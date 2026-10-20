@@ -1,0 +1,259 @@
+# Copyright 2026 The RPent Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Offline action contracts with fake measured feedback, never hardware."""
+
+import copy
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
+
+from robots.flexiv.env_server import CollectorBackend, FlexivEnvFacade
+from robots.flexiv.motion import rotation
+
+
+@pytest.fixture
+def backend(monkeypatch):
+    now = [100.0]
+    monkeypatch.setattr("robots.flexiv.motion.time.monotonic", lambda: now[0])
+    monkeypatch.setattr(
+        "robots.flexiv.motion.time.sleep", lambda s: now.__setitem__(0, now[0] + s)
+    )
+    b = CollectorBackend("unused", supervised=True)
+    b.session = "owned"
+    b.connection = {
+        "motion_enabled": True,
+        "workspace_min": [0, -0.8, -0.49],
+        "workspace_max": [1, 0.8, 1],
+    }
+    b.calibration = SimpleNamespace(
+        data={"T_base_board": np.eye(4).tolist()}, offset=np.array([0, 0, 0.00837])
+    )
+    state = {
+        "tcp_pose": [0.4, 0, 0.2, 0, 1, 0, 0],
+        "joint_velocity": [0.0] * 7,
+        "gripper_width_m": 0.098,
+        "gripper_force_n": 0.0,
+        "gripper_is_moving": False,
+        "fault": False,
+        "operational": True,
+        "mode": "Mode.NRT_CARTESIAN_MOTION_FORCE",
+    }
+    b.calls = []
+    b.state = state
+    b.armed = True
+
+    def request(path, data=None):
+        b.calls.append((path, data))
+        if path.endswith("/state"):
+            return {
+                "state": copy.deepcopy(state),
+                "armed": b.armed,
+                "stop_reason": None,
+            }
+        if path.endswith("/pose-step"):
+            state["tcp_pose"] = list(data["pose"])
+        if path.endswith("/gripper-step"):
+            state["gripper_width_m"] = data["width_m"]
+        if path.endswith("/stop"):
+            b.armed = False
+        return {"submitted": True}
+
+    b.request = request
+    return b
+
+
+def test_motion_is_bounded_and_returns_actual_feedback(backend):
+    result = backend.move_tcp([0.402, 0, 0.2])
+    assert result["reached"] and 1 <= result["commands"] <= 3
+    assert (
+        np.linalg.norm(np.array(result["measured_pose"][:3]) - [0.402, 0, 0.2])
+        <= 0.0004
+    )
+    before = np.array([0.4, 0, 0.2])
+    for path, data in backend.calls:
+        if path.endswith("/pose-step"):
+            assert np.linalg.norm(np.array(data["pose"][:3]) - before) <= 0.000801
+            before = np.array(data["pose"][:3])
+
+
+@pytest.mark.parametrize("failure", [None, "stop", "timeout"])
+def test_joint_home_waits_for_feedback_and_stops_on_failure(backend, failure):
+    original = backend.request
+    count = [0]
+    backend.state["joint_position"] = [0.0] * 7
+
+    def request(path, data=None):
+        if path.endswith("home-step"):
+            count[0] += 1
+            if count[0] == 2:
+                return {"reached": True, "joint_error_rad": 0.0}
+            if failure != "timeout":
+                backend.state["joint_position"] = [0.001] * 7
+            if failure == "stop":
+                backend.armed = False
+            return {"reached": False, "target_joints_rad": [0.001] * 7}
+        return original(path, data)
+
+    backend.request = request
+    if failure:
+        with pytest.raises(RuntimeError):
+            backend.reset_home()
+        assert count[0] == 1
+        assert backend.calls[-1][0].endswith("/stop")
+    else:
+        assert backend.reset_home()["reached"]
+        assert count[0] == 2
+
+
+@pytest.mark.parametrize(
+    "target", [[float("nan"), 0, 0.2], [0.8, 0, 0.2], [0.4, 0, -0.49]]
+)
+def test_invalid_target_sends_no_commands(backend, target):
+    with pytest.raises(ValueError):
+        backend.move_tcp(target)
+    assert all(path.endswith("/state") for path, _ in backend.calls)
+
+
+def test_operator_stop_prevents_following_actions(backend):
+    backend.stop_motion()
+    with pytest.raises(RuntimeError, match="operator"):
+        backend.move_tcp([0.401, 0, 0.2])
+    assert not any(path.endswith("/pose-step") for path, _ in backend.calls)
+
+
+def test_timeout_stops_and_never_accumulates_targets(backend):
+    request = backend.request
+
+    def frozen(path, data=None):
+        if path.endswith("/pose-step"):
+            backend.calls.append((path, data))
+            return {"submitted": True}
+        return request(path, data)
+
+    backend.request = frozen
+    with pytest.raises(RuntimeError, match="did not settle"):
+        backend.move_tcp([0.402, 0, 0.2])
+    assert sum(p.endswith("/pose-step") for p, _ in backend.calls) == 1
+    assert backend.calls[-1][0].endswith("/stop")
+
+
+def test_contact_holds_without_more_closure_or_claiming_grasp(backend):
+    request = backend.request
+
+    def contact(path, data=None):
+        result = request(path, data)
+        if path.endswith("/gripper-step"):
+            backend.state["gripper_force_n"] = 5.5
+        return result
+
+    backend.request = contact
+    result = backend.set_gripper(0.04)
+    assert (
+        result["contact_detected"]
+        and not result["object_grasp_verified"]
+        and not result["reached"]
+    )
+    assert sum(p.endswith("/gripper-step") for p, _ in backend.calls) == 1
+    assert any(p.endswith("/gripper-hold") for p, _ in backend.calls)
+
+
+def test_gripper_wrong_direction_stops(backend):
+    request = backend.request
+    backend.state["gripper_width_m"] = 0.05
+
+    def wrong(path, data=None):
+        result = request(path, data)
+        if path.endswith("/gripper-step"):
+            backend.state["gripper_width_m"] = 0.051
+        return result
+
+    backend.request = wrong
+    with pytest.raises(RuntimeError, match="direction"):
+        backend.set_gripper(0.04)
+    assert backend.calls[-1][0].endswith("/stop")
+
+
+def test_table_down_uses_calibration_and_checks_clearance(backend):
+    board = np.eye(4)
+    from scipy.spatial.transform import Rotation
+
+    board[:3, :3] = Rotation.from_euler("x", 5, degrees=True).as_matrix()
+    backend.calibration.data["T_base_board"] = board.tolist()
+    backend.move_tcp = lambda xyz, q: [*xyz, *q]
+    pose = backend.align_tool_down()
+    np.testing.assert_allclose(
+        rotation(pose).as_matrix()[:, 2], -board[:3, 2], atol=1e-8
+    )
+    backend.state["tcp_pose"][2] = 0.02
+    with pytest.raises(ValueError, match="raise"):
+        backend.align_tool_down()
+
+
+def test_supervised_rpc_exposes_actions_but_never_arm(backend):
+    routes = FlexivEnvFacade(backend)._rpc
+    assert "env.move_tcp" in routes and "env.set_gripper" in routes
+    assert all("arm" not in name and "resume" not in name for name in routes)
+    backend.connection["motion_enabled"] = False
+    with pytest.raises(RuntimeError, match="observation-only"):
+        backend.set_gripper(0.04)
+
+
+def test_gripper_waits_for_delayed_feedback_without_resending(backend):
+    request = backend.request
+    pending = []
+    reads = [0]
+
+    def delayed(path, data=None):
+        if path.endswith("/gripper-step"):
+            backend.calls.append((path, data))
+            pending.append(data["width_m"])
+            return {"submitted": True}
+        if path.endswith("/state") and pending:
+            reads[0] += 1
+            if reads[0] >= 12:
+                backend.state["gripper_width_m"] = pending[0]
+        return request(path, data)
+
+    backend.request = delayed
+    result = backend.set_gripper(0.096)
+    assert result["reached"]
+    assert sum(p.endswith("/gripper-step") for p, _ in backend.calls) == 1
+    assert reads[0] >= 12
+
+
+def test_post_motion_capture_retries_only_transient_stationarity(backend):
+    count = [0]
+
+    def capture(path, data=None):
+        count[0] += 1
+        if count[0] < 3:
+            raise RuntimeError(
+                'Collector 409: {"detail":"Arm must be stationary; release SpaceMouse and wait"}'
+            )
+        return {"valid": True}
+
+    backend.request = capture
+    assert backend.calibration_snapshot() == {"valid": True}
+    assert count[0] == 3
+
+    def fault(path, data=None):
+        count[0] += 1
+        raise RuntimeError('Collector 409: {"detail":"Robot reports a fault"}')
+
+    backend.request = fault
+    with pytest.raises(RuntimeError, match="fault"):
+        backend.calibration_snapshot()
+    assert count[0] == 4

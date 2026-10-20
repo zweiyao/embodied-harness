@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RPent · 实验开始</title>
+<link rel="stylesheet" href="/static/setup.css">
+<script type="module" src="/static/setup.js"></script>
+</head>
+<body>
+<main>
+  <header><span class="brand">RPent / Harness VLA</span><a href="/console">查看当前控制台 →</a></header>
+  <h1>开始一次实验</h1>
+  <p class="intro">选择环境和参数，进入控制台后发送任务开始运行。</p>
+  <div id="status" role="status">正在读取服务配置…</div>
+  <form id="setupForm">
+    <fieldset disabled id="fields">
+      <section>
+        <h2><span>01</span> 选择环境</h2>
+        <label>实验环境<select id="robot"></select></label>
+        <p id="environmentNote" class="note"></p>
+      </section>
+      <section>
+        <h2><span>02</span> 选择任务</h2>
+        <div id="simulation" class="grid">
+          <label>任务集<select id="suite"></select></label>
+          <label>随机种子<select id="seed"></select></label>
+          <label class="wide">任务编号与指令<select id="task"></select></label>
+        </div>
+        <div id="physical" hidden>
+          <label>任务模板<select id="inspection"></select></label>
+          <label>实验指令<textarea id="physicalInstruction" rows="3" style="width:100%;box-sizing:border-box"></textarea></label>
+          <label>控制模式<select id="physicalMode"><option value="readonly">只读观察与定位</option><option value="supervised">受限真机实验</option></select></label>
+          <p id="physicalStatus" role="status">正在读取机械臂状态…</p>
+          <button type="button" id="armPhysical">启用受限动作（原地恢复）</button>
+          <button type="button" id="stopPhysical" style="background:#a71919;color:white">停止机械臂和夹爪</button>
+          <p class="note">启用后可执行实际动作，请在机械臂旁观察。恢复保持当前位姿和夹爪，不归位或初始化。每次实验结束或保护停止后需要重新启用。保留控制器急停作为硬件停止方式。</p>
+        </div>
+      </section>
+      <section>
+        <h2><span>03</span> 模型与预算</h2>
+        <div class="grid">
+          <label>高层模型<select id="model"></select></label>
+          <label>最多决策轮数<select id="max_turns"></select></label>
+          <label>每次回复最多 Token<select id="max_tokens"></select></label>
+          <label>规划超时<select id="planner_timeout_s"></select></label>
+        </div>
+        <p class="note">决策轮数是 Agent 调用模型的预算，不是机械臂动作步数。参数仅影响后续新任务；模型服务和凭据由服务器管理。</p>
+      </section>
+      <section class="summary">
+        <h2>准备好的任务</h2><code id="command"></code>
+        <p class="note">保存后将在控制台填好任务命令，按 Enter 才会启动。已有实验运行时，可直接进入控制台查看。</p>
+        <button type="submit" id="enter">保存参数并进入控制台 →</button>
+      </section>
+    </fieldset>
+  </form>
+  <p class="footer">配置保存在当前服务会话中；服务重启后恢复启动默认值。每轮运行目录内保留实际配置快照。</p>
+</main>
+</body>
+</html>
