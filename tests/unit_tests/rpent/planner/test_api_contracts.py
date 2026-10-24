@@ -182,7 +182,9 @@ def test_finish_returns_transcript_for_rpent_without_step_files(tmp_path, monkey
 
 
 @pytest.mark.parametrize("request_timeout_s", [None, 0.05])
-def test_opt_in_model_timeout_covers_stalled_response_stream(tmp_path, request_timeout_s):
+def test_opt_in_model_timeout_covers_stalled_response_stream(
+    tmp_path, request_timeout_s
+):
     events = Events()
     toolkit = RobotToolkit(events)
     toolkit.model_request_timeout_s = request_timeout_s

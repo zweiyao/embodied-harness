@@ -115,7 +115,12 @@ class RunJournal:
                 os.fsync(f.fileno())
 
 
-def native_catalog():
+def native_catalog(robot="libero"):
+    if robot != "libero":
+        from rpent.robots.base import _resolve_robot
+
+        return _resolve_robot(robot).native_catalog()
+
     from robots.libero import tools
     from robots.libero.research.sensors import ACTIONS
     from rpent.tools import iter_tools
@@ -174,8 +179,11 @@ def native_catalog():
 
 
 class Workbench:
-    def __init__(self, config):
+    def __init__(self, config, *, robot="libero"):
         self.config = config
+        self.robot = robot
+        if config.get("robot", "libero") != robot:
+            raise ValueError("Workbench configuration belongs to another robot")
         self.root = Path(config["runs_root"]).resolve()
         self.library = Path(config["library_root"]).resolve()
         self.profiles = {
@@ -197,11 +205,15 @@ class Workbench:
                         "error": "Previous server exited before finalization; inspect flushed events and states.",
                     },
                 )
+            if (path.parent / "pilot-attempt.json").exists():
+                from robots.univtac.pilot.execution import restore_from_output
+
+                restore_from_output(path.parent).after_finish(json.loads(final.read_text()))
 
     @classmethod
-    def from_env(cls):
+    def from_env(cls, *, robot="libero"):
         path = os.environ.get("RPENT_WORKBENCH")
-        return cls(json.loads(Path(path).read_text())) if path else None
+        return cls(json.loads(Path(path).read_text()), robot=robot) if path else None
 
     def public_profiles(self):
         return [
@@ -215,7 +227,7 @@ class Workbench:
     def catalog(self):
         from robots.libero.research.library import Library
 
-        result = native_catalog()
+        result = native_catalog(self.robot)
         invoked = set()
         for run in self.root.glob("*/tasks/*/tool-invocations.json"):
             try:

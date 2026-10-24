@@ -3,6 +3,8 @@
 """Offline protocol tests; no simulator, API or generated code is executed."""
 
 import json
+import subprocess
+import sys
 from collections import Counter
 
 import pytest
@@ -234,3 +236,162 @@ def test_failed_final_validation_blocks_holdout(tmp_path):
         )
     with pytest.raises(ValueError, match="validations must pass"):
         pilot.reserve_episode(pilot.manifest["cells"][8]["id"], "heldout", version)
+
+
+def pending_interface_reviews(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    version = pilot.freeze(bundle(development(pilot, tmp_path), pilot))
+    attempts, reports = [], []
+    for cell in pilot.manifest["cells"][6:8]:
+        attempt = pilot.reserve_episode(cell["id"], cell["id"], version)
+        pilot.record_scene(attempt, scene())
+        pilot.finish_episode(
+            attempt, {"termination_reason": "completed", "native_success": True}
+        )
+        report = tmp_path / f"{cell['id']}-interface.md"
+        report.write_text(
+            "Recorded declarations, parameters and outputs were reviewed."
+        )
+        attempts.append(attempt)
+        reports.append(report)
+    return pilot, version, attempts, reports
+
+
+def test_post_run_interface_review_unblocks_holdout_without_rewriting_finish(tmp_path):
+    pilot, version, attempts, reports = pending_interface_reviews(tmp_path)
+    formal = pilot.manifest["cells"][8]["id"]
+    with pytest.raises(ValueError, match="validations must pass"):
+        pilot.reserve_episode(formal, "heldout", version)
+    for attempt, report in zip(attempts, reports, strict=True):
+        pilot.record_interface_validation(attempt, True, report)
+    events = [
+        json.loads(line)
+        for line in (pilot.root / "events.jsonl").read_text().splitlines()
+    ]
+    finished = [
+        event
+        for event in events
+        if event["kind"] == "finished" and event["id"] in attempts
+    ]
+    assert len(finished) == 2
+    assert all(
+        "interface_validation_passed" not in event["outcome"] for event in finished
+    )
+    validations = [event for event in events if event["kind"] == "interface_validation"]
+    assert len(validations) == 2 and all(
+        event["freeze_id"] == version for event in validations
+    )
+    assert all(
+        event["scene_fingerprint"] and len(event["evidence"]["sha256"]) == 64
+        for event in validations
+    )
+    assert all(
+        row["interface_validation_passed"] for row in pilot.summary()["rows"][6:8]
+    )
+    pilot.reserve_episode(formal, "heldout", version)
+    assert pilot.summary()["episodes_reserved"] == 9
+
+
+@pytest.mark.parametrize("change", ["modified", "removed"])
+def test_interface_evidence_is_rechecked_before_every_formal_reservation(
+    tmp_path, change
+):
+    pilot, version, attempts, reports = pending_interface_reviews(tmp_path)
+    for attempt, report in zip(attempts, reports, strict=True):
+        pilot.record_interface_validation(attempt, True, report)
+    if change == "modified":
+        reports[0].write_text("Changed after acceptance")
+    else:
+        reports[0].unlink()
+    with pytest.raises(ValueError, match="interface validation"):
+        pilot.reserve_episode(pilot.manifest["cells"][8]["id"], "heldout", version)
+    assert pilot.summary()["episodes_reserved"] == 8
+
+
+def test_failed_or_duplicate_review_cannot_be_replaced_by_success(tmp_path):
+    pilot, version, attempts, reports = pending_interface_reviews(tmp_path)
+    pilot.record_interface_validation(attempts[0], False, reports[0])
+    with pytest.raises(ValueError, match="already recorded"):
+        pilot.record_interface_validation(attempts[0], True, reports[0])
+    pilot.record_interface_validation(attempts[1], True, reports[1])
+    with pytest.raises(ValueError, match="validations must pass"):
+        pilot.reserve_episode(pilot.manifest["cells"][8]["id"], "heldout", version)
+    assert pilot.summary()["rows"][6]["native_success"] is True
+    assert pilot.summary()["rows"][6]["interface_validation_passed"] is False
+
+
+def test_interface_review_requires_finished_validation_and_initial_scene(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    development_attempts = development(pilot, tmp_path)
+    version = pilot.freeze(bundle(development_attempts, pilot))
+    report = tmp_path / "report.md"
+    report.write_text("Review")
+    with pytest.raises(ValueError, match="validate-stage"):
+        pilot.record_interface_validation(development_attempts[0], True, report)
+    attempt = pilot.reserve_episode("dev-07", "validation", version)
+    with pytest.raises(ValueError, match="ended"):
+        pilot.record_interface_validation(attempt, True, report)
+    pilot.finish_episode(attempt, {"termination_reason": "setup_failure"})
+    with pytest.raises(ValueError, match="matching freeze and scene"):
+        pilot.record_interface_validation(attempt, True, report)
+
+
+def test_interface_review_rejects_missing_empty_evidence_and_nonboolean_decision(
+    tmp_path,
+):
+    pilot, _, attempts, reports = pending_interface_reviews(tmp_path)
+    with pytest.raises(ValueError, match="boolean"):
+        pilot.record_interface_validation(attempts[0], "true", reports[0])
+    reports[0].write_text("")
+    with pytest.raises(ValueError, match="must not be empty"):
+        pilot.record_interface_validation(attempts[0], True, reports[0])
+    reports[0].unlink()
+    with pytest.raises(FileNotFoundError):
+        pilot.record_interface_validation(attempts[0], True, reports[0])
+    assert not any(
+        "interface_validation_passed" in row for row in pilot.summary()["rows"][6:8]
+    )
+
+
+def test_interface_review_cannot_replace_legacy_decision_or_accept_changed_freeze(
+    tmp_path,
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    version = pilot.freeze(bundle(development(pilot, tmp_path), pilot))
+    finish_validation(pilot, version)
+    report = tmp_path / "review.md"
+    report.write_text("review")
+    attempt = pilot.summary()["rows"][6]["attempt_id"]
+    with pytest.raises(ValueError, match="already recorded"):
+        pilot.record_interface_validation(attempt, False, report)
+
+    pending_root = tmp_path / "pending"
+    pending_root.mkdir()
+    other, version, attempts, reports = pending_interface_reviews(pending_root)
+    frozen = other.root / f"freeze-{version}.json"
+    payload = json.loads(frozen.read_text())
+    payload["code_revision"] = "modified"
+    frozen.write_text(json.dumps(payload))
+    with pytest.raises(ValueError, match="hash mismatch"):
+        other.record_interface_validation(attempts[0], True, reports[0])
+
+
+def test_validate_interface_cli_records_explicit_decision(tmp_path):
+    pilot, _, attempts, reports = pending_interface_reviews(tmp_path)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "robots.univtac.pilot",
+            str(pilot.root),
+            "validate-interface",
+            attempts[0],
+            str(reports[0]),
+            "--passed",
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert pilot.summary()["rows"][6]["interface_validation_passed"] is True
+    assert pilot.summary()["episodes_reserved"] == 8

@@ -25,6 +25,12 @@ def main() -> None:
         command = commands.add_parser(name)
         command.add_argument("attempt")
         command.add_argument("payload", type=Path)
+    validation = commands.add_parser("validate-interface")
+    validation.add_argument("attempt")
+    validation.add_argument("evidence", type=Path)
+    decision = validation.add_mutually_exclusive_group(required=True)
+    decision.add_argument("--passed", dest="passed", action="store_true")
+    decision.add_argument("--failed", dest="passed", action="store_false")
     freeze = commands.add_parser("freeze")
     freeze.add_argument("payload", type=Path)
     inputs = commands.add_parser("maker-inputs")
@@ -44,6 +50,10 @@ def main() -> None:
         result = pilot.summary()
     elif args.command == "reserve":
         result = pilot.reserve_episode(args.cell, args.session, args.freeze)
+    elif args.command == "validate-interface":
+        result = pilot.record_interface_validation(
+            args.attempt, args.passed, args.evidence
+        )
     elif args.command == "maker-inputs":
         result = pilot.maker_inputs(args.variant, args.attempts)
     elif args.command == "reserve-offline":

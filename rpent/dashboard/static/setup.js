@@ -99,8 +99,11 @@ try {
   $('simulation').hidden = !profile.suites;
   $('physical').hidden = !!profile.suites;
   if (profile.suites) {
-    options('suite', Object.keys(profile.suites).map(s => [s,s]), 'libero_object');
-    options('seed', Array.from({length:10}, (_,i) => [i, i]), 0);
+    const suites = Object.keys(profile.suites);
+    options('suite', suites.map(s => [s,s]), suites.includes('libero_object') ? 'libero_object' : suites[0]);
+    const seeds = Array.from({length:10}, (_,i) => i);
+    if (setup.robot === 'univtac') seeds.push(100, 101, 102);
+    options('seed', seeds.map(i => [i, i]), 0);
     tasks();
   } else {
     options('inspection', profile.inspections.map(s => [s,s]));

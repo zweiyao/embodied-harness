@@ -111,10 +111,14 @@ def _file_refs(paths: dict) -> dict:
     return refs
 
 
-def _verify_refs(refs: dict) -> None:
+def _verify_refs(refs: dict, *, label: str = "maker input") -> None:
     for ref in refs.values():
-        if hashlib.sha256(Path(ref["path"]).read_bytes()).hexdigest() != ref["sha256"]:
-            raise ValueError("maker input file changed after recording")
+        try:
+            actual = hashlib.sha256(Path(ref["path"]).read_bytes()).hexdigest()
+        except OSError as exc:
+            raise ValueError(f"{label} evidence is unavailable") from exc
+        if actual != ref["sha256"]:
+            raise ValueError(f"{label} file changed after recording")
 
 
 class Pilot:
@@ -205,10 +209,49 @@ class Pilot:
                     record = next((e for e in attempts if e["cell"] == dev["id"]), None)
                     if record is None or record["id"] not in finished:
                         raise ValueError("all eight development attempts are required")
-                    if dev["stage"] == "validate" and not finished[record["id"]][
-                        "outcome"
-                    ].get("interface_validation_passed", False):
-                        raise ValueError("both final interface validations must pass")
+                    if dev["stage"] == "validate":
+                        validation = next(
+                            (
+                                e
+                                for e in events
+                                if e["kind"] == "interface_validation"
+                                and e["id"] == record["id"]
+                            ),
+                            None,
+                        )
+                        passed = (
+                            finished[record["id"]]["outcome"].get(
+                                "interface_validation_passed"
+                            )
+                            is True
+                        )
+                        if validation is not None:
+                            recorded_scene = next(
+                                (
+                                    e
+                                    for e in events
+                                    if e["kind"] == "scene" and e["id"] == record["id"]
+                                ),
+                                {},
+                            )
+                            if (
+                                validation["freeze_id"] != freeze_id
+                                or validation["scene_fingerprint"]
+                                != recorded_scene.get("fingerprint")
+                                or not recorded_scene.get("matched")
+                            ):
+                                raise ValueError(
+                                    "interface validation freeze/scene mismatch"
+                                )
+                            _verify_refs(
+                                {"interface": validation["evidence"]},
+                                label="interface validation",
+                            )
+                            passed = validation["passed"] is True
+                        if not passed:
+                            raise ValueError(
+                                "both final interface validations must pass"
+                            )
                     if not any(
                         e["kind"] == "scene" and e["id"] == record["id"] for e in events
                     ):
@@ -292,6 +335,53 @@ class Pilot:
             }
 
         self._transaction(finish)
+
+    def record_interface_validation(
+        self, attempt_id: str, passed: bool, evidence_path: str | Path
+    ) -> None:
+        """Append one human interface decision after a validation episode ends.
+
+        This decision is independent of native task success and cannot replace
+        an earlier decision. Formal reservations recheck the evidence bytes.
+        """
+        if type(passed) is not bool:
+            raise ValueError("interface validation passed must be a boolean")
+
+        def record(events):
+            attempt = self._attempt(events, attempt_id)
+            finished = self._finished(events).get(attempt_id)
+            if self._cell(attempt["cell"])["stage"] != "validate" or finished is None:
+                raise ValueError(
+                    "interface validation requires an ended validate-stage attempt"
+                )
+            if "interface_validation_passed" in finished["outcome"] or any(
+                e["kind"] == "interface_validation" and e["id"] == attempt_id
+                for e in events
+            ):
+                raise ValueError("interface validation is already recorded")
+            frozen = next((e for e in events if e["kind"] == "frozen"), {})
+            scene = next(
+                (e for e in events if e["kind"] == "scene" and e["id"] == attempt_id),
+                {},
+            )
+            if attempt["freeze_id"] != frozen.get("id") or not scene.get("matched"):
+                raise ValueError(
+                    "interface validation requires matching freeze and scene evidence"
+                )
+            self.load_freeze(attempt["freeze_id"])
+            evidence = _file_refs({"interface": evidence_path})["interface"]
+            if Path(evidence["path"]).stat().st_size == 0:
+                raise ValueError("interface validation evidence must not be empty")
+            return None, {
+                "kind": "interface_validation",
+                "id": attempt_id,
+                "passed": passed,
+                "freeze_id": attempt["freeze_id"],
+                "scene_fingerprint": scene["fingerprint"],
+                "evidence": evidence,
+            }
+
+        self._transaction(record)
 
     def _maker_inputs(
         self, events: list[dict], variant: str, attempts: list[str]
@@ -550,6 +640,20 @@ class Pilot:
                         "scene_matched": scene.get("matched"),
                     }
                 )
+                validation = next(
+                    (
+                        e
+                        for e in events
+                        if e["kind"] == "interface_validation"
+                        and e["id"] == event["id"]
+                    ),
+                    None,
+                )
+                if validation is not None:
+                    rows[-1].update(
+                        interface_validation_passed=validation["passed"],
+                        interface_validation_evidence=validation["evidence"],
+                    )
             return {
                 "episodes_reserved": len(rows),
                 "episode_limit": 40,

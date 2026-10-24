@@ -112,10 +112,24 @@ The self-contained bundle contains:
 C's tools must be retained unchanged in D/E; F must have exactly C's tools.
 The bundle's content hash is the freeze ID. Its file is rechecked before final
 validation and held-out reservations; edits invalidate it. Both final Max
-validations must use this freeze and record `interface_validation_passed: true`
-before formal reservations are accepted. This flag means interface acceptance,
-not improved task success. The runner supplies the evidence; the ledger does
-not invent or independently infer the flag from prose.
+validations must use this freeze and pass interface acceptance before formal
+reservations are accepted. This decision is separate from task success; the
+ledger does not infer it from model prose or the official success flag.
+
+After `dev-07` and `dev-08` finish, inspect their recorded declarations, actual
+calls, parameter handling and outputs. Save a report for each attempt, then
+append its explicit decision without rewriting the finished run:
+
+```sh
+python -m robots.univtac.pilot /absolute/batch validate-interface ATTEMPT_ID /absolute/interface-review.md --passed
+```
+
+Use `--failed` when the interface check fails. The API equivalent is
+`record_interface_validation(attempt_id, passed, evidence_path)`. Each decision
+binds the frozen bundle, initial scene fingerprint and report SHA-256. It cannot
+be replaced; missing or changed evidence blocks formal reservations. Existing
+finished records with an explicit `interface_validation_passed` boolean remain
+supported. Neither acceptance path establishes a generated-tool benefit.
 
 After freezing, offline development is closed. A changed tool, parameter,
 controller or guidance needs a new, separately budgeted batch; do not change the
@@ -127,3 +141,45 @@ entries. Runtime data belong outside Git.
 freeze ID, termination and native outcome. Compare matched task/seed rows and
 report missing/infrastructure outcomes explicitly. Record actual new-tool use;
 a success without its invocation does not demonstrate benefit from its code.
+
+## RPent execution hooks
+
+The UniVTAC robot adapter uses the existing API/Codex planners. Supply
+`--pilot-root` and `--pilot-cell` together to charge one fixed cell before
+simulator startup. Add `--pilot-freeze` for final validation and held-out cells.
+For provisional CLI tools, `--tool-selection-json` reads complete frozen
+declarations; the dashboard already provides its explicit selection. Mismatched
+selections are rejected rather than silently replaced. Do not supply both.
+
+The adapter defaults to 60 model responses and 3600 seconds. API response limits
+cover the full response stream. Codex SDK exposes no reliable provider request
+boundaries, so its 180-second limit covers a **model-wait interval**, including
+SDK transport/retries but excluding RPent tool execution. Cancellation/cleanup
+can take additional time. This is not a measurement of network-only latency.
+
+The execution bridge checks scene evidence before model actions, freezes and
+compares actual controller/source/memory provenance and the Docker image ID,
+and records startup failures without refunding attempts. Runtime overrides in
+condition `parameters` must be empty in this version; program constants belong
+in the frozen source/schema. Model profiles use
+`models.profiles[model] = {planner, model, reasoning_effort, base_url, max_tokens}`
+and the shared budget is `models.budget`. Credentials remain outside this file.
+
+Official success comes from the private evaluator's `official_success` field;
+`finish` remains a separate model judgment. A completed software flow, interface
+validation, or passing fixture test is not evidence of a successful task.
+
+## Implementation verification (2026-10-24)
+
+Remote combined regression passed 510 tests, including 101 UniVTAC protocol,
+sensor, execution, recording and lifecycle tests, plus the shared dashboard,
+planner, tool and registration contracts. Ruff checks and setup-page JavaScript
+syntax checks passed. Separate high-resolution LIBERO replay/Docker tests passed
+48 checks; the existing LIBERO control implementation was not changed.
+
+The independent simulator environment is installed, but bare Isaac AppLauncher
+startup still crashes in the RTX/Hydra renderer before task construction. See
+[`robots/univtac/INSTALL.md`](../../robots/univtac/INSTALL.md) for the evidence
+and dependency versions. No tactile pilot episodes or real model requests have
+run (0/40 attempts, 0/80 offline requests). Scripted smoke, generated tactile
+tools, frozen formal comparisons and task-effect claims remain pending.

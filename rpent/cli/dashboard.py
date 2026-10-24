@@ -119,10 +119,10 @@ def run_dashboard_session(
         output_dir=session_root,
         dashboard_spec=dashboard_spec,
     )
-    if robot_spec.name == "libero":
+    if robot_spec.name in {"libero", "univtac"}:
         from rpent.dashboard.workbench import Workbench
 
-        state.workbench = Workbench.from_env()
+        state.workbench = Workbench.from_env(robot=robot_spec.name)
         if state.workbench is not None:
             state.workbench.recover_interrupted()
     dashboard_server = DashboardServer(
@@ -221,6 +221,12 @@ def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
             # Inner finalization saves detailed outcome; retain startup failures too.
             if not (claimed.output_dir / "outcome.json").exists():
                 write_json(claimed.output_dir / "outcome.json", {"ended_at": stamp(), "error": error, "status": termination_reason(error, state.workbench_aborted, None, False), "environment_success": None})
+            if (claimed.output_dir / "pilot-attempt.json").exists():
+                from robots.univtac.pilot.execution import restore_from_output
+
+                restore_from_output(claimed.output_dir).after_finish(
+                    json.loads((claimed.output_dir / "outcome.json").read_text())
+                )
 
 
 def _run_dashboard_task_inner(
@@ -271,7 +277,7 @@ def _run_dashboard_task_inner(
     prepare_run_memory(task_args, robot_spec, run_config)
     if getattr(state, "workbench", None) is not None:
         material_root = state.workbench.config.get("language_materials")
-        if material_root:
+        if material_root and robot_spec.name == "libero":
             from robots.libero.research.language_materials import freeze_materials
 
             freeze_materials(material_root, run_config.output_dir, run_config.prompt_vars)

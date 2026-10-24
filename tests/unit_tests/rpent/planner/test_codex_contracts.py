@@ -592,7 +592,10 @@ def test_dashboard_model_wait_limit_excludes_native_tools(slow_tool):
                         await asyncio.to_thread(toolkit.execute_tool, "move", {})
                         for event in _model_response_events(1, finish=True):
                             yield event
-                        yield {"method": "turn/completed", "payload": {"turn": {"status": "completed"}}}
+                        yield {
+                            "method": "turn/completed",
+                            "payload": {"turn": {"status": "completed"}},
+                        }
                     else:
                         yield {"method": "item/started", "payload": {}}
                         await asyncio.sleep(2)
@@ -620,8 +623,13 @@ def test_dashboard_model_wait_limit_excludes_native_tools(slow_tool):
             recorder.observe(event)
 
         session = _CodexDashboardSession(
-            config=None, thread_options={}, turn_options={}, recorder=recorder,
-            emit_event=emit_event, control=control, wait_clock=clock,
+            config=None,
+            thread_options={},
+            turn_options={},
+            recorder=recorder,
+            emit_event=emit_event,
+            control=control,
+            wait_clock=clock,
         )
         turn = Turn()
         done = asyncio.Event()

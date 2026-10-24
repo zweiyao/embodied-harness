@@ -37,10 +37,15 @@ EXPECTED_ROBOTS = (
     "robocasa",
     "robodojo",
     "robotwin",
+    "univtac",
     "yam",
 )
 
 PROMPT_VARIABLES = {
+    "univtac": {
+        "instruction": "Insert the held test tube into the hole.",
+        "task_guidance": "",
+    },
     "flexiv": {
         "instruction": "Inspect the physical robot without motion",
         "output_dir": Path("/output"),
