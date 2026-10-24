@@ -26,13 +26,18 @@ def frame():
     return {
         "step": 7,
         "proprio": {"robot0_eef_pos": [0.01, 0.02, 0.25]},
-        "cameras": {"agentview": {"world": world}},
+        "cameras": {
+            "agentview": {
+                "world": world + 10,
+                "high": {"world": world, "rgb": np.zeros((256, 256, 3))},
+            }
+        },
     }
 
 
 def test_center_and_point_relation_use_observed_world_geometry():
     f = frame()
-    f["cameras"]["agentview"]["world"][126:131, 126:131, 2] = 0.09
+    f["cameras"]["agentview"]["high"]["world"][126:131, 126:131, 2] = 0.09
     result = RUN(
         [f],
         {
@@ -47,13 +52,14 @@ def test_center_and_point_relation_use_observed_world_geometry():
     assert result["relation"]["sample_inside_rim_polygon"] is True
     assert result["relation"]["sample_above_rim_m"] == pytest.approx(-0.04)
     assert "success" not in result
-    high = RUN([f], {"rim_points": [[4 * r + 1, 4 * c + 1] for r, c in RIM]})
-    assert high["opening"] == result["opening"]
+    mismatch = RUN([f], {"rim_points": [[4 * r + 1, 4 * c + 1] for r, c in RIM]})
+    assert "error" in mismatch
+    assert "opening" not in mismatch
 
 
 def test_invalid_depth_withheld_and_background_neighbors_excluded():
     f = frame()
-    world = f["cameras"]["agentview"]["world"]
+    world = f["cameras"]["agentview"]["high"]["world"]
     world[79:82, 127:130] = np.nan
     assert (
         RUN([f], {"rim_points": RIM, "image_size": [256, 256]})["status"]
@@ -101,10 +107,38 @@ def test_points_on_one_edge_do_not_define_opening():
 
 def test_height_outlier_excluded_only_with_four_point_supermajority():
     f = frame()
-    f["cameras"]["agentview"]["world"][199:202, 199:202, 2] = 0.0
+    f["cameras"]["agentview"]["high"]["world"][199:202, 199:202, 2] = 0.0
     result = RUN([f], {"rim_points": [*RIM, [200, 200]], "image_size": [256, 256]})
     assert result["status"] == "measured"
     assert result["excluded_rim_indices"] == [4]
     assert result["opening"]["center_xy"] == pytest.approx([0, 0])
     result = RUN([f], {"rim_points": [*RIM[:3], [200, 200]], "image_size": [256, 256]})
     assert result["status"] == "inconsistent_rim"
+
+
+def test_missing_high_resolution_does_not_fall_back_to_low_world():
+    f = frame()
+    del f["cameras"]["agentview"]["high"]
+    result = RUN([f], {"rim_points": RIM, "image_size": [256, 256]})
+    assert "high-resolution" in result["error"]
+    assert "opening" not in result
+
+
+def test_real_1024_pixels_keep_high_resolution_surface_and_rc_order():
+    row, col = np.mgrid[:1024, :1024]
+    world = np.stack(
+        [(col - 512) / 1000, (row - 512) / 1000, np.full_like(row, 0.13, dtype=float)],
+        axis=-1,
+    ).astype(np.float16)
+    f = frame()
+    f["cameras"]["agentview"]["high"] = {
+        "world": world,
+        "rgb": np.zeros((1024, 1024, 3), dtype=np.uint8),
+    }
+    points = [[400, 500], [500, 400], [600, 500], [500, 600]]
+    result = RUN([f], {"rim_points": points})
+    assert result["status"] == "measured"
+    assert result["depth_image_size"] == [1024, 1024]
+    assert result["rim_samples"][0]["world_xyz"] == pytest.approx(
+        world[400, 500].astype(float).tolist(), abs=1e-4
+    )

@@ -1,7 +1,7 @@
 {
-  "source_run": "de70bcd9a4b879e44ed6",
-  "reason": "Qwen adopted the tool but one of six selected rim pixels hit the table. Rather than discard five coherent samples and force more calls, exclude height outliers only with >=4 inliers and >=75% support; preserve raw samples and excluded indices. Clarify optional bottom pixel refers to held object only.",
-  "input_contract": "Up to four recorded RGB-D/proprio frames. Caller supplies calibrated image pixels [row,col], image_size defaults to [1024,1024]. World depth is 256x256 and sampled at corresponding pixel centres using 3x3 patches. XYZ metres, +Z up. Requires roughly horizontal opening and visually identified inner rim. No simulator object poses, controller, hidden floor or success labels.",
+  "source_run": "e25131e79d0b25d2bc72",
+  "reason": "Match native back_project high-resolution sensor input. In the same historical frame, mapping pixel [525,555] to a 256x256 world map changed its surface point by 8.16 cm. Use actual recorded high-resolution data and report missing data explicitly; this fixes input parity, not proven task performance.",
+  "input_contract": "At most four recorded frames. Existing 256x256 fields remain available to old tool versions. This version uses cameras[camera].high with same-step actual RGB/world artifacts; high metric depth/calibration are optional in historical records. Coordinates are world XYZ metres and image [row,col], never [x,y]. No upsampling, silent low-resolution fallback, simulator object poses, controller or success labels.",
   "validation": "unverified",
-  "previous_version": "9cb7290e317642602e72eee144d350a889364e1b322f6f4976ab2e56521dffaa"
+  "previous_version": "85169deece6fb31d8329f93bcd542211a7a16202af150f81f9aa43bdff0be1b6"
 }

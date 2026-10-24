@@ -35,16 +35,30 @@ def run(frames, params):
             "available_steps": [f["step"] for f in frames],
         }
     camera = params.get("camera", "agentview")
-    world = frame["cameras"][camera]["world"]
+    data = frame["cameras"][camera].get("high")
+    if data is None:
+        return {
+            "error": "high-resolution RGB/world observation not recorded",
+            "step": frame["step"],
+            "camera": camera,
+            "resolution": "high",
+        }
+    world = data["world"]
     h, w = world.shape[:2]
     image_h, image_w = params.get("image_size", [1024, 1024])
+    if data["rgb"].shape[:2] != (h, w) or (image_h, image_w) != (h, w):
+        return {
+            "error": "image_size must match the recorded high-resolution RGB/world pair",
+            "step": frame["step"],
+            "camera": camera,
+            "recorded_image_size": [h, w],
+        }
     eef = np.asarray(frame["proprio"]["robot0_eef_pos"], dtype=float)
 
     def sample(point):
         if not (0 <= point[0] < image_h and 0 <= point[1] < image_w):
             return {"pixel_rc": point, "error": "pixel outside declared image_size"}
-        row = min(h - 1, int((point[0] + 0.5) * h / image_h))
-        col = min(w - 1, int((point[1] + 0.5) * w / image_w))
+        row, col = point
         patch = world[
             max(0, row - 1) : min(h, row + 2), max(0, col - 1) : min(w, col + 2), :3
         ].reshape(-1, 3)
@@ -76,6 +90,8 @@ def run(frames, params):
         "camera": camera,
         "input_image_size": [image_h, image_w],
         "depth_image_size": [h, w],
+        "resolution": "high",
+        "source_artifacts": data.get("source_artifacts", {}),
         "coordinates": "world XYZ metres; world +Z is up",
         "rim_samples": samples,
         "limitations": "Caller identifies the inner rim and object. Local depth consistency does not verify identity. Sampled polygon is not the full free space; no hidden floor, collision clearance, grasp or task success is inferred.",

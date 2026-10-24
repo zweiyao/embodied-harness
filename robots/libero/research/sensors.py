@@ -172,6 +172,33 @@ class SensorInterface:
                     ),
                     "calibration": {k: meta[k] for k in CALIBRATION if k in meta},
                 }
+                high_names = {
+                    "rgb": f"{camera}_high.png",
+                    "world": f"{camera}_world_high.npz",
+                    "depth": f"{camera}_depth_high.npz",
+                    "calibration": f"{camera}_metadata_high.json",
+                }
+                if all(high_names[k] in record.artifacts for k in ("rgb", "world")):
+                    high = {
+                        key: self.state.load(name, step=record.step_idx)
+                        for key, name in high_names.items()
+                        if name in record.artifacts
+                    }
+                    if "calibration" in high:
+                        high["calibration"] = {
+                            k: high["calibration"][k]
+                            for k in CALIBRATION
+                            if k in high["calibration"]
+                        }
+                    high.update(
+                        step=record.step_idx,
+                        camera=camera,
+                        image_size=list(high["rgb"].shape[:2]),
+                        source_artifacts={
+                            k: name for k, name in high_names.items() if k in high
+                        },
+                    )
+                    cameras[camera]["high"] = high
             frames.append(
                 {
                     "step": record.step_idx,
