@@ -55,7 +55,12 @@ from pydantic_ai import (
 )
 from pydantic_ai.agent import WrapperAgent
 from pydantic_ai.capabilities import AbstractCapability, Thinking, on_event
-from pydantic_ai.capabilities.abstract import AgentNode, NodeResult, WrapRunHandler
+from pydantic_ai.capabilities.abstract import (
+    AgentNode,
+    NodeResult,
+    WrapNodeRunHandler,
+    WrapRunHandler,
+)
 from pydantic_ai.exceptions import UsageLimitExceeded, UserError
 from pydantic_ai.messages import ModelMessage, UserContent
 from pydantic_ai.models import Model, ModelRequestContext
@@ -72,6 +77,7 @@ from rpent.planner.base import (
     cancel_and_wait,
     execute_tool,
 )
+from rpent.planner.request_timeout import ModelRequestTimeout, request_timeout
 from rpent.tools.toolkit import Toolkit, ToolResult
 from rpent.utils.logging import get_logger
 from rpent.utils.templates import substitute
@@ -185,7 +191,9 @@ class ApiAgentLoop(Planner):
         try:
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
-                timeout=None if self.interactive and not getattr(toolkit, "journal", None) else self.timeout_s,
+                timeout=None
+                if self.interactive and not getattr(toolkit, "journal", None)
+                else self.timeout_s,
             )
         except asyncio.TimeoutError:
             session.error = f"planner timed out after {self.timeout_s:g}s"
@@ -509,6 +517,27 @@ class _Session(AbstractCapability):
         self.run_done.set()
         self.cancellation: CancellationToken | None = None
         self.completions = 0
+        self.model_request_timeout_s = request_timeout(toolkit.toolkit)
+
+    async def wrap_node_run(
+        self, ctx: RunContext, *, node: AgentNode, handler: WrapNodeRunHandler
+    ) -> NodeResult:
+        """Limit a complete model response, including its stream, but not tools."""
+        timeout = self.model_request_timeout_s
+        if timeout is None or not isinstance(node, ModelRequestNode):
+            return await handler(node)
+        try:
+            return await asyncio.wait_for(handler(node), timeout=timeout)
+        except asyncio.TimeoutError as exc:
+            journal = getattr(self.toolkit.toolkit, "journal", None)
+            if journal is not None:
+                journal.append(
+                    "model_request_timeout",
+                    {"timeout_s": timeout, "scope": "model_response"},
+                )
+            raise ModelRequestTimeout(
+                f"model response timed out after {timeout:g}s"
+            ) from exc
 
     async def wrap_run(
         self, ctx: RunContext, *, handler: WrapRunHandler

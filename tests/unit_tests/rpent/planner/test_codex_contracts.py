@@ -19,6 +19,7 @@ import json
 import os
 import queue
 import threading
+import time
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -35,6 +36,7 @@ from rpent.planner.codex import (
     _codex_mcp_config_overrides,
     _interrupt,
 )
+from rpent.planner.request_timeout import ModelWaitClock, TimedToolkit, request_timeout
 from rpent.planner.utils.http_mcp_server import HttpMcpServer, mcp_result
 from rpent.tools import ToolResult
 from rpent.tools.common import CommonTools
@@ -525,6 +527,147 @@ def test_cli_keeps_finish_at_the_response_budget(tmp_path, monkeypatch):
     assert FakeCodex.instances[0].closed
     assert FakeMcpServer.instances[0].stopped
     assert result.error is None
+
+
+@pytest.mark.parametrize("slow_tool", [False, True])
+def test_cli_model_wait_limit_excludes_native_tools(tmp_path, monkeypatch, slow_tool):
+    install_fake_backend(monkeypatch)
+    toolkit = FakeToolkit()
+    toolkit.model_request_timeout_s = 0.1
+
+    def execute_tool(name, args):
+        time.sleep(0.3)
+        return ToolResult(data={"ok": True})
+
+    monkeypatch.setattr(toolkit, "execute_tool", execute_tool)
+
+    def stream(self):
+        if slow_tool:
+            FakeMcpServer.instances[-1].toolkit.execute_tool("move", {})
+            yield from _model_response_events(1, finish=True)
+        else:
+            deadline = time.monotonic() + 2
+            while not self.interrupt_calls and time.monotonic() < deadline:
+                time.sleep(0.01)
+        yield {"method": "turn/completed", "payload": {"turn": {"status": "completed"}}}
+
+    monkeypatch.setattr(FakeTurn, "stream", stream)
+    result = make_planner(tmp_path, RecordingSink(), timeout_s=3).solve(
+        system_prompt="system", user_message="task", toolkit=toolkit, max_turns=2
+    )
+    assert FakeMcpServer.instances[-1].stopped
+    assert FakeCodex.instances[-1].closed
+    if slow_tool:
+        assert result.error is None
+        assert result.finish_result["status"] == "stuck"
+        assert FakeCodex.instances[-1].thread.fake_turn.interrupt_calls == 0
+    else:
+        assert "model-wait interval timed out after 0.1s" in result.error
+        assert "excludes RPent tool execution" in result.error
+        assert FakeCodex.instances[-1].thread.fake_turn.interrupt_calls == 1
+        assert result.finish_result is None
+
+
+@pytest.mark.parametrize("slow_tool", [False, True])
+def test_dashboard_model_wait_limit_excludes_native_tools(slow_tool):
+    from rpent.planner.codex import _CodexDashboardSession, _Recorder
+
+    async def run():
+        clock = ModelWaitClock(0.1)
+        stream_closed = []
+
+        class SlowToolkit(FakeToolkit):
+            def execute_tool(self, name, args):
+                time.sleep(0.3)
+                return ToolResult(data={"ok": True})
+
+        toolkit = TimedToolkit(SlowToolkit(), clock)
+
+        class Turn:
+            interrupt_calls = 0
+
+            async def stream(self):
+                try:
+                    if slow_tool:
+                        await asyncio.to_thread(toolkit.execute_tool, "move", {})
+                        for event in _model_response_events(1, finish=True):
+                            yield event
+                        yield {"method": "turn/completed", "payload": {"turn": {"status": "completed"}}}
+                    else:
+                        yield {"method": "item/started", "payload": {}}
+                        await asyncio.sleep(2)
+                finally:
+                    stream_closed.append(True)
+
+            async def interrupt(self):
+                self.interrupt_calls += 1
+
+        class Control:
+            ended = False
+
+            async def tool_completed(self, session):
+                pass
+
+            def end(self):
+                self.ended = True
+
+        recorder = _Recorder(max_turns=2, dashboard_events=RecordingSink())
+        control = Control()
+        events = []
+
+        def emit_event(event):
+            events.append(event)
+            recorder.observe(event)
+
+        session = _CodexDashboardSession(
+            config=None, thread_options={}, turn_options={}, recorder=recorder,
+            emit_event=emit_event, control=control, wait_clock=clock,
+        )
+        turn = Turn()
+        done = asyncio.Event()
+        session._turn = turn
+        session._turn_done = done
+        await asyncio.wait_for(session._consume_turn(turn, done), timeout=3)
+        await session.close()
+        assert done.is_set() and control.ended
+        assert stream_closed == [True]
+        if slow_tool:
+            assert session.error is None
+            assert turn.interrupt_calls == 0
+            assert recorder.finish_result["status"] == "stuck"
+        else:
+            assert "ModelRequestTimeout" in session.error
+            assert "model-wait interval timed out after 0.1s" in session.error
+            assert turn.interrupt_calls == 1
+            assert events[-1]["method"] == "model_wait_timeout"
+
+    asyncio.run(run())
+
+
+def test_model_wait_clock_pauses_until_last_parallel_tool_finishes(monkeypatch):
+    now = [0.0]
+    monkeypatch.setattr("rpent.planner.request_timeout.time.monotonic", lambda: now[0])
+    clock = ModelWaitClock(180)
+    now[0] = 179
+    assert clock.remaining() == 1
+    clock.tool_started()
+    clock.tool_started()
+    now[0] = 1000
+    clock.tool_finished()
+    assert clock.remaining() is None
+    clock.tool_finished()
+    assert clock.remaining() == 180
+    now[0] += 179
+    clock.reset()
+    assert clock.remaining() == 180
+
+
+@pytest.mark.parametrize("value", [0, -1, True, "180", float("nan"), float("inf")])
+def test_model_request_timeout_requires_explicit_positive_finite_seconds(value):
+    with pytest.raises(ValueError, match="finite and positive"):
+        request_timeout(SimpleNamespace(model_request_timeout_s=value))
+    assert request_timeout(SimpleNamespace()) is None
+    assert request_timeout(SimpleNamespace(model_request_timeout_s=180)) == 180
 
 
 @pytest.mark.parametrize(

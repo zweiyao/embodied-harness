@@ -181,6 +181,51 @@ def test_finish_returns_transcript_for_rpent_without_step_files(tmp_path, monkey
     ]
 
 
+@pytest.mark.parametrize("request_timeout_s", [None, 0.05])
+def test_opt_in_model_timeout_covers_stalled_response_stream(tmp_path, request_timeout_s):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.model_request_timeout_s = request_timeout_s
+    stream_closed = []
+
+    async def stream(messages, info):
+        try:
+            yield "starting"
+            await asyncio.sleep(0.15)
+            yield finish()
+        finally:
+            stream_closed.append(True)
+
+    result, _, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=2
+    )
+    assert stream_closed == [True]
+    if request_timeout_s is None:
+        assert result.error is None
+        assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+    else:
+        assert "model response timed out after 0.05s" in result.error
+        assert result.finish_result is None
+        assert toolkit.calls == []
+
+
+def test_model_response_timeout_excludes_tool_execution(tmp_path):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.model_request_timeout_s = 0.1
+    toolkit.register("slow_tool", lambda: (time.sleep(0.25), "done")[1])
+
+    async def stream(messages, info):
+        yield finish() if toolkit.calls else tool("slow_tool")
+
+    result, _, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=2
+    )
+    assert result.error is None
+    assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+    assert [name for name, _ in toolkit.calls] == ["slow_tool", "finish"]
+
+
 def test_refused_finish_retries_without_claiming_success(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)

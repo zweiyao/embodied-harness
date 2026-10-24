@@ -55,6 +55,13 @@ from rpent.planner.base import (
     cancel_and_wait,
     strip_mcp_prefix,
 )
+from rpent.planner.request_timeout import (
+    ModelRequestTimeout,
+    ModelWaitClock,
+    TimedToolkit,
+    request_timeout,
+    timed_sdk_events,
+)
 from rpent.planner.utils.http_mcp_server import HttpMcpServer
 from rpent.tools.toolkit import Toolkit
 from rpent.utils.config import get_repo_root
@@ -149,7 +156,15 @@ class CodexPlanner(Planner):
         }
         journal = getattr(toolkit, "journal", None)
         if journal is not None:
-            journal.append("sdk_request", {"system": system_prompt, "user": user_message, "options": self._turn_options, "model": self._model if hasattr(self, "_model") else None})
+            journal.append(
+                "sdk_request",
+                {
+                    "system": system_prompt,
+                    "user": user_message,
+                    "options": self._turn_options,
+                    "model": self._model if hasattr(self, "_model") else None,
+                },
+            )
         if not getattr(toolkit, "planner_tools_only", False):
             return self._solve(**kwargs)
         with tempfile.TemporaryDirectory(prefix="rpent-planner-") as directory:
@@ -213,11 +228,15 @@ class CodexPlanner(Planner):
             max_turns=max_turns,
             dashboard_events=self._dashboard_events,
         )
-        state: dict[str, Any] = {}
+        timeout = request_timeout(toolkit)
+        wait_clock = ModelWaitClock(timeout) if timeout is not None else None
+        state: dict[str, Any] = {"model_wait_clock": wait_clock}
 
         # Start the in-thread MCP HTTP server so Codex can reach the
         # shared toolkit without spawning a subprocess.
-        mcp_server = HttpMcpServer(toolkit)
+        mcp_server = HttpMcpServer(
+            TimedToolkit(toolkit, wait_clock) if wait_clock else toolkit
+        )
         mcp_url = mcp_server.start()
         logger.info("mcp http endpoint: %s", mcp_url)
 
@@ -247,13 +266,25 @@ class CodexPlanner(Planner):
             name="codex-sdk",
             daemon=True,
         )
+        if wait_clock is not None:
+            wait_clock.reset()
         worker.start()
         error: str | None = None
         try:
-            worker.join(timeout=self._timeout_s)
+            if wait_clock is None:
+                worker.join(timeout=self._timeout_s)
+            else:
+                deadline = time.monotonic() + self._timeout_s
+                while worker.is_alive() and time.monotonic() < deadline:
+                    if wait_clock.remaining() == 0:
+                        error = str(wait_clock.error())
+                        break
+                    worker.join(
+                        timeout=min(0.05, max(0.0, deadline - time.monotonic()))
+                    )
 
             if worker.is_alive():
-                error = f"Codex SDK timed out after {self._timeout_s}s"
+                error = error or f"Codex SDK timed out after {self._timeout_s}s"
                 try:
                     toolkit.cancel_active_and_wait()
                 except Exception as cancel_error:
@@ -399,12 +430,18 @@ class CodexPlanner(Planner):
                     try:
                         for event in turn.stream():
                             _write_jsonl(raw_f, _message_to_json(event))
+                            previous_turns = recorder.turns
                             if rendered := recorder.observe(event):
                                 with write_lock:
                                     chunks.append(rendered)
                                     out_f.write(rendered)
                                     out_f.flush()
                                 logger.info(rendered.strip())
+                            if (
+                                recorder.turns > previous_turns
+                                and state.get("model_wait_clock") is not None
+                            ):
+                                state["model_wait_clock"].reset()
                             stop_result = getattr(toolkit, "planner_stop_result", None)
                             if stop_result is not None:
                                 recorder.finish_result = stop_result
@@ -456,7 +493,11 @@ class CodexPlanner(Planner):
         error: str | None = None
         started = time.time()
 
-        mcp_server = HttpMcpServer(toolkit)
+        timeout = request_timeout(toolkit)
+        wait_clock = ModelWaitClock(timeout) if timeout is not None else None
+        mcp_server = HttpMcpServer(
+            TimedToolkit(toolkit, wait_clock) if wait_clock else toolkit
+        )
         mcp_url = mcp_server.start()
         try:
             with open(output_path, "w") as out_f, open(raw_stream_path, "w") as raw_f:
@@ -507,6 +548,7 @@ class CodexPlanner(Planner):
                     recorder=recorder,
                     emit_event=emit_event,
                     control=control,
+                    wait_clock=wait_clock,
                 )
                 try:
                     await asyncio.wait_for(session.run(prompt), timeout=self._timeout_s)
@@ -622,6 +664,7 @@ class _CodexDashboardSession:
         recorder: "_Recorder",
         emit_event,
         control: DashboardPlannerControl,
+        wait_clock: ModelWaitClock | None = None,
     ) -> None:
         self._config = config
         self._thread_options = thread_options
@@ -629,6 +672,7 @@ class _CodexDashboardSession:
         self._recorder = recorder
         self._emit_event = emit_event
         self._control = control
+        self._wait_clock = wait_clock
         self._codex: Any | None = None
         self._thread: Any | None = None
         self._turn: Any | None = None
@@ -654,7 +698,17 @@ class _CodexDashboardSession:
         if self._turn is not None:
             await self._turn.steer(text)
             return 0
-        self._turn = await self._thread.turn(text, **self._turn_options)
+        if self._wait_clock is None:
+            self._turn = await self._thread.turn(text, **self._turn_options)
+        else:
+            self._wait_clock.reset()
+            try:
+                self._turn = await asyncio.wait_for(
+                    self._thread.turn(text, **self._turn_options),
+                    timeout=self._wait_clock.seconds,
+                )
+            except asyncio.TimeoutError as exc:
+                raise self._wait_clock.error() from exc
         self._turn_done = asyncio.Event()
         self._turn_task = asyncio.create_task(
             self._consume_turn(self._turn, self._turn_done)
@@ -697,9 +751,16 @@ class _CodexDashboardSession:
 
     async def _consume_turn(self, turn: Any, done: asyncio.Event) -> None:
         limit_reached = False
+        events = timed_sdk_events(turn.stream(), self._wait_clock)
         try:
-            async for event in turn.stream():
+            async for event in events:
+                previous_turns = self._recorder.turns
                 self._emit_event(event)
+                if (
+                    self._wait_clock is not None
+                    and self._recorder.turns > previous_turns
+                ):
+                    self._wait_clock.reset()
                 method = str(_get(event, "method", ""))
                 payload = _get(event, "payload")
 
@@ -751,12 +812,26 @@ class _CodexDashboardSession:
                 return
             raise RuntimeError("Codex turn stream ended without turn/completed")
         except Exception as exc:
+            if isinstance(exc, ModelRequestTimeout):
+                self._emit_event(
+                    {
+                        "method": "model_wait_timeout",
+                        "payload": {
+                            "message": str(exc),
+                            "scope": "sdk_wait_excluding_native_tools",
+                        },
+                    }
+                )
+                with contextlib.suppress(Exception):
+                    await asyncio.wait_for(turn.interrupt(), timeout=15)
             self._turn = None
             self._turn_done = None
             done.set()
             self.error = f"{type(exc).__name__}: {exc}"
             if not self._closing:
                 self._control.end()
+        finally:
+            await events.aclose()
 
 
 # ---------------------------------------------------------------------------
