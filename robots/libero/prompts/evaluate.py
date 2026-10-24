@@ -108,6 +108,21 @@ DISAMBIGUATION / TARGETING:
   frame-clipped/reflective container is rim-biased, so derive the true cavity
   center from the woven-rim pixels.
 
+BASKET PLACEMENT ORDER:
+1. After grasping, lift vertically with `gripper:1` until the BOTTOM of the
+   held object clears the highest rim along the carry path, with a margin.
+   EEF height alone does not establish clearance; inspect the held object.
+2. Keep that safe height while moving horizontally over a free spot INSIDE
+   the basket. Use separate `move_to` calls for lifting, traversing, and
+   lowering; do not descend diagonally across the rim.
+3. Inspect the returned images to confirm the held object's footprint is
+   inside the cavity before lowering. Account for its offset from the EEF.
+4. Descend vertically with `gripper:1`, then `release` once the object is
+   inside at a suitable placement height. Derive positions from this scene.
+5. If a move exhausts its budget with a large remaining error, inspect before
+   continuing. Do not release an object outside or against the rim; lift,
+   re-localize the cavity, and realign first.
+
 PER-TASK RECIPES THAT WORKED AT SEED 0 (adapt coords to your seed):
 - 2-items→basket (t0,t1,t7): place the BOX first into the EMPTY basket interior
   (descend deep, release), then drop/`pi0_pick`-lift the CAN in beside it; a

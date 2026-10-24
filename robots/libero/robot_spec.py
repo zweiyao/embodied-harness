@@ -123,6 +123,13 @@ def get_robot_spec() -> RobotSpec:
     """
     from robots.libero.memory import prepare_memory, validate_options
 
+    def finalize_run(context):
+        if not (context.output_dir / "sensor-trace.json").exists():
+            return None
+        from robots.libero.research.native import finalize_run as finalize_research
+
+        return finalize_research(context)
+
     return RobotSpec(
         name="libero",
         prompts=PromptBundle(
@@ -137,6 +144,7 @@ def get_robot_spec() -> RobotSpec:
         run_flash=_run_flash,
         validate_args=validate_options,
         prepare_memory=prepare_memory,
+        finalize_run=finalize_run,
     )
 
 
@@ -152,13 +160,35 @@ def get_toolkit(
     """Return the LIBERO toolkit for the current session."""
     from robots.libero.toolkit import LiberoToolkit
 
+    if config.prompt_vars.get("sensor_library"):
+        from robots.libero.research.native import SensorResearchToolkit
+
+        return SensorResearchToolkit(
+            runtime_kwargs=runtime_kwargs,
+            dashboard_events=dashboard_events,
+            memory=MemoryManager(
+                config.output_dir / "empty-memory", memory_access="read_only"
+            ),
+            state_output_dir=state_output_dir or config.output_dir,
+            sensor_library=config.prompt_vars["sensor_library"],
+            sandbox_image=config.prompt_vars["sensor_sandbox_image"],
+        )
+
     explore = mode == "exploration"
     memory = MemoryManager(
         root=config.prompt_vars.get("memory_dir") or get_memory_dir("libero"),
         memory_access="inbox_write" if explore else "read_only",
         inbox_cell_tag=config.recipe_tag if explore else None,
     )
-    return LiberoToolkit(
+    toolkit_type = LiberoToolkit
+    manual = {}
+    if "manual_tools" in config.prompt_vars:
+        from robots.libero.research.manual import ManualToolkit
+
+        toolkit_type = ManualToolkit
+        manual = {"selected": config.prompt_vars["manual_tools"], "journal": config.prompt_vars["run_journal"]}
+    return toolkit_type(
+        **manual,
         runtime_kwargs=runtime_kwargs,
         dashboard_events=dashboard_events,
         memory=memory,
@@ -180,6 +210,15 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool) -> None:
     from robots.libero.memory import MEMORY_VERSIONS
 
     required = not use_dashboard
+    parser.add_argument(
+        "--sensor-library",
+        help="Enable perception research using a frozen JSON tool library (an empty list selects the baseline).",
+    )
+    parser.add_argument(
+        "--sensor-sandbox-image",
+        default="embodied-sensor:pilot",
+        help="Docker image for generated perception tools.",
+    )
     parser.add_argument(
         "--enable-direct-action",
         action="store_true",
@@ -305,7 +344,12 @@ def _parse_config(args: argparse.Namespace) -> RunConfig:
         raise ValueError("--explore-sessions must be greater than 0")
     if explore and args.collect_flywheel_data:
         raise ValueError("flywheel collection supports evaluation mode only")
-    memory_profile = requested_profile or ("local" if explore else "hf")
+    sensor_library = getattr(args, "sensor_library", None)
+    memory_profile = (
+        "local"
+        if sensor_library
+        else requested_profile or ("local" if explore else "hf")
+    )
     if memory_profile == "hf" and args.memory_dir is not None:
         raise ValueError("--memory-dir requires --memory-profile local or --explore")
     args.memory_profile = memory_profile
@@ -314,7 +358,7 @@ def _parse_config(args: argparse.Namespace) -> RunConfig:
         if args.memory_dir
         else get_memory_dir("libero")
     )
-    local_eval = not explore and memory_profile == "local"
+    local_eval = not explore and memory_profile == "local" and not sensor_library
     if local_eval:
         if planner == "flash":
             from robots.libero.memory import replay_directory
@@ -342,6 +386,10 @@ def _parse_config(args: argparse.Namespace) -> RunConfig:
                 "run exploration first or use --memory-profile hf"
             )
     prompt_vars = {
+        "sensor_library": sensor_library,
+        "sensor_sandbox_image": getattr(
+            args, "sensor_sandbox_image", "embodied-sensor:pilot"
+        ),
         "suite": args.suite,
         "task": args.task,
         "seed": args.seed,

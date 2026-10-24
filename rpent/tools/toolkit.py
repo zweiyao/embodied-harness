@@ -139,6 +139,11 @@ class Toolkit:
     :meth:`close` to release robot-side primitives / servers at the end of the run.
     """
 
+    # Evaluation toolkits may exclude planner-provided file/network capabilities.
+    planner_tools_only = False
+    # An evaluator can end a planner without publishing a success label to it.
+    planner_stop_result: dict[str, Any] | None = None
+
     def __init__(
         self,
         *,

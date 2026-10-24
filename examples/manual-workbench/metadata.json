@@ -1,0 +1,6 @@
+{
+  "source_run": "dd4aceb7f96a4aa76029",
+  "reason": "Astra baseline used 10 separate back_project calls in 12 model rounds, then exhausted its budget after 5 actions without release. Batch comparable patches and expose local depth spread and EEF offsets in one explicit perception call. This is an integration candidate, not evidence of better success.",
+  "validation": "unverified",
+  "input_contract": "At most four recorded frames; agentview/wrist RGB, depth and world maps aligned at 256x256. Points normalized to calibrated image coordinates; world XYZ in metres. EEF from proprioception. No hidden object state."
+}

@@ -1,0 +1,7 @@
+# Build using the cached RPent image, without downloading packages.
+FROM rlinf/rlinf:agentic-rlinf0.3-maniskill_libero AS source
+FROM nvidia/cuda:12.4.1-base-ubuntu22.04
+COPY --from=source /opt/venv/.python/cpython-3.11.14-linux-x86_64-gnu /python
+COPY --from=source /opt/venv/openpi/lib/python3.11/site-packages/numpy /python/lib/python3.11/site-packages/numpy
+COPY --from=source /opt/venv/openpi/lib/python3.11/site-packages/numpy.libs /python/lib/python3.11/site-packages/numpy.libs
+ENV PATH="/python/bin:${PATH}"

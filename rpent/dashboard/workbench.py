@@ -1,0 +1,487 @@
+# Copyright 2026 The RPent Authors.
+# Licensed under the Apache License, Version 2.0.
+"""Manual experiment catalog, immutable selections and durable run evidence."""
+
+from __future__ import annotations
+
+import base64
+import dataclasses
+import difflib
+import hashlib
+import inspect
+import json
+import os
+import re
+import subprocess
+import threading
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def stamp():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def clean(value):
+    if isinstance(value, dict):
+        return {
+            str(k): (
+                "[redacted]"
+                if re.search(
+                    r"api.?key$|authorization|access_token|refresh_token|id_token|password",
+                    str(k),
+                    re.I,
+                )
+                else clean(v)
+            )
+            for k, v in value.items()
+        }
+    if isinstance(value, (list, tuple)):
+        return [clean(v) for v in value]
+    if isinstance(value, str):
+        for key in ("OPENAI_API_KEY", "CODEX_API_KEY"):
+            secret = os.environ.get(key)
+            if secret and len(secret) > 8:
+                value = value.replace(secret, "[redacted]")
+        return re.sub(
+            r"\bsk-[A-Za-z0-9_.-]+|Bearer\s+[A-Za-z0-9_.-]+", "[redacted]", value
+        )
+    return value
+
+
+def write_json(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(path.suffix + ".tmp")
+    temp.write_text(
+        json.dumps(clean(value), ensure_ascii=False, indent=2, default=str) + "\n"
+    )
+    temp.replace(path)
+
+
+class RunJournal:
+    """Flush events before returning; binary model inputs are content-addressed."""
+
+    def __init__(self, root):
+        self.root = Path(root)
+        self.root.mkdir(parents=True, exist_ok=True)
+        self.lock = threading.RLock()
+
+    def encode(self, value):
+        if isinstance(value, bytes):
+            name = "inputs/" + hashlib.sha256(value).hexdigest() + ".bin"
+            path = self.root / name
+            path.parent.mkdir(exist_ok=True)
+            if not path.exists():
+                path.write_bytes(value)
+            return {"artifact": name, "bytes": len(value)}
+        if (
+            isinstance(value, str)
+            and value.startswith("data:image/")
+            and ";base64," in value
+        ):
+            return {
+                "media_type": value.split(";")[0][5:],
+                **self.encode(base64.b64decode(value.split(",", 1)[1])),
+            }
+        if dataclasses.is_dataclass(value):
+            return {
+                f.name: self.encode(getattr(value, f.name))
+                for f in dataclasses.fields(value)
+            }
+        if hasattr(value, "model_dump"):
+            return self.encode(value.model_dump(mode="python"))
+        if isinstance(value, dict):
+            if value.get("type") == "image" and isinstance(value.get("data"), str):
+                return {
+                    "type": "image",
+                    "mimeType": value.get("mimeType"),
+                    **self.encode(base64.b64decode(value["data"])),
+                }
+            return {str(k): self.encode(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [self.encode(v) for v in value]
+        return value
+
+    def append(self, kind, payload):
+        with self.lock:
+            record = clean(
+                {"time": stamp(), "kind": kind, "payload": self.encode(payload)}
+            )
+            with (self.root / "events.jsonl").open("a") as f:
+                f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+
+
+def native_catalog():
+    from robots.libero import tools
+    from robots.libero.research.sensors import ACTIONS
+    from rpent.tools import iter_tools
+    from rpent.tools.common import CommonTools
+
+    result = []
+    for owner in (tools, tools.LiberoPrimitives, CommonTools):
+        for tool in iter_tools(owner):
+            source = inspect.getsource(tool.handler)
+            result.append(
+                {
+                    "id": "native:" + tool.name,
+                    "name": tool.name,
+                    "origin": "native",
+                    "category": "control"
+                    if tool.name in ACTIONS
+                    else "auxiliary"
+                    if owner is CommonTools
+                    else "perception",
+                    "description": tool.description,
+                    "parameters": tool.input_schema,
+                    "version": hashlib.sha256(source.encode()).hexdigest(),
+                    "source": source,
+                    "required": tool.name == "finish",
+                    "dependencies": [],
+                    "validation": "native",
+                    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+                    "example": None,
+                }
+            )
+    # Register the API adapter's image reader in the shared toolkit for parity.
+    result.append(
+        {
+            "id": "native:read_image",
+            "name": "read_image",
+            "origin": "native",
+            "category": "perception",
+            "description": "Read a saved observation image by artifact name and step.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "step": {"type": "integer", "default": -1},
+                },
+                "required": ["name"],
+            },
+            "version": "shared-image-reader-v1",
+            "required": False,
+            "dependencies": [],
+            "validation": "native",
+            "source": None,
+            "example": None,
+        }
+    )
+    return sorted(result, key=lambda x: (x["category"], x["name"]))
+
+
+class Workbench:
+    def __init__(self, config):
+        self.config = config
+        self.root = Path(config["runs_root"]).resolve()
+        self.library = Path(config["library_root"]).resolve()
+        self.profiles = {
+            p["id"]: {**p, "reasoning_effort": p.get("reasoning_effort") or "none"}
+            for p in config["models"]
+        }
+        self.checks = {}
+        self.environment_lock = threading.RLock()
+
+    def recover_interrupted(self):
+        for path in self.root.glob("*/tasks/*/manifest.json"):
+            final = path.parent / "outcome.json"
+            if not final.exists():
+                write_json(
+                    final,
+                    {
+                        "status": "abnormal_exit",
+                        "environment_success": None,
+                        "error": "Previous server exited before finalization; inspect flushed events and states.",
+                    },
+                )
+
+    @classmethod
+    def from_env(cls):
+        path = os.environ.get("RPENT_WORKBENCH")
+        return cls(json.loads(Path(path).read_text())) if path else None
+
+    def public_profiles(self):
+        return [
+            {
+                k: p.get(k)
+                for k in ("id", "label", "planner", "model", "reasoning_effort")
+            }
+            for p in self.profiles.values()
+        ]
+
+    def catalog(self):
+        from robots.libero.research.library import Library
+
+        result = native_catalog()
+        invoked = set()
+        for run in self.root.glob("*/tasks/*/tool-invocations.json"):
+            try:
+                invoked.update(json.loads(run.read_text()))
+            except (OSError, ValueError):
+                pass
+        for path in sorted(self.library.glob("*.meta.json")):
+            metadata = json.loads(path.read_text())
+            version = path.name.removesuffix(".meta.json")
+            (tool,) = Library(self.library).load(version)
+            result.append(
+                {
+                    **metadata,
+                    **tool,
+                    "id": "generated:" + version,
+                    "origin": "generated",
+                    "category": "perception",
+                    "version": version,
+                    "invoked": version in invoked,
+                    "required": False,
+                }
+            )
+        return result
+
+    def selection(self, ids=None):
+        catalog = {t["id"]: t for t in self.catalog()}
+        if ids is None:
+            ids = [i for i, t in catalog.items() if t["origin"] == "native"]
+        if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
+            raise ValueError("tools must be a list of catalog IDs")
+        if len(ids) != len(set(ids)) or any(i not in catalog for i in ids):
+            raise ValueError("Unknown or duplicate tool/version")
+        selected = [catalog[i] for i in ids]
+        names = [t["name"] for t in selected]
+        if "finish" not in names or len(names) != len(set(names)):
+            raise ValueError("finish is required; select one version per tool name")
+        for t in selected:
+            missing = set(t.get("dependencies", [])) - set(names)
+            if missing:
+                raise ValueError(f"{t['name']} requires: {', '.join(sorted(missing))}")
+        return selected
+
+    def normalize(self, payload):
+        allowed = {
+            "model_profile",
+            "tools",
+            "max_turns",
+            "max_tokens",
+            "planner_timeout_s",
+        }
+        if set(payload) - allowed:
+            raise ValueError("Use the configured model profile and tool catalog")
+        if "model_profile" in payload and payload["model_profile"] not in self.profiles:
+            raise ValueError("Unknown model profile")
+        if "tools" in payload:
+            self.selection(payload["tools"])
+        return payload
+
+    def prepare(self, request):
+        profile_id = request.get("model_profile", next(iter(self.profiles)))
+        if not self.checks.get(profile_id, {}).get("ok"):
+            raise ValueError("请先在开始页检查所选模型连接")
+        selected = self.selection(request.get("tools"))
+        return {
+            **request,
+            "model_profile": profile_id,
+            "tools": [t["id"] for t in selected],
+            "frozen_tools": selected,
+        }
+
+    @contextmanager
+    def environment(self, profile_id):
+        profile = self.profiles[profile_id]
+        self.environment_lock.acquire()
+        keys = ("OPENAI_API_KEY", "CODEX_API_KEY", "CODEX_HOME")
+        before = {k: os.environ.get(k) for k in keys}
+        try:
+            for k in keys:
+                os.environ.pop(k, None)
+            if profile.get("key_file"):
+                os.environ["OPENAI_API_KEY"] = (
+                    Path(profile["key_file"]).read_text().strip()
+                )
+            if profile.get("codex_home"):
+                os.environ["CODEX_HOME"] = profile["codex_home"]
+            yield profile
+        finally:
+            for k, v in before.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
+            self.environment_lock.release()
+
+    def check(self, profile_id):
+        from rpent.planner.check import LlmCheckRequest, check_llm
+
+        if profile_id not in self.profiles:
+            raise ValueError("Unknown model profile")
+        with self.environment(profile_id) as p:
+            result = check_llm(
+                LlmCheckRequest(
+                    planner=p["planner"],
+                    model=p["model"],
+                    base_url=p.get("base_url"),
+                    timeout_s=60,
+                )
+            ).as_dict()
+        result["checked_at"] = stamp()
+        self.checks[profile_id] = clean(result)
+        return self.checks[profile_id]
+
+    def runs(self):
+        result = []
+        for path in self.root.glob("*/tasks/*/dashboard_config.json"):
+            try:
+                config = json.loads(path.read_text())
+                root = path.parent
+                manifest = root / "manifest.json"
+                data = json.loads(manifest.read_text()) if manifest.exists() else {}
+                final = root / "outcome.json"
+                outcome = json.loads(final.read_text()) if final.exists() else {}
+                result.append(
+                    {
+                        "id": hashlib.sha256(
+                            str(root.relative_to(self.root)).encode()
+                        ).hexdigest()[:20],
+                        "path": str(root),
+                        "config": config,
+                        "manifest": data,
+                        "outcome": outcome,
+                        "updated": path.stat().st_mtime,
+                    }
+                )
+            except (OSError, ValueError):
+                continue
+        return sorted(result, key=lambda x: x["updated"], reverse=True)
+
+    def run(self, run_id):
+        for item in self.runs():
+            if item["id"] == run_id:
+                root = Path(item["path"])
+                item["files"] = sorted(
+                    str(p.relative_to(root))
+                    for p in root.rglob("*")
+                    if p.is_file() and not p.is_symlink()
+                )
+                return item
+        raise ValueError("Unknown run")
+
+    def artifact(self, run_id, name):
+        root = Path(self.run(run_id)["path"]).resolve()
+        path = (root / name).resolve()
+        if not path.is_relative_to(root) or not path.is_file():
+            raise ValueError("Unknown artifact")
+        return path
+
+
+def publish(library_root, tool, metadata):
+    """Called explicitly by Codex; publication never selects a tool for a run."""
+    from robots.libero.research.library import Library
+
+    library = Library(Path(library_root))
+    version = library.save([tool])
+    path = Path(library_root) / f"{version}.meta.json"
+    if not path.exists() and metadata.get("previous_version"):
+        (previous,) = library.load(metadata["previous_version"])
+        metadata = {
+            **metadata,
+            "diff": "".join(
+                difflib.unified_diff(
+                    previous["source"].splitlines(True),
+                    tool["source"].splitlines(True),
+                    fromfile=metadata["previous_version"],
+                    tofile=version,
+                )
+            ),
+        }
+    if not path.exists():
+        write_json(
+            path,
+            {
+                "created_at": stamp(),
+                "dependencies": [],
+                "validation": "unverified",
+                "input_contract": "Up to 4 recorded frames; calibrated 256x256 RGB/depth/world in metres; proprioception and SAM3 masks.",
+                **metadata,
+            },
+        )
+    # Published tools expose only the latest version of each name. Runs own
+    # their frozen source, so removing library entries cannot rewrite history.
+    for old_meta in list(library.root.glob("*.meta.json")):
+        old_version = old_meta.name.removesuffix(".meta.json")
+        if old_version != version:
+            (old_tool,) = library.load(old_version)
+            if old_tool["name"] == tool["name"]:
+                old_meta.unlink()
+                (library.root / f"{old_version}.json").unlink()
+    return version
+
+
+def source_snapshot(root, output):
+    """Record code, including untracked integration modules but not run data."""
+    root, output = Path(root), Path(output)
+    revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True
+    ).stdout.strip()
+    diff = subprocess.run(
+        ["git", "diff", "HEAD", "--", "rpent", "robots", "tests"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    ).stdout
+    (output / "code.diff").write_text(clean(diff))
+    files = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "--cached",
+            "--others",
+            "--exclude-standard",
+            "rpent",
+            "robots",
+        ],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    hashes = {}
+    for name in files:
+        path = root / name
+        if (
+            path.name.startswith("._")
+            or path.suffix not in {".py", ".html", ".js", ".css"}
+            or not path.is_file()
+        ):
+            continue
+        data = clean(path.read_text())
+        target = output / "code" / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(data)
+        hashes[name] = hashlib.sha256(data.encode()).hexdigest()
+    return {"revision": revision, "files": hashes}
+
+
+def termination_reason(error, aborted, finish, solved):
+    if aborted:
+        return "aborted"
+    message = (error or "").lower()
+    if any(
+        term in message
+        for term in (
+            "connection",
+            "network",
+            "connecterror",
+            "dns",
+            "stream disconnected",
+        )
+    ):
+        return "network_failure"
+    if "timed out" in message or "timeout" in message:
+        return "timeout"
+    if "unsupported reasoning" in message or "configuration" in message:
+        return "configuration_error"
+    if error:
+        return "error"
+    if finish or solved:
+        return "completed"
+    return "budget_exhausted"

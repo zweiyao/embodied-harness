@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RPent · 实验开始</title>
 <link rel="stylesheet" href="/static/setup.css">
+<link rel="stylesheet" href="/static/workbench.css">
 <script type="module" src="/static/setup.js"></script>
 </head>
 <body>
@@ -45,6 +46,15 @@
           <label>规划超时<select id="planner_timeout_s"></select></label>
         </div>
         <p class="note">决策轮数是 Agent 调用模型的预算，不是机械臂动作步数。参数仅影响后续新任务；模型服务和凭据由服务器管理。</p>
+      </section>
+      <section id="workbenchTools" hidden>
+        <h2><span>04</span> 本轮工具</h2>
+        <nav><a href="/tools">工具库与源码</a> · <a href="/runs">实验记录</a></nav>
+        <p class="note">取消感知工具不会关闭动作后自动返回的原生图像。新工具默认不勾选；每轮冻结所选版本。</p>
+        <p><button type="button" id="allTools">全选</button> <button type="button" id="clearTools">清空可选工具</button> <button type="button" id="nativeTools">恢复原生默认</button></p>
+        <div id="toolPicker"></div>
+        <button type="button" id="checkModels">检查所选模型连接</button>
+        <p id="modelCheck" role="status">启动前需要完成模型最小请求检查。</p>
       </section>
       <section class="summary">
         <h2>准备好的任务</h2><code id="command"></code>

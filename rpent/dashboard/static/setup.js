@@ -1,5 +1,7 @@
+import {renderTools} from './tool-picker.js';
 const $ = (id) => document.getElementById(id);
-let setup, profile, config;
+let setup, profile, config, picker;
+let checksPassed = false;
 async function request(path, options) {
   const response = await fetch(path, options);
   const data = await response.json();
@@ -31,7 +33,7 @@ async function status() {
   $('status').classList.remove('error');
   $('status').textContent = ready ? '服务已就绪 · 请选择下一次实验的配置'
     : `当前服务：${state.session_state}。可通过右上角查看控制台，待服务就绪后配置。`;
-  $('enter').disabled = !ready;
+  $('enter').disabled = !ready || (setup.workbench && !checksPassed);
 }
 $('robot').addEventListener('change', () => {
   const target = setup.profiles.find(p => p.robot === $('robot').value);
@@ -75,7 +77,7 @@ $('setupForm').addEventListener('submit', async event => {
       if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error('请先点击“启用受限动作”，核对状态后再进入控制台');
       if ($('physicalMode').value === 'readonly' && hardware.armed && !await physicalAction('stop')) throw new Error('停止未确认，无法进入只读实验');
     }
-    const payload = {model: $('model').value};
+    const payload = setup.workbench ? {model_profile: $('model').value, tools: picker.selected()} : {model: $('model').value};
     for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) payload[id] = Number($(id).value);
     await request('/api/session/config', {
       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload),
@@ -106,10 +108,53 @@ try {
     await physicalStatus();
     setInterval(() => physicalStatus().catch(error => { $('physicalStatus').textContent = `状态不可用：${error.message}`; }), 3000);
   }
-  const models = [...setup.models];
+  const models = [...(setup.models || [])];
   if (config.model && !models.includes(config.model)) models.push(config.model);
-  options('model', models.map(m => [m,m.replace('openai-chat:', '')]), config.model);
-  budget('max_turns', [12, 30, 50, 80, 120, 200], v => `${v} 轮`);
+  options('model', setup.workbench ? setup.model_profiles.map(p => [p.id, `${p.label} · ${p.planner}`]) : models.map(m => [m,m.replace('openai-chat:', '')]), setup.workbench ? config.model_profile : config.model);
+  if (setup.workbench) {
+    $('workbenchTools').hidden = false;
+    const catalog = (await request('/api/tools')).tools;
+    const copied = sessionStorage.getItem('rpent.copyRun');
+    let selection = config.tools;
+    if (copied) {
+      const prior = JSON.parse(copied);
+      selection = prior.tools;
+      const missing = (selection || []).filter(id => !catalog.some(t => t.id === id));
+      if (missing.length) throw new Error(`历史工具版本不存在：${missing.join(', ')}`);
+      if (prior.model_profile) $('model').value = prior.model_profile;
+      for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) if (prior[id] != null) config[id] = prior[id];
+      if (prior.suite) { $('suite').value = prior.suite; tasks(); }
+      if (prior.task != null) $('task').value = prior.task;
+      if (prior.seed != null) $('seed').value = prior.seed;
+      sessionStorage.removeItem('rpent.copyRun');
+    }
+    picker = renderTools($('toolPicker'), catalog, selection);
+    for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
+    const health = await request('/api/models/status');
+    const selectedHealth = () => {
+      checksPassed = Boolean(health[$('model').value]?.ok);
+      $('modelCheck').textContent = checksPassed ? '所选模型连接检查已通过' : '请检查所选模型连接。';
+    };
+    $('model').addEventListener('change', () => { selectedHealth(); status(); });
+    $('checkModels').onclick = async () => {
+      $('checkModels').disabled = true;
+      $('model').disabled = true;
+      checksPassed = false;
+      const p = setup.model_profiles.find(p => p.id === $('model').value);
+      health[p.id] = {ok:false};
+      try {
+        $('modelCheck').textContent = `正在检查 ${p.label}…`;
+        const result = await request('/api/llm/check', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model_profile:p.id})});
+        health[p.id] = result;
+        if (!result.ok) throw new Error(JSON.stringify(result));
+        checksPassed = true;
+        $('modelCheck').textContent = `${p.label}：通过`;
+      } catch(error) { $('modelCheck').textContent = `连接未通过：${error.message}`; }
+      finally { $('checkModels').disabled = false; $('model').disabled = false; await status(); }
+    };
+    selectedHealth();
+  }
+  budget('max_turns', [12, 25, 30, 50, 80, 120, 200], v => `${v} 轮`);
   budget('max_tokens', [2048, 4096, 8192, 16384], v => `${v} Token`);
   budget('planner_timeout_s', [180, 600, 1200, 1800, 3600], v => `${v/60} 分钟`);
   command();

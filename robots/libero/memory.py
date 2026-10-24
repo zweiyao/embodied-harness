@@ -39,6 +39,21 @@ DEFAULT_REPO = "RLinf/RPent-memory"
 
 def validate_options(args: argparse.Namespace) -> None:
     """Check memory options without starting services or downloading files."""
+    if getattr(args, "sensor_library", None):
+        if getattr(args, "planner", None) not in {"api", "codex"}:
+            raise ValueError("--sensor-library supports api and codex planners only")
+        if getattr(args, "explore", False) or getattr(
+            args, "enable_direct_action", False
+        ):
+            raise ValueError(
+                "--sensor-library uses fixed actions and one episode; remove --explore/--enable-direct-action"
+            )
+        if (
+            getattr(args, "memory_dir", None)
+            or getattr(args, "memory_version", "auto") != "auto"
+            or getattr(args, "memory_profile", None) == "hf"
+        ):
+            raise ValueError("--sensor-library excludes task memory")
     if getattr(args, "memory_version", "auto") != "auto" and (
         getattr(args, "explore", False)
         or getattr(args, "memory_profile", None) == "local"
@@ -56,6 +71,8 @@ def validate_options(args: argparse.Namespace) -> None:
 def prepare_memory(args: argparse.Namespace, config: RunConfig) -> None:
     """Bind the selected corpus to all consumers before task services start."""
     validate_options(args)
+    if getattr(args, "sensor_library", None):
+        return
     profile = getattr(args, "memory_profile", None) or (
         "local" if getattr(args, "explore", False) else "hf"
     )

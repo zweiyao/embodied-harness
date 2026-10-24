@@ -185,7 +185,7 @@ class ApiAgentLoop(Planner):
         try:
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
-                timeout=None if self.interactive else self.timeout_s,
+                timeout=None if self.interactive and not getattr(toolkit, "journal", None) else self.timeout_s,
             )
         except asyncio.TimeoutError:
             session.error = f"planner timed out after {self.timeout_s:g}s"
@@ -316,7 +316,8 @@ class _HarnessToolkit(FunctionToolset):
         self.stopping = threading.Event()
         self.validators: dict[str, Draft202012Validator] = {}
         self.output_types: list[Any] = [str]
-        self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
+        if not getattr(toolkit, "planner_tools_only", False):
+            self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
         for declaration in toolkit.list_tools():
             spec = {
                 "name": declaration.name,
@@ -420,6 +421,10 @@ class _HarnessToolkit(FunctionToolset):
             self.stopping.set()
             raise
         self._record_result(name, ctx, self._text(result))
+        stop_result = getattr(self.toolkit, "planner_stop_result", None)
+        if stop_result is not None:
+            self.finish_result = stop_result
+            self.stopping.set()
         if self.stopping.is_set():
             # End inside CallToolsNode so the SDK records an interrupted batch
             # before it can consume queued messages in the next request node.
@@ -542,6 +547,9 @@ class _Session(AbstractCapability):
             if self.interactive:
                 message += " Use /exit to close the session."
             raise _RequestBudgetExhausted(message) from None
+        journal = getattr(self.toolkit.toolkit, "journal", None)
+        if journal is not None:
+            journal.append("model_request", request_context)
         return request_context
 
     async def before_node_run(self, ctx: RunContext, *, node: AgentNode) -> AgentNode:
@@ -564,6 +572,9 @@ class _Session(AbstractCapability):
         self, ctx: RunContext, *, node: AgentNode, result: NodeResult
     ) -> NodeResult:
         if isinstance(node, ModelRequestNode) and isinstance(result, CallToolsNode):
+            journal = getattr(self.toolkit.toolkit, "journal", None)
+            if journal is not None:
+                journal.append("model_response", result.model_response)
             # Retain completed turns even when request history is later compacted.
             content: list[dict[str, Any]] = []
             for part in result.model_response.parts:

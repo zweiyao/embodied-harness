@@ -10,6 +10,7 @@
   <header>
     <h1><span class="dot">●</span> RPent <span class="meta" data-i18n="liveMonitor">Live Monitor</span></h1>
     <a href="/" id="setupLink" hidden>开始配置</a>
+    <nav id="workbenchNav" hidden><a href="/tools">工具库</a> · <a href="/runs">实验记录</a> · <span id="runIdentity"></span> · <button id="abortExperiment" type="button">中止本轮</button></nav>
     <span id="statusBadge" class="badge b-stale">—</span>
     <span id="resultBadge" class="badge b-fail" style="display:none"></span>
     <div id="runtimeStatus" class="runtime-status" aria-live="polite"></div>
@@ -28,6 +29,7 @@
     <span class="meta" id="connMeta"></span>
   </header>
 
+  <div id="staleWarning" role="alert" hidden style="background:#8c281c;color:white;padding:12px">连接中断：当前画面是旧记录，不代表实验仍在运行。</div>
   <main>
     <div class="col left">
       <div class="panel-title">
@@ -119,6 +121,6 @@
     </div>
   </main>
 
-<script type="module" src="/static/dashboard.js?v=setup-20261014"></script>
+<script type="module" src="/static/dashboard.js?v=workbench-20261021"></script>
 </body>
 </html>

@@ -198,6 +198,12 @@ class DashboardState:
         self._lock = threading.RLock()
         self._condition = threading.Condition(self._lock)
         self._next_config: dict[str, Any] = {}
+        self.workbench = None
+        self.journal = None
+        self.workbench_aborted = False
+        self.run_id = None
+        import uuid
+        self.server_id = uuid.uuid4().hex
         self._task_state: str | None = None
         self._terminated = False
         self._truncated = False
@@ -435,6 +441,7 @@ class DashboardState:
                 or self._shutdown_requested
                 or self._session_state == "fatal"
                 or self.operator_verdict == "abort"
+                or self.workbench_aborted
             )
 
     def shared_services_ready(self) -> None:
@@ -592,6 +599,10 @@ class DashboardState:
                     "Dashboard Session is still starting shared services"
                 )
 
+            if self.workbench is not None:
+                if self._session_state not in {"ready"}:
+                    raise ValueError("Finish or interrupt the current experiment before starting another")
+                request = self.workbench.prepare({**self._next_config, **request})
             self._pending_task = dict(request)
             self._control_error = None
             self._control_feedback = []
@@ -619,10 +630,15 @@ class DashboardState:
             "max_tokens": (128, 32768),
             "planner_timeout_s": (10, 7200),
         }
-        if not config or set(config) - {"model", *limits}:
+        extra = {"model_profile", "tools"} if self.workbench is not None else set()
+        if self.workbench is not None:
+            self.workbench.normalize(config)
+        if not config or set(config) - {"model", *limits, *extra}:
             raise ValueError("Only model and planner budgets can be changed")
         normalized = dict(config)
         for name, value in config.items():
+            if name in extra:
+                continue
             if name == "model":
                 if not isinstance(value, str) or not value.strip():
                     raise ValueError("model must be a non-empty string")
@@ -651,6 +667,8 @@ class DashboardState:
                 return None
 
             request = {**self._pending_task, **self._next_config}
+            if self.workbench is not None:
+                request = dict(self._pending_task)
             self._pending_task = None
             self._task_generation += 1
             number = self._task_generation
@@ -659,6 +677,11 @@ class DashboardState:
                 / "tasks"
                 / f"{number:04d}_{self._task_output_slug(request)}"
             )
+            while output_dir.exists():
+                self._task_generation += 1
+                number = self._task_generation
+                output_dir = self._session_root / "tasks" / f"{number:04d}_{self._task_output_slug(request)}"
+            output_dir.mkdir(parents=True, exist_ok=False)
             self._begin_task_locked(request, output_dir=output_dir)
             return ClaimedTask(
                 number=number,
@@ -716,6 +739,14 @@ class DashboardState:
         output_dir: Path,
     ) -> None:
         self._current_task = request
+        if self.workbench is not None:
+            import hashlib
+
+            from rpent.dashboard.workbench import RunJournal
+
+            self.workbench_aborted = False
+            self.journal = RunJournal(output_dir)
+            self.run_id = hashlib.sha256(str(output_dir.resolve().relative_to(self.workbench.root)).encode()).hexdigest()[:20]
         self.operator = None
         self.operator_verdict = None
         self.operator_exploration = False
@@ -932,6 +963,18 @@ class DashboardState:
         ):
             self._exploration_message.status = "withdrawn"
 
+    def abort_workbench_task(self) -> None:
+        """Drain the current planner through RPent's existing replacement boundary."""
+        with self._condition:
+            if self.workbench is None or self._task_state not in {"starting", "running"}:
+                raise ValueError("No active workbench experiment")
+            self.workbench_aborted = True
+            self.journal.append("operator_abort", {})
+            self._pending_task = None
+            self._session_state = "switch_pending"
+            self._accepting_input = False
+            self._interaction_changed_locked()
+
     def request_interrupt(self) -> InterruptRequestResult:
         """Record an Esc request without waiting for the planner backend."""
         with self._condition:
@@ -944,6 +987,9 @@ class DashboardState:
             ):
                 return "noop"
             self._interrupt_requested = True
+            if self.workbench is not None:
+                self.workbench_aborted = True
+                self.journal.append("operator_interrupt", {})
             self._interrupt_in_flight = False
             self._interaction_changed_locked()
             return "accepted"
@@ -991,6 +1037,10 @@ class DashboardState:
 
     def emit(self, event: DashboardEvent) -> None:
         """Project one structured event into the existing frontend state."""
+        if self.journal is not None:
+            # StepRecordEvent owns a live EnvState; its artifacts are saved separately.
+            if not isinstance(event, StepRecordEvent):
+                self.journal.append("dashboard_event", event)
         if isinstance(event, TranscriptEvent):
             with self._condition:
                 self._events.append(event.payload)
@@ -1188,6 +1238,10 @@ class DashboardState:
     def _session_fields_locked(self) -> dict[str, Any]:
         return {
             "session_state": self._session_state,
+            "run_id": self.run_id,
+            "server_id": self.server_id,
+            "workbench": self.workbench is not None,
+            "run_model": (self._current_task or {}).get("model_profile"),
             "task_generation": self._task_generation,
             "current_task": self._command_snapshot(self._current_task),
             "pending_task": self._command_snapshot(self._pending_task),

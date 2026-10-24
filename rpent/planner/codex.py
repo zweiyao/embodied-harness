@@ -33,7 +33,7 @@ import queue
 import tempfile
 import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -129,6 +129,60 @@ class CodexPlanner(Planner):
         }
 
     def solve(
+        self,
+        *,
+        system_prompt: str,
+        user_message: str,
+        toolkit: Toolkit,
+        max_turns: int,
+        input_queue: queue.Queue[str | None] | None = None,
+        dashboard_interaction: DashboardInteractionPort | None = None,
+    ) -> PlannerResult:
+        """Use only registered tools when the toolkit requires an evaluation boundary."""
+        kwargs = {
+            "system_prompt": system_prompt,
+            "user_message": user_message,
+            "toolkit": toolkit,
+            "max_turns": max_turns,
+            "input_queue": input_queue,
+            "dashboard_interaction": dashboard_interaction,
+        }
+        journal = getattr(toolkit, "journal", None)
+        if journal is not None:
+            journal.append("sdk_request", {"system": system_prompt, "user": user_message, "options": self._turn_options, "model": self._model if hasattr(self, "_model") else None})
+        if not getattr(toolkit, "planner_tools_only", False):
+            return self._solve(**kwargs)
+        with tempfile.TemporaryDirectory(prefix="rpent-planner-") as directory:
+            root = Path(directory)
+            cwd, home = root / "work", root / "codex"
+            cwd.mkdir()
+            home.mkdir()
+            old_root, old_thread, old_turn = (
+                self._repo_root,
+                self._thread_options,
+                self._turn_options,
+            )
+            self._restricted_home = home
+            self._restricted_tools = [tool.name for tool in toolkit.list_tools()]
+            self._repo_root = str(cwd)
+            self._thread_options = {
+                **old_thread,
+                "cwd": str(cwd),
+                "sandbox": openai_codex.Sandbox.read_only,
+            }
+            self._turn_options = {**old_turn, **self._thread_options}
+            try:
+                return self._solve(**kwargs)
+            finally:
+                self._repo_root, self._thread_options, self._turn_options = (
+                    old_root,
+                    old_thread,
+                    old_turn,
+                )
+                self._restricted_home = None
+                self._restricted_tools = []
+
+    def _solve(
         self,
         *,
         system_prompt: str,
@@ -351,11 +405,19 @@ class CodexPlanner(Planner):
                                     out_f.write(rendered)
                                     out_f.flush()
                                 logger.info(rendered.strip())
+                            stop_result = getattr(toolkit, "planner_stop_result", None)
+                            if stop_result is not None:
+                                recorder.finish_result = stop_result
                             if (
                                 str(_get(event, "method", "")) != "turn/completed"
                                 and not limit_reached
-                                and recorder.finish_result is None
-                                and recorder.turns >= recorder.max_turns
+                                and (
+                                    stop_result is not None
+                                    or (
+                                        recorder.finish_result is None
+                                        and recorder.turns >= recorder.max_turns
+                                    )
+                                )
                             ):
                                 limit_reached = True
                                 try:
@@ -400,8 +462,14 @@ class CodexPlanner(Planner):
             with open(output_path, "w") as out_f, open(raw_stream_path, "w") as raw_f:
 
                 def emit_event(event: Any) -> None:
+                    journal = getattr(toolkit, "journal", None)
+                    if journal is not None:
+                        journal.append("sdk_event", _message_to_json(event))
                     _write_jsonl(raw_f, _message_to_json(event))
                     rendered = recorder.observe(event)
+                    stop_result = getattr(toolkit, "planner_stop_result", None)
+                    if stop_result is not None:
+                        recorder.finish_result = stop_result
                     if rendered:
                         chunks.append(rendered)
                         out_f.write(rendered)
@@ -492,11 +560,53 @@ class CodexPlanner(Planner):
     # -- config builder ----------------------------------------------------
 
     def _build_config(self, mcp_url: str) -> Any:
-        return build_codex_config(
+        config = build_codex_config(
             mcp_url=mcp_url,
             base_url=self._base_url,
             api_key=self._api_key,
             cwd=self._repo_root,
+        )
+        home = getattr(self, "_restricted_home", None)
+        if home is None:
+            return config
+        from rpent.robots.components.grounding_agent import _isolated_codex_environment
+
+        # The native MCP server remains available; inherited MCP servers and
+        # builtin file/network tools are excluded from the evaluation boundary.
+        if (home / "auth.json").is_symlink():
+            (home / "auth.json").unlink()
+        env, overrides = _isolated_codex_environment(
+            config.env, home, config.config_overrides
+        )
+        disabled = (
+            "shell_tool",
+            "unified_exec",
+            "view_image",
+            "view_image_tool",
+            "js_repl",
+            "code_mode",
+            "multi_agent",
+            "multi_agent_v2",
+            "image_generation",
+            "goals",
+            "hooks",
+            "browser_use",
+            "computer_use",
+        )
+        return replace(
+            config,
+            env=env,
+            config_overrides=overrides
+            + config.config_overrides
+            + tuple(f"features.{name}=false" for name in disabled)
+            + (
+                'mcp_servers.rpent.default_tools_approval_mode="approve"',
+                "mcp_servers.rpent.enabled_tools=" + json.dumps(self._restricted_tools),
+                "tools.update_plan.enabled=false",
+                "tools.experimental_request_user_input.enabled=false",
+                'web_search="disabled"',
+                "apps._default.enabled=false",
+            ),
         )
 
 
@@ -604,8 +714,13 @@ class _CodexDashboardSession:
                 if (
                     method != "turn/completed"
                     and not limit_reached
-                    and self._recorder.finish_result is None
-                    and self._recorder.turns >= self._recorder.max_turns
+                    and (
+                        (self._recorder.finish_result or {}).get("environment_stopped")
+                        or (
+                            self._recorder.finish_result is None
+                            and self._recorder.turns >= self._recorder.max_turns
+                        )
+                    )
                 ):
                     limit_reached = True
                     try:

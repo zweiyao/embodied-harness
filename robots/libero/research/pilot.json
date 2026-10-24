@@ -1,0 +1,15 @@
+{
+  "suite": "libero_10",
+  "libero_type": "pro",
+  "tasks": [0, 3, 9],
+  "splits": {"explore": [0, 1], "validation": [2, 3, 4], "heldout": [5, 6, 7, 8, 9]},
+  "iterations": 3,
+  "max_turns": 24,
+  "max_episode_steps": 2000,
+  "vla_endpoint": null,
+  "sam3_endpoint": null,
+  "sandbox_image": "embodied-sensor:pilot",
+  "library_dir": "logs/sensor-library",
+  "teacher": {"kind": "codex_sdk", "model": "gpt-6-astra"},
+  "actor": {"kind": "chat_completions", "url": "http://127.0.0.1:18121/v1", "model": "Qwen3.8-27B", "max_tokens": 4096}
+}

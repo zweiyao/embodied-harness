@@ -280,3 +280,21 @@ Dashboard
 3. 如果可用工具需要调整（比如将 ``pi0_pick`` 改成 ``mymodel_pick``），相应更新 ``robots/libero/toolkit.py``。
 
 完整流程见 :doc:`../development/add_primitive`。
+
+感知工具研究
+----------------
+
+添加 ``--sensor-library /path/to/library.json --memory-profile local``，即可通过原生
+CLI 或 Dashboard 运行冻结的感知工具库。空 JSON 列表表示基线。该模式支持 ``api`` 和
+``codex`` 规划器，保留原动作原语及默认抓取预算，提供 RGB-D、标定、本体状态、
+分割和生成的感知工具。生成工具需要 Docker 沙箱，配置见
+``robots/libero/research/README.md``。
+
+先调用 ``view_env_state`` 读取任务指令和初始图像，后续动作结果包含新观测和执行计数。
+模型输入不包含任务记忆、仿真物体状态和控制器成功标签。Codex 使用独立配置目录，
+只开放 RPent 的 MCP 工具。该模式不能与 ``--explore`` 或
+``--enable-direct-action`` 同用。
+
+每局在原生转录和视频旁保存 ``sensor-trace.json`` 与 ``research-report.json``。
+任务是否成功以报告中的 ``native_success`` 为准，模型的 finish 声明和 Dashboard
+运行完成状态均不作为任务成功指标。

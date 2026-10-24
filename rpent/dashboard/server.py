@@ -84,6 +84,10 @@ class DashboardServer:
         }
         setup_path = os.environ.get("RPENT_DASHBOARD_SETUP")
         self._setup = json.loads(Path(setup_path).read_text()) if setup_path else None
+        self._workbench = getattr(state, "workbench", None)
+        if self._workbench is not None:
+            self._setup = self._workbench.config["setup"]
+            self._planner_config.update(model_profile=next(iter(self._workbench.profiles)), tools=[t["id"] for t in self._workbench.selection()])
         self._robot_name = robot_name
         # Server-side context the page cannot supply. The check keeps its own
         # short timeouts; the run's is never reused.
@@ -137,7 +141,51 @@ class DashboardServer:
 
         @app.get("/api/setup")
         def api_setup() -> JSONResponse:
-            return JSONResponse({**(self._setup or {}), "robot": self._robot_name})
+            return JSONResponse({**(self._setup or {}), "robot": self._robot_name, "workbench": self._workbench is not None,
+                                 "model_profiles": self._workbench.public_profiles() if self._workbench else []})
+
+        @app.get("/tools")
+        @app.get("/runs")
+        def workbench_page() -> HTMLResponse:
+            return HTMLResponse((Path(__file__).parent / "workbench.html").read_text())
+
+        @app.get("/api/models/status")
+        def model_status() -> JSONResponse:
+            return JSONResponse(self._workbench.checks if self._workbench else {})
+
+        @app.get("/api/tools/{tool_id}")
+        def tool_details(tool_id: str) -> JSONResponse:
+            for item in self._workbench.catalog() if self._workbench else []:
+                if item["id"] == tool_id:
+                    return JSONResponse(item)
+            return JSONResponse({"error": "Unknown tool/version"}, status_code=404)
+
+        @app.get("/api/tools")
+        def tool_catalog() -> JSONResponse:
+            return JSONResponse({"tools": self._workbench.catalog() if self._workbench else []})
+
+        @app.get("/api/runs")
+        def runs() -> JSONResponse:
+            return JSONResponse({"runs": self._workbench.runs() if self._workbench else []})
+
+        @app.get("/api/runs/{run_id}")
+        def run_details(run_id: str) -> JSONResponse:
+            try:
+                if self._workbench is None:
+                    raise ValueError("Workbench unavailable")
+                return JSONResponse(self._workbench.run(run_id))
+            except ValueError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=404)
+
+        @app.get("/api/runs/{run_id}/artifact/{name:path}")
+        def run_artifact(run_id: str, name: str):
+            try:
+                if self._workbench is None:
+                    raise ValueError("Workbench unavailable")
+                path = self._workbench.artifact(run_id, name)
+                return FileResponse(path, headers={"Cache-Control": "no-store"})
+            except ValueError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=404)
 
         @app.get("/console")
         def console() -> HTMLResponse:
@@ -179,10 +227,22 @@ class DashboardServer:
             if "model" in payload:
                 payload = {**payload, "model": payload["model"].strip()}
             self._planner_config = {**self._planner_config, **payload}
+            if self._workbench is not None:
+                selected = self._workbench.profiles[self._planner_config["model_profile"]]
+                self._planner_config.update({k: selected.get(k) for k in ("model", "planner", "reasoning_effort")})
             return JSONResponse(self._planner_config)
 
         @app.post("/api/llm/check")
         def api_llm_check(payload: dict[str, Any] = Body(default={})) -> JSONResponse:
+            if self._workbench is not None:
+                if self._state.session_state != "ready" or not self._llm_check_lock.acquire(blocking=False):
+                    return JSONResponse({"error": "请在没有实验运行时检查连接"}, status_code=409)
+                try:
+                    return JSONResponse(self._workbench.check(payload.get("model_profile", self._planner_config["model_profile"])))
+                except ValueError as exc:
+                    return JSONResponse({"error": str(exc)}, status_code=422)
+                finally:
+                    self._llm_check_lock.release()
             # Single-flight: the button is a diagnostic, not a load generator.
             if not self._llm_check_lock.acquire(blocking=False):
                 return JSONResponse(
@@ -235,6 +295,14 @@ class DashboardServer:
             except (DashboardMessageConflictError, InteractionUnavailableError) as exc:
                 return JSONResponse({"error": str(exc)}, status_code=409)
             return JSONResponse({"ok": True})
+
+        @app.post("/api/session/abort")
+        def abort_experiment() -> JSONResponse:
+            try:
+                self._state.abort_workbench_task()
+                return JSONResponse({"ok": True})
+            except ValueError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=409)
 
         @app.post("/api/session/interrupt")
         def api_interrupt() -> JSONResponse:

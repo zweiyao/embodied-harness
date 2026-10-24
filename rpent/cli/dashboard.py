@@ -119,6 +119,12 @@ def run_dashboard_session(
         output_dir=session_root,
         dashboard_spec=dashboard_spec,
     )
+    if robot_spec.name == "libero":
+        from rpent.dashboard.workbench import Workbench
+
+        state.workbench = Workbench.from_env()
+        if state.workbench is not None:
+            state.workbench.recover_interrupted()
     dashboard_server = DashboardServer(
         host=args.dashboard_host,
         port=args.dashboard_port,
@@ -181,7 +187,43 @@ def run_dashboard_session(
     return 0
 
 
-def _run_dashboard_task(
+def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
+    if getattr(state, "workbench", None) is None:
+        return _run_dashboard_task_inner(args=args, robot_spec=robot_spec, state=state, claimed=claimed, **kwargs)
+    from rpent.dashboard.workbench import (
+        source_snapshot,
+        stamp,
+        termination_reason,
+        write_json,
+    )
+    from rpent.utils.config import get_repo_root
+
+    selected = claimed.request["frozen_tools"]
+    profile_id = claimed.request["model_profile"]
+    with state.workbench.environment(profile_id) as profile:
+        configured = copy.copy(args)
+        for key in ("planner", "model", "base_url", "reasoning_effort"):
+            setattr(configured, key, profile.get(key))
+        error = None
+        try:
+            write_json(claimed.output_dir / "dashboard_config.json", {"robot": robot_spec.name, "model": configured.model, "task": {k:v for k,v in claimed.request.items() if k != "frozen_tools"}})
+            manifest = {"run_id": state.run_id, "started_at": stamp(), "profile": {k: profile.get(k) for k in ("id", "planner", "model", "reasoning_effort", "base_url")},
+                        "tools": selected, "task": {k: v for k, v in claimed.request.items() if k != "frozen_tools"},
+                        "code": source_snapshot(get_repo_root(), claimed.output_dir)}
+            write_json(claimed.output_dir / "manifest.json", manifest)
+            error = _run_dashboard_task_inner(args=configured, robot_spec=robot_spec, state=state, claimed=claimed, **kwargs)
+            return error
+        except BaseException as exc:
+            error = f"{type(exc).__name__}: {exc}"
+            raise
+        finally:
+            state.journal.append("run_end", {"error": error})
+            # Inner finalization saves detailed outcome; retain startup failures too.
+            if not (claimed.output_dir / "outcome.json").exists():
+                write_json(claimed.output_dir / "outcome.json", {"ended_at": stamp(), "error": error, "status": termination_reason(error, state.workbench_aborted, None, False), "environment_success": None})
+
+
+def _run_dashboard_task_inner(
     *,
     args: argparse.Namespace,
     robot_spec: RobotSpec,
@@ -206,7 +248,7 @@ def _run_dashboard_task(
         json.dumps(
             {
                 "robot": robot_spec.name,
-                "task": claimed.request,
+                "task": {k: v for k, v in claimed.request.items() if k != "frozen_tools"},
                 "model": task_args.model,
                 **{
                     name: value
@@ -221,9 +263,18 @@ def _run_dashboard_task(
         encoding="utf-8",
     )
     run_config = robot_spec.parse_config(task_args)
+    if getattr(state, "workbench", None) is not None:
+        run_config.prompt_vars["manual_tools"] = claimed.request["frozen_tools"]
+        run_config.prompt_vars["run_journal"] = state.journal
     from rpent.memory.loading import prepare_run_memory
 
     prepare_run_memory(task_args, robot_spec, run_config)
+    if getattr(state, "workbench", None) is not None:
+        material_root = state.workbench.config.get("language_materials")
+        if material_root:
+            from robots.libero.research.language_materials import freeze_materials
+
+            freeze_materials(material_root, run_config.output_dir, run_config.prompt_vars)
     output_dir = init_output_dir(run_config.output_dir, verbose=args.verbose)
 
     recipe_tag = run_config.recipe_tag
@@ -323,6 +374,13 @@ def _run_dashboard_task(
                         config=run_config,
                     )
                 solved = False
+                if getattr(state, "workbench", None) is not None:
+                    from robots.libero.research.manual import availability_prompt
+                    from rpent.dashboard.workbench import write_json
+
+                    system_prompt = availability_prompt(claimed.request["frozen_tools"]) + system_prompt
+                    write_json(Path(output_dir) / "prompts.json", {"system": system_prompt, "user": session_message})
+                    write_json(Path(output_dir) / "tool-declarations.json", [{"name": t.name, "description": t.description, "parameters": t.input_schema} for t in toolkit.list_tools()])
                 state.bind_toolkit(toolkit)
                 memory_manager = toolkit.memory
                 try:
@@ -331,12 +389,12 @@ def _run_dashboard_task(
                         output_dir=output_dir,
                         recipe_tag=recipe_tag,
                         robot_name=args.robot_name,
-                        base_url=args.base_url,
+                        base_url=task_args.base_url,
                         model=task_args.model,
                         memory_dir=run_config.prompt_vars.get("memory_dir"),
                         max_tokens=task_args.max_tokens,
                         planner_timeout_s=task_args.planner_timeout_s,
-                        reasoning_effort=args.reasoning_effort,
+                        reasoning_effort=task_args.reasoning_effort,
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,
@@ -421,7 +479,28 @@ def _run_dashboard_task(
             "environment_success": environment_success,
             "stats": stats,
             "messages": _serialize_messages(messages),
+            "error": agent_error,
         }
+        if getattr(state, "workbench", None) is not None:
+            from rpent.dashboard.workbench import (
+                clean,
+                stamp,
+                termination_reason,
+                write_json,
+            )
+
+            record = clean(record)
+            observed_steps = toolkit.state.records() if memory_manager is not None else []
+            calls = [r.command for r in observed_steps if r.command]
+            write_json(Path(output_dir) / "outcome.json", {"ended_at": stamp(), "environment_success": environment_success,
+                       "finish": finish_result, "error": agent_error, "stats": stats, "elapsed_s": record["elapsed_s"],
+                       "status": termination_reason(agent_error, state.workbench_aborted, finish_result, solved),
+                       "last_completed_step": toolkit.state.records()[-1].step_idx if calls else 0,
+                       "actions": len(calls), "release_count": sum(c.get("action") == "release" for c in calls),
+                       "release_evidence": [{"step":r.step_idx, "command":r.command, "result":r.result, "gripper_qpos":r.state.get("robot0_gripper_qpos")} for r in observed_steps if (r.command or {}).get("action") == "release"],
+                       "last_gripper_qpos": observed_steps[-1].state.get("robot0_gripper_qpos") if observed_steps else None,
+                       "video_recorded": (Path(output_dir) / "episode.mp4").is_file(),
+                       "stable_placement": "未独立验证"})
         try:
             with open(transcript_path, "a") as transcript_file:
                 json.dump(record, transcript_file, indent=2, default=str)
