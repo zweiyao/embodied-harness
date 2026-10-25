@@ -100,7 +100,8 @@ class UniVTACToolkit(Toolkit):
         self.journal = journal or RunJournal(output_dir)
         self._capture_lock = threading.RLock()
         self._pending = []
-        self._stopped = False
+        self._environment_stopped = False
+        self._model_finish = None
         self._evaluator = {}
         super().__init__(
             dashboard_events=dashboard_events,
@@ -259,7 +260,7 @@ class UniVTACToolkit(Toolkit):
 
     def _update_evaluator(self):
         self._evaluator = self.env.evaluator_state()
-        self._stopped |= bool(self._evaluator.get("done"))
+        self._environment_stopped |= bool(self._evaluator.get("done"))
         write_json(self.journal.root / "evaluator.json", self._evaluator)
         if self._evaluator.get("video_path"):
             video = Path(self._evaluator["video_path"]).resolve()
@@ -273,7 +274,9 @@ class UniVTACToolkit(Toolkit):
 
     @property
     def planner_stop_result(self):
-        if self._stopped:
+        if self._model_finish is not None:
+            return dict(self._model_finish)
+        if self._environment_stopped:
             return {
                 "_finish": True,
                 "environment_stopped": True,
@@ -362,7 +365,9 @@ class UniVTACToolkit(Toolkit):
         gripper 0 closed to 1 open. Local IK bounds joint changes. This is
         position control, not force control or a collision-free path guarantee.
         """
-        if self._stopped:
+        if self._model_finish is not None:
+            return ToolResult(data={"error": "Model already finished this episode"})
+        if self._environment_stopped:
             return ToolResult(data={"error": "Environment episode ended"})
         if not 1 <= len(poses) <= 5:
             raise ValueError("Supply 1..5 target poses")
@@ -373,7 +378,7 @@ class UniVTACToolkit(Toolkit):
         self._pending = (
             observations if isinstance(observations, list) else [observations]
         )
-        self._stopped = bool(terminated or truncated)
+        self._environment_stopped = bool(terminated or truncated)
         return ToolResult(data=info)
 
     def get_env_state(self, *, command, result, elapsed_s):
@@ -422,8 +427,12 @@ class UniVTACToolkit(Toolkit):
                 "elapsed_s": time.monotonic() - started,
             },
         )
-        if result.data.get("_finish"):
-            self._stopped = True
+        if (
+            name == "finish"
+            and result.data.get("_finish")
+            and self._model_finish is None
+        ):
+            self._model_finish = dict(result.data)
         if any(
             t["name"] == name and t["origin"] == "generated" for t in self.selection
         ):

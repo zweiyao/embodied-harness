@@ -329,6 +329,8 @@ def test_official_terminal_state_stops_actions_without_success_leak(create_toolk
     api = create_toolkit(env=env)
     result = api.execute_tool("move_eef", {"poses": [POSE] * 5})
     assert api.solved() and api.planner_stop_result["_finish"]
+    assert api.planner_stop_result["environment_stopped"] is True
+    assert "official_success" not in api.planner_stop_result
     assert env.count == 1
     assert (
         "official_success" not in result.to_text()
@@ -346,15 +348,24 @@ def test_evaluator_status_contract_uses_official_field(create_toolkit):
     assert api.solved()
 
 
-def test_model_finish_success_does_not_replace_official_evaluator(create_toolkit):
+@pytest.mark.parametrize("status", ["success", "failure"])
+def test_model_finish_is_preserved_without_claiming_environment_termination(
+    create_toolkit, status
+):
     api = create_toolkit()
-    finish = api.execute_tool(
-        "finish", {"status": "success", "summary": "I think it is done"}
-    )
-    assert finish.data["_finish"] and api.planner_stop_result["_finish"]
+    payload = {"status": status, "summary": "My observation-based decision"}
+    finish = api.execute_tool("finish", payload)
+    expected = {"_finish": True, **payload}
+    assert finish.data == api.planner_stop_result == expected
+    assert "environment_stopped" not in api.planner_stop_result
+    assert api.env.evaluator_state()["done"] is False
     assert not api.solved()
     assert api.execute_tool("move_eef", {"poses": [POSE]}).is_error
     assert not api.env.chunk_calls
+    assert api.planner_stop_result == expected
+    # Planner adapters must not mutate the latched model decision.
+    api.planner_stop_result["status"] = "stopped"
+    assert api.planner_stop_result == expected
 
 
 @pytest.mark.parametrize("success", [False, True])
