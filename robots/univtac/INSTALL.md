@@ -17,8 +17,13 @@ RPent remains under `/home/zwy/work/harnessvla` in its existing environment.
    prefix's `bin/`. No system CUDA or user environment needs replacing.
 2. Clone UniVTAC with Git LFS smudging disabled and check out
    `0dafa10262e22f486f160a55d6f11aeab12d8e7b`. The needed task assets are in
-   this checkout; do not download demonstration datasets or policy weights
-   for the model-driven pilot.
+   this checkout, but Git LFS pointers are not usable assets. Fetch the
+   `third_party/TacEx/source/tacex_assets/tacex_assets/data/Robots/Franka/GelSight_Mini/Gripper/`
+   and `third_party/TacEx/source/tacex_assets/tacex_assets/data/Sensors/GelSight_Mini/`
+   LFS objects. The pinned vendored tree lacks `.gitattributes`, so checkout
+   alone may leave pointers: verify each real file against its committed LFS
+   SHA256 and size before replacing the pointer. Do not download demonstration
+   datasets or policy weights for the model-driven pilot.
 3. In the new prefix install PyTorch `2.5.1` and torchvision `0.20.1` from
    `https://download.pytorch.org/whl/cu124`. Install
    `isaacsim[all,extscache]==4.5.0` using NVIDIA's package index. Pin
@@ -77,7 +82,11 @@ Set `OMNI_KIT_ACCEPT_EULA=YES`
 in the simulator subprocess environment, set `PYTHONPATH` to the RPent
 checkout, and run `python -m robots.univtac.probe --root <UniVTAC> --output-dir
 <private-log-dir>`. This imports the headless app and task classes without
-constructing/resetting a task. Only after this succeeds should the trusted
+constructing/resetting a task, and checks the actual configured local USD and
+touch-sensor calibration dependencies. Read `probe-result.json`: all of
+`probe_passed`, `headless_imports_passed`, and `local_assets_passed` must be
+true. Kit shutdown can exit zero after a Python failure, so an exit code alone
+is insufficient. Only after these checks succeed should the trusted
 runner reserve a pilot cell and start a scripted smoke or model episode.
 The install commands alone do not establish that simulation works.
 
@@ -126,8 +135,19 @@ the compiled library and runtime wrapper stay in
 
 The first reserved smoke subsequently exposed a separate asset problem: the
 GelSight Mini robot USD was still a Git LFS pointer. That attempt is retained as
-`setup_failure`, not a task failure or a successful smoke. Real asset validation
-is required before the second attempt; import success alone does not cover it.
+`setup_failure`, not a task failure or a successful smoke. The required 25
+GSmini assets (61.43 MB) were then hydrated and checked against their original
+LFS size and SHA256. Evidence stays in `external/univtac-assets-20261025.json`.
+
+The local `assets/scene/gridroom_curved.usd` is byte-identical to NVIDIA's
+Isaac 2023.1.0 Grid asset (SHA256
+`ead7580ee7e39ada2261d16fab50a01691d9dd676061b4579366838d78ef3742`). Its
+missing relative textures, `Materials/Textures/radialFalloffGrid_v02.png` and
+`radialGrid_clrmap_50.png`, were fetched from that exact official asset directory.
+URLs, hashes and sizes are recorded in
+`external/univtac-asset-supplement-20261025/provenance.json`. No USD was edited.
+The `gltf/pbr.mdl` reference is supplied by Kit's configured MDL search paths;
+it should not be copied beside WristCamera.usd or replaced with a fake material.
 
 After a trusted runner reserves a script cell, use the same independent
 Python to run `python -m robots.univtac.smoke --root <UniVTAC> --output-dir

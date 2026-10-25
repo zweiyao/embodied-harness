@@ -223,7 +223,10 @@ def smoke_reservation(tmp_path):
     return pilot, output
 
 
-def test_script_smoke_records_scene_before_motion_and_finishes_once(tmp_path):
+@pytest.mark.parametrize("recording_error", [False, True])
+def test_script_smoke_records_scene_before_motion_and_finishes_once(
+    tmp_path, recording_error
+):
     from robots.univtac.smoke import run_smoke
 
     pilot, output = smoke_reservation(tmp_path)
@@ -262,6 +265,8 @@ def test_script_smoke_records_scene_before_motion_and_finishes_once(tmp_path):
                     )
                 },
                 "video_path": "native.mp4",
+                "physics_step": 42,
+                "control_step": 1,
             }
 
         def step(self, command):
@@ -271,17 +276,33 @@ def test_script_smoke_records_scene_before_motion_and_finishes_once(tmp_path):
             ]
             assert events[-1]["kind"] == "scene"
             calls.append("hold")
-            return self.observation(), 0, False, False, {"exec_success": True}
+            return (
+                self.observation(),
+                0,
+                False,
+                False,
+                {"exec_success": True, "native_action_delta": 1},
+            )
 
         def finish_recording(self):
             calls.append("flush")
+            if recording_error:
+                raise RuntimeError("video flush failed")
 
         def close(self):
             calls.append("close")
 
     outcome = run_smoke(root="unused", output_dir=output, backend_factory=Backend)
     assert outcome["official_success"] is True
+    assert outcome["termination_reason"] == (
+        "failed" if recording_error else "completed"
+    )
     assert outcome["model_score"] is False
+    assert outcome["script_only"] is True
+    assert outcome["expert_uses_model_command_budget"] is False
+    assert outcome["eef_commands_attempted"] == outcome["eef_commands_executed"] == 1
+    assert outcome["physics_steps_after_reset"] == 42
+    assert outcome["native_action_count"] == 1
     assert calls[:3] == ["reset", "hold", "expert"]
     assert calls[-1] == "close"
     with pytest.raises(ValueError, match="already finished"):
@@ -311,3 +332,80 @@ def test_script_smoke_setup_failure_consumes_reserved_slot_without_retry(tmp_pat
     ]
     assert events[-1]["kind"] == "finished"
     assert (output / "smoke-error.txt").exists()
+
+
+@pytest.mark.parametrize(
+    ("stage", "error", "reason"),
+    [
+        ("reset", RuntimeError("reset failed"), "setup_failure"),
+        ("hold", RuntimeError("control failed"), "failed"),
+        ("expert", RuntimeError("expert failed"), "failed"),
+        ("expert", TimeoutError("deadline"), "timeout"),
+        ("expert", KeyboardInterrupt(), "aborted"),
+    ],
+)
+def test_smoke_errors_keep_stage_termination_and_one_finish(
+    tmp_path, stage, error, reason
+):
+    from robots.univtac.smoke import run_smoke
+
+    pilot, output = smoke_reservation(tmp_path)
+
+    class Backend:
+        def __init__(self, **kwargs):
+            self.task = SimpleNamespace(play_once=self.expert)
+
+        def reset(self):
+            if stage == "reset":
+                raise error
+            return {
+                "state": {
+                    "eef_pose_wxyz": np.array([0, 0, 0, 1, 0, 0, 0]),
+                    "gripper": 0.5,
+                }
+            }, {}
+
+        def evaluator_state(self):
+            return {
+                "scene": {
+                    key: {"fixed": 1}
+                    for key in ("model", "state", "physics", "sensors", "rng", "assets")
+                },
+                "physics_step": 2,
+                "control_step": 0 if stage == "hold" else 1,
+            }
+
+        def step(self, command):
+            if stage == "hold":
+                raise error
+            return (
+                None,
+                0,
+                False,
+                False,
+                {"exec_success": True, "native_action_delta": 1},
+            )
+
+        def expert(self):
+            raise error
+
+        def finish_recording(self):
+            if stage == "expert":
+                raise RuntimeError("secondary recording failure")
+
+        def close(self):
+            pass
+
+    outcome = run_smoke(root="unused", output_dir=output, backend_factory=Backend)
+    assert outcome["termination_reason"] == reason
+    assert outcome["official_success"] is None
+    assert outcome["eef_commands_attempted"] == (stage != "reset")
+    events = [
+        json.loads(line)
+        for line in (pilot.root / "events.jsonl").read_text().splitlines()
+    ]
+    finished = [event for event in events if event["kind"] == "finished"]
+    assert len(finished) == 1
+    assert finished[0]["outcome"]["termination_reason"] == reason
+    assert finished[0]["maker_inputs"] == {}
+    pilot.reserve_episode("dev-02", "next-smoke")

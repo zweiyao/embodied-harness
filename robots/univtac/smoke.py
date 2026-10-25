@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import signal
 import time
 import traceback
 from pathlib import Path
@@ -56,13 +57,18 @@ def run_smoke(*, root, output_dir, device="cuda:0", backend_factory=UniVTACBacke
         )
     started = time.monotonic()
     backend = None
+    reset_complete = False
     outcome = {
         "termination_reason": "setup_failure",
         "official_success": None,
         "native_success": None,
         "scripted_expert": True,
+        "script_only": True,
         "model_score": False,
         "maker_inputs_excluded": True,
+        "expert_uses_model_command_budget": False,
+        "eef_commands_attempted": 0,
+        "eef_commands_executed": 0,
     }
     try:
         cell = record["cell"]
@@ -74,6 +80,7 @@ def run_smoke(*, root, output_dir, device="cuda:0", backend_factory=UniVTACBacke
             device=device,
         )
         observation, _ = backend.reset()
+        reset_complete = True
         initial = backend.evaluator_state()
         fingerprint = pilot.record_scene(record["attempt_id"], initial["scene"])
         record["scene_fingerprint"] = fingerprint
@@ -82,7 +89,10 @@ def run_smoke(*, root, output_dir, device="cuda:0", backend_factory=UniVTACBacke
         save_native_frame(output_dir / "smoke-initial-sensors.npz", observation)
         state = observation["state"]
         command = [*state["eef_pose_wxyz"].tolist(), state["gripper"]]
+        outcome["eef_commands_attempted"] = 1
         _, _, _, _, receipt = backend.step(command)
+        outcome["eef_commands_executed"] = receipt["native_action_delta"]
+        outcome["hold_receipt"] = receipt
         write_json_atomic(
             output_dir / "smoke-hold.json",
             {
@@ -101,37 +111,49 @@ def run_smoke(*, root, output_dir, device="cuda:0", backend_factory=UniVTACBacke
                 "method": "native Task.play_once",
                 "uses_hidden_task_state": True,
                 "part_of_model_evaluation": False,
+                "model_command_budget_applies": False,
             },
         )
         backend.task.play_once()
         official = bool(backend.task.check_success())
+        outcome.update(official_success=official, native_success=official)
         final = backend.evaluator_state()
         # play_once is the expert path and does not update eval_success, which is
         # normally set by take_action. Preserve both rather than inventing a flag.
         final["official_predicate_after_expert"] = official
         write_json_atomic(output_dir / "smoke-final-evaluator.json", final)
         save_native_frame(output_dir / "smoke-final-sensors.npz", backend.observation())
-        backend.finish_recording()
         outcome.update(
             termination_reason="completed" if official else "failed",
-            official_success=official,
-            native_success=official,
             scene_fingerprint=fingerprint,
             hold_receipt=receipt,
             evaluator_path=str(output_dir / "smoke-final-evaluator.json"),
             video_path=final["video_path"],
         )
+        backend.finish_recording()
     except BaseException as exc:
-        outcome.update(error=f"{type(exc).__name__}: {exc}")
+        reason = "failed" if reset_complete else "setup_failure"
+        if isinstance(exc, TimeoutError):
+            reason = "timeout"
+        elif isinstance(exc, (KeyboardInterrupt, SystemExit)):
+            reason = "aborted"
+        outcome.update(termination_reason=reason, error=f"{type(exc).__name__}: {exc}")
         (output_dir / "smoke-error.txt").write_text(traceback.format_exc())
     finally:
+        if reset_complete:
+            try:
+                final = backend.evaluator_state()
+                outcome["physics_steps_after_reset"] = final["physics_step"]
+                outcome["native_action_count"] = final["control_step"]
+            except Exception as exc:
+                outcome["accounting_error"] = str(exc)
         if backend is not None:
             try:
                 backend.finish_recording()
             except BaseException as exc:
-                outcome.update(
-                    termination_reason="setup_failure", recording_error=str(exc)
-                )
+                outcome["recording_error"] = str(exc)
+                if outcome["termination_reason"] == "completed":
+                    outcome["termination_reason"] = "failed"
         outcome["elapsed_s"] = time.monotonic() - started
         # Persist the outcome before Kit shutdown, which may terminate its Python
         # process. The ledger is authoritative and receives exactly one finish.
@@ -150,6 +172,13 @@ def main():
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--device", default="cuda:0")
     args = parser.parse_args()
+
+    def deadline_reached(_signum, _frame):
+        raise TimeoutError("Smoke supervisor wall-clock deadline reached")
+
+    # The independent supervisor sends this only to the Python child, allowing
+    # the child to flush video and finish its ledger before any forced shutdown.
+    signal.signal(signal.SIGALRM, deadline_reached)
     result = run_smoke(**vars(args))
     print(json.dumps(result))
     return 0 if result["termination_reason"] == "completed" else 1
