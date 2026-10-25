@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.khronos.org/vulkan/profiles-0.8-latest.json#",
+  "capabilities": {
+    "allocation_cap": {
+      "properties": {
+        "VkPhysicalDeviceMaintenance3Properties": {
+          "maxMemoryAllocationSize": 4292870144
+        }
+      }
+    }
+  },
+  "profiles": {
+    "VP_RPENT_isaac_rtx_compat": {
+      "version": 1,
+      "api-version": "1.1.0",
+      "label": "RPent isolated Isaac RTX allocation cap",
+      "description": "Override only the reported single-allocation limit for the old RTX initialization path. Not a total VRAM cap.",
+      "capabilities": ["allocation_cap"]
+    }
+  }
+}

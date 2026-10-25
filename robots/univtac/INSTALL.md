@@ -70,7 +70,10 @@ Any proxy variables are scoped to the installation process and use the
 remote host's existing proxy. Do not change the user's global proxy or add
 a laptop reverse tunnel. Local RPC and simulation traffic stay direct.
 
-Verification must use the remote environment. Set `OMNI_KIT_ACCEPT_EULA=YES`
+Verification must use the remote environment. On the current 595.80 host, use
+the private Python wrapper described in [rtx_compat/README.md](rtx_compat/README.md).
+It enables the allocation-limit compatibility layer only in the simulator process.
+Set `OMNI_KIT_ACCEPT_EULA=YES`
 in the simulator subprocess environment, set `PYTHONPATH` to the RPent
 checkout, and run `python -m robots.univtac.probe --root <UniVTAC> --output-dir
 <private-log-dir>`. This imports the headless app and task classes without
@@ -78,7 +81,7 @@ constructing/resetting a task. Only after this succeeds should the trusted
 runner reserve a pilot cell and start a scripted smoke or model episode.
 The install commands alone do not establish that simulation works.
 
-## Verified deployment state (2026-10-24)
+## Initial deployment state (2026-10-24)
 
 The independent Python 3.10 prefix, Isaac Sim 4.5, Lab 2.1.1, cuRobo,
 bundled TacEx and its UIPC native bindings were installed successfully. The
@@ -88,7 +91,7 @@ in both RPent's remote environment and the independent Python 3.10 prefix.
 The latter also served a real loopback metadata request without resetting a
 task. No simulator episode has been started.
 
-**Headless startup has not passed.** On this host's NVIDIA 595.80 driver,
+**The initial headless startup failed.** On this host's NVIDIA 595.80 driver,
 the renderer segfaults while initializing the Hydra viewport, before any
 UniVTAC task is constructed. A process-local `DISPLAY=:1` and NVIDIA-only
 Vulkan ICD removed the initial GL/display warnings but did not fix the
@@ -104,8 +107,27 @@ This signature matches [NVIDIA's reported 595-branch RTX/Hydra problem](https://
 and a [4.5/5.0/5.1 renderer crash report](https://forums.developer.nvidia.com/t/isaac-sim-error-on-rtx-5060-gb-laptop-gpu/371956).
 That is evidence for a driver/runtime incompatibility, not proof that a
 particular replacement driver will work on this host. The dependency installation
-did not change the driver, global proxy or existing simulator environment. Resolve the
-rendering prerequisite and rerun the probe before reserving smoke cells.
+did not change the driver, global proxy or existing simulator environment.
+
+## Process-only startup repair (2026-10-25)
+
+The real Vulkan property query returned `UINT64_MAX` for
+`VkPhysicalDeviceMaintenance3Properties.maxMemoryAllocationSize`. Gdb located
+the crash in `librtx.scenedb.plugin.so`. A private Khronos Profiles layer, built
+from pinned upstream sources, changes only that reported single-allocation limit
+to 4292870144 bytes. It does not restrict total VRAM to 4 GiB.
+
+With the existing driver and unchanged Isaac/Lab environment, bare AppLauncher
+now reaches ready and exits 0. The full UniVTAC task import probe also passed in
+7.90 seconds, with CUDA available and no task reset. Configuration, source hashes,
+the compiled library and runtime wrapper stay in
+`external/isaac-rtx-compat/`; no global/user Vulkan layer is registered. See
+[rtx_compat/README.md](rtx_compat/README.md) for reproduction and opt-out.
+
+The first reserved smoke subsequently exposed a separate asset problem: the
+GelSight Mini robot USD was still a Git LFS pointer. That attempt is retained as
+`setup_failure`, not a task failure or a successful smoke. Real asset validation
+is required before the second attempt; import success alone does not cover it.
 
 After a trusted runner reserves a script cell, use the same independent
 Python to run `python -m robots.univtac.smoke --root <UniVTAC> --output-dir
