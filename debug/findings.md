@@ -166,3 +166,36 @@ use returned to 17,063 MiB on unchanged driver 595.80. The restored local web
 forward also returned a healthy session response. Consolidated evidence is in
 `artifacts/isaac-startup-20261025/verification.json`. Runtime records remain
 remote; only source, tests and documentation are committed.
+
+
+## GPT development episodes and visible workbench (2026-10-25)
+
+The independent RPent UniVTAC workbench runs on remote 8093 (local 18093);
+LIBERO 8092 retains its original process. Two GPT C-condition development
+slots completed: dev-03 (seed 2, 121.3 s) and dev-04 (seed 3, 108.4 s).
+Each used eight model responses and five EEF actions. Both models explicitly
+reported success, while both official evaluations remained false.
+
+Read-only native-frame audits independently explain the mismatch. Even using
+the more favorable of the official +/-30-degree target directions, final tube
+axis errors were at least 28.70/25.67 degrees, above acos(0.99)=8.11 degrees.
+EEF descent was 44.96/49.95 mm; tube-base descent was 17.72/18.17 mm. Visual entry
+into the opening does not establish alignment and insertion depth. The native
+success check runs after both physical steps; no missed evaluation update was
+found. Evaluator evidence is kept outside maker inputs.
+
+An independent logging defect replaced model finish with environment_stopped.
+Commit 8a8a890 separates the two causes and retains the model payload; old
+outcomes remain unchanged and raw tool events preserve the original decision.
+Both videos decode completely; all model image blobs match recorded PNGs.
+Wrist extrinsics now track the hand. The native physics archive precedes a
+second camera render, so the same physics-step number does not imply equal RGB
+bytes across those two paths; depth and tactile arrays do match.
+
+The ledger now holds four finished attempts (two smoke, two GPT) and one of 80
+offline requests (7.531-second connectivity check). No Max, generated-tool, or
+holdout experiment ran. Formal comparisons remain gated on tool preparation,
+Max feedback, freezing and interface validation. Compact results are in
+[univtac-exploration-20261025.json](univtac-exploration-20261025.json); remote
+read-only audit files are in artifacts/univtac-audit-20261025/. Dashboard/CLI
+regression passed 154 tests; the finish/evidence/lifecycle regression passed 38.
