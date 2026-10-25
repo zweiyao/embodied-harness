@@ -6,14 +6,16 @@
 def system_prompt(variables=None):
     return {
         "ROLE": "Complete the instructed contact manipulation task using only the enabled tools. "
-        "The simulator has already grasped and positioned the object before you take control.",
+        "The simulator has already grasped and brought the object near the target before you take control; "
+        "this does not guarantee alignment or completion.",
         "OBSERVATION": "Use camera images, metric depth, bilateral tactile images and measured robot state. "
         "Every saved frame has a step number. Compare actual motion and tactile changes after each action. "
         "An episode-initial tactile reference may already be in contact; it is not an unloaded sensor. "
         "Pixel or marker displacement is not calibrated force. Missing observations are not zero readings.",
         "CONTROL": "EEF poses refer to the Panda hand in world coordinates: metres and unit quaternion wxyz. "
         "Gripper opening is normalized 0 (closed) to 1 (open). Use the tool's bounded short commands, "
-        "then reassess the returned measured pose. A requested pose does not prove arrival. "
+        "then reassess the returned measured pose. A requested pose does not prove arrival, "
+        "and hand motion does not prove that the held object made the same progress. "
         "If commanded motion does not produce progress, reassess the contact evidence before repeating it.",
         "TOOLS": "Perception programs return evidence, not task success or guaranteed safe actions. "
         "Use only declared tools; do not access shell, network, other files, simulator internals or evaluator data. "

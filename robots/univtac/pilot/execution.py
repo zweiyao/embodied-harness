@@ -20,6 +20,34 @@ BUDGET = {
 PROFILE_FIELDS = {"planner", "model", "reasoning_effort", "base_url", "max_tokens"}
 
 
+def tools_match_for_execution(selected: list[dict], frozen: list[dict]) -> bool:
+    """Compare ordered executable definitions, ignoring catalog display metadata."""
+    fields = (
+        "name",
+        "origin",
+        "version",
+        "source",
+        "description",
+        "parameters",
+        "dependencies",
+    )
+
+    def execution_data(tools):
+        return json.dumps(
+            [
+                {
+                    key: tool.get(key, [] if key == "dependencies" else None)
+                    for key in fields
+                }
+                for tool in tools
+            ],
+            sort_keys=True,
+            allow_nan=False,
+        )
+
+    return execution_data(selected) == execution_data(frozen)
+
+
 class PilotExecution:
     """One already-reserved episode and its immutable effective configuration."""
 
@@ -193,7 +221,9 @@ def before_start(
         raise ValueError(
             "This condition requires a frozen bundle or explicit provisional tools"
         )
-    if selected is not None and selected != condition["tools"]:
+    if selected is not None and not tools_match_for_execution(
+        selected, condition["tools"]
+    ):
         raise ValueError(
             "Selected tools differ from the fixed condition; no silent replacement"
         )

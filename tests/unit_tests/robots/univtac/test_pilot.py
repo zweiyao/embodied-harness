@@ -284,6 +284,24 @@ def test_connectivity_cannot_claim_episode_inputs_or_a_maker_branch(
     assert pilot.summary()["offline_requests"] == 0
 
 
+def test_frozen_batch_allows_only_input_free_connectivity_within_same_budget(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    attempts = development(pilot, tmp_path)
+    pilot.freeze(bundle(attempts, pilot))
+    before = pilot.summary()["offline_requests"]
+    request = pilot.reserve_offline("connectivity", None, [])
+    pilot.finish_offline(request, {"ok": False, "status": "network_failure"})
+    assert pilot.summary()["offline_requests"] == before + 1
+    with pytest.raises(ValueError, match="no inputs"):
+        pilot.reserve_offline("connectivity", None, attempts)
+    with pytest.raises(ValueError, match="closed after freezing"):
+        pilot.reserve_offline("maker", "G1", attempts)
+    for _ in range(80 - before - 1):
+        pilot.reserve_offline("connectivity", None, [])
+    with pytest.raises(ValueError, match="budget exhausted"):
+        pilot.reserve_offline("connectivity", None, [])
+
+
 def test_maker_budgets_are_shared_and_failed_requests_not_refunded(tmp_path):
     pilot = Pilot.create(tmp_path / "pilot")
     attempts = development(pilot, tmp_path)

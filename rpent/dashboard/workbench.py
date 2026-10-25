@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import base64
+import copy
 import dataclasses
 import difflib
 import hashlib
@@ -220,7 +221,15 @@ class Workbench:
 
         summary = self.pilot.summary()
         used = {row["id"] for row in summary["rows"]}
+        finished = {
+            row["id"] for row in summary["rows"] if "termination_reason" in row
+        }
         active = summary["episodes_reserved"] > summary["finished"]
+        freeze_error = None
+        try:
+            self._pilot_frozen_bundle()
+        except (OSError, ValueError) as exc:
+            freeze_error = str(exc)
         cells = []
         for cell in self.pilot.manifest["cells"]:
             reason = None
@@ -229,13 +238,23 @@ class Workbench:
                 status, reason = "used", "This pilot cell has already been used"
             elif cell["model"] == "script":
                 status, reason = "script_only", "Script smoke cells are not model runs"
-            elif cell["stage"] != "explore":
+            elif cell["stage"] == "holdout":
                 status = "blocked"
-                reason = "This dashboard currently opens only GPT exploration cells"
+                reason = "Held-out experiments are not enabled in this dashboard"
             elif active:
                 status, reason = "blocked", "Finish the active pilot episode first"
             elif summary["episodes_reserved"] >= summary["episode_limit"]:
                 status, reason = "blocked", "Pilot episode budget exhausted"
+            elif cell["stage"] in ("provisional", "validate"):
+                required = 4 if cell["stage"] == "provisional" else 6
+                if any(
+                    previous["id"] not in finished
+                    for previous in self.pilot.manifest["cells"][:required]
+                ):
+                    status = "blocked"
+                    reason = f"Finish the first {required} development attempts first"
+                elif cell["stage"] == "validate" and freeze_error:
+                    status, reason = "blocked", freeze_error
             cells.append(
                 {
                     **cell,
@@ -256,6 +275,17 @@ class Workbench:
             },
             "cells": cells,
         }
+
+    def _pilot_frozen_bundle(self):
+        frozen = self.pilot._transaction(
+            lambda events: (
+                next((event["id"] for event in events if event["kind"] == "frozen"), None),
+                None,
+            )
+        )
+        if not self.pilot_freeze or self.pilot_freeze != frozen:
+            raise ValueError("Configure the matching frozen bundle before validation")
+        return self.pilot.load_freeze(self.pilot_freeze)
 
     def _available_pilot_cell(self, cell_id):
         if self.pilot is None:
@@ -278,7 +308,7 @@ class Workbench:
             if "pilot_cell" in request:
                 raise ValueError("This dashboard has no server-configured pilot")
             return
-        from robots.univtac.pilot.execution import BUDGET
+        from robots.univtac.pilot.execution import BUDGET, tools_match_for_execution
 
         cell = self._available_pilot_cell(request.get("pilot_cell"))
         profile = self.profiles[request["model_profile"]]
@@ -296,6 +326,22 @@ class Workbench:
             for key in ("max_turns", "planner_timeout_s")
         ):
             raise ValueError("Pilot requires 60 responses and a 3600-second planner budget")
+        if cell["stage"] == "provisional":
+            generated = [
+                tool
+                for tool in request["frozen_tools"]
+                if tool["origin"] == "generated"
+            ]
+            if not generated or any(
+                tool.get("category") != "perception"
+                or tool.get("validation") != "replay_passed"
+                for tool in generated
+            ):
+                raise ValueError("Select replay-validated generated perception tools")
+        elif cell["stage"] == "validate":
+            expected = self._pilot_frozen_bundle()["conditions"][cell["condition"]]["tools"]
+            if not tools_match_for_execution(request["frozen_tools"], expected):
+                raise ValueError("Selected tools differ from the frozen validation condition")
 
     def recover_interrupted(self):
         for path in self.root.glob("*/tasks/*/manifest.json"):
@@ -410,6 +456,10 @@ class Workbench:
             "frozen_tools": selected,
         }
         self.validate_pilot_request(prepared)
+        if self.pilot and self.pilot._cell(prepared["pilot_cell"])["stage"] == "validate":
+            prepared["frozen_tools"] = copy.deepcopy(
+                self._pilot_frozen_bundle()["conditions"]["E"]["tools"]
+            )
         return prepared
 
     @contextmanager

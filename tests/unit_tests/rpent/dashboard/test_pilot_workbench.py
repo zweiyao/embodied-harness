@@ -12,7 +12,7 @@ from robots.univtac.pilot import Pilot
 from robots.univtac.robot_spec import DASHBOARD_SPEC
 from rpent.dashboard.server import DashboardServer
 from rpent.dashboard.state import DashboardState
-from rpent.dashboard.workbench import Workbench
+from rpent.dashboard.workbench import Workbench, publish
 
 
 @pytest.fixture
@@ -22,8 +22,15 @@ def pilot_dashboard(tmp_path, monkeypatch):
         attempt = pilot.reserve_episode(cell, cell)
         pilot.finish_episode(attempt, {"termination_reason": "setup_failure"})
     tools = [
-        {"id": "native:finish", "name": "finish", "origin": "native"},
-        {"id": "native:move_eef", "name": "move_eef", "origin": "native"},
+        {
+            "id": f"native:{name}",
+            "name": name,
+            "origin": "native",
+            "description": name,
+            "parameters": {},
+            "source": "def fixture(): pass",
+        }
+        for name in ("finish", "move_eef")
     ]
     monkeypatch.setattr("rpent.dashboard.workbench.native_catalog", lambda robot: tools)
     bench = Workbench(
@@ -267,3 +274,166 @@ def test_history_includes_only_internal_episode_video_link(pilot_dashboard, tmp_
     assert "episode.mp4" not in bench.run(run["id"])["files"]
     with pytest.raises(ValueError, match="Unknown artifact"):
         bench.artifact(run["id"], "episode.mp4")
+
+
+def _finish_development(pilot, tmp_path, through):
+    path = tmp_path / "sanitized.json"
+    path.write_text("{}")
+    for cell in pilot.manifest["cells"][2:through]:
+        attempt = pilot.reserve_episode(cell["id"], cell["id"])
+        pilot.finish_episode(
+            attempt,
+            {
+                "termination_reason": "failed",
+                "maker_inputs": {
+                    key: str(path) for key in ("sensors", "actions", "feedback")
+                },
+            },
+        )
+    return [row["attempt_id"] for row in pilot.summary()["rows"][2:through]]
+
+
+def _publish_sensor(bench, validation="replay_passed"):
+    version = publish(
+        bench.library,
+        {
+            "name": "sensor_change",
+            "description": "Reference-relative change",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False,
+            },
+            "source": "def run(frames, params): return {'change': 0}",
+        },
+        {"validation": validation},
+    )
+    return ["native:finish", "native:move_eef", f"generated:{version}"]
+
+
+def test_qwen_provisional_requires_explicit_replay_validated_tool(
+    pilot_dashboard,
+    tmp_path,
+):
+    pilot, bench, state, client = pilot_dashboard
+    _finish_development(pilot, tmp_path, 4)
+    cells = {
+        cell["id"]: cell for cell in client.get("/api/setup").json()["pilot"]["cells"]
+    }
+    assert cells["dev-05"]["available"] and cells["dev-06"]["available"]
+    assert not cells["dev-07"]["available"]
+    assert all(
+        not cell["available"] for cell in cells.values() if cell["stage"] == "holdout"
+    )
+    ids = _publish_sensor(bench)
+    assert (
+        client.post(
+            "/api/session/config",
+            json={
+                "pilot_cell": "dev-05",
+                "model_profile": "api",
+            },
+        ).status_code
+        == 200
+    )
+    command = {"text": "/rpent-task univtac 0 2"}
+    assert client.post("/api/session/messages", json=command).status_code == 422
+    assert pilot.summary()["episodes_reserved"] == 4
+    assert client.post("/api/session/config", json={"tools": ids}).status_code == 200
+    assert client.post("/api/session/messages", json=command).status_code == 202
+    claimed = state.wait_for_task(0)
+    assert claimed.request["pilot_cell"] == "dev-05"
+    assert claimed.request["model_profile"] == "api"
+    assert claimed.request["tools"] == ids
+    assert claimed.request["frozen_tools"][-1]["validation"] == "replay_passed"
+    bench.validate_pilot_request(claimed.request)
+    assert pilot.summary()["episodes_reserved"] == 4
+
+
+@pytest.mark.parametrize("validation", ["unverified", "invoked"])
+def test_unverified_generated_tool_cannot_start_provisional(
+    pilot_dashboard,
+    tmp_path,
+    validation,
+):
+    pilot, bench, state, client = pilot_dashboard
+    _finish_development(pilot, tmp_path, 4)
+    ids = _publish_sensor(bench, validation)
+    assert (
+        client.post(
+            "/api/session/config",
+            json={
+                "pilot_cell": "dev-05",
+                "model_profile": "api",
+                "tools": ids,
+            },
+        ).status_code
+        == 200
+    )
+    response = client.post(
+        "/api/session/messages", json={"text": "/rpent-task univtac 0 2"}
+    )
+    assert (
+        response.status_code == 422 and "replay-validated" in response.json()["error"]
+    )
+    assert state.wait_for_task(0) is None and pilot.summary()["episodes_reserved"] == 4
+
+
+def test_validation_requires_bound_freeze_and_exact_selected_tools(
+    pilot_dashboard,
+    tmp_path,
+):
+    from tests.unit_tests.robots.univtac.test_pilot import bundle
+
+    pilot, bench, state, client = pilot_dashboard
+    inputs = _finish_development(pilot, tmp_path, 6)
+    ids = _publish_sensor(bench)
+    frozen = bundle(inputs, pilot)
+    for condition, config in frozen["conditions"].items():
+        config["tools"] = bench.selection(ids if condition in "DE" else None)
+    freeze_id = pilot.freeze(frozen)
+    assert (
+        client.post("/api/session/config", json={"pilot_cell": "dev-07"}).status_code
+        == 422
+    )
+    bench.bind_pilot(pilot.root, "dev-07", freeze_id="a" * 64)
+    assert (
+        client.post("/api/session/config", json={"pilot_cell": "dev-07"}).status_code
+        == 422
+    )
+    bench.bind_pilot(
+        pilot.root,
+        "dev-07",
+        freeze_id=freeze_id,
+        run_options={"max_turns": 60, "planner_timeout_s": 3600},
+    )
+    cells = {
+        cell["id"]: cell for cell in client.get("/api/setup").json()["pilot"]["cells"]
+    }
+    assert cells["dev-07"]["available"] and cells["dev-08"]["available"]
+    assert all(
+        not cell["available"] for cell in cells.values() if cell["stage"] == "holdout"
+    )
+    assert (
+        client.post(
+            "/api/session/config",
+            json={
+                "pilot_cell": "dev-07",
+                "model_profile": "api",
+            },
+        ).status_code
+        == 200
+    )
+    command = {"text": "/rpent-task univtac 0 4"}
+    assert client.post("/api/session/messages", json=command).status_code == 422
+    # The prior validation episode may update display-only invocation metadata.
+    invoked = bench.root / "previous/tasks/1/tool-invocations.json"
+    invoked.parent.mkdir(parents=True)
+    invoked.write_text(json.dumps([ids[-1].removeprefix("generated:")]))
+    assert bench.selection(ids)[-1]["invoked"]
+    assert not frozen["conditions"]["E"]["tools"][-1]["invoked"]
+    assert client.post("/api/session/config", json={"tools": ids}).status_code == 200
+    assert client.post("/api/session/messages", json=command).status_code == 202
+    claimed = state.wait_for_task(0)
+    assert claimed.request["frozen_tools"] == frozen["conditions"]["E"]["tools"]
+    assert pilot.summary()["episodes_reserved"] == 6

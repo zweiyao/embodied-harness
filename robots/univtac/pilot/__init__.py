@@ -436,11 +436,12 @@ class Pilot:
         """Charge one request before dispatch; retries also consume the cap of 80.
 
         Connectivity checks have no episode inputs or maker branch and use
-        ``purpose="connectivity", variant=None, attempts=[]``.
+        ``purpose="connectivity", variant=None, attempts=[]``. They remain
+        available after freezing and share the same request budget.
         """
 
         def reserve(events):
-            if any(e["kind"] == "frozen" for e in events):
+            if purpose != "connectivity" and any(e["kind"] == "frozen" for e in events):
                 raise ValueError("offline development is closed after freezing")
             if sum(e["kind"] == "offline" for e in events) >= 80:
                 raise ValueError("offline request budget exhausted")

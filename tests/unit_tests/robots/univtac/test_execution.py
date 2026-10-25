@@ -223,6 +223,48 @@ def test_unimplemented_condition_parameters_are_rejected(tmp_path):
         begin(pilot, tmp_path / "run", "dev-07", freeze_id=version)
 
 
+def test_frozen_execution_ignores_display_changes_but_uses_original_snapshot(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    version, bundle = freeze_after_development(pilot, tmp_path)
+    expected = bundle["conditions"]["E"]["tools"]
+    selected = copy.deepcopy(expected)
+    for tool in selected:
+        tool.update(invoked=True, validation="invoked", example="new display example")
+    run = begin(pilot, tmp_path / "run", "dev-07", freeze_id=version, selected=selected)
+    assert run.selected == expected and run.selected != selected
+    stored = json.loads((run.output_dir / "pilot-attempt.json").read_text())
+    assert stored["selected"] == expected
+    selected[-1]["source"] = "changed after reservation"
+    assert run.selected == expected
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("name", "sensor_renamed"),
+        ("origin", "native"),
+        ("version", "different"),
+        ("source", "def run(frames, params): return {'changed': True}"),
+        ("description", "different instructions"),
+        (
+            "parameters",
+            {"type": "object", "properties": {"threshold": {"type": "number"}}},
+        ),
+        ("dependencies", ["move_eef"]),
+    ],
+)
+def test_changed_frozen_execution_field_is_rejected_before_charging(
+    tmp_path, field, value
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    version, bundle = freeze_after_development(pilot, tmp_path)
+    selected = copy.deepcopy(bundle["conditions"]["E"]["tools"])
+    selected[-1][field] = value
+    with pytest.raises(ValueError, match="Selected tools differ"):
+        begin(pilot, tmp_path / "run", "dev-07", freeze_id=version, selected=selected)
+    assert pilot.summary()["episodes_reserved"] == 6
+
+
 @pytest.mark.parametrize("part", [None, "controller", "code_revision", "memory"])
 def test_frozen_runtime_drift_is_rejected_before_charging(tmp_path, part):
     pilot = Pilot.create(tmp_path / "pilot")
