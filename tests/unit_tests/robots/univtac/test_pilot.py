@@ -23,7 +23,7 @@ def scene(offset=0):
     }
 
 
-def development(pilot, tmp_path):
+def development(pilot, tmp_path, *, missing_scene=None):
     inputs = {}
     for name in ("sensors", "actions", "feedback"):
         path = tmp_path / f"{name}.json"
@@ -32,11 +32,15 @@ def development(pilot, tmp_path):
     attempts = []
     for cell in pilot.manifest["cells"][:6]:
         attempt = pilot.reserve_episode(cell["id"], cell["id"])
-        pilot.record_scene(attempt, scene())
+        failed_before_scene = missing_scene and cell["id"] == missing_scene[0]
+        if not failed_before_scene:
+            pilot.record_scene(attempt, scene())
         pilot.finish_episode(
             attempt,
             {
-                "termination_reason": "completed",
+                "termination_reason": missing_scene[1]
+                if failed_before_scene
+                else "completed",
                 "native_success": False,
                 "maker_inputs": inputs,
             },
@@ -143,6 +147,54 @@ def test_freeze_and_development_gate_prevent_formal_early_start(tmp_path):
         pilot.freeze(frozen)
 
 
+@pytest.mark.parametrize(
+    "cell_id,reason,allowed",
+    [
+        ("dev-01", "setup_failure", True),
+        ("dev-02", "setup_failure", True),
+        ("dev-01", "aborted", False),
+        ("dev-01", "network_failure", False),
+        ("dev-03", "setup_failure", False),
+        ("dev-05", "setup_failure", False),
+        ("dev-07", "setup_failure", False),
+    ],
+)
+def test_only_smoke_setup_failure_may_lack_scene_before_holdout(
+    tmp_path, cell_id, reason, allowed
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    attempts = development(pilot, tmp_path, missing_scene=(cell_id, reason))
+    version = pilot.freeze(bundle(attempts, pilot))
+    for cell in pilot.manifest["cells"][6:8]:
+        attempt = pilot.reserve_episode(cell["id"], cell["id"], version)
+        if cell["id"] != cell_id:
+            pilot.record_scene(attempt, scene())
+        pilot.finish_episode(
+            attempt,
+            {
+                "termination_reason": reason if cell["id"] == cell_id else "completed",
+                "native_success": None,
+                "interface_validation_passed": True,
+            },
+        )
+    reopened = Pilot(pilot.root)
+    summary = reopened.summary()
+    assert summary["episodes_reserved"] == summary["finished"] == 8
+    failure = next(row for row in summary["rows"] if row["id"] == cell_id)
+    assert failure["scene_fingerprint"] is None
+    assert failure["termination_reason"] == reason
+    with pytest.raises(ValueError, match="already"):
+        reopened.reserve_episode(cell_id, "retry", version)
+    formal = pilot.manifest["cells"][8]["id"]
+    if allowed:
+        reopened.reserve_episode(formal, "heldout", version)
+        assert reopened.summary()["episodes_reserved"] == 9
+    else:
+        with pytest.raises(ValueError, match="development scene evidence is missing"):
+            reopened.reserve_episode(formal, "heldout", version)
+        assert reopened.summary()["episodes_reserved"] == 8
+
+
 def test_maker_inputs_exclude_evaluator_fields_and_g0_feedback(tmp_path):
     pilot = Pilot.create(tmp_path / "pilot")
     attempts = development(pilot, tmp_path)
@@ -195,6 +247,41 @@ def test_offline_retries_are_counted_and_capped(tmp_path):
     with pytest.raises(ValueError, match="budget exhausted"):
         pilot.reserve_offline("diagnostic", "G0", attempts)
     assert pilot.summary()["offline_requests"] == 80
+
+
+def test_connectivity_checks_need_no_episodes_and_spend_the_shared_request_budget(
+    tmp_path,
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    request = pilot.reserve_offline("connectivity", None, [])
+    pilot.finish_offline(request, {"error": "network failure"})
+    for _ in range(79):
+        pilot.reserve_offline("connectivity", None, [])
+    summary = Pilot(pilot.root).summary()
+    assert summary["episodes_reserved"] == 0
+    assert summary["offline_requests"] == 80
+    with pytest.raises(ValueError, match="budget exhausted"):
+        pilot.reserve_offline("connectivity", None, [])
+
+
+@pytest.mark.parametrize(
+    "variant,attempts,maker_budget",
+    [
+        ("G0", [], None),
+        ("G1", [], None),
+        (None, ["dev-01"], None),
+        (None, [], {"max_calls": 1, "max_tokens": 10}),
+    ],
+)
+def test_connectivity_cannot_claim_episode_inputs_or_a_maker_branch(
+    tmp_path, variant, attempts, maker_budget
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    with pytest.raises(ValueError, match="connectivity checks require"):
+        pilot.reserve_offline(
+            "connectivity", variant, attempts, maker_budget=maker_budget
+        )
+    assert pilot.summary()["offline_requests"] == 0
 
 
 def test_maker_budgets_are_shared_and_failed_requests_not_refunded(tmp_path):

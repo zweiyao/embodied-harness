@@ -169,6 +169,36 @@ class UniVTACToolkit(Toolkit):
             return [self._load_tree(v, step) for v in value]
         return value
 
+    def _tactile_previews(self, frame):
+        """Keep native Taxim arrays; add RGB8 display copies without rescaling."""
+        previews = {}
+        for side in ("left", "right"):
+            sensor = frame.get("tactile", {}).get(side, {})
+            for kind in ("rgb", "reference_rgb"):
+                if kind not in sensor:
+                    continue
+                raw = np.asarray(sensor[kind])
+                name = f"sensor_tactile_{side}_{kind}.png"
+                metadata = previews[name] = {
+                    "source_artifact": f"sensor_tactile_{side}_{kind}"
+                    + (".png" if raw.dtype == np.uint8 else ".npz"),
+                    "source_dtype": str(raw.dtype),
+                    "source_range": [0, 255],
+                    "encoding": "RGB8 PNG",
+                    "conversion": "clip to [0,255], round to nearest, cast uint8; no rescaling",
+                }
+                # Native Taxim defines RGB in [0,255], including float tensors.
+                # A missing/invalid image must not become an invented black one.
+                if raw.ndim != 3 or raw.shape[-1] != 3 or not np.isfinite(raw).all():
+                    metadata["error"] = "Preview unavailable: expected finite HxWx3 RGB"
+                    continue
+                metadata["clipped_values"] = int(((raw < 0) | (raw > 255)).sum())
+                if raw.dtype != np.uint8:
+                    image = np.rint(np.clip(raw, 0, 255)).astype(np.uint8)
+                    if self.state.save(name, image) is None:
+                        raise OSError(f"Failed to record tactile preview: {name}")
+        return previews
+
     def _record(
         self, observation, command=None, result=None, elapsed_s=None, publish=True
     ):
@@ -196,6 +226,7 @@ class UniVTACToolkit(Toolkit):
         ) as step:
             frame["step"] = step
             saved = self._save_tree(frame, "sensor")
+            saved["image_previews"] = self._tactile_previews(frame)
             if self.state.save("sensor_frame.json", saved) is None:
                 raise OSError("Failed to record sensor frame manifest")
         if publish:
@@ -264,7 +295,15 @@ class UniVTACToolkit(Toolkit):
         if name not in record.artifacts or not name.endswith(".png"):
             return ToolResult(data={"error": "Unknown recorded image"})
         return ToolResult(
-            data={"step": record.step_idx, "artifact": name},
+            data={
+                "step": record.step_idx,
+                "artifact": name,
+                "image_metadata": self.state.load(
+                    "sensor_frame.json", step=record.step_idx
+                )
+                .get("image_previews", {})
+                .get(name),
+            },
             images=[self.state.load_bytes(name, step=record.step_idx)],
         )
 

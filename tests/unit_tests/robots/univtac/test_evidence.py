@@ -10,6 +10,7 @@ from zipfile import ZipFile
 import numpy as np
 import pytest
 
+from robots.univtac.observations import sensor_observation
 from robots.univtac.pilot.evidence import export_development
 from robots.univtac.toolkit import UniVTACToolkit
 from rpent.dashboard.events import NullDashboardEventSink
@@ -208,3 +209,61 @@ def test_initial_observation_exports_even_if_model_never_made_a_tool_call(tmp_pa
         assert json.loads(Path(exported["feedback"]).read_text())["calls"] == []
     finally:
         api.close()
+
+
+def test_tactile_export_preserves_measured_units_axes_and_distinct_resolutions(
+    tmp_path,
+):
+    rgb = np.zeros((4, 6, 3), dtype=np.uint8)
+    depth = np.full((3, 5), 1.7, dtype=np.float32)
+    env = FakeEnv()
+    env.last_obs = sensor_observation(
+        {"tactile": {"left_tactile": {"rgb": rgb, "depth": depth}}},
+        {
+            "root_pose_w": {"position": [0, 0, 0], "quaternion_wxyz": [1, 0, 0, 0]},
+            "hand_pose": {"position": POSE[:3], "quaternion_wxyz": POSE[3:7]},
+            "gripper_qpos": 0.0195,
+            "qpos": [0] * 7,
+        },
+        {"left": rgb.copy()},
+        control_step=0,
+        physics_step=0,
+    )
+    env.last_obs["tactile"]["left"].update(
+        hidden_contact_force="ORACLE", object_pose="ORACLE", official_success=True
+    )
+    root = tmp_path / "run"
+    api = UniVTACToolkit(
+        env=env,
+        output_dir=root,
+        dashboard_events=NullDashboardEventSink(),
+        memory=MemoryManager(tmp_path / "memory", memory_access="read_only"),
+    )
+    try:
+        exported = export_development(root)
+    finally:
+        api.close()
+    with ZipFile(exported["sensors"]) as archive:
+        frame_text = archive.read("frames/0000/sensor_frame.json").decode()
+        assert "ORACLE" not in frame_text and "official_success" not in frame_text
+        tactile = json.loads(frame_text)["tactile"]
+        expected = {
+            "image_size": [4, 6],
+            "depth_image_size": [3, 5],
+            "depth_units": "mm",
+            "depth_semantics": "native_sensor_camera_depth_not_indentation",
+            "marker_units": "pixels",
+            "marker_coordinate_order": "x,y",
+            "marker_origin": "top_left",
+            "marker_axes": "x_right_y_down",
+            "reference_kind": "episode_initial_contact",
+            "tracking_quality": None,
+        }
+        assert {key: tactile["left"][key] for key in expected} == expected
+        for key in ("depth", "depth_units", "depth_image_size", "depth_semantics"):
+            assert key not in tactile["right"]
+        with np.load(
+            io.BytesIO(archive.read("frames/0000/sensor_tactile_left_depth.npz")),
+            allow_pickle=False,
+        ) as saved:
+            np.testing.assert_array_equal(saved["array"], depth)

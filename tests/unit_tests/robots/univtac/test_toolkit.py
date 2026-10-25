@@ -3,11 +3,13 @@
 """Offline sensor isolation, selection and episode accounting contracts."""
 
 import copy
+import io
 import json
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from PIL import Image
 
 from robots.libero.research.library import digest
 from robots.univtac import toolkit as module
@@ -195,6 +197,66 @@ def test_recorded_images_depth_and_tactile_round_trip_without_privileged_fields(
     assert len(reference.images) == 1 and not reference.is_error
     saved = json.loads((api.journal.root / "evaluator.json").read_text())
     assert saved["scene"]["actor"] == "private_evaluator"
+
+
+def test_float_tactile_previews_reach_model_and_keep_raw_arrays(create_toolkit):
+    env = FakeEnv()
+    raw = np.tile(
+        np.array([0, 0.49, 0.51, 128.25, 254.75, 255], dtype=np.float32)[None, :, None],
+        (4, 1, 3),
+    )
+    for side, image in (("left", raw), ("right", raw[:, ::-1].copy())):
+        env.last_obs["tactile"][side] = {
+            "rgb": image,
+            "reference_rgb": image.copy(),
+            "reference_kind": "episode_initial_contact",
+        }
+    api = create_toolkit(env=env)
+    observed = api.execute_tool("observe", {})
+    assert set(observed.data["images"]) == {
+        "sensor_cameras_head_rgb.png",
+        "sensor_tactile_left_rgb.png",
+        "sensor_tactile_right_rgb.png",
+    }
+    assert len(observed.images) == 3
+    for side in ("left", "right"):
+        original = env.last_obs["tactile"][side]["rgb"]
+        recorded = api._frame(0)["tactile"][side]["rgb"]
+        assert recorded.dtype == np.float32
+        np.testing.assert_array_equal(recorded, original)
+        for kind in ("rgb", "reference_rgb"):
+            name = f"sensor_tactile_{side}_{kind}.png"
+            result = api.execute_tool("read_image", {"name": name, "step": 0})
+            assert not result.is_error and len(result.images) == 1
+            preview = np.asarray(Image.open(io.BytesIO(result.images[0])))
+            np.testing.assert_array_equal(preview, np.rint(original).astype(np.uint8))
+            metadata = result.data["image_metadata"]
+            assert metadata["source_artifact"] == name.removesuffix(".png") + ".npz"
+            assert metadata["source_dtype"] == "float32"
+            assert metadata["source_range"] == [0, 255]
+            assert metadata["encoding"] == "RGB8 PNG"
+            assert metadata["clipped_values"] == 0
+    # The same recorded image result is appended after each stateful command.
+    env.chunk_step = lambda poses, **kw: (
+        [env.last_obs],
+        0.0,
+        False,
+        False,
+        {"executed_commands": 1},
+    )
+    moved = api.execute_tool("move_eef", {"poses": [POSE]})
+    assert not moved.is_error and len(moved.images) == 3
+
+
+def test_invalid_tactile_image_is_recorded_without_invented_preview(create_toolkit):
+    env = FakeEnv()
+    env.last_obs["tactile"]["left"]["rgb"] = np.full((4, 6, 3), np.nan, np.float32)
+    api = create_toolkit(env=env)
+    result = api.execute_tool("observe", {})
+    assert "sensor_tactile_left_rgb.png" not in result.data["images"]
+    assert np.isnan(api._frame(0)["tactile"]["left"]["rgb"]).all()
+    metadata = result.data["sensors"]["image_previews"]["sensor_tactile_left_rgb.png"]
+    assert "unavailable" in metadata["error"]
 
 
 def test_generated_program_gets_last_four_independent_sensor_frames(

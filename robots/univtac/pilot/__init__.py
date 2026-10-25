@@ -252,7 +252,12 @@ class Pilot:
                             raise ValueError(
                                 "both final interface validations must pass"
                             )
-                    if not any(
+                    smoke_setup_failure = (
+                        dev["stage"] == "smoke"
+                        and finished[record["id"]]["outcome"]["termination_reason"]
+                        == "setup_failure"
+                    )
+                    if not smoke_setup_failure and not any(
                         e["kind"] == "scene" and e["id"] == record["id"] for e in events
                     ):
                         raise ValueError("development scene evidence is missing")
@@ -422,20 +427,31 @@ class Pilot:
     def reserve_offline(
         self,
         purpose: str,
-        variant: str,
+        variant: str | None,
         attempts: list[str],
         *,
         maker_budget: dict | None = None,
         max_tokens: int = 0,
     ) -> str:
-        """Charge one request before dispatch; retries also consume the cap of 80."""
+        """Charge one request before dispatch; retries also consume the cap of 80.
+
+        Connectivity checks have no episode inputs or maker branch and use
+        ``purpose="connectivity", variant=None, attempts=[]``.
+        """
 
         def reserve(events):
             if any(e["kind"] == "frozen" for e in events):
                 raise ValueError("offline development is closed after freezing")
             if sum(e["kind"] == "offline" for e in events) >= 80:
                 raise ValueError("offline request budget exhausted")
-            inputs = self._maker_inputs(events, variant, attempts)
+            if purpose == "connectivity":
+                if attempts != [] or variant is not None or maker_budget is not None:
+                    raise ValueError(
+                        "connectivity checks require no inputs, variant or maker budget"
+                    )
+                inputs = []
+            else:
+                inputs = self._maker_inputs(events, variant, attempts)
             if purpose == "maker":
                 if (
                     not maker_budget
