@@ -257,10 +257,19 @@ function defaultFrameKind() {
 
 function renderFrameTabs() {
   const container = $(".frame-tabs");
+  const labels = {
+    sensor_cameras_head_rgb: ["外部相机", "Head"],
+    sensor_cameras_wrist_rgb: ["腕部相机", "Wrist"],
+    sensor_tactile_left_rgb: ["左指触觉", "Left tactile"],
+    sensor_tactile_right_rgb: ["右指触觉", "Right tactile"],
+    sensor_tactile_left_reference_rgb: ["左指参考", "Left reference"],
+    sensor_tactile_right_reference_rgb: ["右指参考", "Right reference"],
+  };
   const buttons = Object.keys(mediaState.frameAvailable).map(name => {
     const button = document.createElement("button");
     button.dataset.kind = name;
-    button.textContent = name;
+    button.textContent = labels[name]?.[LANGUAGE === "zh-cn" ? 0 : 1] || name;
+    button.title = name;
     button.classList.toggle("active", name === mediaState.kind);
     button.addEventListener("click", () => setFrameKind(name));
     return button;
