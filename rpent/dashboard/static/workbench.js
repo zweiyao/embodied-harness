@@ -17,7 +17,7 @@ async function showRun(id){
     const states=await request(asset(id,'states.json')),section=el('section');section.append(el('h2','动作与观测'));
     const buttons=el('div',null,'step-list'),body=el('div');section.append(buttons,body);root.append(section);
     const select=step=>{body.replaceChildren();const n=step.step_idx;body.append(el('h3',`第 ${n} 步 · ${step.command?.action||'初始状态'}`),jsonSection('参数、结果和状态',step));
-      const images=el('div',null,'images');for(const camera of ['agentview_high.png','wrist_high.png']){const path=run.files.find(p=>p.startsWith(camera+'/')&&Number(p.split('/').at(-1).split('.')[0])===n);if(path){const img=el('img');img.src=asset(id,path);img.alt=`第 ${n} 步 ${camera}`;images.append(img);}}body.append(images);
+      const images=el('div',null,'images');for(const path of run.files.filter(p=>/\.png\/\d+\.png$/.test(p)&&Number(p.split('/').at(-1).split('.')[0])===n)){const figure=el('figure'),img=el('img');img.src=asset(id,path);img.alt=`第 ${n} 步 ${path.split('/').at(-2)}`;img.loading='lazy';figure.append(img,el('figcaption',img.alt));images.append(figure);}body.append(images);
       const clip=run.files.find(p=>p.includes('.mp4/')&&Number(p.split('/').at(-1).split('.')[0])===n);if(clip){const v=el('video');v.controls=true;v.preload='metadata';v.src=asset(id,clip);body.append(v);}
     };
     for(const step of states.steps||[]){const b=el('button',`${step.step_idx} ${step.command?.action||'初始'}`,'quiet');b.onclick=()=>select(step);buttons.append(b);}if(states.steps?.length)select(states.steps.at(-1));

@@ -631,6 +631,8 @@ class DashboardState:
             "planner_timeout_s": (10, 7200),
         }
         extra = {"model_profile", "tools"} if self.workbench is not None else set()
+        if self.workbench is not None and self.workbench.pilot is not None:
+            extra.add("pilot_cell")
         if self.workbench is not None:
             self.workbench.normalize(config)
         if not config or set(config) - {"model", *limits, *extra}:

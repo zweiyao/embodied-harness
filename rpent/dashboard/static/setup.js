@@ -27,13 +27,29 @@ function budget(id, values, label) {
   if (current != null && !values.includes(current)) values.push(current);
   options(id, values.sort((a,b) => a-b).map(v => [v, label(v)]), current);
 }
+function applyPilotCell() {
+  const cell = setup.pilot?.cells.find(c => c.id === $('pilot_cell').value);
+  if (!cell) return;
+  $('suite').value = 'univtac';
+  tasks();
+  $('task').value = String(cell.task_index);
+  $('seed').value = String(cell.seed);
+  const model = setup.model_profiles.find(p => p.model.replace(/^openai-chat:/, '') === cell.model);
+  $('model').value = model?.id || '';
+  $('max_turns').value = '60';
+  $('planner_timeout_s').value = '3600';
+  $('model').dispatchEvent(new Event('change'));
+  $('pilotStatus').textContent = `${setup.pilot.episodes_reserved}/${setup.pilot.episode_limit} 次已占用 · ${setup.pilot.finished} 次结束 · 离线请求 ${setup.pilot.offline_requests}/${setup.pilot.offline_limit} · ${cell.reason || cell.status}`;
+  command();
+}
 async function status() {
   const state = await request('/api/session/state');
   const ready = state.session_state === 'ready';
   $('status').classList.remove('error');
   $('status').textContent = ready ? '服务已就绪 · 请选择下一次实验的配置'
     : `当前服务：${state.session_state}。可通过右上角查看控制台，待服务就绪后配置。`;
-  $('enter').disabled = !ready || (setup.workbench && !checksPassed);
+  const cellAvailable = !setup.pilot || setup.pilot.cells.some(c => c.id === $('pilot_cell').value && c.available);
+  $('enter').disabled = !ready || !cellAvailable || (setup.workbench && !checksPassed);
 }
 $('robot').addEventListener('change', () => {
   const target = setup.profiles.find(p => p.robot === $('robot').value);
@@ -78,6 +94,7 @@ $('setupForm').addEventListener('submit', async event => {
       if ($('physicalMode').value === 'readonly' && hardware.armed && !await physicalAction('stop')) throw new Error('停止未确认，无法进入只读实验');
     }
     const payload = setup.workbench ? {model_profile: $('model').value, tools: picker.selected()} : {model: $('model').value};
+    if (setup.pilot) payload.pilot_cell = $('pilot_cell').value;
     for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) payload[id] = Number($(id).value);
     await request('/api/session/config', {
       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload),
@@ -157,9 +174,16 @@ try {
     };
     selectedHealth();
   }
-  budget('max_turns', [12, 25, 30, 50, 80, 120, 200], v => `${v} 轮`);
+  budget('max_turns', [12, 25, 30, 50, 60, 80, 120, 200], v => `${v} 轮`);
   budget('max_tokens', [2048, 4096, 8192, 16384], v => `${v} Token`);
   budget('planner_timeout_s', [180, 600, 1200, 1800, 3600], v => `${v/60} 分钟`);
+  if (setup.pilot) {
+    $('pilot').hidden = false;
+    options('pilot_cell', setup.pilot.cells.map(c => [c.id, `${c.id} · ${c.task} · seed ${c.seed} · ${c.status}`]), config.pilot_cell || setup.pilot.selected_cell);
+    for (const option of $('pilot_cell').options) option.disabled = !setup.pilot.cells.find(c => c.id === option.value).available;
+    $('pilot_cell').addEventListener('change', applyPilotCell);
+    applyPilotCell();
+  }
   command();
   await status();
   $('fields').disabled = false;

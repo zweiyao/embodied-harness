@@ -125,6 +125,17 @@ def run_dashboard_session(
         state.workbench = Workbench.from_env(robot=robot_spec.name)
         if state.workbench is not None:
             state.workbench.recover_interrupted()
+            if getattr(args, "pilot_root", None):
+                state.workbench.bind_pilot(
+                    args.pilot_root,
+                    args.pilot_cell,
+                    freeze_id=args.pilot_freeze,
+                    run_options={
+                        "max_turns": args.max_turns,
+                        "max_tokens": args.max_tokens,
+                        "planner_timeout_s": args.planner_timeout_s,
+                    },
+                )
     dashboard_server = DashboardServer(
         host=args.dashboard_host,
         port=args.dashboard_port,
@@ -206,6 +217,7 @@ def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
             setattr(configured, key, profile.get(key))
         error = None
         try:
+            state.workbench.validate_pilot_request(claimed.request)
             write_json(claimed.output_dir / "dashboard_config.json", {"robot": robot_spec.name, "model": configured.model, "task": {k:v for k,v in claimed.request.items() if k != "frozen_tools"}})
             manifest = {"run_id": state.run_id, "started_at": stamp(), "profile": {k: profile.get(k) for k in ("id", "planner", "model", "reasoning_effort", "base_url")},
                         "tools": selected, "task": {k: v for k, v in claimed.request.items() if k != "frozen_tools"},

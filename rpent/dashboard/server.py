@@ -88,6 +88,11 @@ class DashboardServer:
         if self._workbench is not None:
             self._setup = self._workbench.config["setup"]
             self._planner_config.update(model_profile=next(iter(self._workbench.profiles)), tools=[t["id"] for t in self._workbench.selection()])
+            if self._workbench.pilot is not None:
+                defaults = {**self._workbench.pilot_defaults, "pilot_cell": self._workbench.pilot_cell}
+                self._planner_config.update(defaults)
+                if self._workbench.pilot_defaults:
+                    self._state.set_next_config(self._workbench.pilot_defaults)
         self._robot_name = robot_name
         # Server-side context the page cannot supply. The check keeps its own
         # short timeouts; the run's is never reused.
@@ -142,7 +147,8 @@ class DashboardServer:
         @app.get("/api/setup")
         def api_setup() -> JSONResponse:
             return JSONResponse({**(self._setup or {}), "robot": self._robot_name, "workbench": self._workbench is not None,
-                                 "model_profiles": self._workbench.public_profiles() if self._workbench else []})
+                                 "model_profiles": self._workbench.public_profiles() if self._workbench else [],
+                                 "pilot": self._workbench.pilot_setup(self._planner_config.get("pilot_cell")) if self._workbench else None})
 
         @app.get("/tools")
         @app.get("/runs")

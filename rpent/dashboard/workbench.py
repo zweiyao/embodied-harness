@@ -192,6 +192,110 @@ class Workbench:
         }
         self.checks = {}
         self.environment_lock = threading.RLock()
+        self.pilot = None
+        self.pilot_cell = None
+        self.pilot_freeze = None
+        self.pilot_defaults = {}
+
+    def bind_pilot(self, root, cell, *, freeze_id=None, run_options=None):
+        """Bind server-owned pilot settings; HTTP may change only the cell."""
+        if self.robot != "univtac":
+            raise ValueError("Pilot cells are available only for UniVTAC")
+        from robots.univtac.pilot import Pilot
+
+        pilot = Pilot(root)
+        pilot._cell(cell)
+        if not (pilot.root / "events.jsonl").is_file():
+            raise ValueError("Pilot ledger does not exist")
+        self.pilot = pilot
+        self.pilot_cell = cell
+        self.pilot_freeze = freeze_id
+        self.pilot_defaults = dict(run_options or {})
+
+    def pilot_setup(self, selected_cell=None):
+        """Read current protocol slots and usage without reserving an episode."""
+        if self.pilot is None:
+            return None
+        from robots.univtac.robot_spec import TASKS
+
+        summary = self.pilot.summary()
+        used = {row["id"] for row in summary["rows"]}
+        active = summary["episodes_reserved"] > summary["finished"]
+        cells = []
+        for cell in self.pilot.manifest["cells"]:
+            reason = None
+            status = "available"
+            if cell["id"] in used:
+                status, reason = "used", "This pilot cell has already been used"
+            elif cell["model"] == "script":
+                status, reason = "script_only", "Script smoke cells are not model runs"
+            elif cell["stage"] != "explore":
+                status = "blocked"
+                reason = "This dashboard currently opens only GPT exploration cells"
+            elif active:
+                status, reason = "blocked", "Finish the active pilot episode first"
+            elif summary["episodes_reserved"] >= summary["episode_limit"]:
+                status, reason = "blocked", "Pilot episode budget exhausted"
+            cells.append(
+                {
+                    **cell,
+                    "task_index": TASKS.index(cell["task"]),
+                    "available": reason is None,
+                    "status": status,
+                    "reason": reason,
+                }
+            )
+        return {
+            "selected_cell": selected_cell or self.pilot_cell,
+            **{
+                key: summary[key]
+                for key in (
+                    "episodes_reserved", "episode_limit", "finished",
+                    "offline_requests", "offline_limit",
+                )
+            },
+            "cells": cells,
+        }
+
+    def _available_pilot_cell(self, cell_id):
+        if self.pilot is None:
+            raise ValueError("This dashboard has no server-configured pilot")
+        if not isinstance(cell_id, str) or not cell_id:
+            raise ValueError("pilot_cell must be a non-empty protocol cell ID")
+        cell = next(
+            (cell for cell in self.pilot_setup()["cells"] if cell["id"] == cell_id),
+            None,
+        )
+        if cell is None:
+            raise ValueError("Unknown pilot cell")
+        if not cell["available"]:
+            raise ValueError(cell["reason"])
+        return cell
+
+    def validate_pilot_request(self, request):
+        """Check the effective claimed configuration before any run starts."""
+        if self.pilot is None:
+            if "pilot_cell" in request:
+                raise ValueError("This dashboard has no server-configured pilot")
+            return
+        from robots.univtac.pilot.execution import BUDGET
+
+        cell = self._available_pilot_cell(request.get("pilot_cell"))
+        profile = self.profiles[request["model_profile"]]
+        if (
+            request.get("suite") != "univtac"
+            or type(request.get("task")) is not int
+            or request["task"] != cell["task_index"]
+            or type(request.get("seed")) is not int
+            or request["seed"] != cell["seed"]
+            or profile["model"].removeprefix("openai-chat:") != cell["model"]
+        ):
+            raise ValueError("Task, seed and model must match the selected pilot cell")
+        if any(
+            request.get(key) != BUDGET[key]
+            for key in ("max_turns", "planner_timeout_s")
+        ):
+            raise ValueError("Pilot requires 60 responses and a 3600-second planner budget")
 
     def recover_interrupted(self):
         for path in self.root.glob("*/tasks/*/manifest.json"):
@@ -278,25 +382,35 @@ class Workbench:
             "max_tokens",
             "planner_timeout_s",
         }
+        if self.pilot is not None:
+            allowed.add("pilot_cell")
         if set(payload) - allowed:
             raise ValueError("Use the configured model profile and tool catalog")
         if "model_profile" in payload and payload["model_profile"] not in self.profiles:
             raise ValueError("Unknown model profile")
         if "tools" in payload:
             self.selection(payload["tools"])
+        if "pilot_cell" in payload:
+            self._available_pilot_cell(payload["pilot_cell"])
         return payload
 
     def prepare(self, request):
+        if {"pilot_root", "pilot_freeze"} & request.keys():
+            raise ValueError("Pilot root and frozen bundle are server-owned settings")
+        if self.pilot is not None:
+            request = {**self.pilot_defaults, "pilot_cell": self.pilot_cell, **request}
         profile_id = request.get("model_profile", next(iter(self.profiles)))
         if not self.checks.get(profile_id, {}).get("ok"):
             raise ValueError("请先在开始页检查所选模型连接")
         selected = self.selection(request.get("tools"))
-        return {
+        prepared = {
             **request,
             "model_profile": profile_id,
             "tools": [t["id"] for t in selected],
             "frozen_tools": selected,
         }
+        self.validate_pilot_request(prepared)
+        return prepared
 
     @contextmanager
     def environment(self, profile_id):
@@ -327,17 +441,39 @@ class Workbench:
 
         if profile_id not in self.profiles:
             raise ValueError("Unknown model profile")
-        with self.environment(profile_id) as p:
-            result = check_llm(
-                LlmCheckRequest(
-                    planner=p["planner"],
-                    model=p["model"],
-                    base_url=p.get("base_url"),
-                    timeout_s=60,
+        request_id = (
+            self.pilot.reserve_offline("connectivity", None, [])
+            if self.pilot else None
+        )
+        try:
+            with self.environment(profile_id) as p:
+                result = check_llm(
+                    LlmCheckRequest(
+                        planner=p["planner"],
+                        model=p["model"],
+                        base_url=p.get("base_url"),
+                        timeout_s=60,
+                    )
+                ).as_dict()
+        except BaseException as exc:
+            if request_id is not None:
+                failure = clean({
+                    "ok": False,
+                    "status": "error",
+                    "detail": f"{type(exc).__name__}: {exc}",
+                    "checked_at": stamp(),
+                })
+                self.checks[profile_id] = failure
+                self.pilot.finish_offline(
+                    request_id, {"model_profile": profile_id, **failure}
                 )
-            ).as_dict()
+            raise
         result["checked_at"] = stamp()
         self.checks[profile_id] = clean(result)
+        if request_id is not None:
+            self.pilot.finish_offline(
+                request_id, {"model_profile": profile_id, **self.checks[profile_id]}
+            )
         return self.checks[profile_id]
 
     def runs(self):
@@ -373,7 +509,12 @@ class Workbench:
                 item["files"] = sorted(
                     str(p.relative_to(root))
                     for p in root.rglob("*")
-                    if p.is_file() and not p.is_symlink()
+                    if p.is_file() and (
+                        not p.is_symlink() or (
+                            p == root / "episode.mp4"
+                            and p.resolve().is_relative_to(root.resolve())
+                        )
+                    )
                 )
                 return item
         raise ValueError("Unknown run")
