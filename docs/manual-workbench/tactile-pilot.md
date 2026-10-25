@@ -183,3 +183,30 @@ startup still crashes in the RTX/Hydra renderer before task construction. See
 and dependency versions. No tactile pilot episodes or real model requests have
 run (0/40 attempts, 0/80 offline requests). Scripted smoke, generated tactile
 tools, frozen formal comparisons and task-effect claims remain pending.
+
+## Startup recovery and two smoke attempts (2026-10-25)
+
+Isaac startup is now working with a process-local Vulkan allocation-property
+compatibility layer. The driver and existing RPent environment/services were
+not changed. The final no-task import/asset probe passed in 7.49 seconds.
+
+| Cell | Outcome | Official task result | Evidence |
+| --- | --- | --- | --- |
+| dev-01, seed 0 | setup_failure | Unknown; no EEF command | Robot USD was a Git LFS pointer; failure retained, assets subsequently hydrated. |
+| dev-02, seed 1 | completed; clean child exit | Native expert predicate true | 155.99 s, 408 physical-step archives, fully decoded 388-frame video. |
+
+The pilot has consumed 2/40 attempts and 0/80 offline requests. These are
+scripted diagnostics, not model scores or tool-effect evidence. No failed cell
+was reset or refunded, and GPT/Max exploration has not started.
+
+The second run exposed stale wrist camera extrinsics: the camera image moved
+but its recorded pose stayed at the initialization value. The adapter now
+enables Isaac's `update_latest_camera_pose` flag. An independent camera scene
+verified the fix with a known 0.10 m movement and matching USD/ROS pose; all
+eight checks passed. Remote regression now passes 119 UniVTAC tests. This fix
+does not change task physics, robot commands or the success predicate.
+
+The original dev-02 record is retained with this known calibration defect and
+must not be used as valid world-coordinate projection evidence. There has not
+been another full task after the camera fix. Detailed findings and the standalone
+reproduction are in [`debug/findings.md`](../../debug/findings.md).

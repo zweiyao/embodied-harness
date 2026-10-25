@@ -60,6 +60,48 @@ def test_sensor_allowlist_drops_privileged_native_fields():
     assert not result["cameras"]["head"]["rgb"].any()
 
 
+def test_camera_poses_refresh_before_native_task_construction(tmp_path, monkeypatch):
+    from robots.univtac import backend as backend_module
+
+    cameras = [
+        SimpleNamespace(name=name, update_latest_camera_pose=False)
+        for name in ("head", "wrist")
+    ]
+    cfg = SimpleNamespace(
+        cameras=cameras,
+        sim=SimpleNamespace(dt=1 / 120),
+        scene=SimpleNamespace(),
+        decimation=1,
+        step_lim=300,
+    )
+
+    class ConstructionReached(Exception):
+        pass
+
+    class Task:
+        def __init__(self, actual_cfg, mode):
+            assert actual_cfg is cfg
+            assert all(camera.update_latest_camera_pose for camera in cameras)
+            assert (cfg.sim.dt, cfg.decimation, cfg.step_lim) == (1 / 120, 1, 300)
+            assert mode == "eval"
+            # Stop before any native task initialization or episode reset.
+            raise ConstructionReached
+
+    module = SimpleNamespace(
+        __file__=str(tmp_path / "envs" / "insert_hole.py"),
+        TaskCfg=lambda: cfg,
+        Task=Task,
+    )
+    monkeypatch.setattr(backend_module.importlib, "import_module", lambda _: module)
+    backend = UniVTACBackend.__new__(UniVTACBackend)
+    backend.root = backend.output_dir = tmp_path
+    backend.task_name, backend.seed, backend.device = "insert_hole", 1, "cuda:0"
+    backend.task = None
+    backend.start_app = lambda: None
+    with pytest.raises(ConstructionReached):
+        backend.reset()
+
+
 @pytest.mark.parametrize(
     "action",
     [

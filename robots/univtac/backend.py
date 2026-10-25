@@ -169,6 +169,10 @@ class UniVTACBackend:
             cfg.scene.num_envs = 1
             cfg.sim.enable_scene_query_support = True
             cfg.tactile_sensor_type = "gsmini"
+            # TiledCamera otherwise returns its initialization pose even after
+            # the wrist moves, making RGB/depth world coordinates incorrect.
+            for camera in cfg.cameras:
+                camera.update_latest_camera_pose = True
             cfg.obs_data_type = {
                 "camera": ["rgb", "depth"],
                 "tactile": ["rgb", "rgb_marker", "marker", "depth", "pose"],
