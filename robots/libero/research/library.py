@@ -97,6 +97,8 @@ class Sandbox:
     def run(self, tool: dict, params: dict, frames: list[dict]) -> dict:
         import numpy as np
 
+        # JSON Schema treats NaN/Infinity as numbers; only parameters must be finite.
+        json.dumps(params, allow_nan=False)
         Draft202012Validator(tool["parameters"]).validate(params)
         with tempfile.TemporaryDirectory(prefix="sensor-tool-") as directory:
             root = Path(directory)

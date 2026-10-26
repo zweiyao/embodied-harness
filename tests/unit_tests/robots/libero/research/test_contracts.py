@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from robots.libero.research.library import Library, validate_tools
+from robots.libero.research.library import Library, Sandbox, validate_tools
 from robots.libero.research.models import parse_json
 from robots.libero.research.runner import accept_candidate, verify_splits
 from robots.libero.research.sensors import PROPRIO, SensorInterface
@@ -65,6 +65,24 @@ def test_validate_does_not_execute_source(tmp_path):
     source = f'open({str(tmp_path / "host-write")!r}, "w").write("bad")\ndef run(frames, params): return {{}}'
     validate_tools([candidate(source)])
     assert not (tmp_path / "host-write").exists()
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+@pytest.mark.parametrize("nested", [False, True])
+def test_sandbox_rejects_nonfinite_parameters_before_execution(
+    monkeypatch, value, nested
+):
+    monkeypatch.setattr(
+        "robots.libero.research.library.subprocess.Popen",
+        lambda *args, **kwargs: pytest.fail("invalid parameters must not run Docker"),
+    )
+    sandbox = object.__new__(Sandbox)
+    sandbox.image = "unused"
+    params = {"threshold": value}
+    if nested:
+        params = {"values": [params]}
+    with pytest.raises(ValueError, match="Out of range float values"):
+        sandbox.run({"parameters": {"type": "object"}, "source": ""}, params, [])
 
 
 def test_promotion_paired_no_regression():

@@ -35,6 +35,21 @@ def test_numpy_sensor_input(sandbox):
     assert result == {"mean": 2.0}
 
 
+def test_finite_float_parameters_preserve_missing_sensor_values(sandbox):
+    result = sandbox.run(
+        {
+            "parameters": {
+                "type": "object",
+                "properties": {"threshold": {"type": "number"}},
+            },
+            "source": 'import numpy as np\ndef run(frames, params): return {"threshold": params["threshold"], "missing": bool(np.isnan(frames[0]["depth"][0])), "mean": float(np.nanmean(frames[0]["depth"]))}',
+        },
+        {"threshold": 0.5},
+        [{"depth": np.array([float("nan"), 1.0, 2.0])}],
+    )
+    assert result == {"threshold": 0.5, "missing": True, "mean": 1.5}
+
+
 def test_no_host_files_writes_or_network(sandbox, tmp_path):
     secret = tmp_path / "private-evaluator.json"
     secret.write_text("private oracle")
