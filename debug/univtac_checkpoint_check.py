@@ -298,7 +298,10 @@ def restore(backend, root):
         raise ValueError("Checkpoint task/seed differs from reservation")
     state = unpack(json.loads((root / "state.json").read_text()))
     task = backend.task
-    task.scene.reset_to(state["physx"])
+    # TacEx's None default becomes slice(None), which the pinned PhysX tensor
+    # frontend cannot convert to indices. Supply all environment IDs explicitly.
+    env_ids = torch.arange(task.num_envs, device=task.device)
+    task.scene.reset_to(state["physx"], env_ids=env_ids)
     # PhysX GPU setters require this before reading updated link transforms.
     # This refreshes kinematics without advancing a physics step.
     task._robot_manager.robot._physics_sim_view.update_articulations_kinematic()

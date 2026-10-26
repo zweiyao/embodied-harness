@@ -4,6 +4,7 @@
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -16,6 +17,7 @@ from debug.univtac_checkpoint_check import (
     measure,
     pack,
     read_verified,
+    restore,
     unpack,
     validate_reservation,
 )
@@ -70,6 +72,41 @@ def test_strict_check_does_not_hide_small_physics_or_renderer_differences():
         == 1e-12
     )
     assert differences(expected, expected) == []
+
+
+def test_restore_supplies_explicit_physx_environment_indices(tmp_path, monkeypatch):
+    import torch
+
+    class ReachedPhysX(Exception):
+        pass
+
+    def reset_to(state, env_ids=None):
+        # The pinned TacEx default is slice(None), incompatible with the pinned
+        # PhysX frontend's tensor.to(int32). Exercise that actual boundary.
+        assert state == {}
+        assert env_ids.to(torch.int32).tolist() == [0, 1]
+        assert env_ids.device.type == "cpu"
+        raise ReachedPhysX
+
+    monkeypatch.setitem(
+        sys.modules,
+        "uipc.core",
+        SimpleNamespace(SceneFactory=None, SceneIO=None, SceneSnapshot=None),
+    )
+    (tmp_path / "state.json").write_text(json.dumps({"physx": {}}))
+    monkeypatch.setattr(
+        "debug.univtac_checkpoint_check.read_verified",
+        lambda root: {"task": "insert_hole", "seed": 2},
+    )
+    backend = SimpleNamespace(
+        task_name="insert_hole",
+        seed=2,
+        task=SimpleNamespace(
+            scene=SimpleNamespace(reset_to=reset_to), num_envs=2, device="cpu"
+        ),
+    )
+    with pytest.raises(ReachedPhysX):
+        restore(backend, tmp_path)
 
 
 def test_only_matching_precharged_infrastructure_reservation(tmp_path):

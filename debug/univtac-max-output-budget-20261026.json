@@ -1,0 +1,58 @@
+{
+  "windows": [
+    {
+      "window": "dev03-step3",
+      "request_id": "bb2983a7d5bf41b2ab32f1b6043e42e5",
+      "status": "timeout",
+      "first_chunk_s": 3.3163801007904112,
+      "last_stream_event_s": 179.7779332329519,
+      "total_s": 180.0025066358503,
+      "stream_events": 3709,
+      "returned_part_kinds": [
+        "thinking"
+      ],
+      "final_usage": null,
+      "usage_note": "Provider had not returned final usage at timeout; partial SDK zero counters are not actual consumption.",
+      "prompt_and_tools_match_8192_request": true
+    },
+    {
+      "window": "dev04-step5",
+      "request_id": "d05b570176994ca8b8610a1520985eb5",
+      "status": "timeout",
+      "first_chunk_s": 6.7423164448700845,
+      "last_stream_event_s": 179.70357442484237,
+      "total_s": 180.00207986985333,
+      "stream_events": 3440,
+      "returned_part_kinds": [
+        "thinking"
+      ],
+      "final_usage": null,
+      "usage_note": "Provider had not returned final usage at timeout; partial SDK zero counters are not actual consumption.",
+      "prompt_and_tools_match_8192_request": true
+    }
+  ],
+  "max_tokens": 10000,
+  "thinking": true,
+  "single_request_timeout_s": 180,
+  "direct": true,
+  "retries": 0,
+  "actual_offline_requests": 2,
+  "new_episodes": 0,
+  "actions_executed": 0,
+  "tool_calls": 0,
+  "visible_text_chars": 0,
+  "selection": "No tool call returned before timeout",
+  "parameter_execution_interpretation": "Not assessed: neither response reached a visible tool call or explanation",
+  "validation": "3 CPU/Docker/MockTransport tests passed before the requests",
+  "comparison": "Same messages and tools as original 8192 windows; only max_completion_tokens changed in actual wire bodies. Old results retained.",
+  "conclusion": "This trial did not demonstrate tool-use improvement. Increasing total output to 10000 alone did not produce an actionable response within 180 seconds. Continued incoming thinking events show generation continued; no transport error was reported.",
+  "pilot_counts_after": {
+    "offline_requests": 11,
+    "episodes_reserved": 6
+  },
+  "files_sha256": {
+    "acceptance.py": "c7559832d1c1654c1d462cc7d07ec9276e1c96e5de14b91110334ceac9d1c967",
+    "native_adapter.py": "811ad1867ab9835687161cca44dda7132e8c5824371fd19bff25f4b0d4a97619",
+    "test_acceptance.py": "bda156b4ea792fe9ba63af21050c4fd33fa2c95859889d2f2582961ee0d50123"
+  }
+}
