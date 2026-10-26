@@ -1,6 +1,6 @@
 --- a/collector/core/joint_home.py
 +++ b/collector/core/joint_home.py
-@@ -104,62 +104,52 @@
+@@ -104,62 +104,54 @@
                      gripper_commanded=False, motion_executed=False)
  
      def step(self, token):
@@ -87,7 +87,9 @@
 +                raise HTTPException(409, 'Home primitive control mode changed')
 +            primitive = robot._robot.primitive_states()
 +            reached = primitive['reachedTarget']
-+            if not isinstance(reached, (bool, np.bool_)):
++            # RDK represents primitive boolean states as integer 0/1.
++            if (not isinstance(reached, (bool, np.bool_, int, np.integer))
++                    or reached not in (0, 1)):
 +                raise HTTPException(409, 'Invalid MoveJ reachedTarget feedback')
 +            if reached and error <= .0002 and np.max(np.abs(state['joint_velocity'])) < .005:
 +                robot._robot.SwitchMode(flexivrdk.Mode.NRT_CARTESIAN_MOTION_FORCE)

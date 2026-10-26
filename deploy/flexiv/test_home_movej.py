@@ -46,11 +46,13 @@ def start(home):
     home.state['mode'] = 'Mode.NRT_PRIMITIVE_EXECUTION'
 
 
-def test_submit_once_then_require_measured_arrival(home):
+@pytest.mark.parametrize('flag_type', [bool, int, np.int32])
+def test_submit_once_then_require_measured_arrival(home, flag_type):
     start(home)
+    home.robot._robot.primitive_states = lambda: {'reachedTarget': flag_type(0)}
     for _ in range(3):
         assert not home.step('owner')['reached']
-    home.robot._robot.primitive_states = lambda: {'reachedTarget': True}
+    home.robot._robot.primitive_states = lambda: {'reachedTarget': flag_type(1)}
     assert not home.step('owner')['reached']  # API flag alone is insufficient.
     home.state['joint_position'] = home.goal.tolist()
     home.state['joint_velocity'] = [.01]*7
@@ -95,6 +97,16 @@ def test_poll_failure_does_not_resend(home, failure):
     else:
         home.robot._robot.primitive_states = lambda: {}
     with pytest.raises((HTTPException, KeyError)):
+        home.step('owner')
+    assert len([x for x in home.commands if x[0] == 'MoveJ']) == 1
+
+
+@pytest.mark.parametrize('value', [-1, 2, 0.0, 1.0, '0', '1', None, [1]])
+def test_invalid_primitive_flags_fail_closed(home, value):
+    start(home)
+    home.state['joint_position'] = home.goal.tolist()
+    home.robot._robot.primitive_states = lambda: {'reachedTarget': value}
+    with pytest.raises(HTTPException):
         home.step('owner')
     assert len([x for x in home.commands if x[0] == 'MoveJ']) == 1
 
