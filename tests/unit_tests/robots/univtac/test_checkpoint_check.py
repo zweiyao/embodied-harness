@@ -18,6 +18,8 @@ from debug.univtac_checkpoint_check import (
     pack,
     read_verified,
     restore,
+    restore_physx,
+    runtime_state,
     unpack,
     validate_reservation,
 )
@@ -39,18 +41,19 @@ def test_numeric_and_rng_state_roundtrip_without_pickle():
         pack(object())
 
 
-def checkpoint(tmp_path):
+def checkpoint(tmp_path, version=1):
     files = {}
     for name in ("state.json", "scene.json", "baseline.json"):
         (tmp_path / name).write_text("{}")
         files[name] = hashlib.sha256(b"{}").hexdigest()
-    manifest = {"schema_version": 1, "files": files}
+    manifest = {"schema_version": version, "files": files}
     (tmp_path / "manifest.json").write_text(json.dumps(manifest))
     return manifest
 
 
-def test_checkpoint_integrity_and_paths_before_restore(tmp_path):
-    manifest = checkpoint(tmp_path)
+@pytest.mark.parametrize("version", [1, 2])
+def test_checkpoint_integrity_and_paths_before_restore(tmp_path, version):
+    manifest = checkpoint(tmp_path, version)
     assert read_verified(tmp_path) == manifest
     (tmp_path / "scene.json").write_text("changed")
     with pytest.raises(ValueError, match="Checkpoint file changed"):
@@ -74,39 +77,107 @@ def test_strict_check_does_not_hide_small_physics_or_renderer_differences():
     assert differences(expected, expected) == []
 
 
-def test_restore_supplies_explicit_physx_environment_indices(tmp_path, monkeypatch):
+def test_capture_and_restore_preserve_commands_distinct_from_actual_state(monkeypatch):
     import torch
 
-    class ReachedPhysX(Exception):
-        pass
+    actual_position = torch.tensor([[0.1], [0.2]])
+    actual_velocity = torch.tensor([[0.01], [0.02]])
+    commands = {
+        "joint_pos_target": torch.tensor([[0.3], [0.4]]),
+        "joint_vel_target": torch.tensor([[0.0], [0.0]]),
+        "joint_effort_target": torch.tensor([[0.5], [0.6]]),
+    }
+    data = SimpleNamespace(
+        joint_pos=actual_position.clone(),
+        joint_vel=actual_velocity.clone(),
+        **{name: value.clone() for name, value in commands.items()},
+    )
+    flushed = []
 
-    def reset_to(state, env_ids=None):
-        # The pinned TacEx default is slice(None), incompatible with the pinned
-        # PhysX frontend's tensor.to(int32). Exercise that actual boundary.
-        assert state == {}
+    def set_target(name, target, env_ids):
         assert env_ids.to(torch.int32).tolist() == [0, 1]
         assert env_ids.device.type == "cpu"
-        raise ReachedPhysX
+        getattr(data, name)[env_ids] = target
+
+    robot = SimpleNamespace(
+        data=data,
+        set_joint_position_target=lambda target, env_ids: set_target(
+            "joint_pos_target", target, env_ids
+        ),
+        set_joint_velocity_target=lambda target, env_ids: set_target(
+            "joint_vel_target", target, env_ids
+        ),
+        set_joint_effort_target=lambda target, env_ids: set_target(
+            "joint_effort_target", target, env_ids
+        ),
+        write_data_to_sim=lambda: flushed.append(
+            {name: getattr(data, name).clone() for name in commands}
+        ),
+    )
+    physical = {"position": actual_position, "velocity": actual_velocity}
+
+    def reset_to(state, env_ids=None):
+        assert env_ids.to(torch.int32).tolist() == [0, 1]
+        # The pinned reset_to overwrites command buffers with measured state.
+        data.joint_pos = state["position"].clone()
+        data.joint_vel = state["velocity"].clone()
+        data.joint_pos_target = data.joint_pos.clone()
+        data.joint_vel_target = data.joint_vel.clone()
+
+    task = SimpleNamespace(
+        scene=SimpleNamespace(get_state=lambda: physical, reset_to=reset_to),
+        _robot_manager=SimpleNamespace(robot=robot),
+        _actor_manager=SimpleNamespace(actors={}),
+        _tactile_manager=SimpleNamespace(tactiles={}),
+        rng=np.random.default_rng(2),
+        num_envs=2,
+        device="cpu",
+    )
+    monkeypatch.setattr(torch.cuda, "get_rng_state_all", lambda: [])
+    state = runtime_state(SimpleNamespace(task=task, references={}, physics_start=0))
+    for name in commands:
+        getattr(data, name).fill_(99)
+        assert torch.equal(state["joint_targets"][name], commands[name])
+    state = unpack(json.loads(json.dumps(pack(state))))
+    restore_physx(task, state)
+    assert torch.equal(data.joint_pos, actual_position)
+    assert torch.equal(data.joint_vel, actual_velocity)
+    assert len(flushed) == 1
+    for name, expected in commands.items():
+        assert torch.equal(flushed[0][name], expected)
+        assert flushed[0][name].dtype == expected.dtype
+
+
+@pytest.mark.parametrize("targets", [None, {}, {"joint_pos_target": [0.0]}])
+def test_missing_command_targets_reject_before_touching_physics(targets):
+    import torch
+
+    def forbidden_reset(*args, **kwargs):
+        pytest.fail("Invalid checkpoint must not change physical state")
+
+    task = SimpleNamespace(
+        scene=SimpleNamespace(reset_to=forbidden_reset),
+        _robot_manager=SimpleNamespace(
+            robot=SimpleNamespace(data=SimpleNamespace(joint_pos=torch.zeros(1, 1)))
+        ),
+    )
+    with pytest.raises(ValueError, match="complete commanded joint targets"):
+        restore_physx(task, {"joint_targets": targets})
+
+
+def test_old_snapshot_remains_auditable_but_cannot_restore(tmp_path, monkeypatch):
+    manifest = checkpoint(tmp_path)
+    assert read_verified(tmp_path) == manifest
+    before = {path.name: path.read_bytes() for path in tmp_path.iterdir()}
 
     monkeypatch.setitem(
         sys.modules,
         "uipc.core",
         SimpleNamespace(SceneFactory=None, SceneIO=None, SceneSnapshot=None),
     )
-    (tmp_path / "state.json").write_text(json.dumps({"physx": {}}))
-    monkeypatch.setattr(
-        "debug.univtac_checkpoint_check.read_verified",
-        lambda root: {"task": "insert_hole", "seed": 2},
-    )
-    backend = SimpleNamespace(
-        task_name="insert_hole",
-        seed=2,
-        task=SimpleNamespace(
-            scene=SimpleNamespace(reset_to=reset_to), num_envs=2, device="cpu"
-        ),
-    )
-    with pytest.raises(ReachedPhysX):
-        restore(backend, tmp_path)
+    with pytest.raises(ValueError, match="Schema 1 checkpoint is audit-only"):
+        restore(SimpleNamespace(), tmp_path)
+    assert {path.name: path.read_bytes() for path in tmp_path.iterdir()} == before
 
 
 def test_only_matching_precharged_infrastructure_reservation(tmp_path):
@@ -204,6 +275,8 @@ def test_failed_initialization_is_charged_and_written_before_close(
 
 @pytest.mark.parametrize("fail", [False, True])
 def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, fail):
+    import torch
+
     original = tmp_path / "reset"
     original.mkdir()
     (original / "evaluator-initial-gel.npz").write_bytes(b"initial")
@@ -218,6 +291,15 @@ def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, 
         ),
         scene=SimpleNamespace(get_state=lambda: {}),
         _get_observations=lambda: {},
+        _robot_manager=SimpleNamespace(
+            robot=SimpleNamespace(
+                data=SimpleNamespace(
+                    joint_pos_target=torch.tensor([[0.3]]),
+                    joint_vel_target=torch.tensor([[0.0]]),
+                    joint_effort_target=torch.tensor([[0.5]]),
+                )
+            )
+        ),
     )
     backend = SimpleNamespace(task=task, output_dir=tmp_path, run_dir=original)
 
@@ -232,7 +314,15 @@ def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, 
         with pytest.raises(RuntimeError, match="measurement failed"):
             measure(backend)
     else:
-        assert measure(backend)["scene"] == {"measured": True}
+        measured = measure(backend)
+        assert measured["scene"] == {"measured": True}
+        assert unpack(measured["joint_targets"])["joint_effort_target"].item() == 0.5
+        altered = json.loads(json.dumps(measured))
+        altered["joint_targets"]["joint_vel_target"]["data"][0][0] = 0.01
+        assert (
+            differences(measured, altered)[0]["path"]
+            == "/joint_targets/joint_vel_target/data"
+        )
     assert backend.run_dir == original
     assert (original / "evaluator-initial-gel.npz").read_bytes() == b"initial"
     archived = list(

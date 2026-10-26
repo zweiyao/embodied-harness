@@ -36,6 +36,7 @@ TASK_FIELDS = (
     "episode_length_buf",
 )
 ACTOR_FIELDS = ("next_status", "next_pts", "next_mat")
+JOINT_TARGET_FIELDS = ("joint_pos_target", "joint_vel_target", "joint_effort_target")
 MARKER_FIELDS = (
     "init_surface_vertices",
     "init_surface_vertices_camera",
@@ -100,7 +101,7 @@ def read_verified(root):
     """Reject missing, changed or escaping files before touching simulator state."""
     root = Path(root).resolve()
     manifest = json.loads((root / "manifest.json").read_text())
-    if manifest.get("schema_version") != 1:
+    if manifest.get("schema_version") not in (1, 2):
         raise ValueError("Unsupported checkpoint schema")
     if not {"state.json", "scene.json", "baseline.json"} <= manifest["files"].keys():
         raise ValueError("Incomplete checkpoint manifest")
@@ -143,12 +144,20 @@ def fields(obj, names):
     return {name: getattr(obj, name) for name in names if hasattr(obj, name)}
 
 
+def commanded_joint_targets(task):
+    return {
+        name: getattr(task._robot_manager.robot.data, name).clone()
+        for name in JOINT_TARGET_FIELDS
+    }
+
+
 def runtime_state(backend):
     import torch
 
     task = backend.task
     return {
         "physx": task.scene.get_state(),
+        "joint_targets": commanded_joint_targets(task),
         "task": fields(task, TASK_FIELDS),
         "actors": {
             name: fields(actor, ACTOR_FIELDS)
@@ -210,6 +219,7 @@ def measure(backend, *, refresh=False):
         # Recompute from live state, never use the cached scene fingerprint.
         "scene": scene,
         "physx": pack(task.scene.get_state()),
+        "joint_targets": pack(commanded_joint_targets(task)),
         "uipc_dump_sha256": dump_hashes,
     }
     write_json(archive / "measurements.json", result)
@@ -275,7 +285,7 @@ def capture(backend, root):
     }
     write_json(root / "baseline.json", baseline)
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "task": backend.task_name,
         "seed": backend.seed,
         "frame": frame,
@@ -289,19 +299,45 @@ def capture(backend, root):
     return baseline
 
 
+def restore_physx(task, state):
+    """Restore measured state and the independently commanded joint targets."""
+    import torch
+
+    robot = task._robot_manager.robot
+    targets = state.get("joint_targets")
+    if not isinstance(targets, dict) or set(targets) != set(JOINT_TARGET_FIELDS):
+        raise ValueError("Checkpoint lacks complete commanded joint targets")
+    if any(
+        not torch.is_tensor(value) or value.shape != robot.data.joint_pos.shape
+        for value in targets.values()
+    ):
+        raise ValueError("Checkpoint joint target tensors have incompatible shapes")
+    # TacEx's None default becomes slice(None), which the pinned PhysX tensor
+    # frontend cannot convert to indices. Supply all environment IDs explicitly.
+    env_ids = torch.arange(task.num_envs, device=task.device)
+    task.scene.reset_to(state["physx"], env_ids=env_ids)
+    # reset_to substitutes measured positions/velocities as targets. Restore the
+    # original commands instead; Isaac's setters only fill buffers until flushed.
+    robot.set_joint_position_target(targets["joint_pos_target"], env_ids=env_ids)
+    robot.set_joint_velocity_target(targets["joint_vel_target"], env_ids=env_ids)
+    robot.set_joint_effort_target(targets["joint_effort_target"], env_ids=env_ids)
+    robot.write_data_to_sim()
+
+
 def restore(backend, root):
     import torch
     from uipc.core import SceneFactory, SceneIO, SceneSnapshot
 
     manifest = read_verified(root)
+    if manifest["schema_version"] != 2:
+        raise ValueError(
+            "Schema 1 checkpoint is audit-only: commanded joint targets were not saved"
+        )
     if (manifest["task"], manifest["seed"]) != (backend.task_name, backend.seed):
         raise ValueError("Checkpoint task/seed differs from reservation")
     state = unpack(json.loads((root / "state.json").read_text()))
     task = backend.task
-    # TacEx's None default becomes slice(None), which the pinned PhysX tensor
-    # frontend cannot convert to indices. Supply all environment IDs explicitly.
-    env_ids = torch.arange(task.num_envs, device=task.device)
-    task.scene.reset_to(state["physx"], env_ids=env_ids)
+    restore_physx(task, state)
     # PhysX GPU setters require this before reading updated link transforms.
     # This refreshes kinematics without advancing a physics step.
     task._robot_manager.robot._physics_sim_view.update_articulations_kinematic()
