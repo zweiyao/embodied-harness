@@ -1,0 +1,93 @@
+{
+  "stage": "Second response after the six native perception results in each historical development window",
+  "settings": {
+    "max_tokens": 10000,
+    "enable_thinking": true,
+    "timeout_s": 300,
+    "retries": 0
+  },
+  "new_offline_requests": 2,
+  "new_simulator_attempts": 0,
+  "actions_executed": 0,
+  "windows": [
+    {
+      "window": "dev03-step3",
+      "request_id": "d4f67893edfb444fbd120a45ce2206dc",
+      "total_s": 168.57299937703647,
+      "first_chunk_s": 5.04481136193499,
+      "finish_reason": "tool_call",
+      "usage": {
+        "input_tokens": 17699,
+        "cache_write_tokens": 0,
+        "cache_read_tokens": 5120,
+        "output_tokens": 8349,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0,
+        "details": {
+          "reasoning_tokens": 7679,
+          "text_tokens": 669
+        },
+        "cost": null
+      },
+      "protocol": {
+        "matched_tool_pairs": 6,
+        "images": 7,
+        "parent_result_images": 3,
+        "parent_reasoning_retained": true,
+        "prompt_and_tools_unchanged": true
+      },
+      "wire_sha256": "672ba3fccc41cd24adb8e6bd4ad37faafe28f239104ef913f117b4464eac5482",
+      "calls": [
+        {
+          "name": "move_eef",
+          "call_id": "call_e9a0a2c5c9714a318e748d44",
+          "arguments": "{\"poses\": \n[[0.5869, 0.0187, 0.2951, 0.0, 1.0, 0.0, 0.0, 0.14668], [0.5869, 0.0187, 0.2851, 0.0, 1.0, 0.0, 0.0, 0.14668]]\n\n}",
+          "schema_valid": true,
+          "executed": false,
+          "proposal_only": true
+        }
+      ],
+      "candidate_called": false
+    },
+    {
+      "window": "dev04-step5",
+      "request_id": "e5d742d5729c4233826760e5181e74d0",
+      "total_s": 208.62466448009945,
+      "first_chunk_s": 6.468544013099745,
+      "finish_reason": "length",
+      "usage": {
+        "input_tokens": 15236,
+        "cache_write_tokens": 0,
+        "cache_read_tokens": 6144,
+        "output_tokens": 10000,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0,
+        "details": {
+          "reasoning_tokens": 9760,
+          "text_tokens": 239
+        },
+        "cost": null
+      },
+      "protocol": {
+        "matched_tool_pairs": 6,
+        "images": 8,
+        "parent_result_images": 4,
+        "parent_reasoning_retained": true,
+        "prompt_and_tools_unchanged": true
+      },
+      "wire_sha256": "7877c4575d6d1c493e55d6c4481a5b35cf8165d3e718b0fc7d5744b41e58bbf6",
+      "calls": [],
+      "candidate_called": false
+    }
+  ],
+  "counts_after": {
+    "offline_requests": 15,
+    "simulator_attempts": 8
+  },
+  "conclusion": "The 300-second allowance permits decisions beyond 180 seconds, but the second window exhausts 10000 output tokens. G1 remains uncalled; the movement proposal was not executed. No task success, program benefit or network-only explanation is established.",
+  "validation": "Two mock protocol tests passed. Both follow-up requests retained actual parent responses, all six corresponding tool results and original images. No further request or action was dispatched."
+}
