@@ -1,0 +1,73 @@
+{
+  "scope": "development, not a paired tool benefit estimate",
+  "runs": [
+    {
+      "cell": "dev-05",
+      "source_run": "/home/zwy/work/embodied_harness/univtac-runs/session-20261025-162930-740949/tasks/0001_univtac_t0_s2",
+      "outcome_sha256": "8d6ba5d84214f4142f6e356127a5ddaeb304127e4ac34a07a35ca37dff0f214e",
+      "status": "timeout",
+      "error": "ModelRequestTimeout: model response timed out after 180s",
+      "official_success": false,
+      "elapsed_s": 263.1,
+      "actions": 0,
+      "usage": {
+        "total_input_tokens": 6749,
+        "total_output_tokens": 1114,
+        "total_cached_input_tokens": 0,
+        "turns_used": 3,
+        "tool_calls": 3
+      },
+      "profile": {
+        "id": "qwen3.8-max",
+        "planner": "api",
+        "model": "openai-chat:qwen3.8-max",
+        "reasoning_effort": "none",
+        "base_url": "https://llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+      },
+      "tool_calls": [
+        "observe",
+        "depth_points",
+        "depth_points"
+      ],
+      "generated_calls": 0,
+      "network_route": "remote proxy 7900; startup override prevented NO_PROXY change until after dev06"
+    },
+    {
+      "cell": "dev-06",
+      "source_run": "/home/zwy/work/embodied_harness/univtac-runs/session-20261026-024229-872096/tasks/0001_univtac_t0_s3",
+      "outcome_sha256": "3e6766e5f678f08a511694adb0fd029d411946c4c8fd701fad75d6bc1e5cf0a2",
+      "status": "network_failure",
+      "error": "ModelAPIError: Connection error.",
+      "official_success": false,
+      "elapsed_s": 294.9,
+      "actions": 0,
+      "usage": {
+        "total_input_tokens": 6937,
+        "total_output_tokens": 2587,
+        "total_cached_input_tokens": 0,
+        "turns_used": 3,
+        "tool_calls": 3
+      },
+      "profile": {
+        "id": "qwen3.8-max",
+        "planner": "api",
+        "model": "openai-chat:qwen3.8-max",
+        "reasoning_effort": "high",
+        "base_url": "https://llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+      },
+      "tool_calls": [
+        "observe",
+        "depth_points",
+        "depth_points"
+      ],
+      "generated_calls": 0,
+      "network_route": "remote proxy 7900; startup override prevented NO_PROXY change until after dev06"
+    }
+  ],
+  "limits": [
+    "Neither Max run reached robot motion or called the generated tool.",
+    "Failed requests returned no final usage; recorded tokens are not full billed cost.",
+    "dev05 timeout cause unresolved; dev06 returned connection error.",
+    "Thinking remains enabled per user preference. All future comparison conditions share the same setting."
+  ]
+}
