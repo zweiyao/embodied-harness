@@ -26,7 +26,7 @@ exec "$repo/.venv/bin/python" -m rpent.cli.main \
   --univtac-python "$workspace/external/isaac-rtx-compat/univtac-python" \
   --dashboard --dashboard-host 127.0.0.1 --dashboard-port 8093 \
   --dashboard-language zh-cn \
-  --planner codex --model gpt-6-astra --reasoning-effort low \
+  --planner codex --model gpt-6-astra --reasoning-effort high \
   --suite univtac --task 0 --seed 2 \
   --max-turns 60 --max-tokens 10000 --planner-timeout-s 3600 \
-  --output-dir "$workspace/univtac-runs/session-$(date -u +%Y%m%d-%H%M%S)-$$"
+  --output-dir "$workspace/univtac-runs-current/session-$(date -u +%Y%m%d-%H%M%S)-$$"
