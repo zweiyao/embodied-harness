@@ -30,5 +30,5 @@ exec "$repo/.venv/bin/python" -m rpent.cli.main \
   --suite univtac --task 0 --seed 2 \
   --pilot-root "$workspace/experiments/tactile-pilot-20261025" \
   --pilot-cell dev-03 \
-  --max-turns 60 --max-tokens 8192 --planner-timeout-s 3600 \
+  --max-turns 60 --max-tokens 10000 --planner-timeout-s 3600 \
   --output-dir "$workspace/univtac-runs/session-$(date -u +%Y%m%d-%H%M%S)-$$"

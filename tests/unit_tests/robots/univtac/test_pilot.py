@@ -9,7 +9,7 @@ from collections import Counter
 
 import pytest
 
-from robots.univtac.pilot import Pilot, default_manifest
+from robots.univtac.pilot import Pilot, amended_manifest, default_manifest, digest
 
 
 def scene(offset=0):
@@ -500,3 +500,226 @@ def test_validate_interface_cli_records_explicit_decision(tmp_path):
     assert result.returncode == 0, result.stderr
     assert pilot.summary()["rows"][6]["interface_validation_passed"] is True
     assert pilot.summary()["episodes_reserved"] == 8
+
+
+def infrastructure(pilot, *, passed=True):
+    for cell_id in ("infra-01", "infra-02"):
+        attempt = pilot.reserve_episode(cell_id, cell_id)
+        pilot.record_scene(attempt, scene())
+        pilot.finish_episode(
+            attempt,
+            {"termination_reason": "completed", "checkpoint_validation_passed": passed},
+        )
+
+
+def test_budget_amendment_preserves_failed_attempts_and_original_records(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    attempt = pilot.reserve_episode("dev-01", "original")
+    pilot.finish_episode(attempt, {"termination_reason": "setup_failure"})
+    original = (pilot.root / "manifest.json").read_bytes()
+    prefix = (pilot.root / "events.jsonl").read_bytes()
+    old_reader = Pilot(pilot.root)
+    version = pilot.amend_budget("User approved 12 development / 24 Max / 4 GPT")
+    reopened = Pilot(pilot.root)
+    assert reopened.manifest == amended_manifest()
+    assert (pilot.root / "manifest.json").read_bytes() == original
+    assert (pilot.root / "events.jsonl").read_bytes().startswith(prefix)
+    summary = old_reader.summary()
+    assert summary["schema_version"] == 2
+    assert summary["episodes_reserved"] == summary["finished"] == 1
+    assert summary["termination_counts"] == {"setup_failure": 1}
+    assert summary["episode_limit"] == 40 and summary["development_limit"] == 12
+    assert summary["holdout_limits"] == {"qwen3.8-max": 24, "gpt-6-astra": 4}
+    assert len(reopened.manifest["cells"]) == 40
+    assert reopened.manifest["cells"][:8] == default_manifest()["cells"][:8]
+    assert len({c["id"] for c in reopened.manifest["cells"]}) == 40
+    assert [(c["id"], c["seed"]) for c in reopened.manifest["cells"][8:12]] == [
+        ("infra-01", 2),
+        ("infra-02", 2),
+        ("repair-01", 6),
+        ("repair-02", 7),
+    ]
+    amendment = json.loads(
+        (pilot.root / f"manifest-amendment-{version}.json").read_text()
+    )
+    assert digest(amendment) == version and amendment["reason"].startswith(
+        "User approved"
+    )
+    with pytest.raises(ValueError, match="already been used"):
+        reopened.reserve_episode("dev-01", "retry")
+    with pytest.raises(ValueError, match="already been amended"):
+        reopened.amend_budget("Retry")
+
+
+def test_v1_is_unchanged_and_orphan_amendment_is_not_effective(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    payload = {
+        "original_manifest_sha256": digest(default_manifest()),
+        "manifest": amended_manifest(),
+        "reason": "User approved revision",
+    }
+    path = pilot.root / f"manifest-amendment-{digest(payload)}.json"
+    path.write_text(json.dumps(payload))
+    reopened = Pilot(pilot.root)
+    assert reopened.manifest == default_manifest()
+    assert reopened.summary()["schema_version"] == 1
+    assert reopened.summary()["holdout_limits"] == {"qwen3.8-max": 24, "gpt-6-astra": 8}
+    # Recover the fully written orphan without overwriting its bytes.
+    original = path.read_bytes()
+    assert reopened.amend_budget(payload["reason"]) == digest(payload)
+    assert path.read_bytes() == original
+
+
+def test_old_pilot_object_cannot_reserve_removed_cell_after_amendment(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    stale = Pilot(pilot.root)
+    removed = "gpt-6-astra-insert_tube-101-C"
+    assert stale._cell(removed)["stage"] == "holdout"
+    pilot.amend_budget("User approved revision")
+    with pytest.raises(ValueError, match="unknown protocol cell"):
+        stale.reserve_episode(removed, "old-reader")
+    assert pilot.summary()["episodes_reserved"] == 0
+
+
+def test_missing_ledger_is_not_recreated_as_an_unused_batch(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    (pilot.root / "events.jsonl").unlink()
+    with pytest.raises(FileNotFoundError):
+        Pilot(pilot.root)
+    with pytest.raises(FileNotFoundError):
+        pilot.summary()
+    assert not (pilot.root / "events.jsonl").exists()
+
+
+@pytest.mark.parametrize("change", ["modified", "missing", "forged", "duplicate"])
+def test_committed_amendment_tampering_fails_closed(tmp_path, change):
+    pilot = Pilot.create(tmp_path / "pilot")
+    version = pilot.amend_budget("User approved revision")
+    path = pilot.root / f"manifest-amendment-{version}.json"
+    payload = json.loads(path.read_text())
+    if change == "missing":
+        path.unlink()
+    elif change == "duplicate":
+        with (pilot.root / "events.jsonl").open("a") as file:
+            file.write(json.dumps({"kind": "budget_amendment", "id": version}) + "\n")
+    else:
+        payload["manifest"]["max_episodes"] = 100
+        if change == "modified":
+            path.write_text(json.dumps(payload))
+        else:
+            forged = digest(payload)
+            (pilot.root / f"manifest-amendment-{forged}.json").write_text(
+                json.dumps(payload)
+            )
+            events = json.loads((pilot.root / "events.jsonl").read_text())
+            events["id"] = forged
+            (pilot.root / "events.jsonl").write_text(json.dumps(events) + "\n")
+    with pytest.raises((ValueError, FileNotFoundError)):
+        Pilot(pilot.root)
+    with pytest.raises((ValueError, FileNotFoundError)):
+        pilot.summary()
+
+
+def test_budget_amendment_requires_authorization_reason_and_no_active_attempt(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    for reason in (None, "", " "):
+        with pytest.raises(ValueError, match="authorization reason"):
+            pilot.amend_budget(reason)
+    pilot.reserve_episode("dev-01", "active")
+    with pytest.raises(ValueError, match="active attempt"):
+        pilot.amend_budget("User approved revision")
+    assert not list(pilot.root.glob("manifest-amendment-*.json"))
+
+
+def test_budget_amendment_rejects_frozen_batch_and_used_holdout_history(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    pilot.freeze(bundle(development(pilot, tmp_path), pilot))
+    with pytest.raises(ValueError, match="precede freezing"):
+        pilot.amend_budget("User approved revision")
+    # Even an invalid legacy ledger lacking its freeze event cannot amend used holdout.
+    other = Pilot.create(tmp_path / "other")
+    with (other.root / "events.jsonl").open("a") as file:
+        for event in (
+            {
+                "kind": "reserved",
+                "id": "historical",
+                "cell": default_manifest()["cells"][8]["id"],
+            },
+            {"kind": "finished", "id": "historical"},
+        ):
+            file.write(json.dumps(event) + "\n")
+    with pytest.raises(ValueError, match="used holdout"):
+        other.amend_budget("User approved revision")
+
+
+@pytest.mark.parametrize("checkpoint", [None, False])
+def test_v2_freeze_requires_both_successful_checkpoints(tmp_path, checkpoint):
+    pilot = Pilot.create(tmp_path / "pilot")
+    pilot.amend_budget("User approved revision")
+    frozen = bundle(development(pilot, tmp_path), pilot)
+    if checkpoint is not None:
+        infrastructure(pilot, passed=checkpoint)
+    with pytest.raises(ValueError, match="both infrastructure checkpoints"):
+        pilot.freeze(frozen)
+    assert not list(pilot.root.glob("freeze-*.json"))
+
+
+@pytest.mark.parametrize("use_repair", [False, True])
+def test_v2_optional_repairs_may_be_skipped_but_used_attempts_must_end(
+    tmp_path, use_repair
+):
+    pilot = Pilot.create(tmp_path / "pilot")
+    pilot.amend_budget("User approved revision")
+    frozen = bundle(development(pilot, tmp_path), pilot)
+    infrastructure(pilot)
+    if use_repair:
+        attempt = pilot.reserve_episode("repair-01", "repair")
+        with pytest.raises(ValueError, match="active attempt"):
+            pilot.freeze(frozen)
+        pilot.record_scene(attempt, scene())
+        pilot.finish_episode(attempt, {"termination_reason": "network_failure"})
+    version = pilot.freeze(frozen)
+    with pytest.raises(ValueError, match="closed after freezing"):
+        pilot.reserve_episode("repair-02", "late-repair")
+    finish_validation(pilot, version)
+    formal = next(c["id"] for c in pilot.manifest["cells"] if c["stage"] == "holdout")
+    pilot.reserve_episode(formal, "formal", version)
+    assert pilot.summary()["episodes_reserved"] == 11 + int(use_repair)
+
+
+def test_v2_used_repair_still_needs_scene_before_holdout(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    pilot.amend_budget("User approved revision")
+    frozen = bundle(development(pilot, tmp_path), pilot)
+    infrastructure(pilot)
+    attempt = pilot.reserve_episode("repair-01", "repair")
+    pilot.finish_episode(attempt, {"termination_reason": "setup_failure"})
+    version = pilot.freeze(frozen)
+    finish_validation(pilot, version)
+    formal = next(c["id"] for c in pilot.manifest["cells"] if c["stage"] == "holdout")
+    with pytest.raises(ValueError, match="development scene evidence is missing"):
+        pilot.reserve_episode(formal, "formal", version)
+
+
+def test_amend_budget_cli_records_user_reason(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "robots.univtac.pilot",
+            str(pilot.root),
+            "amend-budget",
+            "--reason",
+            "User approved 12/24/4",
+        ],
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert Pilot(pilot.root).manifest == amended_manifest()
+    event = json.loads((pilot.root / "events.jsonl").read_text())
+    assert (
+        event["kind"] == "budget_amendment"
+        and event["reason"] == "User approved 12/24/4"
+    )

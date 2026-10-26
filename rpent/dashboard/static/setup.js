@@ -39,7 +39,7 @@ function applyPilotCell() {
   $('max_turns').value = '60';
   $('planner_timeout_s').value = '3600';
   $('model').dispatchEvent(new Event('change'));
-  $('pilotStatus').textContent = `${setup.pilot.episodes_reserved}/${setup.pilot.episode_limit} 次已占用 · ${setup.pilot.finished} 次结束 · 离线请求 ${setup.pilot.offline_requests}/${setup.pilot.offline_limit} · ${cell.reason || cell.status}`;
+  $('pilotStatus').textContent = `协议 v${setup.pilot.schema_version ?? 1} · ${setup.pilot.episodes_reserved}/${setup.pilot.episode_limit} 次已占用 · ${setup.pilot.finished} 次结束 · 离线请求 ${setup.pilot.offline_requests}/${setup.pilot.offline_limit} · ${cell.reason || cell.status}`;
   command();
 }
 async function status() {

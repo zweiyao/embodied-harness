@@ -245,6 +245,8 @@ class Workbench:
                 status, reason = "blocked", "Finish the active pilot episode first"
             elif summary["episodes_reserved"] >= summary["episode_limit"]:
                 status, reason = "blocked", "Pilot episode budget exhausted"
+            elif cell.get("optional") and summary["frozen"]:
+                status, reason = "blocked", "Optional repair is closed after freezing"
             elif cell["stage"] in ("provisional", "validate"):
                 required = 4 if cell["stage"] == "provisional" else 6
                 if any(
@@ -271,6 +273,7 @@ class Workbench:
                 for key in (
                     "episodes_reserved", "episode_limit", "finished",
                     "offline_requests", "offline_limit",
+                    "schema_version", "development_limit", "holdout_limits",
                 )
             },
             "cells": cells,

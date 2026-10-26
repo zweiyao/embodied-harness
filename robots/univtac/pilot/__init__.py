@@ -86,6 +86,44 @@ def default_manifest() -> dict:
     }
 
 
+def amended_manifest() -> dict:
+    """Keep 40 slots: up to 12 development, 24 Max and four GPT holdout runs."""
+    manifest = default_manifest()
+    extra = [
+        {
+            "id": f"infra-{index:02d}",
+            "stage": "infrastructure",
+            "model": "script",
+            "condition": "C",
+            "task": "insert_hole",
+            "seed": 2,
+        }
+        for index in (1, 2)
+    ] + [
+        {
+            "id": f"repair-{index:02d}",
+            "stage": "provisional",
+            "model": "qwen3.8-max",
+            "condition": "provisional",
+            "task": "insert_hole",
+            "seed": seed,
+            "optional": True,
+        }
+        for index, seed in enumerate((6, 7), 1)
+    ]
+    manifest["schema_version"] = 2
+    manifest["cells"] = (
+        manifest["cells"][:8]
+        + extra
+        + [
+            cell
+            for cell in manifest["cells"][8:]
+            if not (cell["model"] == "gpt-6-astra" and cell["seed"] == 101)
+        ]
+    )
+    return manifest
+
+
 def scene_fingerprint(components: dict) -> str:
     """Hash evaluator-only simulator state, configuration and asset evidence.
 
@@ -129,6 +167,7 @@ class Pilot:
         self.manifest = json.loads((self.root / "manifest.json").read_text())
         if self.manifest != default_manifest():
             raise ValueError("pilot manifest differs from the fixed protocol")
+        self._transaction(lambda events: (None, None))
 
     @classmethod
     def create(cls, root: str | Path) -> Pilot:
@@ -142,17 +181,107 @@ class Pilot:
     def _transaction(self, operation):
         import fcntl
 
-        with (self.root / "events.jsonl").open("a+") as file:
+        with (self.root / "events.jsonl").open("r+") as file:
             fcntl.flock(file, fcntl.LOCK_EX)
             file.seek(0)
             events = [json.loads(line) for line in file if line.strip()]
+            self.manifest = self._manifest_for_events(events)
             result, event = operation(events)
             if event is not None:
+                file.seek(0, os.SEEK_END)
                 event["recorded_at"] = datetime.now(timezone.utc).isoformat()
                 file.write(json.dumps(event, allow_nan=False) + "\n")
                 file.flush()
                 os.fsync(file.fileno())
+                if event["kind"] == "budget_amendment":
+                    self.manifest = self._manifest_for_events(events + [event])
             return result
+
+    @staticmethod
+    def _check_amendment_timing(events: list[dict]) -> None:
+        if any(e["kind"] == "frozen" for e in events):
+            raise ValueError("budget amendment must precede freezing")
+        attempts = [e for e in events if e["kind"] == "reserved"]
+        if any(e["id"] not in Pilot._finished(events) for e in attempts):
+            raise ValueError("finish the active attempt before amending the budget")
+        stages = {cell["id"]: cell["stage"] for cell in default_manifest()["cells"]}
+        if any(e["cell"] not in stages for e in attempts):
+            raise ValueError("budget amendment cannot change already used cells")
+        if any(stages.get(e["cell"]) == "holdout" for e in attempts):
+            raise ValueError("budget amendment cannot follow a used holdout cell")
+
+    def _manifest_for_events(self, events: list[dict]) -> dict:
+        amendments = [e for e in events if e["kind"] == "budget_amendment"]
+        if not amendments:
+            return default_manifest()
+        if len(amendments) != 1:
+            raise ValueError("only one budget amendment is allowed")
+        event = amendments[0]
+        version = event.get("id", "")
+        if (
+            not isinstance(version, str)
+            or len(version) != 64
+            or any(c not in "0123456789abcdef" for c in version)
+        ):
+            raise ValueError("invalid budget amendment id")
+        payload = json.loads(
+            (self.root / f"manifest-amendment-{version}.json").read_text()
+        )
+        if digest(payload) != version:
+            raise ValueError("budget amendment hash mismatch")
+        if (
+            set(payload) != {"original_manifest_sha256", "manifest", "reason"}
+            or payload["original_manifest_sha256"] != digest(default_manifest())
+            or payload["manifest"] != amended_manifest()
+            or not isinstance(payload["reason"], str)
+            or not payload["reason"].strip()
+            or event.get("reason") != payload["reason"]
+        ):
+            raise ValueError("budget amendment differs from the authorized protocol")
+        self._check_amendment_timing(events[: events.index(event)])
+        return payload["manifest"]
+
+    def amend_budget(self, reason: str) -> str:
+        """Append the approved v2 allocation without rewriting original records."""
+        if not isinstance(reason, str) or not reason.strip():
+            raise ValueError("provide the user authorization reason")
+        payload = {
+            "original_manifest_sha256": digest(default_manifest()),
+            "manifest": amended_manifest(),
+            "reason": reason.strip(),
+        }
+        version = digest(payload)
+
+        def amend(events):
+            if any(e["kind"] == "budget_amendment" for e in events):
+                raise ValueError("budget has already been amended")
+            self._check_amendment_timing(events)
+            path = self.root / f"manifest-amendment-{version}.json"
+            temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+            try:
+                with temporary.open("x") as file:
+                    json.dump(payload, file, indent=2, allow_nan=False)
+                    file.flush()
+                    os.fsync(file.fileno())
+                try:
+                    os.link(temporary, path)
+                except FileExistsError:
+                    if json.loads(path.read_text()) != payload:
+                        raise ValueError("immutable budget amendment file differs")
+                directory = os.open(self.root, os.O_RDONLY)
+                try:
+                    os.fsync(directory)
+                finally:
+                    os.close(directory)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return version, {
+                "kind": "budget_amendment",
+                "id": version,
+                "reason": payload["reason"],
+            }
+
+        return self._transaction(amend)
 
     def _cell(self, cell_id: str) -> dict:
         cell = next(
@@ -184,11 +313,11 @@ class Pilot:
         memory_mode: str = "read_only",
     ) -> str:
         """Charge a slot before simulator startup, including failed attempts."""
-        cell = self._cell(cell_id)
         if not session_id or memory_mode != "read_only":
             raise ValueError("a fresh session and read_only memory are required")
 
         def reserve(events):
+            cell = self._cell(cell_id)
             attempts = [e for e in events if e["kind"] == "reserved"]
             if len(attempts) >= self.manifest["max_episodes"]:
                 raise ValueError("episode budget exhausted")
@@ -198,6 +327,8 @@ class Pilot:
                 raise ValueError("cell or model session has already been used")
             if any(e["id"] not in self._finished(events) for e in attempts):
                 raise ValueError("finish the active attempt before reserving another")
+            if cell.get("optional") and any(e["kind"] == "frozen" for e in events):
+                raise ValueError("optional repair is closed after freezing")
             if cell["stage"] in ("validate", "holdout"):
                 frozen = [e for e in events if e["kind"] == "frozen"]
                 if not frozen or freeze_id != frozen[0]["id"]:
@@ -205,10 +336,18 @@ class Pilot:
                 self.load_freeze(freeze_id)
             if cell["stage"] == "holdout":
                 finished = self._finished(events)
-                for dev in self.manifest["cells"][:8]:
+                for dev in self.manifest["cells"]:
+                    if dev["stage"] == "holdout":
+                        continue
                     record = next((e for e in attempts if e["cell"] == dev["id"]), None)
+                    if dev.get("optional") and record is None:
+                        continue
                     if record is None or record["id"] not in finished:
-                        raise ValueError("all eight development attempts are required")
+                        raise ValueError(
+                            "all eight development attempts are required"
+                            if self.manifest["schema_version"] == 1
+                            else "all mandatory and reserved optional development attempts must finish"
+                        )
                     if dev["stage"] == "validate":
                         validation = next(
                             (
@@ -576,6 +715,32 @@ class Pilot:
             if any(e["kind"] == "frozen" for e in events):
                 raise ValueError("batch is already frozen")
             finished = self._finished(events)
+            if self.manifest["schema_version"] == 2:
+                if any(
+                    e["kind"] == "reserved" and e["id"] not in finished for e in events
+                ):
+                    raise ValueError("finish the active attempt before freezing")
+                for cell in self.manifest["cells"]:
+                    if cell["stage"] != "infrastructure":
+                        continue
+                    attempt = next(
+                        (
+                            e
+                            for e in events
+                            if e["kind"] == "reserved" and e["cell"] == cell["id"]
+                        ),
+                        None,
+                    )
+                    if (
+                        attempt is None
+                        or finished.get(attempt["id"], {})
+                        .get("outcome", {})
+                        .get("checkpoint_validation_passed")
+                        is not True
+                    ):
+                        raise ValueError(
+                            "both infrastructure checkpoints must pass before freezing"
+                        )
             expected_inputs = []
             for cell in self.manifest["cells"][:6]:
                 attempt = next(
@@ -672,8 +837,20 @@ class Pilot:
                         interface_validation_evidence=validation["evidence"],
                     )
             return {
+                "schema_version": self.manifest["schema_version"],
                 "episodes_reserved": len(rows),
-                "episode_limit": 40,
+                "episode_limit": self.manifest["max_episodes"],
+                "development_limit": sum(
+                    c["stage"] != "holdout" for c in self.manifest["cells"]
+                ),
+                "holdout_limits": dict(
+                    Counter(
+                        c["model"]
+                        for c in self.manifest["cells"]
+                        if c["stage"] == "holdout"
+                    )
+                ),
+                "frozen": any(e["kind"] == "frozen" for e in events),
                 "offline_requests": sum(e["kind"] == "offline" for e in events),
                 "offline_limit": 80,
                 "finished": len(finished),

@@ -17,6 +17,8 @@ def main() -> None:
     commands.add_parser("init")
     commands.add_parser("summary")
     commands.add_parser("manifest")
+    amendment = commands.add_parser("amend-budget")
+    amendment.add_argument("--reason", required=True, help="User authorization reason")
     reserve = commands.add_parser("reserve")
     reserve.add_argument("cell")
     reserve.add_argument("session")
@@ -48,6 +50,8 @@ def main() -> None:
         result = pilot.manifest
     elif args.command == "summary":
         result = pilot.summary()
+    elif args.command == "amend-budget":
+        result = pilot.amend_budget(args.reason)
     elif args.command == "reserve":
         result = pilot.reserve_episode(args.cell, args.session, args.freeze)
     elif args.command == "validate-interface":

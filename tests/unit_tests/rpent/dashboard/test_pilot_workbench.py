@@ -170,6 +170,34 @@ def test_cell_configuration_requires_a_bound_univtac_pilot(pilot_dashboard):
         bench.bind_pilot(pilot.root, "dev-03")
 
 
+def test_amended_budget_refreshes_and_frozen_optional_repairs_are_unavailable(
+    pilot_dashboard, tmp_path
+):
+    from tests.unit_tests.robots.univtac.test_pilot import (
+        bundle,
+        development,
+        infrastructure,
+    )
+
+    _, bench, _, client = pilot_dashboard
+    pilot = Pilot.create(tmp_path / "amended")
+    bench.bind_pilot(pilot.root, "dev-03")
+    pilot.amend_budget("User approved 12/24/4")
+    frozen = bundle(development(pilot, tmp_path), pilot)
+    infrastructure(pilot)
+    setup = client.get("/api/setup").json()["pilot"]
+    assert setup["schema_version"] == 2 and setup["episode_limit"] == 40
+    assert setup["development_limit"] == 12
+    assert setup["holdout_limits"] == {"qwen3.8-max": 24, "gpt-6-astra": 4}
+    assert next(c for c in setup["cells"] if c["id"] == "repair-01")["available"]
+    pilot.freeze(frozen)
+    setup = client.get("/api/setup").json()["pilot"]
+    repair = next(c for c in setup["cells"] if c["id"] == "repair-01")
+    assert not repair["available"] and "closed after freezing" in repair["reason"]
+    response = client.post("/api/session/config", json={"pilot_cell": "repair-01"})
+    assert response.status_code == 422
+
+
 def test_claimed_cell_overrides_cli_default_in_snapshot(pilot_dashboard, tmp_path):
     from rpent.cli.dashboard import _run_dashboard_task_inner
     from rpent.dashboard.state import ClaimedTask
