@@ -55,12 +55,16 @@ Dashboard 支持开始页、模型选择、下一任务预算设置及真机停�
 - `observe` 保存真实位姿、图像、深度与标定信息；动作后自动记录观测。
 - `view_perception_setup` 和 `localize_target` 使用已记录帧的标定与深度。
 - 坐标使用机器人基座系、米，四元数为 wxyz；侧装机械臂的基座 +Z 不代表重力向上。
-- `move_tcp` 每次调用最多 50 mm / 10°，拆成反馈驱动的小步；
+- `move_tcp` 每次调用最多 50 mm / 10°，一次提交原生平滑轨迹，速度上限 20 mm/s、角速度上限 0.15 rad/s，
+  加速度上限 0.1 m/s² / 0.5 rad/s²，到位后才返回；
   `move_delta` 入口最多 2 mm。夹爪闭合接触不等同于确认抓取成功。
-- `align_tool_down` 使用标定桌面法向，并要求夹爪张开与桌面间隙满足检查条件。
+- `align_tool_down` 使用标定桌面法向，由程序处理每段不超过 10° 的姿态调整；
+  旋转要求全程抓取参考点距桌面至少 50 mm，平移至少 4 mm。夹持时也可旋转，
+  但桌面检查不包含手指及被抓物体的完整几何，仍需确认扫掠空间。
 - `reset_home` 使用操作员保存的关节参考位姿，需明确授权并检查路径；
   自动任务前复位默认关闭。路径边界检查不是完整的机械臂碰撞规划。
-- 停止和中断会停止动作；模型不能启用动作、清故障或初始化设备。
+- 停止 RPC 独立于运动排队锁；取消工具会先请求停止，再等待清理。
+  模型不能启用动作、清故障或初始化设备。
 - 当前适配器不包含 Flexiv VLA、碰撞规划器或物理任务成功判定器；
   模型的完成声明不能代替实际成功判定。
 
@@ -90,3 +94,11 @@ tool offsets and saved home joints require deployment-specific validation.
 There is no Flexiv VLA, collision planner or native task-success evaluator in this
 adapter. Offline tests validate interfaces without moving hardware. Local experiment
 records and the validation dashboard are excluded from this source snapshot.
+
+Native Cartesian targets are submitted once and monitored until measured arrival.
+Translation is capped at 20 mm/s and 0.1 m/s²; rotation at 0.15 rad/s and 0.5 rad/s².
+Per-call bounds remain 50 mm / 10 degrees. Table alignment handles orientation
+segments internally. Rotation no longer requires an open gripper, but requires
+50 mm grasp-reference clearance throughout; translation requires 4 mm. These
+checks do not model fingers, held objects, or whole-arm collisions. Stop RPC can
+interrupt a running movement; cancellation requests stop before draining calls.

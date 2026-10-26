@@ -219,3 +219,43 @@ def test_startup_home_once_only_for_armed_experiment(
         kit.execute_tool("observe", {})
         assert calls == (["home"] if enabled else [])
         kit.close()
+
+
+def test_cancelling_active_motion_requests_stop_before_waiting(tmp_path, monkeypatch):
+    import threading
+
+    monkeypatch.setattr("rpent.tools.toolkit.substitute", lambda value: value)
+    monkeypatch.setattr(FlexivToolkit, "_register_common_tools", lambda self: None)
+    entered, stopped = threading.Event(), threading.Event()
+
+    def move(*args):
+        entered.set()
+        assert stopped.wait(2)
+        return {"stopped": True}
+
+    env = SimpleNamespace(
+        meta={"motion_enabled": True, "supervised_control": True},
+        get_observation=lambda: {"state": {}, "images_jpeg": {}},
+        move_tcp=move,
+        stop_motion=lambda: stopped.set(),
+        close=lambda: None,
+    )
+    toolkit = FlexivToolkit(
+        env=env,
+        output_dir=tmp_path,
+        dashboard_events=SimpleNamespace(enabled=False, emit=lambda e: None),
+        memory=SimpleNamespace(),
+    )
+    worker = threading.Thread(
+        target=lambda: toolkit.execute_tool("move_tcp", {"position_m": [0.4, 0.0, 0.2]})
+    )
+    worker.start()
+    try:
+        assert entered.wait(1)
+        toolkit.cancel_active_and_wait()
+        assert stopped.is_set()
+    finally:
+        stopped.set()
+        worker.join(2)
+        toolkit.close()
+    assert not worker.is_alive()

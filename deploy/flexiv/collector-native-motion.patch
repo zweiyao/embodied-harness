@@ -1,0 +1,160 @@
+--- a/collector/core/supervised_motion.py
++++ b/collector/core/supervised_motion.py
+@@ -101,14 +101,43 @@
+ 
+     def watchdog(self):
+         now = time.monotonic()
+-        if self.armed:
+-            state = self.bridge.driver().get_live_state()
+-            if state['fault'] or not state['operational']:
+-                self.halt('Hardware fault or loss of operational state')
+         if self.armed and (now > self.expires or
+                 (self.bridge.token is not None and not self.bridge.active) or
+                 (self.command_deadline and now > self.command_deadline)):
+             self.halt('Motion authorization, session lease or command deadline expired')
++        if self.armed:
++            try:
++                state = self.bridge.driver().get_live_state()
++            except Exception:
++                self.halt('Hardware feedback unavailable')
++                raise
++            if state['fault'] or not state['operational']:
++                self.halt('Hardware fault or loss of operational state')
++            if self.armed and self.command_deadline:
++                pose, q = np.asarray(state['tcp_pose']), np.asarray(state['joint_position'])
++                dq = np.asarray(state['joint_velocity'])
++                robot = self.bridge.driver()
++                limits = np.array([2.7925, 2.2689, 2.7925, 2.2689, 2.7925, 2.2689, 2.7925])
++                if (pose.shape != (7,) or q.shape != (7,) or dq.shape != (7,)
++                        or not np.isfinite(np.r_[pose, q, dq]).all()
++                        or abs(np.linalg.norm(pose[3:])-1) > 1e-3
++                        or np.any(pose[:3] < robot._workspace_min)
++                        or np.any(pose[:3] > robot._workspace_max)
++                        or np.any(np.abs(q) > limits-.05) or not self.cameras_fresh()):
++                    self.halt('Motion feedback bounds or camera freshness failed')
++
++    def cameras_fresh(self):
++        cameras = self.bridge.collector.camera_mgr.cameras
++        if len(cameras) != 2:
++            return False
++        for cam in cameras.values():
++            slot = cam._capture_slot
++            if slot is None:
++                return False
++            timestamp = slot._timestamp.value
++            if not 0 <= time.monotonic()-timestamp <= .15:
++                return False
++        return True
+ 
+     def authorize(self, token):
+         self.bridge.authorize(token)
+@@ -128,13 +157,8 @@
+         self.watchdog()
+         if not self.armed:
+             raise HTTPException(409, 'Operator must arm this experiment in the start page')
+-        cameras = self.bridge.collector.camera_mgr.cameras
+-        if len(cameras) != 2:
+-            raise HTTPException(409, 'Both configured cameras are required for motion')
+-        for cam in cameras.values():
+-            slot = cam._capture_slot
+-            if slot is None or not 0 <= time.monotonic()-slot._timestamp.value <= .15:
+-                raise HTTPException(409, 'Camera frame is stale; no new motion sent')
++        if not self.cameras_fresh():
++            raise HTTPException(409, 'Both cameras must have fresh frames before motion')
+         state = robot.get_live_state()
+         modes = ('Mode.NRT_CARTESIAN_MOTION_FORCE', 'Mode.NRT_JOINT_POSITION') if home else ('Mode.NRT_CARTESIAN_MOTION_FORCE',)
+         if home and self.home.owner == token and self.home.pending is not None:
+@@ -164,7 +188,7 @@
+                 raise HTTPException(409, "Previous target has not been reached; no new step sent")
+         return robot, state, pose
+ 
+-    def pose_step(self, token, target):
++    def pose_step(self, token, target, *, native=False):
+         robot, state, pose = self.ready(token)
+         # Arm motion requires stationary joints; gripper-only steps do not.
+         if np.max(np.abs(state['joint_velocity'])) > .01:
+@@ -173,25 +197,33 @@
+         if (target.shape != (7,) or not np.isfinite(target).all()
+                 or abs(np.linalg.norm(target[3:])-1) > 1e-3):
+             raise HTTPException(422, "Expected a finite pose with unit wxyz quaternion")
+-        if (np.linalg.norm(target[:3]-pose[:3]) > .001000001
+-                or self.angle(pose[3:], target[3:]) > math.radians(.100001)):
+-            raise HTTPException(422, "One step is limited to 1 mm and 0.1 degree")
++        max_distance, max_angle = (.050001, 10.000001) if native else (.001000001, .100001)
++        if (np.linalg.norm(target[:3]-pose[:3]) > max_distance
++                or self.angle(pose[3:], target[3:]) > math.radians(max_angle)):
++            raise HTTPException(422, "Target exceeds the Cartesian motion range")
+         if (np.any(target[:3] < robot._workspace_min+.004)
+                 or np.any(target[:3] > robot._workspace_max-.004)):
+             raise HTTPException(422, "Target must retain 4 mm workspace margin")
+-        from robots.flexiv.driver import _quaternion_to_rot6d
+-        rotation = _quaternion_to_rot6d(*target[3:])
+-        action = dict(zip(('tcp.x', 'tcp.y', 'tcp.z'), target[:3].tolist()))
+-        action.update({f'tcp.r{i+1}': v for i, v in enumerate(rotation)})
+-        robot.send_action(action, strict=True, max_linear_vel=.005, max_angular_vel=.03)
+         self.pending_pose = target.copy()
+         self.command_deadline = time.monotonic()+35
+-        self.audit('pose_step', target=target.tolist(), state=state)
++        if native:
++            # The RDK motion generator supplies interpolation and acceleration limits.
++            robot._robot.SendCartesianMotionForce(target.tolist(), max_linear_vel=.02,
++                max_angular_vel=.15, max_linear_acc=.1, max_angular_acc=.5)
++        else:
++            from robots.flexiv.driver import _quaternion_to_rot6d
++            rotation = _quaternion_to_rot6d(*target[3:])
++            action = dict(zip(('tcp.x', 'tcp.y', 'tcp.z'), target[:3].tolist()))
++            action.update({f'tcp.r{i+1}': v for i, v in enumerate(rotation)})
++            robot.send_action(action, strict=True, max_linear_vel=.005, max_angular_vel=.03)
++        self.audit('pose_target' if native else 'pose_step', target=target.tolist(), state=state)
+         return dict(submitted=True, reached=None, target_pose=target.tolist(),
+-                    measured_pose=state['tcp_pose'])
++                    measured_pose=state['tcp_pose'], native_trajectory=native)
+ 
+     def gripper_step(self, token, width):
+         robot, state, _ = self.ready(token)
++        if self.pending_pose is not None and self.command_deadline:
++            raise HTTPException(409, 'Wait for arm motion completion before gripper motion')
+         measured = state['gripper_width_m']
+         if measured is None or not np.isfinite(measured) or robot._gripper is None:
+             raise HTTPException(409, "Existing initialized gripper feedback is required")
+@@ -220,13 +252,15 @@
+         state = robot.get_live_state()
+         if self.command_deadline and not state['gripper_is_moving']:
+             joint_pending = getattr(getattr(self, 'home', None), 'pending', None)
+-            reached = (np.max(np.abs(np.asarray(state['joint_position'])-joint_pending)) <= .0002
+-                       and np.max(np.abs(state['joint_velocity'])) < .005) if joint_pending is not None else self.pending_pose is None or (
+-                np.linalg.norm(np.asarray(state['tcp_pose'][:3])-self.pending_pose[:3]) <= .00035
++            # JointHome owns the primitive completion flag and its fixed deadline.
++            # A keepalive must not acknowledge MoveJ from joint proximity alone.
++            reached = joint_pending is None and (self.pending_pose is None or (
++                np.linalg.norm(np.asarray(state['tcp_pose'])[:3]-self.pending_pose[:3]) <= .00035
+                 and self.angle(state['tcp_pose'][3:], self.pending_pose[3:]) <= math.radians(.12)
+-                and np.max(np.abs(state['joint_velocity'])) < .005)
++                and np.max(np.abs(state['joint_velocity'])) < .005))
+             if reached:
+                 self.command_deadline = 0.
++                self.pending_pose = None
+         return dict(state=state, armed=self.armed, stop_reason=self.stop_reason)
+ 
+ 
+@@ -274,9 +308,19 @@
+     async def gripper_hold(request: Request):
+         robot = motion.authorize(request.headers.get('X-RPent-Session'))
+         robot._gripper.Stop()
+-        motion.command_deadline = 0.
++        if motion.pending_pose is None and home.pending is None:
++            motion.command_deadline = 0.
+         motion.audit('gripper_hold', state=robot.get_live_state())
+         return dict(held=True, object_grasp_verified=False)
++
++    @app.post('/rpent/supervised/pose-target')
++    async def pose_target(command: PoseStep, request: Request):
++        try:
++            return motion.pose_step(request.headers.get('X-RPent-Session'), command.pose, native=True)
++        except Exception:
++            if motion.armed:
++                motion.halt('Cartesian target failed')
++            raise
+ 
+     @app.post('/rpent/supervised/pose-step')
+     async def pose_step(command: PoseStep, request: Request):

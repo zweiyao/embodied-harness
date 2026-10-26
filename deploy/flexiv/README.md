@@ -27,3 +27,35 @@ FLEXIV_HOME_SOURCE=/path/to/patched/collector/core \
 
 远程 60 项检查通过。部署后须由操作员重新启用，再进行实际复位；
 测试通过不代表真机动作已完成。
+
+## Native Cartesian target follow-up
+
+Apply `collector-native-motion.patch` after the MoveJ patch above; compare the
+current external source before applying. It adds `/rpent/supervised/pose-target`
+while preserving the legacy small-step endpoint. Deploy the matching RPent
+`motion.py`, `env_server.py`, toolkit and prompt together.
+
+The new endpoint accepts one target within 50 mm / 10 degrees, calls the installed
+RDK `SendCartesianMotionForce` once, and enforces 20 mm/s, 0.15 rad/s, 0.1 m/s²,
+and 0.5 rad/s². RPent checks arrival from measured feedback; no generated target
+is treated as proof of success. There is a fixed 35-second collector deadline
+and a 30-second RPent feedback deadline. A separate stop-only RPC bypasses the
+motion queue; other commands remain serialized. Camera/pose/joint feedback is
+checked while motion is pending. These application checks are not hardware
+emergency stops or whole-arm collision checking.
+
+MoveJ's deadline is cleared only by its own completion logic. Gripper operations
+cannot clear or replace an in-flight arm/home deadline. Feedback exceptions
+attempt to stop, and expiry is checked even if hardware state reads fail.
+
+```bash
+FLEXIV_HOME_SOURCE=/path/to/patched/collector/core \
+  python -m pytest deploy/flexiv/test_home_movej.py \
+  deploy/flexiv/test_native_motion.py tests/unit_tests/robots/flexiv -q
+```
+
+Source references: [Flexiv NRT control modes](https://flexiv.us/software/rdk/manual/v2.x/control_modes.html)
+and [RDK Cartesian command](https://devwebcom.flexiv.com/software/rdk/api/classflexiv_1_1rdk_1_1_robot.html).
+The installed RDK 1.9 Python signature was inspected separately; acceleration
+limits are passed by keyword. Fake-hardware checks do not establish actual
+trajectory speed, stopping distance, or manipulation success.

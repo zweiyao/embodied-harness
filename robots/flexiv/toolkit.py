@@ -216,9 +216,10 @@ class FlexivToolkit(Toolkit):
             position_m: Absolute [x,y,z] in robot-base metres, inside reported workspace.
             quaternion_wxyz: Optional unit [w,x,y,z]; omit to preserve orientation.
 
-        Executes <=1 mm / 0.1 degree steps with feedback, <=5 mm/s. At most 10
-        degrees per call. Rotation requires >=80 mm opening and >=50 mm table
-        clearance. Check both images after each move. This does not plan around
+        Uses a native smooth trajectory at <=20 mm/s, with measured arrival feedback.
+        At most 10 degrees per call. Rotation requires >=50 mm table clearance;
+        translation retains >=4 mm grasp-reference clearance. Gripper opening is
+        preserved. Check both images after each move. This does not plan around
         obstacles. For grasping, approach from above, descend, then close.
         """
         self.raise_if_cancelled()
@@ -228,8 +229,10 @@ class FlexivToolkit(Toolkit):
     def align_tool_down(self) -> ToolResult:
         """Point tool +Z toward the calibrated tabletop; preserve projected heading.
 
-        Open to >=80 mm and raise grasp reference >=50 mm above the tabletop
-        first. This rotates in place and returns measured orientation feedback.
+        Raise the grasp reference >=50 mm above the tabletop first. The program
+        handles bounded orientation segments; no model-supplied intermediate
+        quaternions are needed. Gripper opening is preserved. Check that held
+        objects and fingers have a clear sweep; no collision model is available.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.align_tool_down())
@@ -264,6 +267,16 @@ class FlexivToolkit(Toolkit):
     def get_env_state(self, *, command, result, elapsed_s):
         with self._observation_lock:
             return self._capture(command, result, elapsed_s)
+
+    def cancel_active_and_wait(self):
+        with self._scheduler.condition:
+            calls = self._scheduler.cancel()
+            active = bool(self._scheduler.active)
+        try:
+            if active and self.env.meta.get("motion_enabled"):
+                self.env.stop_motion()
+        finally:
+            self._scheduler.wait(calls)
 
     def close(self):
         try:

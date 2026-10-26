@@ -279,7 +279,12 @@ class FlexivEnvFacade(BaseEnvFacade):
                 "reset_home",
             ):
                 self._rpc[f"env.{name}"] = getattr(self.backend, name)
-        # All routes stay serialized: the collector owns one hardware session.
+        # Motion remains serialized. The stop-only route can interrupt its owner.
+
+    def _dispatch_nosession(self, method, args, kwargs):
+        if method == "env.stop_motion" and method in self._rpc:
+            return self._rpc[method](*args, **kwargs)
+        return super()._dispatch_nosession(method, args, kwargs)
 
     def close(self):
         self.backend.close()
