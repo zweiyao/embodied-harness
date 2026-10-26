@@ -744,3 +744,23 @@ def test_amend_budget_cli_records_user_reason(tmp_path):
         event["kind"] == "budget_amendment"
         and event["reason"] == "User approved 12/24/4"
     )
+
+
+def test_offline_closure_preserves_history_and_blocks_new_requests(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    request = pilot.reserve_offline("connectivity", None, [])
+    pilot.finish_offline(request, {"ok": True})
+    ledger = pilot.root / "events.jsonl"
+    original = ledger.read_bytes()
+    pilot.close_offline_requests("User requires live simulator experiments")
+    closed = ledger.read_bytes()
+    assert closed.startswith(original)
+    reopened = Pilot(pilot.root)
+    reopened.close_offline_requests("Already closed")
+    assert ledger.read_bytes() == closed
+    for purpose in ("connectivity", "tool_acceptance", "maker"):
+        with pytest.raises(ValueError, match="use live simulator episodes"):
+            reopened.reserve_offline(purpose, None, [])
+    assert ledger.read_bytes() == closed
+    assert reopened.summary()["offline_requests"] == 1
+    assert reopened.summary()["offline_closed"] is True

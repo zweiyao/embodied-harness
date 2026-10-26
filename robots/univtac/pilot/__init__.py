@@ -590,6 +590,18 @@ class Pilot:
             lambda events: (self._maker_inputs(events, variant, attempts), None)
         )
 
+    def close_offline_requests(self, reason: str) -> None:
+        """Close the historical request path without rewriting its records."""
+        if not reason.strip():
+            raise ValueError("An offline closure reason is required")
+
+        def close(events):
+            if any(e["kind"] == "offline_closed" for e in events):
+                return None, None
+            return None, {"kind": "offline_closed", "reason": reason}
+
+        self._transaction(close)
+
     def reserve_offline(
         self,
         purpose: str,
@@ -604,10 +616,12 @@ class Pilot:
 
         Connectivity checks have no episode inputs or maker branch and use
         ``purpose="connectivity", variant=None, attempts=[]``. They remain
-        available after freezing and share the same request budget.
+        available after freezing unless explicitly closed, and share the budget.
         """
 
         def reserve(events):
+            if any(e["kind"] == "offline_closed" for e in events):
+                raise ValueError("Offline requests are closed; use live simulator episodes")
             if revision is not None and purpose != "maker":
                 raise ValueError("Revision binding is only valid for maker requests")
             if purpose != "connectivity" and any(e["kind"] == "frozen" for e in events):
@@ -960,6 +974,7 @@ class Pilot:
                 "frozen": any(e["kind"] == "frozen" for e in events),
                 "offline_requests": sum(e["kind"] == "offline" for e in events),
                 "offline_limit": 80,
+                "offline_closed": any(e["kind"] == "offline_closed" for e in events),
                 "finished": len(finished),
                 "termination_counts": dict(
                     Counter(r.get("termination_reason", "running") for r in rows)

@@ -287,3 +287,24 @@ def test_abort_uses_native_drain_without_scheduling_another_task(bench, tmp_path
     assert state.session_state == "ready"
     assert state.wait_for_task(0) is None
     assert "operator_abort" in (first.output_dir / "events.jsonl").read_text()
+
+
+def test_manual_experiments_preserve_scene_config_without_pilot_cells(bench, tmp_path):
+    bench.checks = {"api": {"ok": True}}
+    state = DashboardState(output_dir=tmp_path / "session", dashboard_spec=DASHBOARD_SPEC)
+    state.workbench = bench
+    state.shared_services_ready()
+    state.set_next_config({"model_profile": "api", "tools": ["native:finish"]})
+    request = {"suite": "univtac", "task": 0, "seed": 2}
+    assert bench.pilot_setup() is None
+    state.request_task(request)
+    first = state.wait_for_task(0)
+    state.complete_task(state="succeeded")
+    state.request_task(request)
+    second = state.wait_for_task(0)
+    assert first.output_dir != second.output_dir
+    for run in (first, second):
+        assert all(run.request[key] == value for key, value in request.items())
+        assert run.request["model_profile"] == "api"
+        assert run.request["tools"] == ["native:finish"]
+        assert "pilot_cell" not in run.request

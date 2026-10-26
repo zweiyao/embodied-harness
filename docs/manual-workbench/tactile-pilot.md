@@ -1,5 +1,13 @@
 # Bounded UniVTAC tool pilot
 
+> **Historical protocol, superseded for the active workbench on 2026-10-26.**
+> The startup page now uses manual task/model/tool configuration without pilot cells.
+> Qwen evaluations must run live simulator episodes, not historical-input model probes.
+> The old batch's offline request path is explicitly closed; its records remain readable.
+> Removing the selector does not qualify the failed restore checks or validate tool gains.
+> See [current workbench workflow](../../deploy/UNIVTAC_WORKBENCH.md).
+
+
 This protocol records at most 40 simulator attempts and 80 offline model
 requests. It does not launch a simulator, create a second planner, generate
 candidate tools, or claim that an accepted tool improves task success. RPent's
