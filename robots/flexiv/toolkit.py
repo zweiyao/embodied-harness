@@ -239,7 +239,11 @@ class FlexivToolkit(Toolkit):
 
     @tool
     def set_gripper(self, width_m: float) -> ToolResult:
-        """Set opening in metres (0..0.098), using <=2 mm steps and force feedback.
+        """Set the final opening in metres (0..0.098), with measured force feedback.
+
+        Pass the final desired width, e.g. 0.098 to open fully. The program
+        handles <=2 mm internal steps; do not split these into model calls.
+        A control error stops the experiment: report it, do not retry motion.
 
         Contact stops further closure and returns contact_detected, not proof
         of a secure grasp. After contact, lift only 5 mm and inspect both images
