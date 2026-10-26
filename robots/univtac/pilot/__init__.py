@@ -193,7 +193,11 @@ class Pilot:
                 file.write(json.dumps(event, allow_nan=False) + "\n")
                 file.flush()
                 os.fsync(file.fileno())
-                if event["kind"] == "budget_amendment":
+                if event["kind"] in (
+                    "budget_amendment",
+                    "checkpoint_amendment",
+                    "checkpoint_calibration",
+                ):
                     self.manifest = self._manifest_for_events(events + [event])
             return result
 
@@ -211,9 +215,16 @@ class Pilot:
             raise ValueError("budget amendment cannot follow a used holdout cell")
 
     def _manifest_for_events(self, events: list[dict]) -> dict:
+        from .checkpoint_calibration import apply_calibration
+        from .checkpoint_protocol import apply_amendment
+
         amendments = [e for e in events if e["kind"] == "budget_amendment"]
         if not amendments:
-            return default_manifest()
+            return apply_calibration(
+                self.root,
+                events,
+                apply_amendment(self.root, events, default_manifest()),
+            )
         if len(amendments) != 1:
             raise ValueError("only one budget amendment is allowed")
         event = amendments[0]
@@ -239,7 +250,9 @@ class Pilot:
         ):
             raise ValueError("budget amendment differs from the authorized protocol")
         self._check_amendment_timing(events[: events.index(event)])
-        return payload["manifest"]
+        return apply_calibration(
+            self.root, events, apply_amendment(self.root, events, payload["manifest"])
+        )
 
     def amend_budget(self, reason: str) -> str:
         """Append the approved v2 allocation without rewriting original records."""
@@ -282,6 +295,20 @@ class Pilot:
             }
 
         return self._transaction(amend)
+
+    def amend_checkpoint_validation(self, protocol: dict, reason: str) -> str:
+        """Use the two unused repair slots for a versioned checkpoint recheck."""
+        from .checkpoint_protocol import amendment_operation
+
+        return self._transaction(
+            lambda events: amendment_operation(self, events, protocol, reason)
+        )
+
+    def amend_checkpoint_calibration(self, protocol: dict, reason: str) -> str:
+        """Bind development noise calibration before the sole independent restore."""
+        from .checkpoint_calibration import register
+
+        return register(self, protocol, reason)
 
     def _cell(self, cell_id: str) -> dict:
         cell = next(
@@ -571,6 +598,7 @@ class Pilot:
         *,
         maker_budget: dict | None = None,
         max_tokens: int = 0,
+        revision: dict | None = None,
     ) -> str:
         """Charge one request before dispatch; retries also consume the cap of 80.
 
@@ -580,6 +608,8 @@ class Pilot:
         """
 
         def reserve(events):
+            if revision is not None and purpose != "maker":
+                raise ValueError("Revision binding is only valid for maker requests")
             if purpose != "connectivity" and any(e["kind"] == "frozen" for e in events):
                 raise ValueError("offline development is closed after freezing")
             if sum(e["kind"] == "offline" for e in events) >= 80:
@@ -619,6 +649,32 @@ class Pilot:
                     > maker_budget["max_tokens"]
                 ):
                     raise ValueError("maker branch budget exhausted")
+                if revision is not None:
+                    from robots.univtac.pilot import maker, maker_revision
+
+                    if (
+                        len(branch) != 1
+                        or maker_budget != maker.BUDGET
+                        or max_tokens != maker.PER_CALL_TOKENS
+                    ):
+                        raise ValueError(
+                            "Paired refinement uses the second original maker call"
+                        )
+                    other_revisions = [
+                        e.get("revision") for e in prior if e["variant"] != variant
+                    ][1:]
+                    if any(
+                        not item or item["contract"] != revision["contract"]
+                        for item in other_revisions
+                    ):
+                        raise ValueError(
+                            "Both refinements must use the same paired contract"
+                        )
+                    maker_revision.validate_binding(
+                        self, events, variant, inputs, revision
+                    )
+                elif any(e.get("revision") for e in prior):
+                    raise ValueError("Both maker branches must use paired refinement")
             request_id = uuid.uuid4().hex
             return request_id, {
                 "kind": "offline",
@@ -628,6 +684,7 @@ class Pilot:
                 "inputs_hash": digest(inputs),
                 "maker_budget": maker_budget,
                 "max_tokens": max_tokens,
+                **({"revision": revision} if revision is not None else {}),
             }
 
         return self._transaction(reserve)
@@ -715,13 +772,23 @@ class Pilot:
             if any(e["kind"] == "frozen" for e in events):
                 raise ValueError("batch is already frozen")
             finished = self._finished(events)
-            if self.manifest["schema_version"] == 2:
+            if self.manifest["schema_version"] >= 2:
                 if any(
                     e["kind"] == "reserved" and e["id"] not in finished for e in events
                 ):
                     raise ValueError("finish the active attempt before freezing")
                 for cell in self.manifest["cells"]:
                     if cell["stage"] != "infrastructure":
+                        continue
+                    if self.manifest["schema_version"] >= 3 and cell["id"] in (
+                        "infra-01",
+                        "infra-02",
+                    ):
+                        continue
+                    if (
+                        self.manifest["schema_version"] == 4
+                        and cell["id"] == "infra-03"
+                    ):
                         continue
                     attempt = next(
                         (
@@ -741,6 +808,14 @@ class Pilot:
                         raise ValueError(
                             "both infrastructure checkpoints must pass before freezing"
                         )
+                if self.manifest["schema_version"] == 3:
+                    from .checkpoint_protocol import verify_qualification
+
+                    verify_qualification(self.manifest, events)
+                elif self.manifest["schema_version"] == 4:
+                    from .checkpoint_calibration import verify_qualification
+
+                    verify_qualification(self.root, self.manifest, events)
             expected_inputs = []
             for cell in self.manifest["cells"][:6]:
                 attempt = next(
@@ -764,6 +839,12 @@ class Pilot:
             ]
             if any(e["maker_budget"] != bundle["maker_budget"] for e in maker_calls):
                 raise ValueError("freeze must retain the recorded shared maker budget")
+            from robots.univtac.pilot.maker_revision import (
+                validate_binding,
+                verified_maker_result,
+            )
+
+            revision_contracts = []
             for variant in ("G0", "G1"):
                 inputs = self._maker_inputs(
                     events, variant, bundle["maker_input_attempts"]
@@ -780,6 +861,32 @@ class Pilot:
                     raise ValueError(
                         "maker request results must be recorded before freezing"
                     )
+                candidate = verified_maker_result(self, events, calls[-1])
+                condition = bundle["conditions"]["D" if variant == "G0" else "E"]
+                generated = [tool for tool in condition["tools"] if tool not in base]
+                if len(generated) != 1 or any(
+                    generated[0].get(key) != value for key, value in candidate.items()
+                ):
+                    raise ValueError(
+                        "Frozen generated tool differs from its maker candidate"
+                    )
+                binding = calls[-1].get("revision")
+                revision_contracts.append(binding["contract"] if binding else None)
+                if binding is not None:
+                    validate_binding(self, events, variant, inputs, binding)
+                    result = next(
+                        e["result"]
+                        for e in events
+                        if e["kind"] == "offline_result" and e["id"] == calls[-1]["id"]
+                    )
+                    if result.get("revision") != binding:
+                        raise ValueError(
+                            "Maker result revision differs from its reservation"
+                        )
+            if revision_contracts[0] != revision_contracts[1]:
+                raise ValueError(
+                    "Both final makers must use the same paired refinement"
+                )
             write_json_atomic(self.root / f"freeze-{version}.json", bundle)
             return version, {"kind": "frozen", "id": version}
 

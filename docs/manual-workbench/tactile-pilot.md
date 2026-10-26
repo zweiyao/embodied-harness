@@ -16,6 +16,35 @@ runner supplies the real model sessions, observations and evaluation results.
 | Held-out C/D/E/F | `insert_tube`, `pull_out_key`, 100–102 | Qwen3.8 Max | 24 |
 | Held-out C/E | `insert_tube`, `pull_out_key`, 100–101 | GPT-6 Astra | 8 |
 
+The original manifest stays immutable. The approved v2 allocation uses up to
+12 development attempts, 24 Max held-out attempts and four GPT held-out attempts,
+still totaling 40. It adds two checkpoint diagnostics and two optional repair
+slots, removing only GPT's unused seed-101 cells. Register it with
+`amend-budget --reason "..."` before freezing.
+
+If that checkpoint pair fails, `amend-checkpoint PROTOCOL.json --reason "..."`
+can replace the two **unused** repair slots with `infra-03`/`infra-04`, both
+`insert_hole`, seed 2. This v3 revision embeds the complete predeclared numerical
+comparison protocol and its hash. Old failed attempts remain charged. Used
+repair slots, active attempts, formal testing or a frozen bundle prevent this
+revision. The final two Max validation slots remain available. Freezing then
+requires the new capture/restore pair to pass, with immutable reports, snapshot
+files, protocol and matching capture references; it does not reclassify the
+old failures or alter task-success predicates. Qualification must still be
+measured in the simulator; passing CPU fixtures alone is insufficient.
+
+For the recorded infra-03 capture, v1 found exactly three static-image noise
+failures while 427 other checks passed. The v4 ledger amendment explicitly uses
+that failed capture as development calibration, preserving its report and charge.
+`checkpoint_calibration` freezes each actual model RGB input's global and 32-pixel
+tile RMSE limit at the maximum of its six static image pairs plus one intensity
+level. Display-only `rgb_marker` overlays are excluded; native RGB, depth, marker
+coordinates and every non-RGB criterion remain checked. The source and all
+calibration evidence are hashed before the unused infra-04 reservation. Only
+that independent restore can qualify; thresholds cannot change after its result.
+Four static frames establish an engineering tolerance, not a statistical bound
+or evidence that all task/seed pairs are reproducible. The total remains 40.
+
 C supplies RGB-D, tactile observations and fixed manual statistics. D adds G0,
 a generated perception tool without Max invocation feedback. E adds G1, made
 with Max invocation feedback. F retains C's executable tools and conveys G1's

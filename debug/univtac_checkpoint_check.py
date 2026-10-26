@@ -22,6 +22,12 @@ from pathlib import Path
 
 import numpy as np
 
+from debug.univtac_checkpoint_compare import (
+    compare_branches,
+    file_hash,
+    protocol,
+)
+
 TASK_FIELDS = (
     "step_count",
     "take_action_cnt",
@@ -181,8 +187,9 @@ def runtime_state(backend):
     }
 
 
-def measure(backend, *, refresh=False):
+def measure(backend, *, refresh=False, archive_root=None):
     from robots.univtac.backend import save_native_frame
+    from robots.univtac.pilot import digest
 
     if refresh:
         backend.observation()
@@ -191,7 +198,9 @@ def measure(backend, *, refresh=False):
         raise RuntimeError("Official UIPC world.dump returned false during comparison")
     frame = task.uipc_sim.world.frame()
     source = Path(task.uipc_sim.cfg.workspace) / "dump"
-    archive = backend.output_dir / "checkpoint-measurements" / uuid.uuid4().hex
+    archive = (
+        archive_root or backend.output_dir / "checkpoint-measurements"
+    ) / uuid.uuid4().hex
     archive.mkdir(parents=True, exist_ok=False)
     dump_hashes = {}
     for path in source.rglob("*"):
@@ -221,26 +230,56 @@ def measure(backend, *, refresh=False):
         "physx": pack(task.scene.get_state()),
         "joint_targets": pack(commanded_joint_targets(task)),
         "uipc_dump_sha256": dump_hashes,
+        "uipc_frame": frame,
+        "native": {
+            "path": str(archive / "native.npz"),
+            "sha256": file_hash(archive / "native.npz"),
+        },
+        "surface_vertices_w": np.array(
+            task.uipc_sim.sio.simplicial_surface(2).positions().view(), copy=True
+        )
+        .reshape(-1, 3)
+        .tolist(),
+        "runtime_exact": {
+            key: digest(pack(value))
+            for key, value in runtime_state(backend).items()
+            if key not in ("physx", "joint_targets")
+        },
     }
     write_json(archive / "measurements.json", result)
     return result
 
 
-def short_branch(backend, actions):
+def stationary_samples(backend, archive_root=None):
+    """Identical live render calls on capture and restored branches; no stepping."""
+    p = protocol()
+    for _ in range(p["render_warmup_calls"]):
+        backend.observation()
+    return [
+        measure(backend, refresh=True, archive_root=archive_root)
+        for _ in range(p["stationary_samples"])
+    ]
+
+
+def short_branch(backend, actions, archive_root=None):
     records = []
     for action in actions:
         _, _, ended, _, receipt = backend.step(action)
-        records.append({"receipt": receipt, "scene": measure(backend)})
+        records.append(
+            {"receipt": receipt, "scene": measure(backend, archive_root=archive_root)}
+        )
         if ended or not receipt["exec_success"]:
             raise RuntimeError("Short checkpoint branch stopped before all commands")
     return records
 
 
-def capture(backend, root):
+def capture(backend, root, attempt_id):
     from uipc.core import SceneFactory, SceneSnapshot
 
     root.mkdir(parents=True, exist_ok=False)
     task = backend.task
+    archive = root / "measurements"
+    anchor = measure(backend, archive_root=archive)
     state = runtime_state(backend)
     if not task.uipc_sim.world.dump():
         raise RuntimeError("Official UIPC world.dump returned false")
@@ -262,7 +301,7 @@ def capture(backend, root):
     write_json(
         root / "scene.json", SceneFactory().to_json(SceneSnapshot(task.uipc_sim.scene))
     )
-    initial = measure(backend, refresh=True)
+    stationary = stationary_samples(backend, archive)
     from robots.univtac.observations import sensor_observation
 
     # Actual observed hand pose, followed by a fixed 0.2 mm out-and-back and hold.
@@ -275,20 +314,27 @@ def capture(backend, root):
     )["state"]
     start = np.r_[observed["eef_pose_wxyz"], observed["gripper"]]
     lifted = start.copy()
-    lifted[2] += 0.0002
+    lifted[2] += protocol()["branch_offset_m"]
     actions = [lifted.tolist(), start.tolist(), start.tolist()]
     task._rpent_archive = root / "baseline-native-frames"
     baseline = {
-        "initial": initial,
+        "anchor": anchor,
+        "stationary": stationary,
         "actions": actions,
-        "steps": short_branch(backend, actions),
+        "steps": short_branch(backend, actions, archive),
     }
     write_json(root / "baseline.json", baseline)
+    write_json(root / "protocol.json", protocol())
     manifest = {
         "schema_version": 2,
         "task": backend.task_name,
         "seed": backend.seed,
         "frame": frame,
+        "capture_attempt_id": attempt_id,
+        "source_sha256": {
+            name: file_hash(Path(__file__).with_name(name))
+            for name in ("univtac_checkpoint_check.py", "univtac_checkpoint_compare.py")
+        },
         "files": {
             str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(root.rglob("*"))
@@ -333,6 +379,18 @@ def restore(backend, root):
         raise ValueError(
             "Schema 1 checkpoint is audit-only: commanded joint targets were not saved"
         )
+    if (
+        "protocol.json" not in manifest["files"]
+        or json.loads((root / "protocol.json").read_text()) != protocol()
+    ):
+        raise ValueError(
+            "Checkpoint lacks the exact preregistered qualification protocol"
+        )
+    if manifest.get("source_sha256") != {
+        name: file_hash(Path(__file__).with_name(name))
+        for name in ("univtac_checkpoint_check.py", "univtac_checkpoint_compare.py")
+    }:
+        raise ValueError("Qualification source changed since capture")
     if (manifest["task"], manifest["seed"]) != (backend.task_name, backend.seed):
         raise ValueError("Checkpoint task/seed differs from reservation")
     state = unpack(json.loads((root / "state.json").read_text()))
@@ -378,11 +436,20 @@ def restore(backend, root):
 
 def validate_reservation(pilot, attempt_id, phase, output):
     """Accept only an unfinished, precharged development infrastructure cell."""
+    from robots.univtac.pilot import digest
 
     def read(events):
+        p = protocol()
+        if pilot.manifest.get("checkpoint_qualification") != {
+            "protocol_sha256": digest(p),
+            "cells": p["cells"],
+        }:
+            raise ValueError(
+                "Reservation requires the exact registered qualification protocol"
+            )
         attempt = pilot._attempt(events, attempt_id)
         cell = pilot._cell(attempt["cell"])
-        expected = "infra-01" if phase == "capture" else "infra-02"
+        expected = p["cells"][0 if phase == "capture" else 1]
         if (
             cell["id"] != expected
             or cell["stage"] != "infrastructure"
@@ -397,6 +464,71 @@ def validate_reservation(pilot, attempt_id, phase, output):
         return cell, None
 
     return pilot._transaction(read)
+
+
+def qualification_report(
+    output, snapshot, attempt_id, phase, checks, capture_evidence=None
+):
+    from robots.univtac.pilot import digest
+
+    manifest = read_verified(snapshot)
+    branch = (
+        snapshot / "baseline.json"
+        if phase == "capture"
+        else output / "restored-measurements.json"
+    )
+    report = {
+        "passed": checks["passed"],
+        "protocol_sha256": digest(protocol()),
+        "snapshot_sha256": digest(manifest),
+        "attempt_id": attempt_id,
+        "role": phase,
+        "cell_id": protocol()["cells"][0 if phase == "capture" else 1],
+        "checks": checks["checks"],
+        "capture_evidence": capture_evidence,
+        "capture_report_sha256": capture_evidence["sha256"]
+        if capture_evidence
+        else None,
+        "snapshot_manifest": {
+            "path": str(snapshot / "manifest.json"),
+            "sha256": file_hash(snapshot / "manifest.json"),
+        },
+        "branch_evidence": {"path": str(branch), "sha256": file_hash(branch)},
+    }
+    path = output / "report.json"
+    if path.exists():
+        raise FileExistsError("Qualification report is immutable")
+    write_json(path, report)
+    return {"path": str(path), "sha256": file_hash(path)}
+
+
+def capture_report(pilot, snapshot):
+    """Require the completed capture's immutable, ledger-bound evidence."""
+    from robots.univtac.pilot import digest
+
+    manifest = read_verified(snapshot)
+    finished = pilot._transaction(
+        lambda events: (
+            pilot._finished(events).get(manifest["capture_attempt_id"]),
+            None,
+        )
+    )
+    if finished is None:
+        raise ValueError("Capture attempt has not finished")
+    ref = finished["outcome"]["checkpoint_evidence"]
+    if file_hash(ref["path"]) != ref["sha256"]:
+        raise ValueError("Capture report changed")
+    report = json.loads(Path(ref["path"]).read_text())
+    if (
+        report["passed"] is not True
+        or report["role"] != "capture"
+        or report["attempt_id"] != manifest["capture_attempt_id"]
+        or report["cell_id"] != protocol()["cells"][0]
+        or report["protocol_sha256"] != digest(protocol())
+        or report["snapshot_sha256"] != digest(manifest)
+    ):
+        raise ValueError("Capture qualification does not match this snapshot/protocol")
+    return ref
 
 
 def main(argv=None):
@@ -432,6 +564,10 @@ def main(argv=None):
         "renderer_cache_restored": False,
         "evidence": str(output / "checkpoint-result.json"),
     }
+    from robots.univtac.pilot import digest
+
+    result["protocol_sha256"] = digest(protocol())
+    write_json(output / "protocol.json", protocol())
     write_json(output / "checkpoint-result.json", result)
     backend, started = None, time.monotonic()
     try:
@@ -447,22 +583,28 @@ def main(argv=None):
         result["status"] = "initialized"
         write_json(output / "checkpoint-result.json", result)
         if args.phase == "capture":
-            baseline = capture(backend, snapshot)
+            baseline = capture(backend, snapshot, args.attempt_id)
+            checks = compare_branches(baseline, baseline, snapshot, snapshot)
+            parent_evidence = None
         else:
             read_verified(snapshot)
+            parent_evidence = capture_report(pilot, snapshot)
             baseline = json.loads((snapshot / "baseline.json").read_text())
-        restore(backend, snapshot)
-        backend.task._rpent_archive = output / "restored-native-frames"
-        initial = measure(backend, refresh=True)
-        actual = {
-            "initial": initial,
-            "steps": short_branch(backend, baseline["actions"]),
-        }
-        write_json(output / "restored-measurements.json", actual)
-        result["differences"] = differences(
-            {"initial": baseline["initial"], "steps": baseline["steps"]}, actual
+            restore(backend, snapshot)
+            backend.task._rpent_archive = output / "restored-native-frames"
+            anchor = measure(backend)
+            actual = {
+                "anchor": anchor,
+                "stationary": stationary_samples(backend),
+                "actions": baseline["actions"],
+                "steps": short_branch(backend, baseline["actions"]),
+            }
+            write_json(output / "restored-measurements.json", actual)
+            checks = compare_branches(baseline, actual, snapshot, output)
+        result["checkpoint_evidence"] = qualification_report(
+            output, snapshot, args.attempt_id, args.phase, checks, parent_evidence
         )
-        result["checkpoint_validation_passed"] = not result["differences"]
+        result["checkpoint_validation_passed"] = checks["passed"]
         result["status"] = (
             "passed" if result["checkpoint_validation_passed"] else "failed"
         )

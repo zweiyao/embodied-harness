@@ -181,17 +181,26 @@ def test_old_snapshot_remains_auditable_but_cannot_restore(tmp_path, monkeypatch
 
 
 def test_only_matching_precharged_infrastructure_reservation(tmp_path):
+    from debug.univtac_checkpoint_compare import protocol
+    from robots.univtac.pilot import digest
+
     cell = {
-        "id": "infra-01",
+        "id": "infra-03",
         "stage": "infrastructure",
         "model": "script",
         "condition": "C",
         "task": "insert_hole",
         "seed": 2,
     }
-    attempt = {"cell": "infra-01", "session_id": str(tmp_path)}
+    attempt = {"cell": "infra-03", "session_id": str(tmp_path)}
     finished = {}
     pilot = SimpleNamespace(
+        manifest={
+            "checkpoint_qualification": {
+                "protocol_sha256": digest(protocol()),
+                "cells": protocol()["cells"],
+            }
+        },
         _attempt=lambda events, attempt_id: attempt,
         _cell=lambda name: cell,
         _finished=lambda events: finished,
@@ -205,6 +214,11 @@ def test_only_matching_precharged_infrastructure_reservation(tmp_path):
     finished["reserved"] = {}
     with pytest.raises(ValueError, match="reservation"):
         validate_reservation(pilot, "reserved", "capture", tmp_path)
+    finished.clear()
+    for changed in ({}, {"protocol_sha256": "wrong", "cells": protocol()["cells"]}):
+        pilot.manifest = {"checkpoint_qualification": changed}
+        with pytest.raises(ValueError, match="registered qualification protocol"):
+            validate_reservation(pilot, "reserved", "capture", tmp_path)
 
 
 def test_failed_initialization_is_charged_and_written_before_close(
@@ -212,9 +226,10 @@ def test_failed_initialization_is_charged_and_written_before_close(
 ):
     import robots.univtac.backend
     import robots.univtac.pilot
+    from debug.univtac_checkpoint_compare import protocol
 
     cell = {
-        "id": "infra-01",
+        "id": "infra-03",
         "stage": "infrastructure",
         "model": "script",
         "condition": "C",
@@ -223,8 +238,14 @@ def test_failed_initialization_is_charged_and_written_before_close(
     }
     finished = []
     pilot = SimpleNamespace(
+        manifest={
+            "checkpoint_qualification": {
+                "protocol_sha256": robots.univtac.pilot.digest(protocol()),
+                "cells": protocol()["cells"],
+            }
+        },
         _attempt=lambda events, attempt_id: {
-            "cell": "infra-01",
+            "cell": "infra-03",
             "session_id": str(tmp_path),
         },
         _cell=lambda name: cell,
@@ -274,7 +295,9 @@ def test_failed_initialization_is_charged_and_written_before_close(
 
 
 @pytest.mark.parametrize("fail", [False, True])
-def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, fail):
+def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(
+    tmp_path, fail, monkeypatch
+):
     import torch
 
     original = tmp_path / "reset"
@@ -288,6 +311,11 @@ def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, 
         uipc_sim=SimpleNamespace(
             world=SimpleNamespace(dump=lambda: True, frame=lambda: 7),
             cfg=SimpleNamespace(workspace=str(workspace)),
+            sio=SimpleNamespace(
+                simplicial_surface=lambda dim: SimpleNamespace(
+                    positions=lambda: SimpleNamespace(view=lambda: np.zeros((1, 3)))
+                )
+            ),
         ),
         scene=SimpleNamespace(get_state=lambda: {}),
         _get_observations=lambda: {},
@@ -302,6 +330,9 @@ def test_measurement_preserves_reset_gel_archive_and_restores_run_dir(tmp_path, 
         ),
     )
     backend = SimpleNamespace(task=task, output_dir=tmp_path, run_dir=original)
+    monkeypatch.setattr(
+        "debug.univtac_checkpoint_check.runtime_state", lambda backend: {}
+    )
 
     def components(native):
         (backend.run_dir / "evaluator-initial-gel.npz").write_bytes(b"measurement")

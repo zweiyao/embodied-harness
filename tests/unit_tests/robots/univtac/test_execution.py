@@ -10,6 +10,7 @@ import pytest
 from robots.libero.research.library import digest
 from robots.univtac.pilot import Pilot, execution
 from robots.univtac.toolkit import native_catalog
+from tests.unit_tests.robots.univtac.test_pilot import record_maker
 
 
 def evidence():
@@ -79,11 +80,6 @@ def freeze_after_development(pilot, tmp_path, parameters=None):
         if cell["stage"] != "smoke":
             inputs.append(attempt)
     maker_budget = {"max_calls": 1, "max_tokens": 100}
-    for variant in ("G0", "G1"):
-        call = pilot.reserve_offline(
-            "maker", variant, inputs, maker_budget=maker_budget, max_tokens=100
-        )
-        pilot.finish_offline(call, {"status": "completed"})
     generated = {
         "name": "sensor_contact",
         "origin": "generated",
@@ -99,6 +95,11 @@ def freeze_after_development(pilot, tmp_path, parameters=None):
             }
         ]
     )
+    for variant in ("G0", "G1"):
+        call = pilot.reserve_offline(
+            "maker", variant, inputs, maker_budget=maker_budget, max_tokens=100
+        )
+        record_maker(pilot, call, generated)
     base = native_catalog()
     bundle = {
         "conditions": {

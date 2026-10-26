@@ -60,7 +60,7 @@ def bundle(attempts, pilot):
     generated = {
         "name": "sensor_new",
         "description": "measure",
-        "parameters": {},
+        "parameters": {"type": "object", "properties": {}},
         "source": "def run(frames, params): return {}",
     }
     conditions = {
@@ -76,7 +76,7 @@ def bundle(attempts, pilot):
         request = pilot.reserve_offline(
             "maker", variant, attempts, maker_budget=budget, max_tokens=4096
         )
-        pilot.finish_offline(request, {"status": "completed", "output_tokens": 10})
+        record_maker(pilot, request, generated)
     return {
         "conditions": conditions,
         "controller": {"revision": "fixed"},
@@ -88,6 +88,27 @@ def bundle(attempts, pilot):
         "maker_input_attempts": attempts,
         "validation_evidence": {"replay": "development-only"},
     }
+
+
+def record_maker(pilot, request, tool, **overrides):
+    """Persist an actual candidate and returned usage, as the maker driver does."""
+    candidate = {
+        key: tool[key] for key in ("name", "description", "parameters", "source")
+    }
+    output = pilot.root / "maker" / request
+    output.mkdir(parents=True)
+    (output / "candidate.json").write_text(json.dumps(candidate))
+    pilot.finish_offline(
+        request,
+        {
+            "status": "completed",
+            "budget_check": "passed_posthoc",
+            "usage": {"total": {"output_tokens": 10}},
+            "artifact_dir": str(output.resolve()),
+            "candidate_sha256": digest(candidate),
+            **overrides,
+        },
+    )
 
 
 def finish_validation(pilot, version):

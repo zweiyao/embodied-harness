@@ -19,6 +19,9 @@ def main() -> None:
     commands.add_parser("manifest")
     amendment = commands.add_parser("amend-budget")
     amendment.add_argument("--reason", required=True, help="User authorization reason")
+    checkpoint = commands.add_parser("amend-checkpoint")
+    checkpoint.add_argument("protocol", type=Path)
+    checkpoint.add_argument("--reason", required=True)
     reserve = commands.add_parser("reserve")
     reserve.add_argument("cell")
     reserve.add_argument("session")
@@ -52,6 +55,10 @@ def main() -> None:
         result = pilot.summary()
     elif args.command == "amend-budget":
         result = pilot.amend_budget(args.reason)
+    elif args.command == "amend-checkpoint":
+        result = pilot.amend_checkpoint_validation(
+            json.loads(args.protocol.read_text()), args.reason
+        )
     elif args.command == "reserve":
         result = pilot.reserve_episode(args.cell, args.session, args.freeze)
     elif args.command == "validate-interface":

@@ -1,8 +1,10 @@
 # Common G0/G1 maker input plan
 
-This is a proposed bounded generation driver, not an executed maker run.
-The current hand-authored prototype and this conversation must not become the
-initial prompt for a controlled maker run.
+The initial controlled driver is `robots.univtac.pilot.maker`. Each branch starts
+from the same empty skeleton, without the hand-authored prototype or this
+conversation. Its original common-input contract and historical requests remain
+immutable. The separate `robots.univtac.pilot.maker_revision` driver supports one
+paired refinement using each branch's own successful initial candidate.
 
 ## Shared observations
 
@@ -43,17 +45,17 @@ between branches, and frozen before dispatch.
 G1 alone may receive the separately authorized Max `feedback.json` files that
 `Pilot.maker_inputs` returns. Those remain a distinct additional field and are
 not used to select or modify the shared observation summary. G0 receives no
-such feedback field. This preserves the intended single experimental difference.
+such feedback field. This defines the initial-stage feedback difference.
 
 ## Minimal SDK driver
 
-A future `make_tool.py` can reuse
-`robots.libero.research.codex_sdk.complete` for a fresh remote Codex SDK turn.
+The maker drivers reuse
+`robots.libero.research.codex_sdk.complete_recorded` for a fresh remote Codex SDK turn.
 That helper already uses an ephemeral thread, isolated home/work directory,
 disabled tools and no MCP. Use a UniVTAC-specific input contract, not the
 LIBERO `TEACHER_PROMPT`, whose camera/state fields differ.
 
-The driver should perform these steps:
+The initial driver performs these steps:
 
 1. Validate and hash the shared input bundle; write the exact request, image
    identities, model profile and shared output budget before dispatch.
@@ -64,14 +66,57 @@ The driver should perform these steps:
    request a standard `{name, description, parameters, source}` declaration.
    Do not supply the manually assisted prototype or previous conversation.
 4. Save the returned text and usage. Validate declarations without importing
-   generated code, then replay using the existing Docker sandbox. Record
-   execution errors as errors; do not rewrite the tool silently.
+   generated code. Replay remains a separate operation using the existing Docker
+   sandbox; record execution errors without silently rewriting the tool.
 5. Call `Pilot.finish_offline` with the response/replay artifact references,
    hashes, available usage and any error. Publishing/freezing remains separate.
 
-Before using this helper for the controlled comparison, connect the configured
-output-token limit to an SDK-supported setting: its current `complete` signature
-does not accept a token cap. Merely recording `max_tokens` in the ledger is not
-enforcement. Its current timeout is 540 seconds; any changed timeout/model effort
-must be identical across G0/G1 and recorded. The driver must not claim SDK events
-or internal reasoning that the chosen helper does not return.
+Both stages retain the original maker settings: GPT-6-astra, low effort,
+180-second SDK-turn limit, at most two calls and 16,384 returned output tokens per
+branch, and 8,192 output tokens per call. The SDK has no hard output-token cap;
+the prompt limit plus returned-usage check is explicitly
+`soft_limit_and_posthoc_check`. Missing or excessive usage rejects the result.
+Failures still consume calls. The 300-second consumer/experiment timeout does
+not change maker settings. Only SDK events and reasoning actually returned by
+the service are recorded.
+
+## Paired refinement contract v2
+
+`maker_revision.prepare(pilot_root, windows)` validates two development windows,
+then writes content-addressed feedback, contract and G0/G1 request files. It does
+not reserve a request or invoke a model. Each window names `attempt_id`, `first`
+and `after` response directories; only `dev-03` and `dev-04` are accepted. The
+first request must be a completed `tool_acceptance` ledger entry, the continuation
+a completed `after_native_observation` entry for the same input. Recorded request
+wire hashes, exposed G1 declaration and all first-call/return pairs are checked.
+
+The common sensor/action payload, original `common_hash` and image pixels remain
+unchanged. Both refinement requests additionally contain exactly the same
+`shared_observed_measurements`: successful native perception arguments/results
+from these Max queries, with recorded frame, camera, units and calibration fields
+retained. Measurements are deduplicated and sorted by content hash, without
+acquisition order, tool-call IDs, model reasoning, errors or usage. No missing
+frame/time/coordinate field is inferred. Image references contain verified hashes,
+not new image pixels or base64 text.
+
+This supplement equalizes the additional measured values: native depth queries
+can provide exact pixels absent from the original 8×8 depth summary. It is
+explicitly a second-stage input addition from Max-selected queries. The query
+arguments still reveal selection cues; sorting does not remove that limitation.
+
+G1 alone also receives the actual returned messages, calls and tool returns in
+order, plus its original development feedback. A first response with no tool
+returns is labelled `tool_results_seen_by_model=false`; the continuation is true
+only after all returned observations are present. Returned thinking is a model
+claim, length-limited output is incomplete, and action proposals remain
+unexecuted. Review reports, evaluator data, success labels and heldout records
+are not read. Binary image artifacts are checked and replaced with references.
+
+The two branches receive their own initial candidates, so this is paired
+refinement, not a new comparison from an identical candidate. `run(pilot_root,
+binding)` revalidates immutable inputs, charges the remaining original maker call,
+and records the exact prompt, images, events, response, usage and candidate. It
+does not replay or publish. Both branches must reference the same revision
+contract. Freezing requires successful posthoc-budget checks, available usage,
+and exact agreement between each final generated tool and its recorded candidate.
+Original contracts, source files and ledger events are never rewritten.
