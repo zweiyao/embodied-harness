@@ -257,3 +257,28 @@ def test_post_motion_capture_retries_only_transient_stationarity(backend):
     with pytest.raises(RuntimeError, match="fault"):
         backend.calibration_snapshot()
     assert count[0] == 4
+
+
+@pytest.mark.parametrize('failure', [False, True])
+def test_native_home_polls_and_propagates_failure(backend, failure):
+    original = backend.request
+    polls = []
+
+    def request(path, data=None):
+        if path.endswith('home-step'):
+            polls.append(path)
+            if len(polls) == 4:
+                if failure:
+                    raise RuntimeError('Collector stopped: primitive deadline expired')
+                return {'reached': True, 'gripper_commanded': False}
+            return {'reached': False, 'motion': 'MoveJ'}
+        return original(path, data)
+
+    backend.request = request
+    if failure:
+        with pytest.raises(RuntimeError, match='deadline'):
+            backend.reset_home()
+        assert backend.calls[-1][0].endswith('/stop')
+    else:
+        assert backend.reset_home()['reached']
+    assert len(polls) == 4

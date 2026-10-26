@@ -96,6 +96,10 @@ class BoundedControl:
                 self._trace("home_step", result=result)
                 if result.get("reached") is True:
                     return result
+                if result.get("motion") == "MoveJ":
+                    # The collector submits once and checks actual feedback on every poll.
+                    time.sleep(0.1)
+                    continue
                 deadline, settled = time.monotonic() + 30, 0
                 while time.monotonic() < deadline:
                     time.sleep(0.1)

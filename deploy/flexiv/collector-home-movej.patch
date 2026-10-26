@@ -1,0 +1,114 @@
+--- a/collector/core/joint_home.py
++++ b/collector/core/joint_home.py
+@@ -104,62 +104,52 @@
+                     gripper_commanded=False, motion_executed=False)
+ 
+     def step(self, token):
++        """Start one native MoveJ, then poll it without resending the target."""
+         robot, state, _ = self.motion.ready(token, home=True)
+         target, saved = self.target(robot, state)
+         q = np.asarray(state['joint_position'], float)
+-        if np.max(np.abs(state['joint_velocity'])) > .005:
+-            raise HTTPException(409, 'Wait for stationary joints before home step')
++        error = float(np.max(np.abs(target-q)))
+         if self.owner != token:
+             self.owner, self.pending = token, None
+-        if self.pending is not None and np.max(np.abs(q-self.pending)) > .0002:
+-            raise HTTPException(409, 'Previous home target has not been reached')
+-        error = float(np.max(np.abs(target-q)))
+-        if error <= .0002:
+-            import flexivrdk
+-            robot._robot.SwitchMode(flexivrdk.Mode.NRT_CARTESIAN_MOTION_FORCE)
+-            self.pending = None
+-            self.motion.command_deadline = 0.
+-            result = dict(reached=True, joint_error_rad=error,
+-                          measured_joints_rad=q.tolist(), target_joints_rad=target.tolist(),
+-                          measured_pose=state['tcp_pose'], gripper_commanded=False)
+-            self.motion.audit('home_complete', **result)
+-            return result
++        import flexivrdk
+         if self.pending is None:
++            if np.max(np.abs(state['joint_velocity'])) > .005:
++                raise HTTPException(409, 'Wait for stationary joints before home')
+             preview = self.preview()
+             if not preview['path_retains_required_margin']:
+                 raise HTTPException(409, 'Joint home path must retain 4 mm workspace margin')
++            scale = robot.config.get('start_vel_scale', 30)
++            if isinstance(scale, bool) or not isinstance(scale, (int, float)) or not 0 < scale <= 30:
++                raise HTTPException(409, 'Home velocity scale must be in (0, 30]')
+             self.motion.audit('home_preview', **preview)
+-        current = self.fk(robot, q)
+-        delta = target-q
+-        scale = min(1., .0005/np.max(np.abs(delta)))
+-        for _ in range(12):
+-            step = q+scale*delta
+-            predicted = self.fk(robot, step)
+-            distance = np.linalg.norm(predicted[:3, 3]-current[:3, 3])
+-            angle = np.arccos(np.clip((np.trace(predicted[:3, :3].T@current[:3, :3])-1)/2, -1, 1))
+-            if distance <= .0008 and angle <= np.deg2rad(.08):
+-                break
+-            scale *= .5
++            self.pending = target.copy()
++            self.motion.pending_pose = None
++            self.motion.command_deadline = time.monotonic()+120
++            robot._robot.SwitchMode(flexivrdk.Mode.NRT_PRIMITIVE_EXECUTION)
++            robot._robot.ExecutePrimitive('MoveJ', {
++                'target': flexivrdk.JPos(np.rad2deg(target).tolist()),
++                'jntVelScale': scale,
++            })
++            self.motion.audit('home_movej_start', target_joints_rad=target.tolist(),
++                              velocity_scale=scale, gripper_commanded=False, state=state)
+         else:
+-            raise HTTPException(409, 'Cannot bound the home step in TCP space')
+-        p = predicted[:3, 3]
+-        if np.any(p < robot._workspace_min+.004) or np.any(p > robot._workspace_max-.004):
+-            raise HTTPException(409, 'Home target must retain 4 mm workspace margin')
+-        # Bound Cartesian speed using conservative Jacobian row-block norms.
+-        jacobian = np.asarray(self.model.J('flange'), float)
+-        if jacobian.shape != (6, 7) or not np.isfinite(jacobian).all():
+-            raise HTTPException(409, 'Invalid home Jacobian')
+-        # A 1 m lever bound includes the attached tool; retain both speed caps.
+-        gain = float(np.linalg.norm(jacobian[:3], axis=0).sum()+np.linalg.norm(jacobian[3:], axis=0).sum())
+-        speed = min(.005, .004/max(gain, 1.))
+-        import flexivrdk
+-        if state['mode'] != 'Mode.NRT_JOINT_POSITION':
+-            robot._robot.SwitchMode(flexivrdk.Mode.NRT_JOINT_POSITION)
+-        robot._robot.SendJointPosition(step.tolist(), [0.]*7, [speed]*7, [.01]*7)
+-        self.pending = step.copy()
+-        self.motion.pending_pose = None
+-        self.motion.command_deadline = time.monotonic()+35
+-        self.motion.audit('home_step', target_joints_rad=step.tolist(), state=state)
+-        return dict(submitted=True, reached=False, target_joints_rad=step.tolist(),
+-                    home_joints_rad=target.tolist(), joint_error_rad=error,
+-                    max_joint_velocity_rad_s=speed, gripper_commanded=False)
++            if not np.array_equal(target, self.pending):
++                raise HTTPException(409, 'Home reference changed during motion')
++            if state['mode'] != 'Mode.NRT_PRIMITIVE_EXECUTION':
++                raise HTTPException(409, 'Home primitive control mode changed')
++            primitive = robot._robot.primitive_states()
++            reached = primitive['reachedTarget']
++            if not isinstance(reached, (bool, np.bool_)):
++                raise HTTPException(409, 'Invalid MoveJ reachedTarget feedback')
++            if reached and error <= .0002 and np.max(np.abs(state['joint_velocity'])) < .005:
++                robot._robot.SwitchMode(flexivrdk.Mode.NRT_CARTESIAN_MOTION_FORCE)
++                self.pending = None
++                self.motion.command_deadline = 0.
++                result = dict(reached=True, joint_error_rad=error,
++                              measured_joints_rad=q.tolist(), target_joints_rad=target.tolist(),
++                              measured_pose=state['tcp_pose'], gripper_commanded=False)
++                self.motion.audit('home_complete', **result)
++                return result
++        return dict(submitted=True, reached=False, motion='MoveJ',
++                    target_joints_rad=target.tolist(), joint_error_rad=error,
++                    gripper_commanded=False)
+--- a/collector/core/supervised_motion.py
++++ b/collector/core/supervised_motion.py
+@@ -137,6 +137,8 @@
+                 raise HTTPException(409, 'Camera frame is stale; no new motion sent')
+         state = robot.get_live_state()
+         modes = ('Mode.NRT_CARTESIAN_MOTION_FORCE', 'Mode.NRT_JOINT_POSITION') if home else ('Mode.NRT_CARTESIAN_MOTION_FORCE',)
++        if home and self.home.owner == token and self.home.pending is not None:
++            modes += ('Mode.NRT_PRIMITIVE_EXECUTION',)
+         if (state['fault'] or not state['operational'] or not state['control_initialized']
+                 or state['mode'] not in modes):
+             raise HTTPException(409, "Operator must initialize Cartesian control first")
