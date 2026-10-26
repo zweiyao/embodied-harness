@@ -167,7 +167,9 @@ class ApiAgentLoop(Planner):
             end_strategy="early",
             # Finish refusals may span attempts; the request budget still applies.
             retries={"output": max_turns},
-            model_settings=_build_model_settings(self.model, self.max_tokens),
+            model_settings=_build_model_settings(
+                self.model, self.max_tokens, self.reasoning_effort
+            ),
             capabilities=[
                 SlidingWindowCompaction(
                     max_messages=80, max_fraction=0.8, keep_messages=40
@@ -219,9 +221,12 @@ class ApiAgentLoop(Planner):
         )
 
 
-def _build_model_settings(model: Model, max_tokens: int) -> ModelSettings:
-    """Enable parallel tool requests and preserve Anthropic prompt caching."""
+def _build_model_settings(
+    model: Model, max_tokens: int, reasoning_effort: str
+) -> ModelSettings:
+    """Preserve provider caching and translate Qwen's explicit thinking switch."""
     from pydantic_ai.models.anthropic import AnthropicModel, AnthropicModelSettings
+    from pydantic_ai.models.openai import OpenAIChatModel
 
     if isinstance(model, AnthropicModel):
         return AnthropicModelSettings(
@@ -231,7 +236,16 @@ def _build_model_settings(model: Model, max_tokens: int) -> ModelSettings:
             anthropic_cache_tool_definitions=True,
             anthropic_cache_messages=True,
         )
-    return ModelSettings(max_tokens=max_tokens, parallel_tool_calls=True)
+    settings = ModelSettings(max_tokens=max_tokens, parallel_tool_calls=True)
+    if isinstance(model, OpenAIChatModel) and model.model_name.lower().startswith(
+        "qwen"
+    ):
+        # OpenAI's generic thinking profile does not map Qwen's enable_thinking.
+        settings["extra_body"] = {
+            **((model.settings or {}).get("extra_body") or {}),
+            "enable_thinking": reasoning_effort != "none",
+        }
+    return settings
 
 
 class _ConversationAgent(WrapperAgent):

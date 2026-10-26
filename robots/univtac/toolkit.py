@@ -364,6 +364,11 @@ class UniVTACToolkit(Toolkit):
         Each target is [x,y,z,qw,qx,qy,qz,gripper]: metres, unit wxyz quaternion,
         gripper 0 closed to 1 open. Local IK bounds joint changes. This is
         position control, not force control or a collision-free path guarantee.
+        An accepted target directly applies two IK joint-position updates over
+        at most two 120 Hz physics steps (normally 16.7 ms), without extra
+        settling. IK rejection advances no physics. Model thinking and observe
+        do not advance physics either. Use small increments during contact;
+        accurate hand arrival does not establish object progress or stability.
         """
         if self._model_finish is not None:
             return ToolResult(data={"error": "Model already finished this episode"})

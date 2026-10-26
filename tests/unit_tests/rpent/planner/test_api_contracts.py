@@ -1098,6 +1098,84 @@ def test_offline_http_planner_executes_action_and_finish(tmp_path):
         server.assert_complete()
 
 
+@pytest.mark.parametrize(
+    "model_name,effort,expected",
+    [
+        ("qwen3.8-max", "none", False),
+        ("qwen3.8-flash", "none", False),
+        ("qwen3.8-max", "high", True),
+        ("gpt-4.1", "none", None),
+    ],
+)
+def test_qwen_thinking_setting_reaches_serialized_http_body(
+    tmp_path,
+    model_name,
+    effort,
+    expected,
+):
+    import httpx2
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    bodies = []
+
+    def respond(request):
+        bodies.append(json.loads(request.content))
+        chunk = {
+            "id": "offline",
+            "object": "chat.completion.chunk",
+            "created": 1,
+            "model": model_name,
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "tool_calls",
+                    "delta": {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": "finish1",
+                                "type": "function",
+                                "function": {
+                                    "name": "finish",
+                                    "arguments": json.dumps(FINISH_ARGS),
+                                },
+                            }
+                        ],
+                    },
+                }
+            ],
+        }
+        return httpx2.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            content=f"data: {json.dumps(chunk)}\n\ndata: [DONE]\n\n".encode(),
+        )
+
+    client = httpx2.AsyncClient(transport=httpx2.MockTransport(respond))
+    model = OpenAIChatModel(
+        model_name,
+        provider=OpenAIProvider(
+            base_url="https://example.invalid/v1",
+            api_key="offline-test",
+            http_client=client,
+        ),
+    )
+    try:
+        result, _, _ = solve(tmp_path, model, reasoning_effort=effort, max_tokens=8192)
+        assert result.error is None
+        assert len(bodies) == 1
+        body = bodies[0]
+        assert body["max_completion_tokens"] == 8192
+        if expected is None:
+            assert "enable_thinking" not in body
+        else:
+            assert body["enable_thinking"] is expected
+    finally:
+        asyncio.run(client.aclose())
+
+
 def test_offline_http_planner_preserves_non_streaming_responses():
     from openai import OpenAI
 

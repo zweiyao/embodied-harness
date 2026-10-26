@@ -34,7 +34,7 @@ The compact numeric summary contains:
   generated program can operate on full arrays even though the prompt uses a
   deterministic numeric summary.
 
-No success labels, target poses, object poses, inferred official geometry,
+No success labels, evaluator target poses, object poses, inferred official geometry,
 expert actions, evaluator files, audit reports, old conversational conclusions
 or existing candidate output are inputs. Do not rank or select frames using an
 outcome. Keep task wording and the sensor/tool API contract separate, identical
