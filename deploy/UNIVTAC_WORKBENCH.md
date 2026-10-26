@@ -4,6 +4,9 @@
 `start-univtac-workbench.sh` 使用 RPent Python 运行 planner，通过独立的
 `univtac-python` wrapper 启动 Isaac；不修改系统驱动或全局 Vulkan 配置。
 服务器凭据引用放在 `native-univtac/workbench.json`，不提交到 Git。
+Qwen Max 配置启用推理；兼容 API 显式发送 `enable_thinking=true`。
+本地 effort 非 `none` 值只控制该开关，不代表服务端接受推理强度分档。
+Qwen API 域名通过服务 `NO_PROXY` 直连，Codex 保留远程代理。
 
 - UniVTAC：远程 `127.0.0.1:8093`，本机转发 `http://127.0.0.1:18093/`。
 - LIBERO：原远程 `8092` / 本机 `18092` 保留。

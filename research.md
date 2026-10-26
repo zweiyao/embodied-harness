@@ -17,6 +17,7 @@ GPT 根据开发交互中的失败制作感知程序，使用 Qwen3.8 Max 的反
 - Evaluator: 远程 `python -m robots.univtac.pilot /home/zwy/work/embodied_harness/experiments/tactile-pilot-20261025 summary` 的官方成功与逐轮 outcome/events；配对分析保留终止原因、场景指纹、token 和时间。
 - keep_policy: score_improvement；有用候选仍需回放通过、Max 正确使用和配对评测，不以编译通过认定提升。
 - guard: 原 LIBERO 控制器不变；各组共享控制器、基础感知与任务说明；生成程序只读观测白名单，不能访问隐藏几何或官方判分；工具冻结后不修改正式测试条件。
+- Qwen Max 开启推理（2026-10-26 用户明确要求）；API 显式传 `enable_thinking=true`，不把本地 effort 标签解释成服务端支持分档。C/D/E/F 使用同一设置，思考 token 纳入成本，超时原因单独分析。
 - 所有实验在远程独立 UniVTAC 环境执行，完整记录不覆盖、不上传 Git。
 
 ## Current Approach
@@ -34,3 +35,4 @@ GPT 根据开发交互中的失败制作感知程序，使用 Qwen3.8 Max 的反
 | 2026-10-25 | dev01/02 烟测 | 1 次基础设施失败，1 次官方脚本成功 | 记录保留，排除 maker 输入 |
 | 2026-10-25 | dev03/04 GPT 基线 | 官方 0/2，模型均误报完成 | 检查完成语义与时序接触证据 |
 | 2026-10-26 | 开始持续验证 | 尚未新增模拟器尝试 | 统一澄清任务、补齐开发流程 |
+| 2026-10-26 | dev05 Max+接触响应原型 | 第3请求180秒超时，0动作/0新增工具调用 | 计入5/40；修复Qwen思考开关映射并按用户要求开启，API域名直连 |
