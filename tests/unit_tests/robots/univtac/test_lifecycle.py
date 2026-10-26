@@ -37,12 +37,12 @@ def pilot(tmp_path, monkeypatch):
     return Pilot.create(tmp_path / "pilot")
 
 
-def prepare(pilot, output, cell_id="dev-03", freeze=None):
+def prepare(pilot, output, cell_id="dev-03", freeze=None, **profile_overrides):
     cell = pilot._cell(cell_id)
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", default=str(output))
     robot_spec._add_cli_args(parser, use_dashboard=False)
-    parser.set_defaults(**profile(cell["model"]))
+    parser.set_defaults(**{**profile(cell["model"]), **profile_overrides})
     args = parser.parse_args(
         [
             "--pilot-root",
@@ -64,6 +64,38 @@ def prepare(pilot, output, cell_id="dev-03", freeze=None):
         config.prompt_vars["manual_tools"] = toolkit.native_catalog()
     robot_spec._prepare_memory(args, config)
     return args, config
+
+
+@pytest.mark.parametrize("cell_id", ["dev-03", "dev-05"])
+def test_new_model_runs_record_and_apply_300_second_waits(pilot, tmp_path, cell_id):
+    from rpent.planner.request_timeout import request_timeout
+
+    args, config = prepare(
+        pilot, tmp_path / cell_id, cell_id, max_tokens=10000, reasoning_effort="low"
+    )
+    api = robot_spec.get_toolkit(
+        runtime_kwargs={"env": FakeEnv()},
+        dashboard_events=NullDashboardEventSink(),
+        config=config,
+    )
+    try:
+        manifest = json.loads((config.output_dir / "manifest.json").read_text())
+        recorded = restore_from_output(config.output_dir).record
+        assert (
+            manifest["budget"]
+            == recorded["budget"]
+            == {
+                "max_turns": 60,
+                "planner_timeout_s": 3600,
+                "model_request_timeout_s": 300,
+            }
+        )
+        assert request_timeout(api) == 300
+        assert recorded["model_profile_settings"]["planner"] == args.planner
+        assert manifest["profile"]["max_tokens"] == 10000
+        assert manifest["profile"]["reasoning_effort"] == "low"
+    finally:
+        api.close()
 
 
 def test_frozen_prepare_applies_guidance_selection_and_resolved_sandbox_id(

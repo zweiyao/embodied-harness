@@ -171,7 +171,7 @@ def _prepare_run(args, config) -> None:
             budget={
                 "max_turns": args.max_turns,
                 "planner_timeout_s": args.planner_timeout_s,
-                "model_request_timeout_s": 180,
+                "model_request_timeout_s": 300,
             },
             freeze_id=args.pilot_freeze,
             model_profile_settings={
@@ -218,7 +218,7 @@ def _prepare_run(args, config) -> None:
                 "budget": {
                     "max_turns": args.max_turns,
                     "planner_timeout_s": args.planner_timeout_s,
-                    "model_request_timeout_s": 180,
+                    "model_request_timeout_s": 300,
                 },
                 "memory": "empty/read_only",
             },

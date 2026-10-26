@@ -15,7 +15,7 @@ from rpent.evaluation.result import write_json_atomic
 BUDGET = {
     "max_turns": 60,
     "planner_timeout_s": 3600,
-    "model_request_timeout_s": 180,
+    "model_request_timeout_s": 300,
 }
 PROFILE_FIELDS = {"planner", "model", "reasoning_effort", "base_url", "max_tokens"}
 
@@ -188,7 +188,7 @@ def before_start(
         )
     ):
         raise ValueError(
-            "Pilot requires 60 responses, 3600 seconds, 180-second requests"
+            "Pilot requires 60 responses, 3600 seconds, 300-second model-response waits"
         )
     profile = copy.deepcopy(model_profile_settings or {})
     if model != "script" and set(profile) != PROFILE_FIELDS:

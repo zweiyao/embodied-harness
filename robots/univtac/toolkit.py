@@ -83,7 +83,7 @@ def validate_selection(selected):
 
 class UniVTACToolkit(Toolkit):
     planner_tools_only = True
-    model_request_timeout_s = 180.0
+    model_request_timeout_s = 300.0
 
     def __init__(
         self,

@@ -155,6 +155,7 @@ def test_native_development_reserves_before_reset_and_restores_without_recharge(
         {"budget": {**execution.BUDGET, "max_turns": 25}},
         {"budget": {**execution.BUDGET, "planner_timeout_s": 600}},
         {"budget": {**execution.BUDGET, "model_request_timeout_s": 30}},
+        {"budget": {**execution.BUDGET, "model_request_timeout_s": 180}},
         {"selected": []},
     ],
 )
@@ -182,10 +183,26 @@ def test_real_cli_float_timeouts_preserve_fixed_budget(tmp_path):
         budget={
             "max_turns": 60,
             "planner_timeout_s": 3600.0,
-            "model_request_timeout_s": 180.0,
+            "model_request_timeout_s": 300.0,
         },
     )
     assert run.record["budget"] == execution.BUDGET
+
+
+def test_restoring_historical_timeout_does_not_rewrite_or_recharge(tmp_path):
+    pilot = Pilot.create(tmp_path / "pilot")
+    run = begin(pilot, tmp_path / "historical")
+    run.after_finish({"termination_reason": "timeout"})
+    path = run.output_dir / "pilot-attempt.json"
+    record = json.loads(path.read_text())
+    record["budget"]["model_request_timeout_s"] = 180
+    path.write_text(json.dumps(record))
+    original = path.read_bytes()
+    restored = execution.restore_from_output(run.output_dir)
+    assert restored.record["budget"]["model_request_timeout_s"] == 180
+    assert restored.record["outcome"]["termination_reason"] == "timeout"
+    assert path.read_bytes() == original
+    assert pilot.summary()["episodes_reserved"] == pilot.summary()["finished"] == 1
 
 
 def test_frozen_condition_applies_tools_guidance_and_actual_model_profile(tmp_path):

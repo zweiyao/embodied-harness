@@ -153,9 +153,11 @@ selections are rejected rather than silently replaced. Do not supply both.
 
 The adapter defaults to 60 model responses and 3600 seconds. API response limits
 cover the full response stream. Codex SDK exposes no reliable provider request
-boundaries, so its 180-second limit covers a **model-wait interval**, including
+boundaries, so its 300-second limit covers a **model-wait interval**, including
 SDK transport/retries but excluding RPent tool execution. Cancellation/cleanup
 can take additional time. This is not a measurement of network-only latency.
+Both planners use 300 seconds for subsequent simulation runs. Completed run
+records and the controlled maker's separate 180-second budget remain unchanged.
 
 The execution bridge checks scene evidence before model actions, freezes and
 compares actual controller/source/memory provenance and the Docker image ID,

@@ -1,0 +1,140 @@
+{
+  "scope": "infrastructure diagnostics, excluded from maker inputs",
+  "source": "/home/zwy/work/embodied_harness/artifacts/univtac-checkpoint-20261026/comparison-audit.json",
+  "source_sha256": "93bd7cf05cddbb9d9e47ac9b91117373408547376a606db090488effeb0de602",
+  "attempts": [
+    "infra-01",
+    "infra-02"
+  ],
+  "snapshot_schema": 1,
+  "snapshot_integrity_passed": true,
+  "qualification_passed": false,
+  "summary": [
+    {
+      "command": 0,
+      "hand_position_max_m": 1.1920928955078125e-07,
+      "actor_position_max_m": 0.0,
+      "gel_max_m": 0.0,
+      "uipc_exact_files": 9,
+      "depth_outliers": {
+        "observation/head/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 45525,
+          "max_delta_native_units": 2.6226043701171875e-06
+        },
+        "observation/wrist/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 129600,
+          "max_delta_native_units": 2.384185791015625e-06
+        },
+        "tactile/left_tactile/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 6.103515625e-05
+        },
+        "tactile/right_tactile/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 8.20159912109375e-05
+        }
+      }
+    },
+    {
+      "command": 1,
+      "hand_position_max_m": 2.175569534301758e-06,
+      "actor_position_max_m": 2.6226043701171875e-06,
+      "gel_max_m": 2.5391814069963825e-06,
+      "uipc_exact_files": 1,
+      "depth_outliers": {
+        "observation/head/depth": {
+          "over_1mm_count": 2,
+          "finite_pairs": 45520,
+          "max_delta_native_units": 0.054970741271972656
+        },
+        "observation/wrist/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 129600,
+          "max_delta_native_units": 2.1785497665405273e-05
+        },
+        "tactile/left_tactile/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 0.0002613067626953125
+        },
+        "tactile/right_tactile/depth": {
+          "over_1mm_count": 1,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 5.000127792358398
+        }
+      }
+    },
+    {
+      "command": 2,
+      "hand_position_max_m": 8.493661880493164e-06,
+      "actor_position_max_m": 8.881092071533203e-06,
+      "gel_max_m": 9.013716625622115e-06,
+      "uipc_exact_files": 1,
+      "depth_outliers": {
+        "observation/head/depth": {
+          "over_1mm_count": 1,
+          "finite_pairs": 45525,
+          "max_delta_native_units": 0.00136566162109375
+        },
+        "observation/wrist/depth": {
+          "over_1mm_count": 14,
+          "finite_pairs": 129600,
+          "max_delta_native_units": 0.09863980114459991
+        },
+        "tactile/left_tactile/depth": {
+          "over_1mm_count": 1,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 5.00007438659668
+        },
+        "tactile/right_tactile/depth": {
+          "over_1mm_count": 4,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 5.000753402709961
+        }
+      }
+    },
+    {
+      "command": 3,
+      "hand_position_max_m": 4.291534423828125e-06,
+      "actor_position_max_m": 5.31412661075592e-06,
+      "gel_max_m": 5.998638751864016e-06,
+      "uipc_exact_files": 1,
+      "depth_outliers": {
+        "observation/head/depth": {
+          "over_1mm_count": 0,
+          "finite_pairs": 45525,
+          "max_delta_native_units": 0.0008965730667114258
+        },
+        "observation/wrist/depth": {
+          "over_1mm_count": 3,
+          "finite_pairs": 129600,
+          "max_delta_native_units": 0.09862478077411652
+        },
+        "tactile/left_tactile/depth": {
+          "over_1mm_count": 6,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 5.000894546508789
+        },
+        "tactile/right_tactile/depth": {
+          "over_1mm_count": 3,
+          "finite_pairs": 76800,
+          "max_delta_native_units": 5.001140594482422
+        }
+      }
+    }
+  ],
+  "depth_units": {
+    "observation": "m",
+    "tactile_height_map": "mm"
+  },
+  "follow_up": {
+    "change": "Schema 2 records and restores commanded joint position, velocity and effort targets, independently from measured state.",
+    "cpu_checks": 13,
+    "physics_revalidation": "not run",
+    "production_controller_changed": false
+  }
+}
