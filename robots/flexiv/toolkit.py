@@ -138,12 +138,14 @@ class FlexivToolkit(Toolkit):
         Args:
             step: Exact observe step; do not mix images from different steps.
             target: Named object and surface feature, not just its color.
-            camera: wrist or side; choose a view showing the whole target.
+            camera: wrist or side; choose a view showing the entire named surface feature.
             pixel: Interior surface [x,y] pixel in the original full-resolution image.
-            box: Whole target [x0,y0,x1,y1] box; reject clipped/occluded targets.
+            box: Visible feature [x0,y0,x1,y1] box inside the image, enclosing the pixel.
 
         Do not select the hole of a ring-shaped object or background inside a
-        bounding box. Do not invent boxes around clipped fragments. This tool
+        bounding box. Name the visible feature; do not invent hidden geometry.
+        Other object regions may be occluded. Invalid depth is a read-only query
+        failure: reselect a valid surface point, view or observation. This tool
         estimates a surface point; it neither detects objects nor commands motion.
         """
         from robots.flexiv.perception import back_project
@@ -221,7 +223,9 @@ class FlexivToolkit(Toolkit):
         At most 10 degrees per call. Rotation requires >=50 mm table clearance;
         translation retains >=4 mm grasp-reference clearance. Gripper opening is
         preserved. Check both images after each move. This does not plan around
-        obstacles. For grasping, approach from above, descend, then close.
+        obstacles. Select orientation and waypoints for the actual task. An earlier
+        localization call is not required when current evidence supports this target.
+        Inspect actual motion and object progress before choosing another action.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.move_tcp(position_m, quaternion_wxyz))
@@ -234,6 +238,7 @@ class FlexivToolkit(Toolkit):
         handles bounded orientation segments; no model-supplied intermediate
         quaternions are needed. Gripper opening is preserved. Check that held
         objects and fingers have a clear sweep; no collision model is available.
+        This optional helper is not required before every grasp or insertion.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.align_tool_down())
@@ -247,8 +252,9 @@ class FlexivToolkit(Toolkit):
         A control error stops the experiment: report it, do not retry motion.
 
         Contact stops further closure and returns contact_detected, not proof
-        of a secure grasp. After contact, lift only 5 mm and inspect both images
-        before carrying. Use 0.098 to release, then verify the object stayed.
+        of a secure grasp. Inspect the object and actual gripper feedback before
+        transport; grasp closure differs from insertion contact. Release only when
+        required by the instructed task, then verify the object's resulting state.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.set_gripper(width_m))
