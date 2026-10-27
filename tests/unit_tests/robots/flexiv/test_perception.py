@@ -16,6 +16,7 @@
 
 import base64
 import copy
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -315,3 +316,86 @@ def test_control_requires_explicit_side_validation(scene):
     Path(calibration_file).write_text(json.dumps(data))
     with pytest.raises(ValueError):
         Calibration(calibration_file, tool_file, allow_provisional_side_control=True)
+
+
+def test_operator_confirmation_preserves_history_and_binds_file(scene, monkeypatch):
+    model, snapshot = scene
+    calibration_file, tool_file = model.hashes
+    path = Path(calibration_file)
+    data = json.loads(path.read_text())
+    data["wrist_consistency_passed"] = False
+    path.write_text(json.dumps(data))
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    confirmed = Calibration(
+        calibration_file,
+        tool_file,
+        allow_provisional_side_control=True,
+        operator_confirmed_calibration_sha256=digest,
+    )
+    validation = confirmed.observation(snapshot)["camera_calibration"][
+        "calibration_validation"
+    ]
+    assert validation["operator_confirmed_cameras"] == ["side", "wrist"]
+    assert not validation["wrist_passed"]
+    assert validation["operator_confirmation"]["calibration_sha256"] == digest
+    assert validation["operator_confirmation"]["measured_error_mm"] is None
+    backend = CollectorBackend("http://unused", confirmed, "/unused")
+    monkeypatch.setattr(backend, "rgbd_snapshot", lambda: snapshot)
+    monkeypatch.setattr(
+        backend, "request", lambda *a, **kw: pytest.fail("Unexpected request")
+    )
+    backend.open()
+    assert backend.get_env_meta()["operator_confirmed_cameras"] == ["side", "wrist"]
+    assert not backend.get_env_meta()["motion_enabled"]
+    with pytest.raises(ValueError, match="supervised side control"):
+        Calibration(
+            calibration_file, tool_file, operator_confirmed_calibration_sha256=digest
+        )
+    path.write_text(path.read_text() + "\n")
+    with pytest.raises(ValueError, match="SHA256"):
+        Calibration(
+            calibration_file,
+            tool_file,
+            allow_provisional_side_control=True,
+            operator_confirmed_calibration_sha256=digest,
+        )
+
+
+@pytest.mark.parametrize("confirmed", [False, True])
+def test_wrist_localization_requires_operator_confirmation_in_provisional_control(
+    scene, tmp_path, monkeypatch, confirmed
+):
+    model, snapshot = scene
+    monkeypatch.setattr("rpent.tools.toolkit.substitute", lambda x: x)
+    monkeypatch.setattr(FlexivToolkit, "_register_common_tools", lambda self: None)
+    env = SimpleNamespace(
+        meta={
+            "calibrated_readonly": True,
+            "motion_enabled": True,
+            "calibration_provisional": True,
+            "operator_confirmed_cameras": ["side", "wrist"] if confirmed else [],
+        },
+        get_observation=lambda: model.observation(snapshot),
+        close=lambda: None,
+    )
+    kit = FlexivToolkit(
+        env=env,
+        output_dir=tmp_path / "run",
+        memory=SimpleNamespace(),
+        dashboard_events=SimpleNamespace(enabled=False, emit=lambda x: None),
+    )
+    result = kit.execute_tool(
+        "localize_target",
+        {
+            "step": 0,
+            "target": "surface",
+            "camera": "wrist",
+            "pixel": [50, 40],
+            "box": [10, 10, 90, 70],
+        },
+    )
+    assert result.is_error is not confirmed
+    if confirmed:
+        assert result.data["camera"] == "wrist"
+        assert not result.data["motion_authorized"]
+    kit.close()

@@ -158,6 +158,7 @@ class FlexivToolkit(Toolkit):
             self.env.meta.get("motion_enabled")
             and self.env.meta.get("calibration_provisional")
             and camera != "side"
+            and camera not in self.env.meta.get("operator_confirmed_cameras", [])
         ):
             raise ValueError(
                 "Use side for this provisional control session; wrist is observation-only"

@@ -109,6 +109,9 @@ class CollectorBackend(BoundedControl):
             "supervised_control": self.supervised,
             "home_available": self.supervised,
             "reset_before_task": self.reset_before_task,
+            "operator_confirmed_cameras": getattr(
+                self.calibration, "operator_confirmed_cameras", []
+            ),
             "calibration_provisional": bool(
                 getattr(self.calibration, "provisional", False)
             ),
@@ -301,6 +304,11 @@ def main():
     parser.add_argument("--supervised-control", action="store_true")
     parser.add_argument("--reset-before-task", action="store_true")
     parser.add_argument("--allow-provisional-side-control", action="store_true")
+    parser.add_argument(
+        "--operator-confirmed-calibration-sha256",
+        default=None,
+        help="Record onsite confirmation of both cameras for this exact calibration file",
+    )
     parser.add_argument("--control-log-dir", default=None)
     parser.add_argument(
         "--allow-inconsistent-readonly",
@@ -327,6 +335,11 @@ def main():
         )
     if args.allow_provisional_side_control and not args.supervised_control:
         parser.error("--allow-provisional-side-control requires --supervised-control")
+    if (
+        args.operator_confirmed_calibration_sha256 is not None
+        and not args.allow_provisional_side_control
+    ):
+        parser.error("Operator confirmation requires --allow-provisional-side-control")
     if args.allow_inconsistent_readonly and not args.calibration_file:
         parser.error("--allow-inconsistent-readonly requires a calibration file")
     if args.calibration_file:
@@ -337,6 +350,7 @@ def main():
             args.tool_tcp_file,
             allow_inconsistent_readonly=args.allow_inconsistent_readonly,
             allow_provisional_side_control=args.allow_provisional_side_control,
+            operator_confirmed_calibration_sha256=args.operator_confirmed_calibration_sha256,
         )
     backend = CollectorBackend(
         args.collector_endpoint,
