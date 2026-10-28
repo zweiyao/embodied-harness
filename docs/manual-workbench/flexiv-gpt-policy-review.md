@@ -1,5 +1,7 @@
 # Flexiv：GPT-as-Policy 直接 EEF 模式审核稿
 
+> 审核入口已更正：请看 [GPT-as-Policy 原文 → 非夕适配建议](gpt-as-policy-to-flexiv-review.md)。本文件仅保留此前候选稿/现有 RPent 差异作为历史参考，不作为本轮源文适配审核基线，也不表示已部署。
+
 状态：**本地替换稿已实现；远程独立审核目录验证；尚未替换运行中的真机服务。**
 
 本稿将 GPT-as-Policy 的 GPT-only 工作流适配到现有 Flexiv 真机接口：模型根据图像、自身状态和本轮历史决定 EEF 目标，检查执行结果后继续。首轮建议沿用 `gpt-6-astra/high` 和现有 `move_tcp`，先验证提示与工具说明的影响；不将此轮称为原仓库控制算法的等价复现。
