@@ -5,6 +5,16 @@ module ownership and interface contracts, and for testing and pull requests.
 Use the implementation and its callers to verify behavior; report disagreements
 with documentation instead of assuming either is correct.
 
+## Project Git workflow
+
+- After each coherent code or documentation change and its applicable validation,
+  commit the relevant changes and push the current task branch without asking
+  again. Update its existing open pull request, or create one if none exists.
+- Describe the final behavior, actual validation results, and remaining gaps in
+  the pull request. Do not merge automatically.
+- Keep credentials, videos, raw observations, model weights, and unrelated files
+  out of commits. Preserve independent changes and do not force-push.
+
 ## Repository map
 
 - `rpent/planner/`, `rpent/session/`, and `rpent/prompt/`: planner adapters,
