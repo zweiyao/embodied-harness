@@ -301,6 +301,7 @@ class FlexivEnvFacade(BaseEnvFacade):
             self.backend, "eef_chunk_control", False
         ):
             self._rpc["env.move_eef"] = self.backend.move_eef
+            self._rpc["env.move_eef_delta"] = self.backend.move_eef_delta
         # Motion remains serialized. The stop-only route can interrupt its owner.
 
     def _dispatch_nosession(self, method, args, kwargs):

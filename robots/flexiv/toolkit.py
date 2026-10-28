@@ -32,7 +32,21 @@ from rpent.tools.toolkit import Toolkit
 
 
 class FlexivToolkit(Toolkit):
-    def __init__(self, *, env, output_dir, dashboard_events, memory):
+    def __init__(
+        self, *, env, output_dir, dashboard_events, memory, control_mode="native"
+    ):
+        if control_mode not in ("native", "eef_delta"):
+            raise ValueError("Unknown Flexiv control mode")
+        if control_mode == "eef_delta":
+            if not all(
+                env.meta.get(key)
+                for key in ("motion_enabled", "supervised_control", "eef_chunk_control")
+            ):
+                raise ValueError(
+                    "eef_delta requires a supervised EEF-enabled environment"
+                )
+            if env.meta.get("reset_before_task"):
+                raise ValueError("eef_delta requires reset_before_task=false")
         self.env = env
         self._observation_lock = threading.RLock()
         super().__init__(
@@ -45,15 +59,19 @@ class FlexivToolkit(Toolkit):
             self.add_tool(self.view_perception_setup)
             self.add_tool(self.localize_target)
         if env.meta["motion_enabled"]:
-            self.add_tool(self.move_delta)
+            if control_mode == "native":
+                self.add_tool(self.move_delta)
             if env.meta.get("supervised_control"):
-                self.add_tool(self.move_tcp)
-                if env.meta.get("eef_chunk_control"):
-                    self.add_tool(self.move_eef)
-                self.add_tool(self.align_tool_down)
+                if control_mode == "eef_delta":
+                    self.add_tool(self.move_eef_delta)
+                else:
+                    self.add_tool(self.move_tcp)
+                    if env.meta.get("eef_chunk_control"):
+                        self.add_tool(self.move_eef)
+                    self.add_tool(self.align_tool_down)
                 self.add_tool(self.set_gripper)
                 self.add_tool(self.stop_motion)
-                if env.meta.get("home_available"):
+                if env.meta.get("home_available") and control_mode == "native":
                     self.add_tool(self.reset_home)
         try:
             self.observe()
@@ -258,6 +276,30 @@ class FlexivToolkit(Toolkit):
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.move_eef(position_m, quaternion_wxyz, steps))
+
+    @tool
+    def move_eef_delta(
+        self,
+        translation_m: list[float],
+        rotation_vector_rad: list[float],
+        steps: Annotated[int, Field(ge=1, le=5, strict=True)],
+    ) -> ToolResult:
+        """Move toward a measured-TCP-relative goal, then hold and return images/state.
+
+        Args:
+            translation_m: Base-axis [dx,dy,dz] metres, vector norm <=0.05.
+            rotation_vector_rad: Base-axis right-hand rotation vector, radians,
+                norm <=10 degrees; [0,0,0] preserves orientation. Not Euler angles.
+            steps: 1–5 controls at 25 Hz toward one goal; delta is applied once.
+
+        Target: p + translation_m, Exp(rotation_vector_rad) * R from fresh TCP.
+        Actual motion can be smaller than requested. Gripper stays unchanged.
+        Existing workspace, table and speed limits apply.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(
+            data=self.env.move_eef_delta(translation_m, rotation_vector_rad, steps)
+        )
 
     @tool
     def align_tool_down(self) -> ToolResult:

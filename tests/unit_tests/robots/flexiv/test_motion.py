@@ -513,3 +513,106 @@ def test_collector_http_rejection_requires_explicit_no_execution(monkeypatch, pr
     expected = EEFInputRejected if proven else RuntimeError
     with pytest.raises(expected):
         backend.request("/rpent/supervised/eef-chunk", {"pose": [0] * 7, "steps": 1})
+
+
+def test_eef_delta_uses_base_axes_and_fresh_feedback_between_segments(backend):
+    from scipy.spatial.transform import Rotation
+
+    backend.eef_chunk_control = True
+    q = Rotation.from_euler("xyz", [35, 15, 70], degrees=True).as_quat()
+    backend.state["tcp_pose"][3:] = [q[3], *q[:3]]
+    reference = list(backend.state["tcp_pose"])
+    original = backend.request
+    sent = []
+
+    def request(path, data=None):
+        if path.endswith("eef-chunk"):
+            sent.append(data)
+            backend.state["tcp_pose"][0] += 0.001
+            return {
+                "held": True,
+                "reached": False,
+                "executed_steps": data["steps"],
+                "ticks": [{"index": i + 1} for i in range(data["steps"])],
+                "measured_pose": list(backend.state["tcp_pose"]),
+            }
+        return original(path, data)
+
+    backend.request = request
+    translation, rotvec = [0.01, 0.004, 0], [0.06, -0.02, 0.03]
+    first = backend.move_eef_delta(translation, rotvec, 5)
+    second = backend.move_eef_delta(translation, rotvec, 1)
+    expected_rotation = Rotation.from_rotvec(rotvec) * rotation(reference)
+    assert len(sent) == 2
+    assert [item["steps"] for item in sent] == [5, 1]
+    np.testing.assert_allclose(sent[0]["pose"][:3], [0.41, 0.004, 0.2])
+    np.testing.assert_allclose(sent[1]["pose"][:3], [0.411, 0.004, 0.2])
+    for result, command in zip((first, second), sent):
+        np.testing.assert_allclose(
+            rotation(command["pose"]).as_matrix(), expected_rotation.as_matrix()
+        )
+        assert result["frame"] == "robot_base"
+        assert result["translation_m"] == translation
+        assert result["rotation_vector_rad"] == rotvec
+        assert result["requested_target_pose"] == command["pose"]
+        assert result["held"] and not result["reached"]
+    np.testing.assert_allclose(first["reference_pose"], reference)
+    np.testing.assert_allclose(second["reference_pose"][:3], [0.401, 0, 0.2])
+    assert first["measured_pose"] != first["requested_target_pose"]
+    assert not any(path.endswith("pose-target") for path, _ in backend.calls)
+
+
+@pytest.mark.parametrize(
+    "translation,rotvec,steps",
+    [
+        ([0, 0], [0, 0, 0], 1),
+        ([float("nan"), 0, 0], [0, 0, 0], 1),
+        ([0, 0, 0], [0, 0], 1),
+        ([0, 0, 0], [0, float("inf"), 0], 1),
+        ([0.04, 0.04, 0], [0, 0, 0], 1),
+        ([0, 0, 0], [0.15, 0.15, 0], 1),
+        ([0, 0, 0], [0, 0, 2 * np.pi], 1),
+        ([0, 0, 0], [0, 0, 0], 0),
+        ([0, 0, 0], [0, 0, 0], 6),
+        ([0, 0, 0], [0, 0, 0], True),
+        ([0, 0, 0], [0, 0, 0], 1.0),
+    ],
+)
+def test_invalid_eef_delta_never_sends_motion(backend, translation, rotvec, steps):
+    backend.eef_chunk_control = True
+    with pytest.raises(ValueError):
+        backend.move_eef_delta(translation, rotvec, steps)
+    assert all(path.endswith("/state") for path, _ in backend.calls)
+
+
+@pytest.mark.parametrize("failure", ["disabled", "disarmed", "readonly", "table"])
+def test_eef_delta_preserves_existing_motion_gates(backend, failure):
+    backend.eef_chunk_control = failure != "disabled"
+    if failure == "disarmed":
+        backend.armed = False
+    elif failure == "readonly":
+        backend.connection["motion_enabled"] = False
+    elif failure == "table":
+        backend.state["tcp_pose"][2] = 0.02
+    with pytest.raises((RuntimeError, ValueError)):
+        backend.move_eef_delta([0, 0, -0.02], [0, 0, 0], 1)
+    assert all(path.endswith("/state") for path, _ in backend.calls)
+
+
+def test_rejected_eef_delta_keeps_reference_and_target_evidence(backend):
+    from robots.flexiv.motion import EEFInputRejected
+
+    backend.eef_chunk_control = True
+    original = backend.request
+
+    def request(path, data=None):
+        if path.endswith("eef-chunk"):
+            raise EEFInputRejected("target rejected before execution")
+        return original(path, data)
+
+    backend.request = request
+    result = backend.move_eef_delta([0.01, 0, 0], [0, 0, 0], 1)
+    assert result["no_execution"] and result["retryable"] and backend.armed
+    assert result["frame"] == "robot_base"
+    assert result["reference_pose"] == backend.state["tcp_pose"]
+    np.testing.assert_allclose(result["requested_target_pose"][:3], [0.41, 0, 0.2])

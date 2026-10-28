@@ -348,6 +348,42 @@ class BoundedControl:
             self._failed_motion(error)
             raise
 
+    def move_eef_delta(self, translation_m, rotation_vector_rad, steps):
+        """Resolve one base-frame delta from measured TCP, then execute a short segment."""
+        if not getattr(self, "eef_chunk_control", False):
+            raise RuntimeError("Short EEF control is not enabled on this server")
+        if type(steps) is not int or not 1 <= steps <= 5:
+            raise ValueError("steps must be an integer in 1..5")
+        translation = np.asarray(translation_m, float)
+        rotvec = np.asarray(rotation_vector_rad, float)
+        if (
+            translation.shape != (3,)
+            or rotvec.shape != (3,)
+            or not np.isfinite(translation).all()
+            or not np.isfinite(rotvec).all()
+        ):
+            raise ValueError("Use finite length-3 translation and rotation vectors")
+        if np.linalg.norm(translation) > 0.05 or np.linalg.norm(rotvec) > np.deg2rad(
+            10
+        ):
+            raise ValueError("EEF delta norms are limited to 50 mm and 10 degrees")
+        self._require_motion()
+        reference = np.asarray(self._control_state()["tcp_pose"], float)
+        q = (Rotation.from_rotvec(rotvec) * rotation(reference)).as_quat()
+        target = np.r_[reference[:3] + translation, q[3], q[:3]]
+        context = {
+            "frame": "robot_base",
+            "reference_pose": reference.tolist(),
+            "translation_m": translation.tolist(),
+            "rotation_vector_rad": rotvec.tolist(),
+            "requested_target_pose": target.tolist(),
+        }
+        self._trace("eef_delta_begin", **context, steps=steps)
+        result = self.move_eef(target[:3].tolist(), target[3:].tolist(), steps)
+        result.update(context)
+        self._trace("eef_delta_end", result=result)
+        return result
+
     def set_gripper(self, width_m):
         self._require_motion()
         if not np.isfinite(width_m) or not 0 <= width_m <= 0.098:

@@ -47,6 +47,7 @@ DASHBOARD_SPEC = {
         "move_delta",
         "move_tcp",
         "move_eef",
+        "move_eef_delta",
         "align_tool_down",
         "set_gripper",
         "stop_motion",
@@ -76,6 +77,12 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool):
     parser.add_argument("--env-endpoint", default=None)
     parser.add_argument("--collector-endpoint", default="http://127.0.0.1:9527")
     parser.add_argument("--instruction", default=INSPECTION)
+    parser.add_argument(
+        "--control-mode",
+        choices=("native", "eef_delta"),
+        default="native",
+        help="Flexiv task tools and prompt; eef_delta requires an EEF-enabled external env.",
+    )
 
 
 def _parse_config(args):
@@ -88,11 +95,14 @@ def _parse_config(args):
         / "logs"
         / (datetime.now().strftime("%Y%m%d-%H%M%S") + "_flexiv")
     )
+    control_mode = getattr(args, "control_mode", "native")
+    if control_mode not in ("native", "eef_delta"):
+        raise ValueError("Unknown Flexiv control mode")
     return RunConfig(
         recipe_tag="flexiv",
         output_dir=output,
-        prompt_vars={"instruction": instruction},
-        task_desc={"instruction": instruction},
+        prompt_vars={"instruction": instruction, "control_mode": control_mode},
+        task_desc={"instruction": instruction, "control_mode": control_mode},
     )
 
 
@@ -104,6 +114,7 @@ def get_toolkit(*, runtime_kwargs, dashboard_events, config):
             env=runtime_kwargs["env"],
             output_dir=config.output_dir,
             dashboard_events=dashboard_events,
+            control_mode=config.prompt_vars.get("control_mode", "native"),
             memory=MemoryManager(
                 root=get_memory_dir("flexiv"), memory_access="read_only"
             ),
