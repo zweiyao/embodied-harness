@@ -16,7 +16,9 @@ import pytest
 from robots.univtac.pilot import digest, maker
 from robots.univtac.pilot import maker_revision as module
 from tests.unit_tests.robots.univtac.test_maker import answer
-from tests.unit_tests.robots.univtac.test_maker import pilot as stage_one_pilot  # noqa: F401
+from tests.unit_tests.robots.univtac.test_maker import (
+    pilot as stage_one_pilot,  # noqa: F401
+)
 from tests.unit_tests.robots.univtac.test_replay import sensors  # noqa: F401
 
 

@@ -131,7 +131,12 @@ def test_segment_mask_is_aligned_and_original_result_preserved(tmp_path):
         instance.mask_client.local.result = SimpleNamespace(found=True, mask=mask)
         store.save(
             "segment_00.json",
-            {"mode": "text", "prompt": "bottle", "camera": "agentview", "segment_index": 0},
+            {
+                "mode": "text",
+                "prompt": "bottle",
+                "camera": "agentview",
+                "segment_index": 0,
+            },
             step=0,
         )
         return result
@@ -153,9 +158,9 @@ def test_segment_mask_is_aligned_and_original_result_preserved(tmp_path):
     )
     import json
 
-    assert [json.loads(line) for line in (tmp_path / recipe).read_text().splitlines()] == [
-        {"action": "segment", "prompt": "bottle", "camera": "agentview"}
-    ]
+    assert [
+        json.loads(line) for line in (tmp_path / recipe).read_text().splitlines()
+    ] == [{"action": "segment", "prompt": "bottle", "camera": "agentview"}]
 
 
 def test_generated_omitted_optional_parameters_are_not_sent_to_sandbox():

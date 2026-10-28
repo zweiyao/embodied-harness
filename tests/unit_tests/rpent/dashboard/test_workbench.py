@@ -96,7 +96,10 @@ def test_selection_is_explicit_and_versions_frozen(bench):
     assert publish(bench.library, new, {"previous_version": version}) == v2
     other = {**candidate(), "name": "sensor_other"}
     other_version = publish(bench.library, other, {})
-    assert {t["version"] for t in bench.catalog() if t["origin"] == "generated"} == {v2, other_version}
+    assert {t["version"] for t in bench.catalog() if t["origin"] == "generated"} == {
+        v2,
+        other_version,
+    }
 
 
 def test_server_rejects_unknown_and_arbitrary_model(bench, tmp_path):
@@ -185,7 +188,9 @@ def test_only_selected_model_must_pass_connection_check(bench):
 
 
 @pytest.mark.parametrize("profile_id", ["api", "sdk"])
-def test_model_profiles_preserve_server_network_environment(bench, monkeypatch, profile_id):
+def test_model_profiles_preserve_server_network_environment(
+    bench, monkeypatch, profile_id
+):
     network = {
         "HTTP_PROXY": "http://remote-proxy.invalid:8080",
         "HTTPS_PROXY": "http://remote-proxy.invalid:8080",
@@ -291,7 +296,9 @@ def test_abort_uses_native_drain_without_scheduling_another_task(bench, tmp_path
 
 def test_manual_experiments_preserve_scene_config_without_pilot_cells(bench, tmp_path):
     bench.checks = {"api": {"ok": True}}
-    state = DashboardState(output_dir=tmp_path / "session", dashboard_spec=DASHBOARD_SPEC)
+    state = DashboardState(
+        output_dir=tmp_path / "session", dashboard_spec=DASHBOARD_SPEC
+    )
     state.workbench = bench
     state.shared_services_ready()
     state.set_next_config({"model_profile": "api", "tools": ["native:finish"]})

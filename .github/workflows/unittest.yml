@@ -33,7 +33,7 @@ jobs:
       - name: Install test dependencies
         run: uv pip install --system -e ".[test]"
       - name: Install calibration test dependencies
-        run: uv pip install --system "opencv-python-headless==4.10.0.84"
+        run: uv pip install --system "opencv-python-headless==4.10.0.84" "pyrealsense2==2.59.1.11053"
       - name: Install Flywheel export dependencies
         run: uv pip install --system -e ".[flywheel]" --torch-backend cpu
       - name: Run unit tests with coverage

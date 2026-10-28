@@ -186,7 +186,10 @@ def get_toolkit(
         from robots.libero.research.manual import ManualToolkit
 
         toolkit_type = ManualToolkit
-        manual = {"selected": config.prompt_vars["manual_tools"], "journal": config.prompt_vars["run_journal"]}
+        manual = {
+            "selected": config.prompt_vars["manual_tools"],
+            "journal": config.prompt_vars["run_journal"],
+        }
     return toolkit_type(
         **manual,
         runtime_kwargs=runtime_kwargs,

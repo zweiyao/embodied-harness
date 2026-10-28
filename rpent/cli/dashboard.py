@@ -200,7 +200,9 @@ def run_dashboard_session(
 
 def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
     if getattr(state, "workbench", None) is None:
-        return _run_dashboard_task_inner(args=args, robot_spec=robot_spec, state=state, claimed=claimed, **kwargs)
+        return _run_dashboard_task_inner(
+            args=args, robot_spec=robot_spec, state=state, claimed=claimed, **kwargs
+        )
     from rpent.dashboard.workbench import (
         source_snapshot,
         stamp,
@@ -218,12 +220,37 @@ def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
         error = None
         try:
             state.workbench.validate_pilot_request(claimed.request)
-            write_json(claimed.output_dir / "dashboard_config.json", {"robot": robot_spec.name, "model": configured.model, "task": {k:v for k,v in claimed.request.items() if k != "frozen_tools"}})
-            manifest = {"run_id": state.run_id, "started_at": stamp(), "profile": {k: profile.get(k) for k in ("id", "planner", "model", "reasoning_effort", "base_url")},
-                        "tools": selected, "task": {k: v for k, v in claimed.request.items() if k != "frozen_tools"},
-                        "code": source_snapshot(get_repo_root(), claimed.output_dir)}
+            write_json(
+                claimed.output_dir / "dashboard_config.json",
+                {
+                    "robot": robot_spec.name,
+                    "model": configured.model,
+                    "task": {
+                        k: v for k, v in claimed.request.items() if k != "frozen_tools"
+                    },
+                },
+            )
+            manifest = {
+                "run_id": state.run_id,
+                "started_at": stamp(),
+                "profile": {
+                    k: profile.get(k)
+                    for k in ("id", "planner", "model", "reasoning_effort", "base_url")
+                },
+                "tools": selected,
+                "task": {
+                    k: v for k, v in claimed.request.items() if k != "frozen_tools"
+                },
+                "code": source_snapshot(get_repo_root(), claimed.output_dir),
+            }
             write_json(claimed.output_dir / "manifest.json", manifest)
-            error = _run_dashboard_task_inner(args=configured, robot_spec=robot_spec, state=state, claimed=claimed, **kwargs)
+            error = _run_dashboard_task_inner(
+                args=configured,
+                robot_spec=robot_spec,
+                state=state,
+                claimed=claimed,
+                **kwargs,
+            )
             return error
         except BaseException as exc:
             error = f"{type(exc).__name__}: {exc}"
@@ -232,7 +259,17 @@ def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
             state.journal.append("run_end", {"error": error})
             # Inner finalization saves detailed outcome; retain startup failures too.
             if not (claimed.output_dir / "outcome.json").exists():
-                write_json(claimed.output_dir / "outcome.json", {"ended_at": stamp(), "error": error, "status": termination_reason(error, state.workbench_aborted, None, False), "environment_success": None})
+                write_json(
+                    claimed.output_dir / "outcome.json",
+                    {
+                        "ended_at": stamp(),
+                        "error": error,
+                        "status": termination_reason(
+                            error, state.workbench_aborted, None, False
+                        ),
+                        "environment_success": None,
+                    },
+                )
             if (claimed.output_dir / "pilot-attempt.json").exists():
                 from robots.univtac.pilot.execution import restore_from_output
 
@@ -266,7 +303,9 @@ def _run_dashboard_task_inner(
         json.dumps(
             {
                 "robot": robot_spec.name,
-                "task": {k: v for k, v in claimed.request.items() if k != "frozen_tools"},
+                "task": {
+                    k: v for k, v in claimed.request.items() if k != "frozen_tools"
+                },
                 "model": task_args.model,
                 **{
                     name: value
@@ -292,7 +331,9 @@ def _run_dashboard_task_inner(
         if material_root and robot_spec.name == "libero":
             from robots.libero.research.language_materials import freeze_materials
 
-            freeze_materials(material_root, run_config.output_dir, run_config.prompt_vars)
+            freeze_materials(
+                material_root, run_config.output_dir, run_config.prompt_vars
+            )
     output_dir = init_output_dir(run_config.output_dir, verbose=args.verbose)
 
     recipe_tag = run_config.recipe_tag
@@ -396,9 +437,25 @@ def _run_dashboard_task_inner(
                     from robots.libero.research.manual import availability_prompt
                     from rpent.dashboard.workbench import write_json
 
-                    system_prompt = availability_prompt(claimed.request["frozen_tools"]) + system_prompt
-                    write_json(Path(output_dir) / "prompts.json", {"system": system_prompt, "user": session_message})
-                    write_json(Path(output_dir) / "tool-declarations.json", [{"name": t.name, "description": t.description, "parameters": t.input_schema} for t in toolkit.list_tools()])
+                    system_prompt = (
+                        availability_prompt(claimed.request["frozen_tools"])
+                        + system_prompt
+                    )
+                    write_json(
+                        Path(output_dir) / "prompts.json",
+                        {"system": system_prompt, "user": session_message},
+                    )
+                    write_json(
+                        Path(output_dir) / "tool-declarations.json",
+                        [
+                            {
+                                "name": t.name,
+                                "description": t.description,
+                                "parameters": t.input_schema,
+                            }
+                            for t in toolkit.list_tools()
+                        ],
+                    )
                 state.bind_toolkit(toolkit)
                 memory_manager = toolkit.memory
                 try:
@@ -508,17 +565,46 @@ def _run_dashboard_task_inner(
             )
 
             record = clean(record)
-            observed_steps = toolkit.state.records() if memory_manager is not None else []
+            observed_steps = (
+                toolkit.state.records() if memory_manager is not None else []
+            )
             calls = [r.command for r in observed_steps if r.command]
-            write_json(Path(output_dir) / "outcome.json", {"ended_at": stamp(), "environment_success": environment_success,
-                       "finish": finish_result, "error": agent_error, "stats": stats, "elapsed_s": record["elapsed_s"],
-                       "status": termination_reason(agent_error, state.workbench_aborted, finish_result, solved),
-                       "last_completed_step": toolkit.state.records()[-1].step_idx if calls else 0,
-                       "actions": len(calls), "release_count": sum(c.get("action") == "release" for c in calls),
-                       "release_evidence": [{"step":r.step_idx, "command":r.command, "result":r.result, "gripper_qpos":r.state.get("robot0_gripper_qpos")} for r in observed_steps if (r.command or {}).get("action") == "release"],
-                       "last_gripper_qpos": observed_steps[-1].state.get("robot0_gripper_qpos") if observed_steps else None,
-                       "video_recorded": (Path(output_dir) / "episode.mp4").is_file(),
-                       "stable_placement": "未独立验证"})
+            write_json(
+                Path(output_dir) / "outcome.json",
+                {
+                    "ended_at": stamp(),
+                    "environment_success": environment_success,
+                    "finish": finish_result,
+                    "error": agent_error,
+                    "stats": stats,
+                    "elapsed_s": record["elapsed_s"],
+                    "status": termination_reason(
+                        agent_error, state.workbench_aborted, finish_result, solved
+                    ),
+                    "last_completed_step": toolkit.state.records()[-1].step_idx
+                    if calls
+                    else 0,
+                    "actions": len(calls),
+                    "release_count": sum(c.get("action") == "release" for c in calls),
+                    "release_evidence": [
+                        {
+                            "step": r.step_idx,
+                            "command": r.command,
+                            "result": r.result,
+                            "gripper_qpos": r.state.get("robot0_gripper_qpos"),
+                        }
+                        for r in observed_steps
+                        if (r.command or {}).get("action") == "release"
+                    ],
+                    "last_gripper_qpos": observed_steps[-1].state.get(
+                        "robot0_gripper_qpos"
+                    )
+                    if observed_steps
+                    else None,
+                    "video_recorded": (Path(output_dir) / "episode.mp4").is_file(),
+                    "stable_placement": "未独立验证",
+                },
+            )
         try:
             with open(transcript_path, "a") as transcript_file:
                 json.dump(record, transcript_file, indent=2, default=str)

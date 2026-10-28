@@ -221,9 +221,7 @@ class Workbench:
 
         summary = self.pilot.summary()
         used = {row["id"] for row in summary["rows"]}
-        finished = {
-            row["id"] for row in summary["rows"] if "termination_reason" in row
-        }
+        finished = {row["id"] for row in summary["rows"] if "termination_reason" in row}
         active = summary["episodes_reserved"] > summary["finished"]
         freeze_error = None
         try:
@@ -271,9 +269,14 @@ class Workbench:
             **{
                 key: summary[key]
                 for key in (
-                    "episodes_reserved", "episode_limit", "finished",
-                    "offline_requests", "offline_limit",
-                    "schema_version", "development_limit", "holdout_limits",
+                    "episodes_reserved",
+                    "episode_limit",
+                    "finished",
+                    "offline_requests",
+                    "offline_limit",
+                    "schema_version",
+                    "development_limit",
+                    "holdout_limits",
                 )
             },
             "cells": cells,
@@ -282,7 +285,9 @@ class Workbench:
     def _pilot_frozen_bundle(self):
         frozen = self.pilot._transaction(
             lambda events: (
-                next((event["id"] for event in events if event["kind"] == "frozen"), None),
+                next(
+                    (event["id"] for event in events if event["kind"] == "frozen"), None
+                ),
                 None,
             )
         )
@@ -328,7 +333,9 @@ class Workbench:
             request.get(key) != BUDGET[key]
             for key in ("max_turns", "planner_timeout_s")
         ):
-            raise ValueError("Pilot requires 60 responses and a 3600-second planner budget")
+            raise ValueError(
+                "Pilot requires 60 responses and a 3600-second planner budget"
+            )
         if cell["stage"] == "provisional":
             generated = [
                 tool
@@ -342,9 +349,13 @@ class Workbench:
             ):
                 raise ValueError("Select replay-validated generated perception tools")
         elif cell["stage"] == "validate":
-            expected = self._pilot_frozen_bundle()["conditions"][cell["condition"]]["tools"]
+            expected = self._pilot_frozen_bundle()["conditions"][cell["condition"]][
+                "tools"
+            ]
             if not tools_match_for_execution(request["frozen_tools"], expected):
-                raise ValueError("Selected tools differ from the frozen validation condition")
+                raise ValueError(
+                    "Selected tools differ from the frozen validation condition"
+                )
 
     def recover_interrupted(self):
         for path in self.root.glob("*/tasks/*/manifest.json"):
@@ -361,7 +372,9 @@ class Workbench:
             if (path.parent / "pilot-attempt.json").exists():
                 from robots.univtac.pilot.execution import restore_from_output
 
-                restore_from_output(path.parent).after_finish(json.loads(final.read_text()))
+                restore_from_output(path.parent).after_finish(
+                    json.loads(final.read_text())
+                )
 
     @classmethod
     def from_env(cls, *, robot="libero"):
@@ -459,7 +472,10 @@ class Workbench:
             "frozen_tools": selected,
         }
         self.validate_pilot_request(prepared)
-        if self.pilot and self.pilot._cell(prepared["pilot_cell"])["stage"] == "validate":
+        if (
+            self.pilot
+            and self.pilot._cell(prepared["pilot_cell"])["stage"] == "validate"
+        ):
             prepared["frozen_tools"] = copy.deepcopy(
                 self._pilot_frozen_bundle()["conditions"]["E"]["tools"]
             )
@@ -495,8 +511,7 @@ class Workbench:
         if profile_id not in self.profiles:
             raise ValueError("Unknown model profile")
         request_id = (
-            self.pilot.reserve_offline("connectivity", None, [])
-            if self.pilot else None
+            self.pilot.reserve_offline("connectivity", None, []) if self.pilot else None
         )
         try:
             with self.environment(profile_id) as p:
@@ -510,12 +525,14 @@ class Workbench:
                 ).as_dict()
         except BaseException as exc:
             if request_id is not None:
-                failure = clean({
-                    "ok": False,
-                    "status": "error",
-                    "detail": f"{type(exc).__name__}: {exc}",
-                    "checked_at": stamp(),
-                })
+                failure = clean(
+                    {
+                        "ok": False,
+                        "status": "error",
+                        "detail": f"{type(exc).__name__}: {exc}",
+                        "checked_at": stamp(),
+                    }
+                )
                 self.checks[profile_id] = failure
                 self.pilot.finish_offline(
                     request_id, {"model_profile": profile_id, **failure}
@@ -562,8 +579,10 @@ class Workbench:
                 item["files"] = sorted(
                     str(p.relative_to(root))
                     for p in root.rglob("*")
-                    if p.is_file() and (
-                        not p.is_symlink() or (
+                    if p.is_file()
+                    and (
+                        not p.is_symlink()
+                        or (
                             p == root / "episode.mp4"
                             and p.resolve().is_relative_to(root.resolve())
                         )

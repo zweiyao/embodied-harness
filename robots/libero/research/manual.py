@@ -132,7 +132,9 @@ class ManualToolkit(LiberoToolkit):
                 "resampling": "nearest pixel centres",
             }
             self.state.save(
-                "mask_alignment_" + result.data["segment_artifact"], alignment, step=step
+                "mask_alignment_" + result.data["segment_artifact"],
+                alignment,
+                step=step,
             )
             with self.mask_lock:
                 self.sensors.masks.setdefault(step, {})[name] = {

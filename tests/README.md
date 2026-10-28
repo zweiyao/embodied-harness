@@ -60,6 +60,11 @@ Unit tests must run offline on an ordinary CPU machine. They may cross a real
 local boundary, such as a loopback TCP connection or child process, but must
 not contact external services.
 
+The Ubuntu CI jobs install `opencv-python-headless==4.10.0.84` and
+`pyrealsense2==2.59.1.11053` for calibration tests. The Flexiv tests use the
+RealSense SDK's pixel deprojection math with synthetic observations; they do
+not open a camera or connect to the robot.
+
 Run the complete suite with:
 
 ```bash

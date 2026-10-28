@@ -415,8 +415,13 @@ def test_validation_requires_bound_freeze_and_exact_selected_tools(
 
     pilot, bench, state, client = pilot_dashboard
     inputs = _finish_development(pilot, tmp_path, 6)
-    ids = _publish_sensor(bench)
     frozen = bundle(inputs, pilot)
+    version = publish(
+        bench.library,
+        frozen["conditions"]["E"]["tools"][-1],
+        {"validation": "replay_passed"},
+    )
+    ids = ["native:finish", "native:move_eef", f"generated:{version}"]
     for condition, config in frozen["conditions"].items():
         config["tools"] = bench.selection(ids if condition in "DE" else None)
     freeze_id = pilot.freeze(frozen)

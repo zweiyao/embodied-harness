@@ -160,15 +160,17 @@ def complete(
         prompt = request_prompt(system, payload)
 
         async def bounded():
-            async with asyncio.timeout(timeout_s):
-                return await _complete(
+            return await asyncio.wait_for(
+                _complete(
                     config,
                     model,
                     prompt,
                     images,
                     output_schema=output_schema,
                     on_event=on_event,
-                )
+                ),
+                timeout=timeout_s,
+            )
 
         return asyncio.run(bounded())
 

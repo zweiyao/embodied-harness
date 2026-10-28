@@ -2,6 +2,7 @@
 # Licensed under the Apache License, Version 2.0.
 """Direct SDK inference keeps image input and excludes environment tools."""
 
+import asyncio
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -9,6 +10,7 @@ import openai_codex
 import pytest
 from openai_codex.generated.v2_all import TurnStatus
 
+from robots.libero.research import codex_sdk
 from robots.libero.research.models import Model
 
 
@@ -88,3 +90,30 @@ def test_sdk_direct_inference_boundary(tmp_path, monkeypatch, status, item_type,
     assert "features.shell_tool=false" in overrides
     assert not any("mcp_servers" in value for value in overrides)
     assert not Path(seen["config"].cwd).exists()
+
+
+@pytest.mark.parametrize("cancelled", [False, True])
+def test_sdk_completion_timeout_waits_for_cleanup(tmp_path, monkeypatch, cancelled):
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / "existing-codex"))
+    monkeypatch.setattr(
+        "rpent.robots.components.grounding_agent._check_codex_mcp_isolation",
+        lambda config: None,
+    )
+    seen = {}
+
+    async def pending(config, *args, **kwargs):
+        seen["cwd"] = Path(config.cwd)
+        try:
+            if cancelled:
+                raise asyncio.CancelledError()
+            await asyncio.sleep(10)
+        finally:
+            await asyncio.sleep(0)
+            seen["cleaned"] = True
+
+    monkeypatch.setattr(codex_sdk, "_complete", pending)
+    expected_error = asyncio.CancelledError if cancelled else asyncio.TimeoutError
+    with pytest.raises(expected_error):
+        codex_sdk.complete("gpt-6-astra", "test", {}, [], timeout_s=0.01)
+    assert seen["cleaned"]
+    assert not seen["cwd"].exists()

@@ -203,6 +203,7 @@ class DashboardState:
         self.workbench_aborted = False
         self.run_id = None
         import uuid
+
         self.server_id = uuid.uuid4().hex
         self._task_state: str | None = None
         self._terminated = False
@@ -601,7 +602,9 @@ class DashboardState:
 
             if self.workbench is not None:
                 if self._session_state not in {"ready"}:
-                    raise ValueError("Finish or interrupt the current experiment before starting another")
+                    raise ValueError(
+                        "Finish or interrupt the current experiment before starting another"
+                    )
                 request = self.workbench.prepare({**self._next_config, **request})
             self._pending_task = dict(request)
             self._control_error = None
@@ -682,7 +685,11 @@ class DashboardState:
             while output_dir.exists():
                 self._task_generation += 1
                 number = self._task_generation
-                output_dir = self._session_root / "tasks" / f"{number:04d}_{self._task_output_slug(request)}"
+                output_dir = (
+                    self._session_root
+                    / "tasks"
+                    / f"{number:04d}_{self._task_output_slug(request)}"
+                )
             output_dir.mkdir(parents=True, exist_ok=False)
             self._begin_task_locked(request, output_dir=output_dir)
             return ClaimedTask(
@@ -748,7 +755,9 @@ class DashboardState:
 
             self.workbench_aborted = False
             self.journal = RunJournal(output_dir)
-            self.run_id = hashlib.sha256(str(output_dir.resolve().relative_to(self.workbench.root)).encode()).hexdigest()[:20]
+            self.run_id = hashlib.sha256(
+                str(output_dir.resolve().relative_to(self.workbench.root)).encode()
+            ).hexdigest()[:20]
         self.operator = None
         self.operator_verdict = None
         self.operator_exploration = False
@@ -968,7 +977,10 @@ class DashboardState:
     def abort_workbench_task(self) -> None:
         """Drain the current planner through RPent's existing replacement boundary."""
         with self._condition:
-            if self.workbench is None or self._task_state not in {"starting", "running"}:
+            if self.workbench is None or self._task_state not in {
+                "starting",
+                "running",
+            }:
                 raise ValueError("No active workbench experiment")
             self.workbench_aborted = True
             self.journal.append("operator_abort", {})

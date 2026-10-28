@@ -621,7 +621,9 @@ class Pilot:
 
         def reserve(events):
             if any(e["kind"] == "offline_closed" for e in events):
-                raise ValueError("Offline requests are closed; use live simulator episodes")
+                raise ValueError(
+                    "Offline requests are closed; use live simulator episodes"
+                )
             if revision is not None and purpose != "maker":
                 raise ValueError("Revision binding is only valid for maker requests")
             if purpose != "connectivity" and any(e["kind"] == "frozen" for e in events):

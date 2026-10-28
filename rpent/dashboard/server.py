@@ -87,9 +87,15 @@ class DashboardServer:
         self._workbench = getattr(state, "workbench", None)
         if self._workbench is not None:
             self._setup = self._workbench.config["setup"]
-            self._planner_config.update(model_profile=next(iter(self._workbench.profiles)), tools=[t["id"] for t in self._workbench.selection()])
+            self._planner_config.update(
+                model_profile=next(iter(self._workbench.profiles)),
+                tools=[t["id"] for t in self._workbench.selection()],
+            )
             if self._workbench.pilot is not None:
-                defaults = {**self._workbench.pilot_defaults, "pilot_cell": self._workbench.pilot_cell}
+                defaults = {
+                    **self._workbench.pilot_defaults,
+                    "pilot_cell": self._workbench.pilot_cell,
+                }
                 self._planner_config.update(defaults)
                 if self._workbench.pilot_defaults:
                     self._state.set_next_config(self._workbench.pilot_defaults)
@@ -146,9 +152,21 @@ class DashboardServer:
 
         @app.get("/api/setup")
         def api_setup() -> JSONResponse:
-            return JSONResponse({**(self._setup or {}), "robot": self._robot_name, "workbench": self._workbench is not None,
-                                 "model_profiles": self._workbench.public_profiles() if self._workbench else [],
-                                 "pilot": self._workbench.pilot_setup(self._planner_config.get("pilot_cell")) if self._workbench else None})
+            return JSONResponse(
+                {
+                    **(self._setup or {}),
+                    "robot": self._robot_name,
+                    "workbench": self._workbench is not None,
+                    "model_profiles": self._workbench.public_profiles()
+                    if self._workbench
+                    else [],
+                    "pilot": self._workbench.pilot_setup(
+                        self._planner_config.get("pilot_cell")
+                    )
+                    if self._workbench
+                    else None,
+                }
+            )
 
         @app.get("/tools")
         @app.get("/runs")
@@ -168,11 +186,15 @@ class DashboardServer:
 
         @app.get("/api/tools")
         def tool_catalog() -> JSONResponse:
-            return JSONResponse({"tools": self._workbench.catalog() if self._workbench else []})
+            return JSONResponse(
+                {"tools": self._workbench.catalog() if self._workbench else []}
+            )
 
         @app.get("/api/runs")
         def runs() -> JSONResponse:
-            return JSONResponse({"runs": self._workbench.runs() if self._workbench else []})
+            return JSONResponse(
+                {"runs": self._workbench.runs() if self._workbench else []}
+            )
 
         @app.get("/api/runs/{run_id}")
         def run_details(run_id: str) -> JSONResponse:
@@ -234,17 +256,35 @@ class DashboardServer:
                 payload = {**payload, "model": payload["model"].strip()}
             self._planner_config = {**self._planner_config, **payload}
             if self._workbench is not None:
-                selected = self._workbench.profiles[self._planner_config["model_profile"]]
-                self._planner_config.update({k: selected.get(k) for k in ("model", "planner", "reasoning_effort")})
+                selected = self._workbench.profiles[
+                    self._planner_config["model_profile"]
+                ]
+                self._planner_config.update(
+                    {
+                        k: selected.get(k)
+                        for k in ("model", "planner", "reasoning_effort")
+                    }
+                )
             return JSONResponse(self._planner_config)
 
         @app.post("/api/llm/check")
         def api_llm_check(payload: dict[str, Any] = Body(default={})) -> JSONResponse:
             if self._workbench is not None:
-                if self._state.session_state != "ready" or not self._llm_check_lock.acquire(blocking=False):
-                    return JSONResponse({"error": "请在没有实验运行时检查连接"}, status_code=409)
+                if (
+                    self._state.session_state != "ready"
+                    or not self._llm_check_lock.acquire(blocking=False)
+                ):
+                    return JSONResponse(
+                        {"error": "请在没有实验运行时检查连接"}, status_code=409
+                    )
                 try:
-                    return JSONResponse(self._workbench.check(payload.get("model_profile", self._planner_config["model_profile"])))
+                    return JSONResponse(
+                        self._workbench.check(
+                            payload.get(
+                                "model_profile", self._planner_config["model_profile"]
+                            )
+                        )
+                    )
                 except ValueError as exc:
                     return JSONResponse({"error": str(exc)}, status_code=422)
                 finally:

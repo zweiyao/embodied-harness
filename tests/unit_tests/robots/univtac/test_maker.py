@@ -263,7 +263,8 @@ def test_recorded_sdk_stream_rejects_tools_and_cleans_up(monkeypatch, tool, time
         )
 
     if tool or timeout:
-        with pytest.raises((TimeoutError, RuntimeError)):
+        expected_error = asyncio.TimeoutError if timeout else RuntimeError
+        with pytest.raises(expected_error):
             asyncio.run(call())
         assert seen["interrupted"]
     else:
