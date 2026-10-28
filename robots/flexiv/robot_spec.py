@@ -46,6 +46,7 @@ DASHBOARD_SPEC = {
         "reset_home",
         "move_delta",
         "move_tcp",
+        "move_eef",
         "align_tool_down",
         "set_gripper",
         "stop_motion",

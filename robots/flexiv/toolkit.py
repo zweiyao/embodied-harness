@@ -19,9 +19,11 @@ import io
 import re
 import threading
 from pathlib import Path
+from typing import Annotated
 
 import numpy as np
 from PIL import Image, ImageDraw
+from pydantic import Field
 
 from rpent.session import EnvState
 from rpent.tools import ToolResult
@@ -46,6 +48,8 @@ class FlexivToolkit(Toolkit):
             self.add_tool(self.move_delta)
             if env.meta.get("supervised_control"):
                 self.add_tool(self.move_tcp)
+                if env.meta.get("eef_chunk_control"):
+                    self.add_tool(self.move_eef)
                 self.add_tool(self.align_tool_down)
                 self.add_tool(self.set_gripper)
                 self.add_tool(self.stop_motion)
@@ -229,6 +233,31 @@ class FlexivToolkit(Toolkit):
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.move_tcp(position_m, quaternion_wxyz))
+
+    @tool
+    def move_eef(
+        self,
+        position_m: list[float],
+        quaternion_wxyz: list[float],
+        steps: Annotated[int, Field(ge=1, le=5, strict=True)],
+    ) -> ToolResult:
+        """Execute one fixed absolute TCP target for 1–5 controls at 25 Hz, then hold and observe.
+
+        Args:
+            position_m: Absolute native TCP [x,y,z], robot-base metres, within 50 mm.
+            quaternion_wxyz: Explicit unit [w,x,y,z], within 10 degrees of measured TCP.
+            steps: Number of 40 ms controls toward this SAME target, not waypoints.
+
+        The native Flexiv controller executes Cartesian goals; no client-side IK.
+        Each control uses fresh state. The segment is followed by a stationary
+        hold and capture, so total call latency exceeds steps * 0.04 seconds.
+        Arrival at the requested target is not guaranteed. Read measured pose,
+        tracking error and recorded tick states before choosing the next action.
+        Gripper opening is unchanged; use set_gripper(width_m) separately.
+        Existing workspace, table, speed and authorization limits still apply.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(data=self.env.move_eef(position_m, quaternion_wxyz, steps))
 
     @tool
     def align_tool_down(self) -> ToolResult:

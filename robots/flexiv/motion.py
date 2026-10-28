@@ -32,6 +32,10 @@ def pose_error(actual, target):
     )
 
 
+class EEFInputRejected(RuntimeError):
+    """The collector explicitly confirms rejection before any command executed."""
+
+
 class BoundedControl:
     """The operator arms separately; actions never enable, initialize or home."""
 
@@ -201,7 +205,7 @@ class BoundedControl:
         self._failed_motion(error)
         raise error
 
-    def move_tcp(self, position_m, quaternion_wxyz=None):
+    def _validated_tcp_target(self, position_m, quaternion_wxyz=None):
         self._require_motion()
         state = self._control_state()
         initial = np.asarray(state["tcp_pose"], float)
@@ -249,6 +253,10 @@ class BoundedControl:
                 raise ValueError(
                     "Translation must retain >=4 mm grasp-reference table clearance"
                 )
+        return state, target
+
+    def move_tcp(self, position_m, quaternion_wxyz=None):
+        state, target = self._validated_tcp_target(position_m, quaternion_wxyz)
         self._trace("move_begin", target=target.tolist(), state=state)
         try:
             response = self.request(
@@ -308,6 +316,37 @@ class BoundedControl:
                 self._trace("contact_hold", result=result)
                 return result
         raise RuntimeError("Contact hold did not settle")
+
+    def move_eef(self, position_m, quaternion_wxyz, steps):
+        """Execute a fixed EEF goal for 1–5 native 25 Hz steps, then hold."""
+        if not getattr(self, "eef_chunk_control", False):
+            raise RuntimeError("Short EEF control is not enabled on this server")
+        if type(steps) is not int or not 1 <= steps <= 5:
+            raise ValueError("steps must be an integer in 1..5")
+        if np.asarray(quaternion_wxyz).shape != (4,):
+            raise ValueError("Short EEF control requires an explicit wxyz quaternion")
+        state, target = self._validated_tcp_target(position_m, quaternion_wxyz)
+        self._trace("eef_begin", target=target.tolist(), steps=steps, state=state)
+        try:
+            result = self.request(
+                "/rpent/supervised/eef-chunk", {"pose": target.tolist(), "steps": steps}
+            )
+            if (
+                result.get("held") is not True
+                or result.get("executed_steps") != steps
+                or len(result.get("ticks", [])) != steps
+            ):
+                raise RuntimeError(
+                    "Incomplete EEF chunk or unconfirmed stationary hold"
+                )
+            self._control_state()
+            self._trace("eef_end", result=result)
+            return result
+        except EEFInputRejected as error:
+            return {"error": str(error), "no_execution": True, "retryable": True}
+        except BaseException as error:
+            self._failed_motion(error)
+            raise
 
     def set_gripper(self, width_m):
         self._require_motion()

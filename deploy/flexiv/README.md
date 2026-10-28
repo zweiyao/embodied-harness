@@ -59,3 +59,37 @@ and [RDK Cartesian command](https://devwebcom.flexiv.com/software/rdk/api/classf
 The installed RDK 1.9 Python signature was inspected separately; acceleration
 limits are passed by keyword. Fake-hardware checks do not establish actual
 trajectory speed, stopping distance, or manipulation success.
+
+## 25 Hz EEF segments (review candidate)
+
+`eef_chunk.py` installs as the external collector's `collector/core/eef_chunk.py`.
+Apply `collector-eef-chunks.patch` only after checking the actual external file
+against its baseline; this patch adds four integration hooks to the existing
+supervised controller. It does not replace the collector or automatically arm it.
+
+The optional RPent `--eef-chunk-control --supervised-control` enables
+`move_eef(position_m, quaternion_wxyz, steps)`. One fixed absolute native TCP goal
+is submitted for 1–5 controls at 25 Hz. Each tick records fresh state. A measured
+pose hold ends the goal; the adapter confirms settling before returning images.
+Call latency includes hold and acquisition and is longer than the 40–200 ms
+execution segment. The gripper remains a separate `set_gripper(width_m)` call.
+
+Normal completion retains the existing operator authorization without extending
+its expiry. Cancel/stop increments a generation counter serialized against SDK
+Send; the worker cannot send another target after that cancellation. The route
+runs in a worker thread so operator requests can be handled during execution.
+Hardware-feedback, timing, force, lease or hold errors stop/disarm. Only explicit
+pre-execution rejection is returned as retryable without automatic recovery.
+The current 50 mm/10-degree target bounds and native motion limits are reused.
+
+```bash
+FLEXIV_HOME_SOURCE=/path/to/candidate/collector/core \
+  python -m pytest deploy/flexiv/test_home_movej.py \
+  deploy/flexiv/test_native_motion.py deploy/flexiv/test_eef_chunks.py \
+  tests/unit_tests/robots/flexiv -q
+```
+
+The isolated remote candidate passed 156 fake-hardware checks. This is not a
+physical timing, stopping-distance, contact, or manipulation validation. No live
+service has been switched to this candidate. See
+[the field mapping and A06/A07 explanation](../../docs/manual-workbench/flexiv-eef-short-control.md).

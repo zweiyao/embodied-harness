@@ -259,3 +259,96 @@ def test_cancelling_active_motion_requests_stop_before_waiting(tmp_path, monkeyp
         worker.join(2)
         toolkit.close()
     assert not worker.is_alive()
+
+
+def test_short_eef_rpc_is_explicit_and_preserves_field_names():
+    rpc = FakeRPC()
+    client = FlexivEnvClient(rpc)
+    calls = []
+    rpc.call = lambda method, **kwargs: calls.append((method, kwargs)) or {"held": True}
+    assert client.move_eef([0.4, 0, 0.2], [1, 0, 0, 0], 5)["held"]
+    assert calls == [
+        (
+            "env.move_eef",
+            {
+                "kwargs": {
+                    "position_m": [0.4, 0, 0.2],
+                    "quaternion_wxyz": [1, 0, 0, 0],
+                    "steps": 5,
+                },
+                "timeout_s": 40,
+            },
+        )
+    ]
+
+
+def test_prompt_uses_measured_tcp_and_real_command_fields(tmp_path):
+    from robots.flexiv.prompt_bundle import system_prompt
+
+    prompt = system_prompt()
+    assert (
+        prompt["POLICY"]
+        == "Operate as the autonomous policy for one physical Flexiv episode."
+    )
+    assert (
+        prompt["EMBODIMENT"]
+        == "Robot: one Flexiv Rizon4 arm with one gripper. Views are side and wrist RGB-D."
+    )
+    text = get_robot_spec().prompts.render("system", variables={})
+    assert "state.tcp_pose" in text
+    assert "position_m" in text and "quaternion_wxyz" in text and "width_m" in text
+    assert "25 Hz" in text
+
+
+def test_eef_endpoint_registered_only_with_explicit_capability():
+    from robots.flexiv.env_server import CollectorBackend
+
+    backend = CollectorBackend("http://unused", supervised=True)
+    assert "env.move_eef" not in FlexivEnvFacade(backend)._rpc
+    backend.eef_chunk_control = True
+    assert "env.move_eef" in FlexivEnvFacade(backend)._rpc
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_eef_tool_capability_and_strict_steps(tmp_path, monkeypatch, enabled):
+    monkeypatch.setattr("rpent.tools.toolkit.substitute", lambda value: value)
+    monkeypatch.setattr(FlexivToolkit, "_register_common_tools", lambda self: None)
+    calls = []
+    env = SimpleNamespace(
+        meta={
+            "motion_enabled": True,
+            "supervised_control": True,
+            "eef_chunk_control": enabled,
+        },
+        get_observation=lambda: {
+            "state": {"tcp_pose": [0.4, 0, 0.2, 1, 0, 0, 0]},
+            "images_jpeg": {},
+        },
+        move_eef=lambda *args: calls.append(args) or {"held": True},
+        close=lambda: None,
+    )
+    kit = FlexivToolkit(
+        env=env,
+        output_dir=tmp_path,
+        memory=SimpleNamespace(),
+        dashboard_events=SimpleNamespace(enabled=False, emit=lambda e: None),
+    )
+    declarations = {tool.name: tool for tool in kit.list_tools()}
+    assert ("move_eef" in declarations) is enabled
+    if enabled:
+        assert set(declarations["move_eef"].input_schema["required"]) == {
+            "position_m",
+            "quaternion_wxyz",
+            "steps",
+        }
+        arguments = {
+            "position_m": [0.41, 0, 0.2],
+            "quaternion_wxyz": [1, 0, 0, 0],
+            "steps": True,
+        }
+        assert kit.execute_tool("move_eef", arguments).is_error
+        assert calls == []
+        arguments["steps"] = 5
+        assert not kit.execute_tool("move_eef", arguments).is_error
+        assert calls == [([0.41, 0, 0.2], [1, 0, 0, 0], 5)]
+    kit.close()

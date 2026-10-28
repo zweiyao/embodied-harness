@@ -27,7 +27,7 @@ from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from robots.flexiv.motion import BoundedControl
+from robots.flexiv.motion import BoundedControl, EEFInputRejected
 from rpent.robots.components.env_facade_base import BaseEnvFacade
 
 
@@ -41,6 +41,7 @@ class CollectorBackend(BoundedControl):
         supervised=False,
         control_log_dir=None,
         reset_before_task=False,
+        eef_chunk_control=False,
     ):
         self.endpoint = endpoint.rstrip("/")
         self.session = None
@@ -49,6 +50,7 @@ class CollectorBackend(BoundedControl):
         self.rgbd_dir = Path(rgbd_dir) if rgbd_dir else None
         self.supervised = supervised
         self.reset_before_task = reset_before_task
+        self.eef_chunk_control = eef_chunk_control
         self.control_log_dir = Path(control_log_dir) if control_log_dir else None
         self._heartbeat_stop = threading.Event()
         self._heartbeat = None
@@ -94,7 +96,19 @@ class CollectorBackend(BoundedControl):
             ) as response:
                 return json.load(response)
         except HTTPError as exc:
-            raise RuntimeError(f"Collector {exc.code}: {exc.read().decode()}") from exc
+            body = exc.read().decode()
+            if path == "/rpent/supervised/eef-chunk" and exc.code in (409, 422):
+                try:
+                    detail = json.loads(body).get("detail")
+                except (ValueError, AttributeError):
+                    detail = None
+                if (
+                    isinstance(detail, dict)
+                    and detail.get("no_execution") is True
+                    and detail.get("retryable") is True
+                ):
+                    raise EEFInputRejected(detail["error"]) from exc
+            raise RuntimeError(f"Collector {exc.code}: {body}") from exc
 
     def get_env_meta(self):
         return {
@@ -107,6 +121,7 @@ class CollectorBackend(BoundedControl):
             "vla_available": False,
             "calibrated_readonly": self.calibration is not None,
             "supervised_control": self.supervised,
+            "eef_chunk_control": self.eef_chunk_control,
             "home_available": self.supervised,
             "reset_before_task": self.reset_before_task,
             "operator_confirmed_cameras": getattr(
@@ -282,6 +297,10 @@ class FlexivEnvFacade(BaseEnvFacade):
                 "reset_home",
             ):
                 self._rpc[f"env.{name}"] = getattr(self.backend, name)
+        if getattr(self.backend, "supervised", False) and getattr(
+            self.backend, "eef_chunk_control", False
+        ):
+            self._rpc["env.move_eef"] = self.backend.move_eef
         # Motion remains serialized. The stop-only route can interrupt its owner.
 
     def _dispatch_nosession(self, method, args, kwargs):
@@ -303,6 +322,7 @@ def main():
     parser.add_argument("--rgbd-dir", default=None)
     parser.add_argument("--supervised-control", action="store_true")
     parser.add_argument("--reset-before-task", action="store_true")
+    parser.add_argument("--eef-chunk-control", action="store_true")
     parser.add_argument("--allow-provisional-side-control", action="store_true")
     parser.add_argument(
         "--operator-confirmed-calibration-sha256",
@@ -327,6 +347,8 @@ def main():
         not args.calibration_file or not args.control_log_dir
     ):
         parser.error("Supervised control requires calibration and --control-log-dir")
+    if args.eef_chunk_control and not args.supervised_control:
+        parser.error("--eef-chunk-control requires --supervised-control")
     if args.reset_before_task and not args.supervised_control:
         parser.error("--reset-before-task requires --supervised-control")
     if args.supervised_control and args.allow_inconsistent_readonly:
@@ -359,6 +381,7 @@ def main():
         supervised=args.supervised_control,
         control_log_dir=args.control_log_dir,
         reset_before_task=args.reset_before_task,
+        eef_chunk_control=args.eef_chunk_control,
     )
     facade = FlexivEnvFacade(backend)
     for signum in (signal.SIGTERM, signal.SIGINT):

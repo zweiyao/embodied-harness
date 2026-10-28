@@ -15,7 +15,7 @@ from starlette.requests import Request
 @pytest.fixture
 def motion(monkeypatch):
     package = ModuleType('tested_native_collector')
-    package.__path__ = []
+    package.__path__ = [str(Path(os.environ['FLEXIV_HOME_SOURCE']))]
     monkeypatch.setitem(sys.modules, package.__name__, package)
     spec = importlib.util.spec_from_file_location(
         package.__name__ + '.supervised_motion',

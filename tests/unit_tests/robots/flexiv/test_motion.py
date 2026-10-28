@@ -405,3 +405,111 @@ def test_invalid_velocity_cannot_be_mistaken_for_arrival(backend):
     with pytest.raises(RuntimeError, match="joint velocity"):
         backend.move_tcp([0.45, 0.0, 0.2])
     assert backend.calls[-1][0].endswith("/stop")
+
+
+@pytest.mark.parametrize("steps", [1, 5])
+def test_eef_chunk_uses_same_goal_and_does_not_wait_for_arrival(backend, steps):
+    backend.eef_chunk_control = True
+    original = backend.request
+
+    def request(path, data=None):
+        if path.endswith("eef-chunk"):
+            backend.calls.append((path, data))
+            return {
+                "held": True,
+                "reached": False,
+                "executed_steps": steps,
+                "ticks": [{"index": i + 1} for i in range(steps)],
+                "measured_pose": list(backend.state["tcp_pose"]),
+            }
+        return original(path, data)
+
+    backend.request = request
+    result = backend.move_eef([0.41, 0, 0.2], [0, 1, 0, 0], steps)
+    assert result["held"] and not result["reached"] and backend.armed
+    sent = [data for path, data in backend.calls if path.endswith("eef-chunk")]
+    assert sent == [{"pose": [0.41, 0, 0.2, 0, 1, 0, 0], "steps": steps}]
+    assert not any(path.endswith("pose-target") for path, _ in backend.calls)
+
+
+@pytest.mark.parametrize(
+    "failure", ["disabled", "count", "bool", "table", "rotation", "empty_quaternion"]
+)
+def test_eef_invalid_or_disabled_sends_no_motion(backend, failure):
+    backend.eef_chunk_control = failure != "disabled"
+    steps = 6 if failure == "count" else True if failure == "bool" else 1
+    position = [0.4, 0, -0.1] if failure == "table" else [0.41, 0, 0.2]
+    q = (
+        [1, 0, 0, 0]
+        if failure == "rotation"
+        else []
+        if failure == "empty_quaternion"
+        else [0, 1, 0, 0]
+    )
+    with pytest.raises((RuntimeError, ValueError)):
+        backend.move_eef(position, q, steps)
+    assert all(path.endswith("/state") for path, _ in backend.calls)
+
+
+def test_eef_pre_execution_rejection_is_returned_without_disarming(backend):
+    from robots.flexiv.motion import EEFInputRejected
+
+    backend.eef_chunk_control = True
+    original = backend.request
+
+    def request(path, data=None):
+        if path.endswith("eef-chunk"):
+            raise EEFInputRejected("invalid EEF goal")
+        return original(path, data)
+
+    backend.request = request
+    result = backend.move_eef([0.41, 0, 0.2], [0, 1, 0, 0], 1)
+    assert result["no_execution"] and result["retryable"] and backend.armed
+
+
+@pytest.mark.parametrize(
+    "result", [None, {"held": False}, {"held": True, "executed_steps": 1, "ticks": []}]
+)
+def test_eef_ambiguous_or_incomplete_execution_stops(backend, result):
+    backend.eef_chunk_control = True
+    original = backend.request
+
+    def request(path, data=None):
+        if path.endswith("eef-chunk"):
+            if result is None:
+                raise RuntimeError("lost acknowledgement")
+            return result
+        return original(path, data)
+
+    backend.request = request
+    with pytest.raises(RuntimeError):
+        backend.move_eef([0.41, 0, 0.2], [0, 1, 0, 0], 1)
+    assert not backend.armed and backend.calls[-1][0].endswith("/stop")
+
+
+@pytest.mark.parametrize("proven", [False, True])
+def test_collector_http_rejection_requires_explicit_no_execution(monkeypatch, proven):
+    import io
+    import json
+    from urllib.error import HTTPError
+
+    from robots.flexiv.motion import EEFInputRejected
+
+    body = json.dumps(
+        {
+            "detail": {
+                "error": "target rejected",
+                "no_execution": proven,
+                "retryable": True,
+            }
+        }
+    ).encode()
+
+    def rejected(*args, **kwargs):
+        raise HTTPError("http://unused", 422, "rejected", {}, io.BytesIO(body))
+
+    monkeypatch.setattr("robots.flexiv.env_server.urlopen", rejected)
+    backend = CollectorBackend("http://unused")
+    expected = EEFInputRejected if proven else RuntimeError
+    with pytest.raises(expected):
+        backend.request("/rpent/supervised/eef-chunk", {"pose": [0] * 7, "steps": 1})

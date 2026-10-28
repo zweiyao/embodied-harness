@@ -1,6 +1,6 @@
 # GPT-as-Policy 原文 → 非夕真机适配建议
 
-状态：**仅供逐条审核；本轮只改审核文档，不改提示代码、不部署服务、不启动真机。**
+状态（2026-10-28）：**A01/A02 按用户精简；A03/A05 按实际字段保留来源格式；A07 短段接口在隔离候选中实现并做替身验证。未切换运行服务，未执行真机。其他条目继续待审。**
 
 本稿以 GPT-as-Policy 的 GPT-only 原文件为唯一对照基线。每项包含原仓库英文摘录（附固定版本与行号）、建议保留/替换的文字、原因和待你决定的部分。之前以“现有 RPent → 候选稿”做的对照不对应你的需求，已标为历史参考。
 
@@ -10,7 +10,10 @@
 | --- | --- |
 | 真机运行服务 | 尚未切换到新提示；本轮不部署。 |
 | 代码仓库 | `921bc5b` 已写入一份待审候选稿，该稿还未得到你逐条确认；它不是本稿建议自动生效的版本。 |
-| 本文 | 基于来源重新给建议。尤其 A07、A17、A18、A21 仍须你选择，确认后才统一修改候选代码。 |
+| 本文 | 基于来源重新给建议。A07 已选择按来源短段模式实现；A17、A18、A21 等其余条目仍待你选择。 |
+
+
+**用户确认的后续格式要求：** 以后各项保留 GPT-as-Policy 原来的段落/列表结构，只把机器人身份、观测路径、命令字段和确有差异的执行事实替换为非夕对应内容。额外建议单列，不混入原文适配。
 
 ## 固定来源
 
@@ -43,12 +46,12 @@ Operate as the autonomous GPT policy
 **适配到非夕的建议文字 / 选项**
 
 ```text
-Operate as the autonomous policy for one physical Flexiv episode. Choose EEF actions from the original task, current observations and this episode’s history. No pi05 model is available; the implementation assistant does not choose online actions.
+Operate as the autonomous policy for one physical Flexiv episode.
 ```
 
-**为什么需要改：** 这是来源方法的核心，应保留。仅把运行场景补为单次非夕真机任务，不改成“先完成全部几何定位才行动”的规划器。
+**为什么需要改：** 按用户要求，角色句只保留这一句，不在 A01 扩写其他职责。
 
-**请审核：** 建议采纳；属于方法原意的保留。
+**状态：** 用户已指定，已按原句写入候选；未部署。
 
 ---
 
@@ -74,12 +77,12 @@ Views are `cam_high`, `cam_left_wrist`,
 **适配到非夕的建议文字 / 选项**
 
 ```text
-Robot: one Flexiv Rizon4 arm with one gripper. Views are side and wrist RGB-D. Inspect the available views and use their actual image dimensions and recorded frame identifiers.
+Robot: one Flexiv Rizon4 arm with one gripper. Views are side and wrist RGB-D.
 ```
 
-**为什么需要改：** 来源的双臂和三路相机名称在你的现场不存在，应换成单臂、侧面及腕部。不能保留虚构的左右手或头部相机。
+**为什么需要改：** 按用户要求仅保留机器人与视角这两句。
 
-**请审核：** 必要适配；仅改现场事实。
+**状态：** 用户已指定，已按原句写入候选；未部署。
 
 ---
 
@@ -99,10 +102,12 @@ Robot: one Flexiv Rizon4 arm with one gripper. Views are side and wrist RGB-D. I
 **适配到非夕的建议文字 / 选项**
 
 ```text
-tcp_pose and commanded EEF targets refer to the configured native tool TCP in robot-base coordinates, in metres and unit quaternion wxyz. This side-mounted arm’s base +Z is not necessarily table-up.
+- `observe()` returns `state.tcp_pose`, the arm's **native tool TCP in robot-base coordinates**, meters, quaternion **wxyz**: [x,y,z,qw,qx,qy,qz].
+- `position_m` uses `state.tcp_pose[:3]` as the current position; `quaternion_wxyz` uses `state.tcp_pose[3:7]` as the current orientation.
+- Commanded positions are absolute robot-base meters and commanded orientations remain unit wxyz.
 ```
 
-**为什么需要改：** 这是最关键的数值语义适配。命令仍是绝对 EEF 位姿，但参考点必须使用当前非夕工具 TCP；上移方向需要按桌面变换解释。
+**为什么需要改：** 将来源的 current_eef.left/right 精确映射到实际 observe() 返回的 state.tcp_pose；不再只写笼统“使用当前位姿”。候选系统的 FRAMES 段保留列表结构，并写出真实位置/姿态字段。
 
 **请审核：** 必要适配；不能直接沿用 X5 坐标。
 
@@ -147,10 +152,12 @@ Use only the recorded Flexiv tcp_to_grasp_translation_m. The grasp reference is 
 **适配到非夕的建议文字 / 选项**
 
 ```text
-Command the gripper separately with set_gripper(width_m), where 0 is closed and 0.098 m is fully open. Returned width and gripper force are measured feedback; a command or contact flag does not establish a secure grasp.
+- EEF `move_eef` explicitly contains `position_m`, `quaternion_wxyz`, `steps`.
+- Gripper `set_gripper` contains `width_m`: 0 means closed, 0.098 means fully open.
+- `observe()` returns measured opening in `state.gripper_width_m`. Arm and gripper commands are separate.
 ```
 
-**为什么需要改：** 现有接口没有 gripper_closed 字段。建议先复用真实开度接口；若想连目标结构也严格一致，需要实现并验证布尔开合适配器，而不是只换文字。
+**为什么需要改：** 保留来源逐项列命令字段的格式，参数名与候选 RPC/toolkit 一致。新 move_eef 只负责短段手臂运动；夹爪沿用已存在的 set_gripper(width_m)，不能把来源布尔开合字段直接发给非夕。
 
 **请审核：** 待你选择：复用米制接口，或实现来源形式的统一 action adapter。
 
@@ -202,16 +209,14 @@ Native controls are 25 Hz (0.04 s).
 **适配到非夕的建议文字 / 选项**
 
 ```text
-方案一（先复用当前控制器）：
-Execute one bounded Cartesian target, wait for measured completion, then return observations for the next decision. Do not interpret this call as a fixed 25 Hz control segment.
-
-方案二（更接近来源，需先实现）：
-Execute the requested EEF target for a bounded short control segment, then hold safely and return fresh observations and measured tracking error before the next decision.
+- EEF `move_eef(position_m, quaternion_wxyz, steps)` executes 1–5 controls toward the SAME absolute TCP target.
+- Native command period is 0.04 s (25 Hz). A target is not proof of arrival; inspect the returned measured pose and error.
+- At segment end, hold the measured pose, verify settling, then capture observations. Do not keep chasing the old target while the model reasons.
 ```
 
-**为什么需要改：** 来源的固定短段是控制循环的一部分。方案一能先试“模型选 EEF”，但不等价于来源执行节奏；方案二需要真实的短段结束/保持/中断接口，现有 stop 会撤销启用，不能拿它冒充普通段结束。方案二实现前不能把那段话作为现有能力传给模型。
+**为什么需要改：** 已按来源的“同一目标、1–5 步、每步新反馈、短段后再决策”写入隔离候选；由非夕原生 Cartesian controller 执行，不照搬 X5 IK。40–200 ms 是执行段时长，段末停稳和采图另计。物理停稳、实际频率与漂移尚需现场验证，替身测试不证明这些物理性质。
 
-**请审核：** 重点待审：选择先复用现有轨迹，还是先做真正短段 EEF 后端。
+**状态：** 用户已选择按来源短段模式实现。见 [A06/A07 解释、接口与验证](flexiv-eef-short-control.md)。
 
 ---
 
@@ -587,6 +592,6 @@ If a depth-localization helper is exposed, it is optional evidence for the polic
 
 - 22 项编号齐全；22 处来源摘录已核对固定 commit 文件，行号与链接一起保存。
 - 本稿没有把不存在的短段控制、错误字段、传感流或工具白名单写成已实现能力。
-- 本轮只生成审核文本；没有修改候选系统提示、工具代码或实际 SDK 配置。
+- 后续用户明确要求的 A01/A02/A03/A05/A07 已修改候选文本与短段控制代码；运行服务与实际 SDK 推理档位未切换。
 - 审核后先确定动作后端（A07）及动作集合（A21），再让提示与真实接口一起保持一致。
 - 通过代码检查只证明文档/接口一致，不证明机器人任务成功。

@@ -1,0 +1,38 @@
+--- a/collector/core/supervised_motion.py
++++ b/collector/core/supervised_motion.py
+@@ -84,6 +84,8 @@
+             raise
+ 
+     def halt(self, reason='Operator stop'):
++        if hasattr(self, 'eef_chunks'):
++            self.eef_chunks.cancel()
+         robot = self.bridge.driver()
+         self.armed, self.stop_reason = False, reason
+         self.pending_pose, self.command_deadline = None, 0.
+@@ -153,6 +155,8 @@
+             (np.linalg.norm(a) * np.linalg.norm(b)), 0, 1)))
+ 
+     def ready(self, token, *, home=False):
++        if hasattr(self, 'eef_chunks'):
++            self.eef_chunks.guard()
+         robot = self.authorize(token)
+         self.watchdog()
+         if not self.armed:
+@@ -250,7 +254,8 @@
+         robot = self.authorize(token)
+         self.watchdog()
+         state = robot.get_live_state()
+-        if self.command_deadline and not state['gripper_is_moving']:
++        if (self.command_deadline and not state['gripper_is_moving']
++                and not getattr(getattr(self, 'eef_chunks', None), 'active', False)):
+             joint_pending = getattr(getattr(self, 'home', None), 'pending', None)
+             # JointHome owns the primitive completion flag and its fixed deadline.
+             # A keepalive must not acknowledge MoveJ from joint proximity alone.
+@@ -334,4 +339,7 @@
+     async def stop(request: Request):
+         return motion.stop(request.headers.get('X-RPent-Session'))
+ 
++    from .eef_chunk import install_eef_chunks
++    install_eef_chunks(motion)
++
+     return motion
