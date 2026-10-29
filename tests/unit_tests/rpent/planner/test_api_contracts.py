@@ -181,6 +181,53 @@ def test_finish_returns_transcript_for_rpent_without_step_files(tmp_path, monkey
     ]
 
 
+@pytest.mark.parametrize("request_timeout_s", [None, 0.05])
+def test_opt_in_model_timeout_covers_stalled_response_stream(
+    tmp_path, request_timeout_s
+):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.model_request_timeout_s = request_timeout_s
+    stream_closed = []
+
+    async def stream(messages, info):
+        try:
+            yield "starting"
+            await asyncio.sleep(0.15)
+            yield finish()
+        finally:
+            stream_closed.append(True)
+
+    result, _, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=2
+    )
+    assert stream_closed == [True]
+    if request_timeout_s is None:
+        assert result.error is None
+        assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+    else:
+        assert "model response timed out after 0.05s" in result.error
+        assert result.finish_result is None
+        assert toolkit.calls == []
+
+
+def test_model_response_timeout_excludes_tool_execution(tmp_path):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.model_request_timeout_s = 0.1
+    toolkit.register("slow_tool", lambda: (time.sleep(0.25), "done")[1])
+
+    async def stream(messages, info):
+        yield finish() if toolkit.calls else tool("slow_tool")
+
+    result, _, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=2
+    )
+    assert result.error is None
+    assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+    assert [name for name, _ in toolkit.calls] == ["slow_tool", "finish"]
+
+
 def test_refused_finish_retries_without_claiming_success(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)
@@ -1049,6 +1096,84 @@ def test_offline_http_planner_executes_action_and_finish(tmp_path):
         assert toolkit.calls == [("move", {}), ("finish", FINISH_ARGS)]
         assert result.finish_result == {"_finish": True, **FINISH_ARGS}
         server.assert_complete()
+
+
+@pytest.mark.parametrize(
+    "model_name,effort,expected",
+    [
+        ("qwen3.8-max", "none", False),
+        ("qwen3.8-flash", "none", False),
+        ("qwen3.8-max", "high", True),
+        ("gpt-4.1", "none", None),
+    ],
+)
+def test_qwen_thinking_setting_reaches_serialized_http_body(
+    tmp_path,
+    model_name,
+    effort,
+    expected,
+):
+    import httpx2
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    bodies = []
+
+    def respond(request):
+        bodies.append(json.loads(request.content))
+        chunk = {
+            "id": "offline",
+            "object": "chat.completion.chunk",
+            "created": 1,
+            "model": model_name,
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "tool_calls",
+                    "delta": {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": "finish1",
+                                "type": "function",
+                                "function": {
+                                    "name": "finish",
+                                    "arguments": json.dumps(FINISH_ARGS),
+                                },
+                            }
+                        ],
+                    },
+                }
+            ],
+        }
+        return httpx2.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            content=f"data: {json.dumps(chunk)}\n\ndata: [DONE]\n\n".encode(),
+        )
+
+    client = httpx2.AsyncClient(transport=httpx2.MockTransport(respond))
+    model = OpenAIChatModel(
+        model_name,
+        provider=OpenAIProvider(
+            base_url="https://example.invalid/v1",
+            api_key="offline-test",
+            http_client=client,
+        ),
+    )
+    try:
+        result, _, _ = solve(tmp_path, model, reasoning_effort=effort, max_tokens=8192)
+        assert result.error is None
+        assert len(bodies) == 1
+        body = bodies[0]
+        assert body["max_completion_tokens"] == 8192
+        if expected is None:
+            assert "enable_thinking" not in body
+        else:
+            assert body["enable_thinking"] is expected
+    finally:
+        asyncio.run(client.aclose())
 
 
 def test_offline_http_planner_preserves_non_streaming_responses():

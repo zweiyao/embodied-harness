@@ -1176,15 +1176,15 @@ def _save_observation_artifacts(
             np.asarray(rgb_hi)[::-1],
             step=step_idx,
         )
-        world_hi = _world_from_depth(
-            _metric_depth(depth_hi, meta_hi)[::-1],
-            meta_hi,
-        ).astype(np.float16)
+        depth_metric_hi = _metric_depth(depth_hi, meta_hi)[::-1]
+        world_hi = _world_from_depth(depth_metric_hi, meta_hi).astype(np.float16)
         env_state.save(
             "agentview_world_high.npz",
             world_hi,
             step=step_idx,
         )
+        env_state.save("agentview_depth_high.npz", depth_metric_hi, step=step_idx)
+        env_state.save("agentview_metadata_high.json", meta_hi, step=step_idx)
     except Exception as e:
         logger.warning("agentview high-res dump failed: %s", e)
 
@@ -1203,15 +1203,17 @@ def _save_observation_artifacts(
             np.asarray(rgb_wrist_hi)[::-1],
             step=step_idx,
         )
-        world_wrist_hi = _world_from_depth(
-            _metric_depth(depth_wrist_hi, meta_wrist_hi)[::-1],
-            meta_wrist_hi,
-        ).astype(np.float16)
+        depth_metric_wrist_hi = _metric_depth(depth_wrist_hi, meta_wrist_hi)[::-1]
+        world_wrist_hi = _world_from_depth(depth_metric_wrist_hi, meta_wrist_hi).astype(
+            np.float16
+        )
         env_state.save(
             "wrist_world_high.npz",
             world_wrist_hi,
             step=step_idx,
         )
+        env_state.save("wrist_depth_high.npz", depth_metric_wrist_hi, step=step_idx)
+        env_state.save("wrist_metadata_high.json", meta_wrist_hi, step=step_idx)
     except Exception as e:
         logger.warning("wrist high-res dump failed: %s", e)
 

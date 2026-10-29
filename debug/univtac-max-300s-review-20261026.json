@@ -1,0 +1,96 @@
+{
+  "max_tokens": 10000,
+  "enable_thinking": true,
+  "single_request_timeout_s": 300,
+  "responses_per_window": 1,
+  "actual_offline_requests": 2,
+  "new_episodes": 0,
+  "actions_executed": 0,
+  "retries": 0,
+  "windows": [
+    {
+      "window": "dev03-step3",
+      "request_id": "a74f9424c2d6461bb3a6664d9a6faf50",
+      "first_chunk_s": 4.006500005023554,
+      "first_text_s": 193.117930654902,
+      "first_tool_call_s": 194.02733290800825,
+      "last_stream_event_s": 197.42619292391464,
+      "total_s": 197.42666794499382,
+      "finish_reason": "tool_call",
+      "usage": {
+        "input_tokens": 6030,
+        "cache_write_tokens": 0,
+        "cache_read_tokens": 1024,
+        "output_tokens": 9185,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0,
+        "details": {
+          "reasoning_tokens": 8863,
+          "text_tokens": 321
+        },
+        "cost": null
+      },
+      "wire_sha256": "49222961947b876a69ffda4954f315f96b578d96577216a077a30744b6be5fc1",
+      "wire_body_matches_10000_180s_request": true,
+      "tool_call_counts": {
+        "read_image": 3,
+        "tactile_stats": 2,
+        "depth_points": 1
+      },
+      "all_arguments_valid": true,
+      "all_readonly_replays_succeeded": true,
+      "candidate_called": false,
+      "actions_executed": 0
+    },
+    {
+      "window": "dev04-step5",
+      "request_id": "2fa185aca3a04d67ba19ee7024cb34f9",
+      "first_chunk_s": 4.334309382131323,
+      "first_text_s": 128.86197060416453,
+      "first_tool_call_s": 129.91424841503613,
+      "last_stream_event_s": 135.21597742801532,
+      "total_s": 135.2164732189849,
+      "finish_reason": "tool_call",
+      "usage": {
+        "input_tokens": 6641,
+        "cache_write_tokens": 0,
+        "cache_read_tokens": 1024,
+        "output_tokens": 6274,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0,
+        "details": {
+          "reasoning_tokens": 5800,
+          "text_tokens": 473
+        },
+        "cost": null
+      },
+      "wire_sha256": "d3ed3c064d66afb567a59c270fe09740b2c7350669b5f088c0a9602f11044a8a",
+      "wire_body_matches_10000_180s_request": true,
+      "tool_call_counts": {
+        "read_image": 4,
+        "depth_points": 2
+      },
+      "all_arguments_valid": true,
+      "all_readonly_replays_succeeded": true,
+      "candidate_called": false,
+      "actions_executed": 0
+    }
+  ],
+  "validation": "5 CPU/Docker/Mock tests passed before dispatch. Both windows checked full actual wire equality and exactly one request even when perception calls return.",
+  "conclusion": "Both first responses returned native perception calls without exhausting 10000 tokens. dev03 first tool event was after 180 seconds; dev04 was before 180, so its faster response cannot be attributed solely to the higher timeout. Neither selected G1. No action executed, no second model response, no task-success or tool-gain claim.",
+  "interpretation_assessed": false,
+  "interpretation_reason": "Only the first response was allowed; replay results were recorded but not sent to a second model request.",
+  "pilot_counts_after": {
+    "offline_requests": 13,
+    "episodes_reserved": 8
+  },
+  "files_sha256": {
+    "acceptance.py": "e97ab2ca1bed75cba1974a7f7a9a8868264f5caeac6ffd6d985efc4740356212",
+    "native_adapter.py": "811ad1867ab9835687161cca44dda7132e8c5824371fd19bff25f4b0d4a97619",
+    "test_acceptance.py": "c672ec494e7d2e0a97a831d406c024d7ab26bcdbb1f71fc5c66c06d96d116713"
+  }
+}

@@ -331,3 +331,24 @@ client without touching the robot by:
    surface (e.g. ``pi0_pick`` → ``mymodel_pick``) needs to change.
 
 See :doc:`../development/add_primitive` for the full walkthrough.
+
+Perception Tool Research
+------------------------
+
+Pass ``--sensor-library /path/to/library.json --memory-profile local`` to run a
+frozen perception library through the native CLI or Dashboard. An empty JSON
+list selects the baseline. This mode supports ``api`` and ``codex`` planners,
+keeps the native motion primitives and their default pick budgets, and exposes
+RGB-D, calibration, proprioception, segmentation and generated sensor tools.
+Generated tools require the Docker sandbox described in
+``robots/libero/research/README.md``.
+
+Start with ``view_env_state`` to read the instruction and initial images.
+Motion results provide subsequent observations and execution counts. Task memory,
+simulator object state and controller success labels are excluded from model
+inputs. Codex uses an isolated home with only RPent's MCP tools.
+Do not combine this mode with ``--explore`` or ``--enable-direct-action``.
+
+Each run saves ``sensor-trace.json`` and ``research-report.json`` alongside the
+native transcript and video. Evaluate task success using ``native_success`` in
+the report, not the model's finish claim or Dashboard run-completion status.

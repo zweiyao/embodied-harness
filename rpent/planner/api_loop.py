@@ -55,7 +55,12 @@ from pydantic_ai import (
 )
 from pydantic_ai.agent import WrapperAgent
 from pydantic_ai.capabilities import AbstractCapability, Thinking, on_event
-from pydantic_ai.capabilities.abstract import AgentNode, NodeResult, WrapRunHandler
+from pydantic_ai.capabilities.abstract import (
+    AgentNode,
+    NodeResult,
+    WrapNodeRunHandler,
+    WrapRunHandler,
+)
 from pydantic_ai.exceptions import UsageLimitExceeded, UserError
 from pydantic_ai.messages import ModelMessage, UserContent
 from pydantic_ai.models import Model, ModelRequestContext
@@ -72,6 +77,7 @@ from rpent.planner.base import (
     cancel_and_wait,
     execute_tool,
 )
+from rpent.planner.request_timeout import ModelRequestTimeout, request_timeout
 from rpent.tools.toolkit import Toolkit, ToolResult
 from rpent.utils.logging import get_logger
 from rpent.utils.templates import substitute
@@ -161,7 +167,9 @@ class ApiAgentLoop(Planner):
             end_strategy="early",
             # Finish refusals may span attempts; the request budget still applies.
             retries={"output": max_turns},
-            model_settings=_build_model_settings(self.model, self.max_tokens),
+            model_settings=_build_model_settings(
+                self.model, self.max_tokens, self.reasoning_effort
+            ),
             capabilities=[
                 SlidingWindowCompaction(
                     max_messages=80, max_fraction=0.8, keep_messages=40
@@ -185,7 +193,9 @@ class ApiAgentLoop(Planner):
         try:
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
-                timeout=None if self.interactive else self.timeout_s,
+                timeout=None
+                if self.interactive and not getattr(toolkit, "journal", None)
+                else self.timeout_s,
             )
         except asyncio.TimeoutError:
             session.error = f"planner timed out after {self.timeout_s:g}s"
@@ -211,9 +221,12 @@ class ApiAgentLoop(Planner):
         )
 
 
-def _build_model_settings(model: Model, max_tokens: int) -> ModelSettings:
-    """Enable parallel tool requests and preserve Anthropic prompt caching."""
+def _build_model_settings(
+    model: Model, max_tokens: int, reasoning_effort: str
+) -> ModelSettings:
+    """Preserve provider caching and translate Qwen's explicit thinking switch."""
     from pydantic_ai.models.anthropic import AnthropicModel, AnthropicModelSettings
+    from pydantic_ai.models.openai import OpenAIChatModel
 
     if isinstance(model, AnthropicModel):
         return AnthropicModelSettings(
@@ -223,7 +236,16 @@ def _build_model_settings(model: Model, max_tokens: int) -> ModelSettings:
             anthropic_cache_tool_definitions=True,
             anthropic_cache_messages=True,
         )
-    return ModelSettings(max_tokens=max_tokens, parallel_tool_calls=True)
+    settings = ModelSettings(max_tokens=max_tokens, parallel_tool_calls=True)
+    if isinstance(model, OpenAIChatModel) and model.model_name.lower().startswith(
+        "qwen"
+    ):
+        # OpenAI's generic thinking profile does not map Qwen's enable_thinking.
+        settings["extra_body"] = {
+            **((model.settings or {}).get("extra_body") or {}),
+            "enable_thinking": reasoning_effort != "none",
+        }
+    return settings
 
 
 class _ConversationAgent(WrapperAgent):
@@ -316,7 +338,8 @@ class _HarnessToolkit(FunctionToolset):
         self.stopping = threading.Event()
         self.validators: dict[str, Draft202012Validator] = {}
         self.output_types: list[Any] = [str]
-        self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
+        if not getattr(toolkit, "planner_tools_only", False):
+            self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
         for declaration in toolkit.list_tools():
             spec = {
                 "name": declaration.name,
@@ -420,6 +443,10 @@ class _HarnessToolkit(FunctionToolset):
             self.stopping.set()
             raise
         self._record_result(name, ctx, self._text(result))
+        stop_result = getattr(self.toolkit, "planner_stop_result", None)
+        if stop_result is not None:
+            self.finish_result = stop_result
+            self.stopping.set()
         if self.stopping.is_set():
             # End inside CallToolsNode so the SDK records an interrupted batch
             # before it can consume queued messages in the next request node.
@@ -504,6 +531,27 @@ class _Session(AbstractCapability):
         self.run_done.set()
         self.cancellation: CancellationToken | None = None
         self.completions = 0
+        self.model_request_timeout_s = request_timeout(toolkit.toolkit)
+
+    async def wrap_node_run(
+        self, ctx: RunContext, *, node: AgentNode, handler: WrapNodeRunHandler
+    ) -> NodeResult:
+        """Limit a complete model response, including its stream, but not tools."""
+        timeout = self.model_request_timeout_s
+        if timeout is None or not isinstance(node, ModelRequestNode):
+            return await handler(node)
+        try:
+            return await asyncio.wait_for(handler(node), timeout=timeout)
+        except asyncio.TimeoutError as exc:
+            journal = getattr(self.toolkit.toolkit, "journal", None)
+            if journal is not None:
+                journal.append(
+                    "model_request_timeout",
+                    {"timeout_s": timeout, "scope": "model_response"},
+                )
+            raise ModelRequestTimeout(
+                f"model response timed out after {timeout:g}s"
+            ) from exc
 
     async def wrap_run(
         self, ctx: RunContext, *, handler: WrapRunHandler
@@ -542,6 +590,9 @@ class _Session(AbstractCapability):
             if self.interactive:
                 message += " Use /exit to close the session."
             raise _RequestBudgetExhausted(message) from None
+        journal = getattr(self.toolkit.toolkit, "journal", None)
+        if journal is not None:
+            journal.append("model_request", request_context)
         return request_context
 
     async def before_node_run(self, ctx: RunContext, *, node: AgentNode) -> AgentNode:
@@ -564,6 +615,9 @@ class _Session(AbstractCapability):
         self, ctx: RunContext, *, node: AgentNode, result: NodeResult
     ) -> NodeResult:
         if isinstance(node, ModelRequestNode) and isinstance(result, CallToolsNode):
+            journal = getattr(self.toolkit.toolkit, "journal", None)
+            if journal is not None:
+                journal.append("model_response", result.model_response)
             # Retain completed turns even when request history is later compacted.
             content: list[dict[str, Any]] = []
             for part in result.model_response.parts:

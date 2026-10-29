@@ -32,6 +32,10 @@ def pose_error(actual, target):
     )
 
 
+class EEFInputRejected(RuntimeError):
+    """The collector explicitly confirms rejection before any command executed."""
+
+
 class BoundedControl:
     """The operator arms separately; actions never enable, initialize or home."""
 
@@ -45,6 +49,15 @@ class BoundedControl:
             or state["mode"] != "Mode.NRT_CARTESIAN_MOTION_FORCE"
         ):
             raise RuntimeError("Control stopped; operator must inspect and arm again")
+        pose = np.asarray(state["tcp_pose"], float)
+        velocity = np.asarray(state["joint_velocity"], float)
+        if (
+            pose.shape != (7,)
+            or velocity.shape != (7,)
+            or not np.isfinite(np.r_[pose, velocity]).all()
+            or abs(np.linalg.norm(pose[3:]) - 1) > 1e-3
+        ):
+            raise RuntimeError("Invalid measured pose or joint velocity feedback")
         if not np.isfinite(state["gripper_force_n"]):
             raise RuntimeError("Invalid gripper force feedback")
         return state
@@ -96,6 +109,10 @@ class BoundedControl:
                 self._trace("home_step", result=result)
                 if result.get("reached") is True:
                     return result
+                if result.get("motion") == "MoveJ":
+                    # The collector submits once and checks actual feedback on every poll.
+                    time.sleep(0.1)
+                    continue
                 deadline, settled = time.monotonic() + 30, 0
                 while time.monotonic() < deadline:
                     time.sleep(0.1)
@@ -134,9 +151,13 @@ class BoundedControl:
 
     def table_geometry(self, state):
         board = np.asarray(self.calibration.data["T_base_board"], float)
-        normal = board[:3, 2].copy()
-        if normal @ (np.asarray(state["tcp_pose"][:3]) - board[:3, 3]) < 0:
-            normal *= -1
+        normal = getattr(self, "_table_normal", None)
+        if normal is None:
+            normal = board[:3, 2].copy()
+            if normal @ (np.asarray(state["tcp_pose"][:3]) - board[:3, 3]) < 0:
+                normal *= -1
+            # Freeze the accepted side; crossing the plane must not flip "up".
+            self._table_normal = normal
         reference = np.asarray(state["tcp_pose"][:3]) + rotation(
             state["tcp_pose"]
         ).apply(self.calibration.offset)
@@ -147,9 +168,9 @@ class BoundedControl:
         self._require_motion()
         state = self._control_state()
         normal, clearance = self.table_geometry(state)
-        if state["gripper_width_m"] < 0.08 or clearance < 0.05:
+        if clearance < 0.05:
             raise ValueError(
-                "Open gripper to >=80 mm and raise grasp reference >=50 mm above table first"
+                "Raise grasp reference >=50 mm above table before alignment"
             )
         z_axis = -normal
         old_x = rotation(state["tcp_pose"]).as_matrix()[:, 0]
@@ -158,10 +179,33 @@ class BoundedControl:
             raise ValueError("Current heading cannot define a table-down orientation")
         x_axis /= np.linalg.norm(x_axis)
         y_axis = np.cross(z_axis, x_axis)
-        q = Rotation.from_matrix(np.column_stack((x_axis, y_axis, z_axis))).as_quat()
-        return self.move_tcp(state["tcp_pose"][:3], [q[3], *q[:3]])
+        target_rotation = Rotation.from_matrix(
+            np.column_stack((x_axis, y_axis, z_axis))
+        )
+        # Keep one model call: use bounded native goals rather than microscopic steps.
+        commands, started = 0, time.monotonic()
+        for _ in range(20):
+            if time.monotonic() - started > 210:
+                break
+            current = self._control_state()["tcp_pose"]
+            remaining = (target_rotation * rotation(current).inv()).as_rotvec()
+            angle = float(np.linalg.norm(remaining))
+            if angle <= np.deg2rad(0.12):
+                return {
+                    "reached": True,
+                    "measured_pose": current,
+                    "angle_error_deg": float(np.rad2deg(angle)),
+                    "commands": commands,
+                }
+            increment = remaining * min(1.0, np.deg2rad(9.9) / angle)
+            q = (Rotation.from_rotvec(increment) * rotation(current)).as_quat()
+            result = self.move_tcp(state["tcp_pose"][:3], [q[3], *q[:3]])
+            commands += result["commands"]
+        error = RuntimeError("Table alignment did not converge")
+        self._failed_motion(error)
+        raise error
 
-    def move_tcp(self, position_m, quaternion_wxyz=None):
+    def _validated_tcp_target(self, position_m, quaternion_wxyz=None):
         self._require_motion()
         state = self._control_state()
         initial = np.asarray(state["tcp_pose"], float)
@@ -187,60 +231,62 @@ class BoundedControl:
             raise ValueError(
                 "One tool call is limited to 50 mm and 10 degrees; use intermediate waypoints"
             )
+        normal, clearance = self.table_geometry(state)
+        board_origin = np.asarray(self.calibration.data["T_base_board"], float)[:3, 3]
+        # Translation is linear. The offset sphere bounds every intermediate rotation;
+        # it is a grasp-reference/table check, not a finger/object collision model.
+        target_height = float(normal @ (target[:3] - board_origin))
         if angle > np.deg2rad(0.2):
-            _, clearance = self.table_geometry(state)
-            if state["gripper_width_m"] < 0.08 or clearance < 0.05:
+            lowest = min(float(normal @ (initial[:3] - board_origin)), target_height)
+            if lowest - np.linalg.norm(self.calibration.offset) < 0.05:
                 raise ValueError(
-                    "Rotate only with open gripper and >=50 mm table clearance"
+                    "Rotation requires >=50 mm table clearance along the motion"
                 )
+        else:
+            target_reference = target[:3] + rotation(target).apply(
+                self.calibration.offset
+            )
+            lowest = min(clearance, float(normal @ (target_reference - board_origin)))
+            # Cover tiny rotations even when they are below the coarse-rotation gate.
+            lowest -= 2 * np.linalg.norm(self.calibration.offset) * np.sin(angle / 2)
+            if lowest < 0.004:
+                raise ValueError(
+                    "Translation must retain >=4 mm grasp-reference table clearance"
+                )
+        return state, target
+
+    def move_tcp(self, position_m, quaternion_wxyz=None):
+        state, target = self._validated_tcp_target(position_m, quaternion_wxyz)
         self._trace("move_begin", target=target.tolist(), state=state)
-        started, commands = time.monotonic(), 0
         try:
-            for _ in range(250):
-                if time.monotonic() - started > 240:
-                    raise RuntimeError("Motion tool exceeded 240 seconds")
+            response = self.request(
+                "/rpent/supervised/pose-target", {"pose": target.tolist()}
+            )
+            self._trace("pose_target", request=target.tolist(), response=response)
+            deadline, settled = time.monotonic() + 30, 0
+            while time.monotonic() < deadline:
+                time.sleep(0.05)
+                state = self._control_state()
+                self._trace("feedback", state=state)
                 current = np.asarray(state["tcp_pose"], float)
                 d, a = pose_error(current, target)
-                if d <= 0.0004 and a <= np.deg2rad(0.12):
+                stable = (
+                    d <= 0.00035
+                    and a <= np.deg2rad(0.12)
+                    and max(map(abs, state["joint_velocity"])) < 0.005
+                )
+                settled = settled + 1 if stable else 0
+                if settled >= 2:
                     result = {
                         "reached": True,
                         "measured_pose": current.tolist(),
                         "translation_error_m": d,
                         "angle_error_deg": float(np.rad2deg(a)),
-                        "commands": commands,
+                        "commands": 1,
                     }
                     self._trace("move_end", result=result)
                     return result
-                delta = target[:3] - current[:3]
-                rv = (rotation(target) * rotation(current).inv()).as_rotvec()
-                xyz = current[:3] + delta * min(1.0, 0.0008 / max(d, 1e-12))
-                rot = Rotation.from_rotvec(
-                    rv * min(1.0, np.deg2rad(0.08) / max(a, 1e-12))
-                ) * rotation(current)
-                q = rot.as_quat()
-                step = [*xyz, q[3], *q[:3]]
-                response = self.request("/rpent/supervised/pose-step", {"pose": step})
-                commands += 1
-                self._trace("pose_step", request=step, response=response)
-                deadline, settled = time.monotonic() + 30, 0
-                while True:
-                    time.sleep(0.1)
-                    state = self._control_state()
-                    self._trace("feedback", state=state)
-                    d, a = pose_error(state["tcp_pose"], step)
-                    stable = (
-                        d <= 0.00035
-                        and a <= np.deg2rad(0.12)
-                        and max(map(abs, state["joint_velocity"])) < 0.005
-                    )
-                    settled = settled + 1 if stable else 0
-                    if settled >= 2:
-                        break
-                    if time.monotonic() > deadline:
-                        raise RuntimeError(
-                            "Measured motion did not settle; experiment stopped"
-                        )
-            raise RuntimeError("Motion exceeded bounded step budget")
+            raise RuntimeError("Measured motion did not settle; experiment stopped")
         except BaseException as error:
             self._failed_motion(error)
             raise
@@ -270,6 +316,73 @@ class BoundedControl:
                 self._trace("contact_hold", result=result)
                 return result
         raise RuntimeError("Contact hold did not settle")
+
+    def move_eef(self, position_m, quaternion_wxyz, steps):
+        """Execute a fixed EEF goal for 1–5 native 25 Hz steps, then hold."""
+        if not getattr(self, "eef_chunk_control", False):
+            raise RuntimeError("Short EEF control is not enabled on this server")
+        if type(steps) is not int or not 1 <= steps <= 5:
+            raise ValueError("steps must be an integer in 1..5")
+        if np.asarray(quaternion_wxyz).shape != (4,):
+            raise ValueError("Short EEF control requires an explicit wxyz quaternion")
+        state, target = self._validated_tcp_target(position_m, quaternion_wxyz)
+        self._trace("eef_begin", target=target.tolist(), steps=steps, state=state)
+        try:
+            result = self.request(
+                "/rpent/supervised/eef-chunk", {"pose": target.tolist(), "steps": steps}
+            )
+            if (
+                result.get("held") is not True
+                or result.get("executed_steps") != steps
+                or len(result.get("ticks", [])) != steps
+            ):
+                raise RuntimeError(
+                    "Incomplete EEF chunk or unconfirmed stationary hold"
+                )
+            self._control_state()
+            self._trace("eef_end", result=result)
+            return result
+        except EEFInputRejected as error:
+            return {"error": str(error), "no_execution": True, "retryable": True}
+        except BaseException as error:
+            self._failed_motion(error)
+            raise
+
+    def move_eef_delta(self, translation_m, rotation_vector_rad, steps):
+        """Resolve one base-frame delta from measured TCP, then execute a short segment."""
+        if not getattr(self, "eef_chunk_control", False):
+            raise RuntimeError("Short EEF control is not enabled on this server")
+        if type(steps) is not int or not 1 <= steps <= 5:
+            raise ValueError("steps must be an integer in 1..5")
+        translation = np.asarray(translation_m, float)
+        rotvec = np.asarray(rotation_vector_rad, float)
+        if (
+            translation.shape != (3,)
+            or rotvec.shape != (3,)
+            or not np.isfinite(translation).all()
+            or not np.isfinite(rotvec).all()
+        ):
+            raise ValueError("Use finite length-3 translation and rotation vectors")
+        if np.linalg.norm(translation) > 0.05 or np.linalg.norm(rotvec) > np.deg2rad(
+            10
+        ):
+            raise ValueError("EEF delta norms are limited to 50 mm and 10 degrees")
+        self._require_motion()
+        reference = np.asarray(self._control_state()["tcp_pose"], float)
+        q = (Rotation.from_rotvec(rotvec) * rotation(reference)).as_quat()
+        target = np.r_[reference[:3] + translation, q[3], q[:3]]
+        context = {
+            "frame": "robot_base",
+            "reference_pose": reference.tolist(),
+            "translation_m": translation.tolist(),
+            "rotation_vector_rad": rotvec.tolist(),
+            "requested_target_pose": target.tolist(),
+        }
+        self._trace("eef_delta_begin", **context, steps=steps)
+        result = self.move_eef(target[:3].tolist(), target[3:].tolist(), steps)
+        result.update(context)
+        self._trace("eef_delta_end", result=result)
+        return result
 
     def set_gripper(self, width_m):
         self._require_motion()

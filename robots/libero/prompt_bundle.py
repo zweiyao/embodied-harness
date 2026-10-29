@@ -28,6 +28,14 @@ def system_prompt(
     variables: Mapping[str, object] | None = None,
 ) -> PromptNode:
     """Assemble the LIBERO system prompt for the selected run mode."""
+    if (variables or {}).get("language_materials"):
+        from robots.libero.research.language_materials import material_prompt
+
+        return material_prompt(variables, "system.md")
+    if (variables or {}).get("sensor_library"):
+        from robots.libero.research.native import SYSTEM_PROMPT
+
+        return SYSTEM_PROMPT
     if (variables or {}).get("mode", "eval") == "explore":
         return explore_parts.system_prompt(variables)
     return evaluate_parts.system_prompt(variables)
@@ -35,6 +43,12 @@ def system_prompt(
 
 def user_prompt(variables: Mapping[str, object] | None = None) -> PromptNode:
     """Assemble the LIBERO user prompt tree."""
+    if (variables or {}).get("language_materials"):
+        from robots.libero.research.language_materials import material_prompt
+
+        return material_prompt(variables, "user.md")
+    if (variables or {}).get("sensor_library"):
+        return "Read view_env_state for the instruction and initial scene, then complete the task using the provided tools."
     return {
         "CELL": user_parts.CELL,
         "MODE": user_parts.MODE,

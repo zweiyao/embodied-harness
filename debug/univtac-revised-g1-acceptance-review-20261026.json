@@ -1,0 +1,166 @@
+{
+  "stage": "Revised G1 free-choice development acceptance",
+  "settings": {
+    "thinking": true,
+    "total_output_tokens": 10000,
+    "timeout_s": 300,
+    "retries": 0,
+    "max_responses_per_window": 3
+  },
+  "new_offline_requests": 3,
+  "simulator_actions_executed": 0,
+  "generated_tool_calls": 0,
+  "native_perception_calls_executed": 4,
+  "action_proposals_not_executed": 1,
+  "windows": [
+    {
+      "window": "dev03-step3",
+      "candidate_called": false,
+      "responses": [
+        {
+          "request_id": "2e11af5f28f64a11a29baf85226fbb20",
+          "turn": 1,
+          "status": "completed",
+          "finish_reason": "length",
+          "total_s": 207.93357900204137,
+          "first_chunk_s": 5.199806878110394,
+          "usage": {
+            "input_tokens": 6057,
+            "cache_write_tokens": 0,
+            "cache_read_tokens": 0,
+            "output_tokens": 10000,
+            "input_audio_tokens": 0,
+            "cache_audio_read_tokens": 0,
+            "output_audio_tokens": 0,
+            "audio_seconds": 0,
+            "details": {
+              "reasoning_tokens": 9722,
+              "text_tokens": 277
+            },
+            "cost": null
+          },
+          "wire_sha256": "e36c352380863e43f48c17c08663d4404d2a35e48f08ffa56fd7d156a00fcfbd",
+          "first_wire_differs_only_in_generated_declaration": true
+        }
+      ],
+      "calls": []
+    },
+    {
+      "window": "dev04-step5",
+      "candidate_called": false,
+      "responses": [
+        {
+          "request_id": "c3fc1a2a1de14a698157e4e582d4148e",
+          "turn": 1,
+          "status": "completed",
+          "finish_reason": "tool_call",
+          "total_s": 179.10876215202734,
+          "first_chunk_s": 5.324316093930975,
+          "usage": {
+            "input_tokens": 6668,
+            "cache_write_tokens": 0,
+            "cache_read_tokens": 1024,
+            "output_tokens": 9322,
+            "input_audio_tokens": 0,
+            "cache_audio_read_tokens": 0,
+            "output_audio_tokens": 0,
+            "audio_seconds": 0,
+            "details": {
+              "reasoning_tokens": 8838,
+              "text_tokens": 483
+            },
+            "cost": null
+          },
+          "wire_sha256": "342f050ab547bc3f9e99d83b13d3006a9133d229ea0735a858e9e0dfd4e6c09f",
+          "first_wire_differs_only_in_generated_declaration": true
+        },
+        {
+          "request_id": "1bd2d8d006384adea8889c6897bb8f2c",
+          "turn": 2,
+          "status": "completed",
+          "finish_reason": "tool_call",
+          "total_s": 145.57160226791166,
+          "first_chunk_s": 3.964225772069767,
+          "usage": {
+            "input_tokens": 17906,
+            "cache_write_tokens": 0,
+            "cache_read_tokens": 6144,
+            "output_tokens": 7690,
+            "input_audio_tokens": 0,
+            "cache_audio_read_tokens": 0,
+            "output_audio_tokens": 0,
+            "audio_seconds": 0,
+            "details": {
+              "reasoning_tokens": 6922,
+              "text_tokens": 767
+            },
+            "cost": null
+          },
+          "wire_sha256": "52a31aaab2202b7767bdeeeedc623a9ca67a6d8298b137d77aba3381860a86af",
+          "first_wire_differs_only_in_generated_declaration": null
+        }
+      ],
+      "calls": [
+        {
+          "turn": 1,
+          "name": "read_image",
+          "schema_valid": true,
+          "executed": true,
+          "proposal_only": null,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "name": "depth_points",
+          "schema_valid": true,
+          "executed": true,
+          "proposal_only": null,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "name": "depth_points",
+          "schema_valid": true,
+          "executed": true,
+          "proposal_only": null,
+          "error": null
+        },
+        {
+          "turn": 1,
+          "name": "tactile_stats",
+          "schema_valid": true,
+          "executed": true,
+          "proposal_only": null,
+          "error": null
+        },
+        {
+          "turn": 2,
+          "name": "move_eef",
+          "schema_valid": true,
+          "executed": false,
+          "proposal_only": true,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "files_sha256": {
+    "/home/zwy/work/embodied_harness/artifacts/g1-revised-acceptance-20261026/acceptance.py": "7c82739a3eeda1825fc6ae6b71c19ad7e3badf3088513cd0613c5136b07c490f",
+    "/home/zwy/work/embodied_harness/artifacts/g1-revised-acceptance-20261026/native_adapter.py": "811ad1867ab9835687161cca44dda7132e8c5824371fd19bff25f4b0d4a97619",
+    "/home/zwy/work/embodied_harness/artifacts/g1-revised-acceptance-20261026/test_acceptance.py": "40a8196c85a430d881e7715619609c7fd97cd1147499bed2e1b6697b1a08af77",
+    "/home/zwy/work/embodied_harness/artifacts/g1-revised-acceptance-20261026/results/summary.json": "d711199347f8bce40b5da434362fef5a28f20b882f06c29e0df2b4c5ddb16c06",
+    "/home/zwy/work/embodied_harness/artifacts/g1-revised-acceptance-20261026/results/candidate.json": "da7f6470336116585bc9487363b93edbe892926344a9a16948e94d8ebbe0840b"
+  },
+  "totals": {
+    "input_tokens": 30631,
+    "output_tokens": 27012,
+    "reasoning_tokens": 25482,
+    "model_wait_s": 532.6139434219804
+  },
+  "budget_after": {
+    "offline_requests": 20,
+    "simulator_attempts": 10
+  },
+  "conclusion": "Neither window adopted revised G1. One first response hit the 10000-token length limit; the other used native perception then proposed movement. The movement was not executed. These observations do not establish task success, cost reduction or generated-program benefit.",
+  "validation": "260 UniVTAC unit checks and 6 bounded acceptance transport/Docker checks passed remotely. Both first requests differed only in the generated tool declaration; thinking and original prompt/images/native tools remained unchanged."
+}

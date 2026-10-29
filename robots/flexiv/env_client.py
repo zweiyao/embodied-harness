@@ -42,6 +42,28 @@ class FlexivEnvClient(BaseEnvClient):
             timeout_s=270,
         )
 
+    def move_eef(self, position_m, quaternion_wxyz, steps):
+        return self._client.call(
+            "env.move_eef",
+            kwargs={
+                "position_m": position_m,
+                "quaternion_wxyz": quaternion_wxyz,
+                "steps": steps,
+            },
+            timeout_s=40,
+        )
+
+    def move_eef_delta(self, translation_m, rotation_vector_rad, steps):
+        return self._client.call(
+            "env.move_eef_delta",
+            kwargs={
+                "translation_m": translation_m,
+                "rotation_vector_rad": rotation_vector_rad,
+                "steps": steps,
+            },
+            timeout_s=40,
+        )
+
     def align_tool_down(self):
         return self._client.call("env.align_tool_down", timeout_s=270)
 

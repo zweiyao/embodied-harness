@@ -1,0 +1,13 @@
+{
+  "name": "sensor_contact_response",
+  "description": "Compare up to four recent recorded frames after short hand motions. Returns measured world-frame hand translations/rotations and bilateral marker-field changes matched by reference pixel position, handling shuffled marker rows. Use it to distinguish hand travel from evolving contact evidence before repeating a motion or judging completion. The repeated-translation flag is a measurement pattern, not proof of blockage or insertion. It cannot measure object progress, infer a hidden hole axis, estimate force, or decide task success; inspect camera/depth evidence when those are needed.",
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "marker_match_radius_px": {"type": "number", "exclusiveMinimum": 0, "maximum": 8, "default": 1.0, "description": "Maximum distance between reference pixel coordinates for mutual-nearest matching."},
+      "min_marker_matches": {"type": "integer", "minimum": 4, "maximum": 64, "default": 8, "description": "Minimum distinct mutual matches per finger and interval."},
+      "marker_change_threshold_px": {"type": "number", "exclusiveMinimum": 0, "maximum": 100, "default": 3.0, "description": "Median matched marker-change threshold for the bilateral-response flag. This is not a force or success threshold."}
+    }
+  }
+}

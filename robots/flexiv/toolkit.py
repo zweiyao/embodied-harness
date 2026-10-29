@@ -19,9 +19,11 @@ import io
 import re
 import threading
 from pathlib import Path
+from typing import Annotated
 
 import numpy as np
 from PIL import Image, ImageDraw
+from pydantic import Field
 
 from rpent.session import EnvState
 from rpent.tools import ToolResult
@@ -30,7 +32,21 @@ from rpent.tools.toolkit import Toolkit
 
 
 class FlexivToolkit(Toolkit):
-    def __init__(self, *, env, output_dir, dashboard_events, memory):
+    def __init__(
+        self, *, env, output_dir, dashboard_events, memory, control_mode="native"
+    ):
+        if control_mode not in ("native", "eef_delta"):
+            raise ValueError("Unknown Flexiv control mode")
+        if control_mode == "eef_delta":
+            if not all(
+                env.meta.get(key)
+                for key in ("motion_enabled", "supervised_control", "eef_chunk_control")
+            ):
+                raise ValueError(
+                    "eef_delta requires a supervised EEF-enabled environment"
+                )
+            if env.meta.get("reset_before_task"):
+                raise ValueError("eef_delta requires reset_before_task=false")
         self.env = env
         self._observation_lock = threading.RLock()
         super().__init__(
@@ -43,13 +59,19 @@ class FlexivToolkit(Toolkit):
             self.add_tool(self.view_perception_setup)
             self.add_tool(self.localize_target)
         if env.meta["motion_enabled"]:
-            self.add_tool(self.move_delta)
+            if control_mode == "native":
+                self.add_tool(self.move_delta)
             if env.meta.get("supervised_control"):
-                self.add_tool(self.move_tcp)
-                self.add_tool(self.align_tool_down)
+                if control_mode == "eef_delta":
+                    self.add_tool(self.move_eef_delta)
+                else:
+                    self.add_tool(self.move_tcp)
+                    if env.meta.get("eef_chunk_control"):
+                        self.add_tool(self.move_eef)
+                    self.add_tool(self.align_tool_down)
                 self.add_tool(self.set_gripper)
                 self.add_tool(self.stop_motion)
-                if env.meta.get("home_available"):
+                if env.meta.get("home_available") and control_mode == "native":
                     self.add_tool(self.reset_home)
         try:
             self.observe()
@@ -138,12 +160,14 @@ class FlexivToolkit(Toolkit):
         Args:
             step: Exact observe step; do not mix images from different steps.
             target: Named object and surface feature, not just its color.
-            camera: wrist or side; choose a view showing the whole target.
+            camera: wrist or side; choose a view showing the entire named surface feature.
             pixel: Interior surface [x,y] pixel in the original full-resolution image.
-            box: Whole target [x0,y0,x1,y1] box; reject clipped/occluded targets.
+            box: Visible feature [x0,y0,x1,y1] box inside the image, enclosing the pixel.
 
         Do not select the hole of a ring-shaped object or background inside a
-        bounding box. Do not invent boxes around clipped fragments. This tool
+        bounding box. Name the visible feature; do not invent hidden geometry.
+        Other object regions may be occluded. Invalid depth is a read-only query
+        failure: reselect a valid surface point, view or observation. This tool
         estimates a surface point; it neither detects objects nor commands motion.
         """
         from robots.flexiv.perception import back_project
@@ -158,6 +182,7 @@ class FlexivToolkit(Toolkit):
             self.env.meta.get("motion_enabled")
             and self.env.meta.get("calibration_provisional")
             and camera != "side"
+            and camera not in self.env.meta.get("operator_confirmed_cameras", [])
         ):
             raise ValueError(
                 "Use side for this provisional control session; wrist is observation-only"
@@ -216,31 +241,91 @@ class FlexivToolkit(Toolkit):
             position_m: Absolute [x,y,z] in robot-base metres, inside reported workspace.
             quaternion_wxyz: Optional unit [w,x,y,z]; omit to preserve orientation.
 
-        Executes <=1 mm / 0.1 degree steps with feedback, <=5 mm/s. At most 10
-        degrees per call. Rotation requires >=80 mm opening and >=50 mm table
-        clearance. Check both images after each move. This does not plan around
-        obstacles. For grasping, approach from above, descend, then close.
+        Uses a native smooth trajectory at <=20 mm/s, with measured arrival feedback.
+        At most 10 degrees per call. Rotation requires >=50 mm table clearance;
+        translation retains >=4 mm grasp-reference clearance. Gripper opening is
+        preserved. Check both images after each move. This does not plan around
+        obstacles. Select orientation and waypoints for the actual task. An earlier
+        localization call is not required when current evidence supports this target.
+        Inspect actual motion and object progress before choosing another action.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.move_tcp(position_m, quaternion_wxyz))
 
     @tool
+    def move_eef(
+        self,
+        position_m: list[float],
+        quaternion_wxyz: list[float],
+        steps: Annotated[int, Field(ge=1, le=5, strict=True)],
+    ) -> ToolResult:
+        """Execute one fixed absolute TCP target for 1–5 controls at 25 Hz, then hold and observe.
+
+        Args:
+            position_m: Absolute native TCP [x,y,z], robot-base metres, within 50 mm.
+            quaternion_wxyz: Explicit unit [w,x,y,z], within 10 degrees of measured TCP.
+            steps: Number of 40 ms controls toward this SAME target, not waypoints.
+
+        The native Flexiv controller executes Cartesian goals; no client-side IK.
+        Each control uses fresh state. The segment is followed by a stationary
+        hold and capture, so total call latency exceeds steps * 0.04 seconds.
+        Arrival at the requested target is not guaranteed. Read measured pose,
+        tracking error and recorded tick states before choosing the next action.
+        Gripper opening is unchanged; use set_gripper(width_m) separately.
+        Existing workspace, table, speed and authorization limits still apply.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(data=self.env.move_eef(position_m, quaternion_wxyz, steps))
+
+    @tool
+    def move_eef_delta(
+        self,
+        translation_m: list[float],
+        rotation_vector_rad: list[float],
+        steps: Annotated[int, Field(ge=1, le=5, strict=True)],
+    ) -> ToolResult:
+        """Move toward a measured-TCP-relative goal, then hold and return images/state.
+
+        Args:
+            translation_m: Base-axis [dx,dy,dz] metres, vector norm <=0.05.
+            rotation_vector_rad: Base-axis right-hand rotation vector, radians,
+                norm <=10 degrees; [0,0,0] preserves orientation. Not Euler angles.
+            steps: 1–5 controls at 25 Hz toward one goal; delta is applied once.
+
+        Target: p + translation_m, Exp(rotation_vector_rad) * R from fresh TCP.
+        Actual motion can be smaller than requested. Gripper stays unchanged.
+        Existing workspace, table and speed limits apply.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(
+            data=self.env.move_eef_delta(translation_m, rotation_vector_rad, steps)
+        )
+
+    @tool
     def align_tool_down(self) -> ToolResult:
         """Point tool +Z toward the calibrated tabletop; preserve projected heading.
 
-        Open to >=80 mm and raise grasp reference >=50 mm above the tabletop
-        first. This rotates in place and returns measured orientation feedback.
+        Raise the grasp reference >=50 mm above the tabletop first. The program
+        handles bounded orientation segments; no model-supplied intermediate
+        quaternions are needed. Gripper opening is preserved. Check that held
+        objects and fingers have a clear sweep; no collision model is available.
+        This optional helper is not required before every grasp or insertion.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.align_tool_down())
 
     @tool
     def set_gripper(self, width_m: float) -> ToolResult:
-        """Set opening in metres (0..0.098), using <=2 mm steps and force feedback.
+        """Set the final opening in metres (0..0.098), with measured force feedback.
+
+        Pass the final desired width, e.g. 0.098 to open fully. The program
+        handles <=2 mm internal steps; do not split these into model calls.
+        A control error stops the experiment: report it, do not retry motion.
 
         Contact stops further closure and returns contact_detected, not proof
-        of a secure grasp. After contact, lift only 5 mm and inspect both images
-        before carrying. Use 0.098 to release, then verify the object stayed.
+        of a secure grasp. Inspect the object and actual gripper feedback before
+        transport; grasp closure differs from insertion contact. Release only when
+        required by the instructed task, then verify the object's resulting state.
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.set_gripper(width_m))
@@ -264,6 +349,16 @@ class FlexivToolkit(Toolkit):
     def get_env_state(self, *, command, result, elapsed_s):
         with self._observation_lock:
             return self._capture(command, result, elapsed_s)
+
+    def cancel_active_and_wait(self):
+        with self._scheduler.condition:
+            calls = self._scheduler.cancel()
+            active = bool(self._scheduler.active)
+        try:
+            if active and self.env.meta.get("motion_enabled"):
+                self.env.stop_motion()
+        finally:
+            self._scheduler.wait(calls)
 
     def close(self):
         try:

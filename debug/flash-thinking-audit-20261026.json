@@ -1,0 +1,96 @@
+{
+  "flash_runs": [
+    {
+      "run": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0008_libero_object_t4_s0",
+      "events_sha256": "100a3c708e1e88d17670d724cd34c63e855823a2ea1bba2ae8914b72d857eead",
+      "model": "qwen3.8-flash",
+      "requests": 17,
+      "responses": 16,
+      "settings": {
+        "max_tokens": 16384,
+        "parallel_tool_calls": true,
+        "thinking": false
+      },
+      "all_settings_equal": true,
+      "recorded_enable_thinking_occurrences": 0,
+      "reasoning_tokens_each": [
+        39,
+        1113,
+        13,
+        113,
+        753,
+        213,
+        1054,
+        1953,
+        707,
+        694,
+        200,
+        181,
+        955,
+        1719,
+        2705,
+        935
+      ],
+      "reasoning_tokens_sum": 13347,
+      "total_output_tokens_sum": 17285,
+      "responses_with_returned_thinking_part": 16,
+      "wire_body_recorded": false,
+      "interpretation": "Provider returned nonzero reasoning tokens; generic thinking=false is not evidence that enable_thinking=false reached the provider."
+    },
+    {
+      "run": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0010_libero_object_t4_s0",
+      "run_id": "21ad983e41e0fc44bd98",
+      "model": "qwen3.8-flash",
+      "requests": 12,
+      "responses": 12,
+      "settings": {
+        "max_tokens": 16384,
+        "parallel_tool_calls": true,
+        "thinking": false
+      },
+      "recorded_enable_thinking_occurrences": 0,
+      "responses_with_returned_thinking_part": 12,
+      "responses_with_positive_reasoning_tokens": 12,
+      "reasoning_tokens_sum": 9454,
+      "total_output_tokens_sum": 11286,
+      "wire_body_recorded": false,
+      "provenance": "Parent agent inspected original events.jsonl; this worker did not repeat the read."
+    }
+  ],
+  "nearby_max_run": {
+    "run": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0009_libero_spatial_t0_s0",
+    "events_sha256": "814c4c0e7e38b4b2552011d835fe0e088e8a455978e9b61a56270cc5bd5a43e1",
+    "model": "qwen3.8-max",
+    "requests": 14,
+    "responses": 14,
+    "settings": {
+      "max_tokens": 16384,
+      "parallel_tool_calls": true,
+      "thinking": false
+    },
+    "all_settings_equal": true,
+    "recorded_enable_thinking_occurrences": 0,
+    "reasoning_tokens_each": [
+      16,
+      11,
+      649,
+      532,
+      30,
+      2282,
+      134,
+      2219,
+      1171,
+      260,
+      604,
+      568,
+      298,
+      155
+    ],
+    "reasoning_tokens_sum": 8929,
+    "total_output_tokens_sum": 11997,
+    "responses_with_returned_thinking_part": 14,
+    "wire_body_recorded": false,
+    "interpretation": "Provider returned nonzero reasoning tokens; generic thinking=false is not evidence that enable_thinking=false reached the provider."
+  },
+  "conclusion": "Both historical Flash runs returned actual ThinkingPart and nonzero reasoning usage. Recorded generic thinking=false does not establish that provider enable_thinking was false. No raw wire body was saved, so the exact HTTP thinking flag cannot be retrospectively asserted."
+}

@@ -1,0 +1,7 @@
+{
+  "source_run": "e25131e79d0b25d2bc72",
+  "reason": "Match native back_project high-resolution sensor input. In the same historical frame, mapping pixel [525,555] to a 256x256 world map changed its surface point by 8.16 cm. Use actual recorded high-resolution data and report missing data explicitly; this fixes input parity, not proven task performance.",
+  "validation": "unverified",
+  "input_contract": "At most four recorded frames. Existing 256x256 fields remain available to old tool versions. This version uses cameras[camera].high with same-step actual RGB/world artifacts; high metric depth/calibration are optional in historical records. Coordinates are world XYZ metres and image [row,col], never [x,y]. No upsampling, silent low-resolution fallback, simulator object poses, controller or success labels.",
+  "previous_version": "2c0d0cf7c2572e6940b699bdd775a5d80284c9a0f237dbc8bb84c37001a0b512"
+}

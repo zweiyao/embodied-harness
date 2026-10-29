@@ -257,10 +257,19 @@ function defaultFrameKind() {
 
 function renderFrameTabs() {
   const container = $(".frame-tabs");
+  const labels = {
+    sensor_cameras_head_rgb: ["外部相机", "Head"],
+    sensor_cameras_wrist_rgb: ["腕部相机", "Wrist"],
+    sensor_tactile_left_rgb: ["左指触觉", "Left tactile"],
+    sensor_tactile_right_rgb: ["右指触觉", "Right tactile"],
+    sensor_tactile_left_reference_rgb: ["左指参考", "Left reference"],
+    sensor_tactile_right_reference_rgb: ["右指参考", "Right reference"],
+  };
   const buttons = Object.keys(mediaState.frameAvailable).map(name => {
     const button = document.createElement("button");
     button.dataset.kind = name;
-    button.textContent = name;
+    button.textContent = labels[name]?.[LANGUAGE === "zh-cn" ? 0 : 1] || name;
+    button.title = name;
     button.classList.toggle("active", name === mediaState.kind);
     button.addEventListener("click", () => setFrameKind(name));
     return button;
@@ -303,7 +312,7 @@ function renderPlannerConfig(config) {
     ? "Flash Mode"
     : `${copy.planner} ${planner} · ${copy.model} ${model}`;
   element.title = element.textContent;
-  $("#modelSettings").hidden = planner === "flash";
+  $("#modelSettings").hidden = planner === "flash" || Boolean(config.model_profile);
   $("#nextModelInput").value = config.model || "";
 }
 
@@ -806,6 +815,11 @@ function resetRenderedTaskProjection() {
 }
 
 function syncTaskGeneration(snapshot) {
+  if (snapshot.workbench && runState.serverId && runState.serverId !== snapshot.server_id) {
+    runState.taskGeneration = null;
+    resetRenderedTaskProjection();
+  }
+  runState.serverId = snapshot.server_id;
   const value = snapshot.task_generation;
   if (runState.taskGeneration == null) {
     runState.taskGeneration = value;
@@ -1190,9 +1204,19 @@ function refreshFrame(idx, opts = {}) {
 }
 
 function applySessionSnapshot(snapshot) {
+  if (snapshot.workbench) {
+    $("#workbenchNav").hidden = false;
+    $("#abortExperiment").disabled = !["running", "task_starting"].includes(snapshot.session_state);
+    $("#modelSettings").hidden = true;
+    $("#runIdentity").textContent = snapshot.run_id ? `实验 ${snapshot.run_id} · ${snapshot.run_model} · ${snapshot.session_state}` : '尚未开始实验';
+    $("#plannerMeta").textContent = snapshot.run_model || '请从开始页选择模型和工具';
+    $("#staleWarning").hidden = true;
+    runState.lastConnected = Date.now();
+  }
   const generationState = syncTaskGeneration(snapshot);
   if (generationState === "stale") return;
   setBadge(snapshot.state, snapshot.control_error || snapshot.error);
+  if (snapshot.workbench && snapshot.run_id && snapshot.session_state === "ready") $("#statusBadge").textContent = "本轮已结束";
   setResult(snapshot.terminated, snapshot.state);
   renderRuntimeStatus(snapshot.runtime);
   syncPrimitiveAvailability(snapshot);
@@ -1353,3 +1377,17 @@ async function boot() {
 }
 
 boot();
+
+setInterval(() => {
+  if (runState.lastConnected) refreshMeta().catch(() => { $("#staleWarning").hidden = false; });
+}, 5000);
+
+$("#abortExperiment").addEventListener("click", async () => {
+  $("#abortExperiment").disabled = true;
+  try {
+    await requestJSON("/api/session/abort", {method:"POST"});
+    await refreshMeta();
+  } catch(error) {
+    $("#runIdentity").textContent = `中止请求失败：${error.message}`;
+  }
+});

@@ -1,0 +1,67 @@
+{
+  "name": "sensor_container_geometry",
+  "description": "For placing an object into a basket, bowl or other roughly horizontal open container, use this instead of repeated single-pixel back_project calls and manual rim averaging. In ONE call select 4-8 pixels spread around the visible INNER RIM (not cloth wall/floor); returns opening center XY, rim height, EEF offset and flags mixed depth. Pixels are [row,col] in the calibrated 1024x1024 image by default, sampled in its actual recorded high-resolution world map; never use the mirrored policy image. Only after grasping, optionally add a clearly visible HELD OBJECT bottom pixel (not the container center or floor) to measure its height and alignment relative to the opening. Reuse measured geometry for a stationary container. image_size must match that recorded high-resolution image; missing high-resolution data returns an error. This only measures caller-selected surfaces; it does not identify objects, execute motion or judge task success.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "rim_points": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "minItems": 4,
+        "maxItems": 8,
+        "description": "[row,col] points spread around the inner rim; order is arbitrary. Do not select visible interior wall as the center."
+      },
+      "object_bottom_point": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minItems": 2,
+        "maxItems": 2,
+        "description": "Optional bottom of the HELD OBJECT in the SAME frame. Omit before grasping or when occluded; not a container/floor point."
+      },
+      "image_size": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 4096
+        },
+        "minItems": 2,
+        "maxItems": 2,
+        "default": [
+          1024,
+          1024
+        ],
+        "description": "[height,width] of the actual recorded high-resolution image used to select pixels. Must match its world map; no resizing or low-resolution fallback."
+      },
+      "step": {
+        "type": "integer",
+        "minimum": -1,
+        "default": -1
+      },
+      "camera": {
+        "type": "string",
+        "enum": [
+          "agentview",
+          "wrist"
+        ],
+        "default": "agentview"
+      }
+    },
+    "required": [
+      "rim_points"
+    ],
+    "additionalProperties": false
+  },
+  "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\nimport numpy as np\n\n\ndef _hull(points):\n    \"\"\"Convex hull of measured XY points, counterclockwise.\"\"\"\n    points = sorted(set(map(tuple, points)))\n\n    def cross(a, b, c):\n        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])\n\n    halves = []\n    for ordered in (points, points[::-1]):\n        half = []\n        for point in ordered:\n            while len(half) >= 2 and cross(half[-2], half[-1], point) <= 0:\n                half.pop()\n            half.append(point)\n        halves.extend(half[:-1])\n    return np.asarray(halves, dtype=float)\n\n\ndef run(frames, params):\n    \"\"\"Measure a visible opening; semantic point selection belongs to the caller.\"\"\"\n    step = params.get(\"step\", -1)\n    frame = (\n        frames[-1]\n        if step == -1\n        else next((f for f in frames if f[\"step\"] == step), None)\n    )\n    if frame is None:\n        return {\n            \"error\": \"step unavailable\",\n            \"available_steps\": [f[\"step\"] for f in frames],\n        }\n    camera = params.get(\"camera\", \"agentview\")\n    data = frame[\"cameras\"][camera].get(\"high\")\n    if data is None:\n        return {\n            \"error\": \"high-resolution RGB/world observation not recorded\",\n            \"step\": frame[\"step\"],\n            \"camera\": camera,\n            \"resolution\": \"high\",\n        }\n    world = data[\"world\"]\n    h, w = world.shape[:2]\n    image_h, image_w = params.get(\"image_size\", [1024, 1024])\n    if data[\"rgb\"].shape[:2] != (h, w) or (image_h, image_w) != (h, w):\n        return {\n            \"error\": \"image_size must match the recorded high-resolution RGB/world pair\",\n            \"step\": frame[\"step\"],\n            \"camera\": camera,\n            \"recorded_image_size\": [h, w],\n        }\n    eef = np.asarray(frame[\"proprio\"][\"robot0_eef_pos\"], dtype=float)\n\n    def sample(point):\n        if not (0 <= point[0] < image_h and 0 <= point[1] < image_w):\n            return {\"pixel_rc\": point, \"error\": \"pixel outside declared image_size\"}\n        row, col = point\n        patch = world[\n            max(0, row - 1) : min(h, row + 2), max(0, col - 1) : min(w, col + 2), :3\n        ].reshape(-1, 3)\n        valid = patch[\n            np.isfinite(patch).all(axis=1) & (np.abs(patch).sum(axis=1) > 1e-6)\n        ]\n        anchor = world[row, col, :3]\n        if not np.isfinite(anchor).all() or np.abs(anchor).sum() <= 1e-6:\n            return {\"pixel_rc\": point, \"error\": \"invalid selected-pixel depth\"}\n        # A rim patch often also sees the table behind it. Keep the local\n        # surface attached to the selected pixel rather than average across it.\n        count = len(valid)\n        valid = valid[np.linalg.norm(valid - anchor, axis=1) <= 0.025]\n        if len(valid) < 3:\n            return {\"pixel_rc\": point, \"error\": \"insufficient locally consistent depth\"}\n        low, median, high = np.quantile(valid, [0.1, 0.5, 0.9], axis=0)\n        spread = float(np.linalg.norm(high - low))\n        return {\n            \"pixel_rc\": point,\n            \"world_xyz\": median.tolist(),\n            \"spread_m\": spread,\n            \"excluded_neighbor_count\": count - len(valid),\n            \"quality\": \"mixed_surface\" if spread > 0.04 else \"locally_consistent\",\n        }\n\n    samples = [sample(p) for p in params[\"rim_points\"]]\n    result = {\n        \"step\": frame[\"step\"],\n        \"camera\": camera,\n        \"input_image_size\": [image_h, image_w],\n        \"depth_image_size\": [h, w],\n        \"resolution\": \"high\",\n        \"source_artifacts\": data.get(\"source_artifacts\", {}),\n        \"coordinates\": \"world XYZ metres; world +Z is up\",\n        \"rim_samples\": samples,\n        \"limitations\": \"Caller identifies the inner rim and object. Local depth consistency does not verify identity. Sampled polygon is not the full free space; no hidden floor, collision clearance, grasp or task success is inferred.\",\n    }\n    if any(\"error\" in s or s[\"quality\"] != \"locally_consistent\" for s in samples):\n        result[\"status\"] = \"resample_flagged_points\"\n        result[\"guidance\"] = (\n            \"Only replace flagged pixels with nearby visible inner-rim pixels; do not repeat all measurements. Avoid background and cloth wall below the rim.\"\n        )\n        return result\n    xyz = np.asarray([s[\"world_xyz\"] for s in samples])\n    if np.ptp(xyz[:, 2]) > 0.06:\n        # A strict majority at a common height can exclude a stray table pixel\n        # without asking the planner to measure the entire opening again.\n        groups = [\n            np.flatnonzero((xyz[:, 2] >= z) & (xyz[:, 2] <= z + 0.04))\n            for z in xyz[:, 2]\n        ]\n        inliers = max(groups, key=len)\n        if len(inliers) < max(4, int(np.ceil(0.75 * len(xyz)))):\n            return {\n                **result,\n                \"status\": \"inconsistent_rim\",\n                \"guidance\": \"No dominant rim-height group. Replace pixels on the floor, background or occluder with visible inner-rim pixels.\",\n            }\n        result[\"excluded_rim_indices\"] = [\n            i for i in range(len(xyz)) if i not in inliers\n        ]\n        result[\"height_consensus\"] = (\n            \"Excluded minority at a different height; opening uses only the remaining points. This does not verify semantic identity.\"\n        )\n        xyz = xyz[inliers]\n    hull = _hull(xyz[:, :2])\n    if len(hull) < 3:\n        return {**result, \"status\": \"insufficient_opening_coverage\"}\n    following = np.roll(hull, -1, axis=0)\n    cross = hull[:, 0] * following[:, 1] - following[:, 0] * hull[:, 1]\n    area = float(cross.sum() / 2)\n    if area < 0.0001 or np.ptp(xyz[:, 2]) > 0.06:\n        return {\n            **result,\n            \"status\": \"inconsistent_rim\",\n            \"guidance\": \"Select points around the same approximately horizontal opening, not its floor or side walls.\",\n        }\n    center = ((hull + following) * cross[:, None]).sum(axis=0) / (6 * area)\n    rim_z = float(np.max(xyz[:, 2]))\n    result.update(\n        status=\"measured\",\n        opening={\n            \"center_xy\": center.tolist(),\n            \"sampled_polygon_xy\": hull.tolist(),\n            \"rim_top_z\": rim_z,\n            \"rim_z_range\": [float(xyz[:, 2].min()), rim_z],\n            \"sampled_area_m2\": area,\n        },\n        eef_to_opening_xy=(center - eef[:2]).tolist(),\n        guidance=\"Use this measured center for the opening, not a depth point on its visible inner wall. Reuse it while the container stays stationary; robot movement alone does not require remeasuring a static container. Check returned action images for changes.\",\n    )\n    if \"object_bottom_point\" in params:\n        point = sample(params[\"object_bottom_point\"])\n        result[\"object_bottom_sample\"] = point\n        if \"error\" not in point and point[\"quality\"] == \"locally_consistent\":\n            bottom = np.asarray(point[\"world_xyz\"])\n            edges = following - hull\n            offset = bottom[:2] - hull\n            margins = (\n                edges[:, 0] * offset[:, 1] - edges[:, 1] * offset[:, 0]\n            ) / np.linalg.norm(edges, axis=1)\n            result[\"relation\"] = {\n                \"sample_to_opening_center_xy\": (center - bottom[:2]).tolist(),\n                \"sample_above_rim_m\": float(bottom[2] - rim_z),\n                \"sample_inside_rim_polygon\": bool(np.min(margins) > 0),\n                \"sample_edge_margin_m\": float(np.min(margins)),\n                \"eef_to_sample_xyz\": (bottom - eef).tolist(),\n                \"interpretation\": \"Point-only relation, not full-object clearance. Positive above_rim means above sampled rim; negative means below. If the point is occluded or belongs to background, discard this relation. A point inside/below the rim does not prove the object has been released.\",\n            }\n    return result\n"
+}

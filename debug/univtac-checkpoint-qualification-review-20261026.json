@@ -1,0 +1,211 @@
+{
+  "attempt_id": "a77eabeeddea4981938cd4277b72fcde",
+  "workflow_passed": false,
+  "official_success": false,
+  "total_checks": 410,
+  "failed_checks": [
+    {
+      "name": "restored/stationary0/unchanged/physx",
+      "passed": false
+    },
+    {
+      "name": "restored/stationary1/unchanged/physx",
+      "passed": false
+    },
+    {
+      "name": "restored/stationary2/unchanged/physx",
+      "passed": false
+    },
+    {
+      "name": "restored/stationary3/unchanged/physx",
+      "passed": false
+    },
+    {
+      "name": "command1/observation/head/depth",
+      "passed": false,
+      "interior_max_m": 5.960464477539062e-07,
+      "limit_m": 2.078125e-05,
+      "edge_pixels": 35352,
+      "interior_pixels": 13946,
+      "unmatched_edge_forward": 1,
+      "unmatched_edge_reverse": 1,
+      "changed_validity_outside_edge": 0
+    },
+    {
+      "name": "stationary0/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 1.2227155990719967,
+      "max_tile_rmse": 3.2568608900508567,
+      "rejected_tiles": 3,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "stationary0/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7958633284050723,
+      "max_tile_rmse": 3.388380113220278,
+      "rejected_tiles": 23,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary0/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6300731604345641,
+      "max_tile_rmse": 3.4628797926485024,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary1/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 1.1726510976022744,
+      "max_tile_rmse": 2.881204485230836,
+      "rejected_tiles": 2,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "stationary1/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7958633284050723,
+      "max_tile_rmse": 3.388380113220278,
+      "rejected_tiles": 23,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary1/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6300731604345641,
+      "max_tile_rmse": 3.4628797926485024,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary2/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 1.147193076483863,
+      "max_tile_rmse": 2.7410568868855782,
+      "rejected_tiles": 2,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "stationary2/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7958633284050723,
+      "max_tile_rmse": 3.388380113220278,
+      "rejected_tiles": 23,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary2/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6300731604345641,
+      "max_tile_rmse": 3.4628797926485024,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary3/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 1.0856693711895415,
+      "max_tile_rmse": 2.2705227234053393,
+      "rejected_tiles": 1,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "stationary3/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7958633284050723,
+      "max_tile_rmse": 3.388380113220278,
+      "rejected_tiles": 23,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "stationary3/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6300731604345641,
+      "max_tile_rmse": 3.4628797926485024,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command1/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 1.1060474896597867,
+      "max_tile_rmse": 2.848871957208928,
+      "rejected_tiles": 2,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "command1/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7708840073433731,
+      "max_tile_rmse": 3.4548803042459615,
+      "rejected_tiles": 22,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command1/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.664629047539553,
+      "max_tile_rmse": 3.9914459316142565,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command2/observation/wrist/rgb",
+      "passed": false,
+      "global_rmse": 0.9975716400112488,
+      "max_tile_rmse": 2.7302200575228364,
+      "rejected_tiles": 1,
+      "maximum_allowed": 3.2258960207606497
+    },
+    {
+      "name": "command2/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.9525504871425743,
+      "max_tile_rmse": 4.42560024177512,
+      "rejected_tiles": 23,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command2/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6950313492130329,
+      "max_tile_rmse": 4.06682462124936,
+      "rejected_tiles": 14,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command3/tactile/left_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.7654003355180289,
+      "max_tile_rmse": 3.0533451600935435,
+      "rejected_tiles": 22,
+      "maximum_allowed": 1.0
+    },
+    {
+      "name": "command3/tactile/right_tactile/rgb",
+      "passed": false,
+      "global_rmse": 0.6650501234242925,
+      "max_tile_rmse": 3.877939073571597,
+      "rejected_tiles": 12,
+      "maximum_allowed": 1.0
+    }
+  ],
+  "source_sha256": {
+    "univtac_checkpoint_check.py": "eba9ae9a3500b41004bae0aab31603d19d6431587f9ab65d60bd2330cab47d13",
+    "univtac_checkpoint_compare.py": "4c8ae6556fee303b63bd8e77cf72524add7e7c3a1b7f41b69f9fe2d2b64120ef",
+    "checkpoint_calibration.py": "f47ed7512aec4e86e9311a88f3c65c37785ea85c9d386181ca195c25d37e13dc"
+  },
+  "protocol_sha256": "6ffa4b7d83688c39635c7953cc64a6a6ac8cf12757bc8885cad712eb428a3ab6",
+  "report_sha256": "bc384c61cad85a9e6fcc045bc8d00e266bcdb87712ecbe40fa199b3c8b9c4e8d",
+  "elapsed_s": 59.76230002217926,
+  "new_gpu_pids_remaining": [],
+  "freeze_gate": "Independent calibrated restore has not qualified",
+  "physical_summary": {
+    "world_surface_max_m": 2.8125297566017594e-07,
+    "root_quaternion_max_component_change_during_static_read": 1.1920928955078125e-07,
+    "initial_uipc_buffers_exact": true
+  },
+  "limitation": "v2 qualification failed; unchanged limits, no retry and no formal evaluation. Physical differences are small but actual model inputs did not meet preregistered criteria."
+}

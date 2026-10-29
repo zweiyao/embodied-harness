@@ -58,6 +58,7 @@ class Calibration:
         *,
         allow_inconsistent_readonly=False,
         allow_provisional_side_control=False,
+        operator_confirmed_calibration_sha256=None,
     ):
         paths = [Path(calibration_file).expanduser(), Path(tool_tcp_file).expanduser()]
         raw = [p.read_bytes() for p in paths]
@@ -65,6 +66,17 @@ class Calibration:
         self.hashes = {
             str(p): hashlib.sha256(value).hexdigest() for p, value in zip(paths, raw)
         }
+        self.operator_confirmed_cameras = []
+        if operator_confirmed_calibration_sha256 is not None:
+            if not allow_provisional_side_control:
+                raise ValueError(
+                    "Operator confirmation requires supervised side control"
+                )
+            if operator_confirmed_calibration_sha256 != self.hashes[str(paths[0])]:
+                raise ValueError(
+                    "Operator confirmation does not match calibration SHA256"
+                )
+            self.operator_confirmed_cameras = ["side", "wrist"]
         for name in ("T_tcp_wrist_camera", "T_base_side_camera", "T_base_board"):
             _matrix(self.data[name])
         consistent = (
@@ -200,6 +212,16 @@ class Calibration:
             "motion_enabled": False,
             "depth_available": True,
         }
+        if self.operator_confirmed_cameras:
+            metadata["calibration_validation"].update(
+                operator_confirmed_cameras=self.operator_confirmed_cameras,
+                operator_confirmation={
+                    "basis": "operator_reported_current_calibration_tested_in_task_area",
+                    "calibration_sha256": next(iter(self.hashes.values())),
+                    "measured_error_mm": None,
+                },
+                control_camera=None,
+            )
         return {
             "state": snapshot["state_after"],
             "images_png": images,
