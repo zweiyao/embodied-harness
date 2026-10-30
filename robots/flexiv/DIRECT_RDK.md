@@ -47,8 +47,13 @@ Dashboard 使用：
 export RPENT_FLEXIV_RDK_ENDPOINT=http://127.0.0.1:5000
 rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
   --dashboard --dashboard-host 127.0.0.1 --dashboard-port 8083 \
-  --planner codex --model gpt-6-astra --reasoning-effort high --max-turns 25
+  --planner codex --model gpt-6-astra --reasoning-effort high --max-turns 25 \
+  --planner-timeout-s 3600
 ```
+
+当前现场实验总时限为 3,600 秒；`max_turns=25` 限制模型响应次数，不是工具调用
+总数。总时限与 RDK 单动作 30 秒期限分别配置。`GET /api/session/config` 可核对
+当前实验预算；现场启动脚本须保留该参数，服务重启后才会沿用。
 
 启动不会使能、初始化夹爪、复位或移动。页面“启用机械臂（RDK）”调用 `/enable`，
 绑定已有夹爪并进入原生笛卡尔模式。故障清除、夹爪全行程初始化和复位不自动执行。
@@ -134,6 +139,10 @@ undone by a cancelled worker. Experiment close stops the devices.
 
 Use `--control-mode rdk` and set `RPENT_FLEXIV_RDK_ENDPOINT` for the Dashboard
 operator controls. Legacy collector modes retain their existing contracts.
+The deployed episode limit is 3,600 seconds (`--planner-timeout-s 3600`), with
+25 model turns. This does not change the separate 30-second RDK command deadline.
+Keep the planner flag in the service launch script and verify its active value
+through `GET /api/session/config` after a restart.
 Only one program should own robot/cameras. The CLI process lock prevents duplicate
 copies of this server; deployment service conflicts exclude the old collector.
 External SDK programs are outside that lock. Native fault checks, configured
