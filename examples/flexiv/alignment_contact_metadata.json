@@ -1,0 +1,16 @@
+{
+  "name": "sensor_alignment_contact",
+  "description": "After localizing a held feature and one or two visible stationary reference surfaces in the SAME recorded observation, compare their robot-base XYZ residual across measured TCP poses. Use before repeating a correction or insertion to check whether each axis became closer/farther and whether low travel accompanied rising opposing force. Supply localization RECORD IDs (not source image IDs); these are produced by localize_target. Tracking is conditional on a rigid grasp and stationary references. The reference centroid is NOT a measured hole center; this tool does not output a motion target or verify insertion.",
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["anchor_step", "feature_record", "reference_records", "compare_steps", "track_with_tcp"],
+    "properties": {
+      "anchor_step": {"type": "integer", "minimum": 0, "description": "Original RGB-D observation step used by every selected localization."},
+      "feature_record": {"type": "integer", "minimum": 0, "description": "Record ID of localize_target for the held object's visible feature."},
+      "reference_records": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1, "maxItems": 2, "uniqueItems": true, "description": "Record IDs for one reference feature or two surfaces whose midpoint is useful. Their centroid is only a reference, not automatically a hole center."},
+      "compare_steps": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 0, "maxItems": 3, "uniqueItems": true, "description": "Later true observation steps in increasing order. Include consecutive pre/post-action observations for command/force diagnosis. Total including anchor <=4."},
+      "track_with_tcp": {"type": "boolean", "description": "Set true only when treating the held feature as rigidly attached to TCP and the references as stationary; estimates remain conditional. False disables later feature-position estimates; motion/force evidence is still computed."}
+    }
+  }
+}
