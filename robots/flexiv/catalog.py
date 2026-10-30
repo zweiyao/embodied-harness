@@ -12,6 +12,30 @@ from rpent.tools import Tool, iter_tools
 from rpent.tools.common import CommonTools
 
 
+def generated_availability(item: dict) -> tuple[bool, str | None]:
+    """Check whether a generated declaration has a supported recorded-input adapter."""
+    adapter = item.get("input_adapter")
+    if adapter is None and item["name"] == "sensor_alignment_contact":
+        # The first published version predates explicit input-adapter metadata.
+        adapter = "flexiv.alignment.v1"
+    if adapter != "flexiv.alignment.v1":
+        return False, "尚无此工具的 Flexiv 观测适配器。"
+    fields = {
+        "anchor_step",
+        "feature_record",
+        "reference_records",
+        "compare_steps",
+        "track_with_tcp",
+    }
+    schema = item.get("parameters", {})
+    if (
+        set(schema.get("properties", {})) != fields
+        or set(schema.get("required", [])) != fields
+    ):
+        return False, "工具参数与 Flexiv 对齐／接触观测适配器不匹配。"
+    return True, None
+
+
 def catalog(
     *,
     control_mode: str = "native",
@@ -78,6 +102,7 @@ def catalog(
             version = path.name.removesuffix(".meta.json")
             metadata = json.loads(path.read_text())
             (tool,) = library.load(version)
+            supported, reason = generated_availability({**metadata, **tool})
             result.append(
                 {
                     **metadata,
@@ -87,8 +112,17 @@ def catalog(
                     "category": "perception",
                     "version": version,
                     "required": False,
-                    "availability": "candidate",
-                    "availability_note": "候选工具，尚未接入真机调用；回放通过不代表任务效果提升。",
+                    "availability": (
+                        "conditional"
+                        if supported and active is None
+                        else "registered"
+                        if supported and tool["name"] in active
+                        else "not_registered"
+                        if supported
+                        else "candidate"
+                    ),
+                    "availability_note": reason
+                    or "可由本轮选择启用；读取记录帧并在隔离容器中执行。回放通过不代表任务效果提升。",
                 }
             )
     return sorted(result, key=lambda item: (item["category"], item["name"]))

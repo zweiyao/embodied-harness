@@ -119,11 +119,15 @@ def run_dashboard_session(
         output_dir=session_root,
         dashboard_spec=dashboard_spec,
     )
-    if robot_spec.name in {"libero", "univtac"}:
+    if robot_spec.name in {"libero", "univtac", "flexiv"}:
         from rpent.dashboard.workbench import Workbench
 
         state.workbench = Workbench.from_env(robot=robot_spec.name)
         if state.workbench is not None:
+            if robot_spec.name == "flexiv":
+                state.workbench.config["control_mode"] = getattr(
+                    args, "control_mode", "native"
+                )
             state.workbench.recover_interrupted()
             if getattr(args, "pilot_root", None):
                 state.workbench.bind_pilot(

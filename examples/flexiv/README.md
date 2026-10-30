@@ -1,6 +1,6 @@
 # 相对对齐与接触诊断工具
 
-名称：`sensor_alignment_contact`。状态：**候选程序，Docker 行为检查与历史回放通过；尚未接入真机 RPent 的可调用列表，也未验证成功率或速度提升。**
+名称：`sensor_alignment_contact`。状态：**Docker 行为检查与历史回放通过；已接入真机工具选择与隔离执行，未验证成功率或速度提升。**
 
 它来自 2026-10-30 Astra 的 USB 插入记录。该轮后段反复沿 X 调整，末端控制器报告到位，但没有确认插入。工具把“修正后是否更接近”和“实际运动是否伴随反向受力”转成程序计算，供模型决定下一步。
 
@@ -18,7 +18,7 @@
 | --- | --- |
 | [sensor_alignment_contact.py](sensor_alignment_contact.py) | 完整程序，标准 `run(frames, params)`，只依赖 NumPy |
 | [alignment_contact_metadata.json](alignment_contact_metadata.json) | 标准名称、说明、JSON Schema 参数 |
-| [alignment_contact_replay.py](alignment_contact_replay.py) | 只读记录适配、Docker 回放和显式发布 |
+| [alignment_contact_replay.py](alignment_contact_replay.py) | 复用真机记录适配器的 Docker 回放和显式发布 |
 | [verify_alignment_contact.py](verify_alignment_contact.py) | Docker 内的合成行为检查 |
 
 将元数据中的三个字段与 Python 文件内容组成 `source` 字段，即现有工具库的四字段声明。源码版本采用现有内容哈希，执行复用 `Sandbox` 的无网络、只读 Docker 容器。
@@ -41,7 +41,12 @@
 - `compare_steps`：最多三个后续真实观测帧，连同锚点最多四帧。要检查单动作接触变化，应包含连续动作前后帧。
 - `track_with_tcp`：是否采用刚性夹持、参考物静止假设；为 false 时不推算后续特征位置，动作与力反馈证据仍可计算。
 
-本例 17、18、19 是查询记录，都来自观测帧 16；不是三张新图像。适配器拒绝把查询编号当作新观测。正式运行接线时须向模型提供可引用的查询记录编号；现有原生 `localize_target` 只返回源帧 `step`，当前未改它的接口。
+本例 17、18、19 是查询记录，都来自观测帧 16；不是三张新图像。适配器拒绝把查询编号当作新观测。原生 `localize_target` 现在同时返回源帧 `step` 与查询记录 `record_step`；定位计算和控制接口保持原样。
+
+真机每轮从启动页手动选择工具；工具源码和版本随配置冻结。此工具依赖
+`localize_target`，取消该依赖会在启动前报错。发布元数据使用
+`input_adapter="flexiv.alignment.v1"`；其他满足同一输入契约的程序可复用此适配器。
+未选工具不注册到模型接口，程序只读取记录，不访问机器人、网络或隐藏评测状态。
 
 ## 本轮实际回放结果
 
@@ -103,4 +108,4 @@ PYTHONPATH=. .venv/bin/python examples/flexiv/alignment_contact_replay.py \
   --library /absolute/path/to/flexiv-candidate-library
 ```
 
-本轮报告位于远程 `/home/zwy/work/embodied_harness/artifacts/flexiv-alignment-tool-20261030/`，候选发布到 `/home/zwy/work/embodied_harness/artifacts/flexiv-perception-library/`，默认未选择。Flexiv 当前尚未接通仿真工作台的生成工具选择与执行器，发布候选不会使它出现在真机 `/tools` 列表；本次不启动新的真机试验。
+历史回放报告位于远程 `/home/zwy/work/embodied_harness/artifacts/flexiv-alignment-tool-20261030/`，工具发布到 `/home/zwy/work/embodied_harness/artifacts/flexiv-perception-library/`，默认未选择。Flexiv 复用仿真工作台的选择、版本冻结和 Docker 执行机制；在 `/tools` 查看说明和源码，在启动页勾选后才进入本轮模型可调用列表。

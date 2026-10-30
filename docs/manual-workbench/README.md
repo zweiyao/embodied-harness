@@ -1,7 +1,9 @@
 # RPent manual tool workbench
 
-Enabled only for LIBERO dashboards by `RPENT_WORKBENCH=/absolute/config.json`.
-Configuration contains `runs_root`, `library_root`, the existing setup-page
+Enabled for LIBERO, UniVTAC and Flexiv dashboards by
+`RPENT_WORKBENCH=/absolute/config.json`. Set `robot` to the matching environment
+(omitting it retains the LIBERO default). Configuration contains `runs_root`,
+`library_root`, the existing setup-page
 `setup` object and `models` profiles (`id`, `label`, `planner`, `model`, optional
 `base_url`, `key_file`, `codex_home`, `reasoning_effort`). Keys stay in private
 server files. The selected profile's probe must pass before starting an episode.
@@ -18,6 +20,45 @@ required; select at most one version of each name. Native action signatures,
 controller code and automatic image feedback are retained. Native prompts and
 memory are the default; the language-guidance experiment below explicitly
 replaces their model-facing text.
+
+## Shared component catalog / 全部工具与每轮选择
+
+All three environments reuse the same catalog, picker, detail dialog, frozen
+selection and planner allowlist. Each runtime still owns its observation and
+control adapters. A shared Python function signature does not imply compatible
+camera fields, coordinate frames, units, tactile sensors or action semantics.
+
+Set `RPENT_TOOL_CATALOG` on each dashboard service to a server-owned JSON file:
+
+```json
+[
+  {"robot": "libero", "library_root": "/absolute/libero-library"},
+  {"robot": "univtac", "library_root": "/absolute/univtac-library"},
+  {"robot": "flexiv", "control_mode": "rdk", "library_root": "/absolute/flexiv-library"}
+]
+```
+
+Each service uses its own Workbench configuration for its current environment;
+the other entries add read-only descriptions and sources to the shared catalog.
+Library directories must exist. No remote robot, simulator or planner is opened
+to browse them. Without this file, the current environment's catalog remains
+available. The Flexiv control mode comes from its server launch configuration.
+
+在“全部组件”中可查看三种环境的控制、感知和辅助工具；“本环境可选”只显示已接入
+当前环境的接口。每张卡片标明来源、已接入环境、用途、参数和源码。不兼容的工具
+仍可查看，但不能勾选，页面会解释缺少的适配。通用辅助工具只在已有运行时支持时
+合并展示；例如 UniVTAC 不开放文件读取，以免读到评测真值。
+
+开始页的全选、清空、恢复原生默认仅作用于本环境可选工具。`finish` 必需，新工具
+默认不选；依赖缺失、未知版本和跨环境接口在提交配置时直接报错。选中清单和源码
+在实验启动时冻结，之后编辑配置只影响下一轮。两个 planner 都受同一清单限制。
+取消感知工具不会关闭动作后自动返回的图像。
+
+Flexiv 使用同一套 Workbench 模型配置和日志机制；启动参数的 `--output-dir` 必须
+位于该配置的 `runs_root` 下。原生控制接口和机械臂启用流程保持不变；选择了当前
+硬件状态不能提供的接口时会明确失败，不会静默漏掉工具。只读实验请取消控制工具。
+对齐／接触工具通过 Flexiv 观测适配器读取定位查询与实际 TCP/力记录，在原有 Docker
+沙箱执行。它可以被手动选入实验；接入和回放通过均不代表任务成功率提升。
 
 ## Language-guidance experiment
 

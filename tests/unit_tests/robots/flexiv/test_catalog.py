@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from robots.flexiv.catalog import catalog
+from robots.flexiv.catalog import catalog, generated_availability
 from robots.flexiv.toolkit import FlexivToolkit
 from robots.libero.research.library import Library
 from rpent.tools import ToolResult
@@ -152,6 +152,37 @@ def test_candidate_is_displayed_but_never_imported_or_registered(tmp_path):
     assert candidate["parameters"] == definition["parameters"]
     assert candidate["source_run"] == metadata["source_run"]
     assert candidate["required"] is False
+
+
+def test_wired_generated_tool_is_selectable_without_loading_program(tmp_path):
+    from examples.flexiv.alignment_contact_replay import candidate
+
+    definition = candidate()
+    definition["source"] = (
+        "raise RuntimeError('must never import')\ndef run(frames, params):\n    return {}\n"
+    )
+    version = Library(tmp_path).save([definition])
+    (tmp_path / f"{version}.meta.json").write_text(
+        json.dumps({"validation": "replay_passed"})
+    )
+    tools = catalog(control_mode="rdk", library_root=tmp_path)
+    generated = next(item for item in tools if item["name"] == definition["name"])
+    assert generated["availability"] == "conditional"
+    assert generated["validation"] == "replay_passed"
+    tools = catalog(control_mode="rdk", declarations=(), library_root=tmp_path)
+    generated = next(item for item in tools if item["name"] == definition["name"])
+    assert generated["availability"] == "not_registered"
+
+
+def test_generated_adapter_contract_can_be_reused_by_another_tool():
+    from examples.flexiv.alignment_contact_replay import candidate
+
+    definition = {**candidate(), "name": "sensor_other_alignment"}
+    assert generated_availability(definition)[0] is False
+    definition["input_adapter"] = "flexiv.alignment.v1"
+    assert generated_availability(definition) == (True, None)
+    definition["parameters"]["required"].remove("anchor_step")
+    assert generated_availability(definition)[0] is False
 
 
 def test_missing_library_is_not_created_while_browsing(tmp_path):

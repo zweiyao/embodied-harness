@@ -15,6 +15,8 @@
 """Dashboard startup memory requirements before shared robot services."""
 
 import argparse
+import json
+from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
@@ -111,3 +113,65 @@ def test_shared_runtime_gets_memory_before_startup(
         == 0
     )
     assert events == (["sync"] if sync_before_shared else []) + ["shared-runtime"]
+
+
+def test_flexiv_dashboard_uses_manual_workbench_without_opening_robot(
+    tmp_path, monkeypatch
+):
+    from robots.flexiv.robot_spec import get_robot_spec
+
+    path = tmp_path / "workbench.json"
+    path.write_text(
+        json.dumps(
+            {
+                "robot": "flexiv",
+                "control_mode": "native",
+                "runs_root": str(tmp_path),
+                "library_root": str(tmp_path / "library"),
+                "setup": {},
+                "models": [{"id": "astra", "planner": "codex", "model": "gpt-6-astra"}],
+            }
+        )
+    )
+    monkeypatch.setenv("RPENT_WORKBENCH", str(path))
+    monkeypatch.delenv("RPENT_TOOL_CATALOG", raising=False)
+    runtime_calls = []
+
+    def init_runtime(args, output_dir, state, components):
+        assert components == set()
+        runtime_calls.append("shared-only")
+        return [], {}
+
+    def start(server):
+        assert server._workbench.robot == "flexiv"
+        assert server._workbench.config["control_mode"] == "rdk"
+        assert "native:move_eef_delta" in server._planner_config["tools"]
+        assert "native:reset_home" not in server._planner_config["tools"]
+        server._state.request_shutdown()
+        return "http://127.0.0.1:12345"
+
+    spec = replace(get_robot_spec(), init_runtime=init_runtime)
+    parser = _build_argparser()
+    spec.add_cli_args(parser, use_dashboard=True)
+    args = parser.parse_args(
+        [
+            "--robot",
+            "flexiv",
+            "--dashboard",
+            "--planner",
+            "codex",
+            "--model",
+            "gpt-6-astra",
+            "--control-mode",
+            "rdk",
+            "--env-endpoint",
+            "http://unused",
+            "--memory-profile",
+            "local",
+            "--output-dir",
+            str(tmp_path / "session"),
+        ]
+    )
+    monkeypatch.setattr(DashboardServer, "start", start)
+    assert dashboard.run_dashboard_session(args, spec, parser=parser) == 0
+    assert runtime_calls == ["shared-only"]

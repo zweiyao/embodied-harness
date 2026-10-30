@@ -111,6 +111,54 @@ def test_workbench_catalog_keeps_its_existing_items(state):
     assert client.get("/api/tools/native:example").json() == items[0]
 
 
+def test_flexiv_selection_is_frozen_before_task_claim(tmp_path, monkeypatch):
+    from robots.flexiv.robot_spec import DASHBOARD_SPEC as FLEXIV_SPEC
+    from rpent.dashboard.workbench import Workbench
+
+    monkeypatch.delenv("RPENT_TOOL_CATALOG", raising=False)
+    state = DashboardState(output_dir=tmp_path / "session", dashboard_spec=FLEXIV_SPEC)
+    state.workbench = Workbench(
+        {
+            "robot": "flexiv",
+            "control_mode": "rdk",
+            "runs_root": str(tmp_path),
+            "library_root": str(tmp_path / "library"),
+            "setup": {},
+            "models": [{"id": "astra", "planner": "codex", "model": "gpt-6-astra"}],
+        },
+        robot="flexiv",
+    )
+    state.workbench.checks["astra"] = {"ok": True}
+    state.shared_services_ready()
+    client = _client(_server(state, robot_name="flexiv", planner="codex"))
+    assert client.get("/api/tools").json()["selectable"] is True
+    chosen = ["native:finish", "native:observe"]
+    assert client.post("/api/session/config", json={"tools": chosen}).status_code == 200
+    state.request_task({"instruction": "Observe only."})
+    assert (
+        client.post(
+            "/api/session/config", json={"tools": chosen + ["native:move_tcp"]}
+        ).status_code
+        == 200
+    )
+    run = state.wait_for_task(0)
+    assert run.request["tools"] == chosen
+    assert [item["name"] for item in run.request["frozen_tools"]] == [
+        "finish",
+        "observe",
+    ]
+    assert (
+        client.post(
+            "/api/session/config", json={"tools": ["native:finish", "native:move_to"]}
+        ).status_code
+        == 422
+    )
+    assert (
+        client.post("/api/session/config", json={"control_mode": "native"}).status_code
+        == 422
+    )
+
+
 def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkeypatch):
     import io
     from concurrent.futures import ThreadPoolExecutor

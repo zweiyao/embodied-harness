@@ -1,4 +1,4 @@
-import {renderTools} from './tool-picker.js?v=flexiv-tools-20261030';
+import {renderTools} from './tool-picker.js?v=all-tools-20261030';
 import {resetControl} from './flexiv-reset.js';
 const $ = (id) => document.getElementById(id);
 let setup, profile, config, picker;
@@ -132,18 +132,19 @@ try {
     $('checkModels').hidden = !setup.workbench;
     $('modelCheck').hidden = !setup.workbench;
     $('toolsRunsLink').hidden = !setup.workbench;
+    $('toolsNote').textContent = `${scope ? `${scope} ` : ''}可查看所有环境的工具，勾选本环境已接入的工具用于本轮实验；其他工具会说明不可选原因。取消感知工具不会关闭动作后自动返回的图像。新工具默认不勾选；每轮冻结所选版本。`;
     if (!canSelect) {
       $('toolsHeading').textContent = '工具简介';
       $('toolsLibraryLink').textContent = '工具简介与源码';
-      $('toolsNote').textContent = `${scope ? `${scope} ` : ''}按控制、感知和运行辅助查看工具；注册状态取决于任务启动配置。候选工具尚未接入模型调用。`;
+      $('toolsNote').textContent = `${scope ? `${scope} ` : ''}可查看各环境工具的简介和源码。当前服务未启用工具选择；候选工具尚未接入模型调用。`;
     }
     const copied = setup.workbench && sessionStorage.getItem('rpent.copyRun');
     let selection = config.tools || [];
     if (copied) {
       const prior = JSON.parse(copied);
       selection = prior.tools;
-      const missing = (selection || []).filter(id => !catalog.some(t => t.id === id));
-      if (missing.length) throw new Error(`历史工具版本不存在：${missing.join(', ')}`);
+      const missing = (selection || []).filter(id => !catalog.some(t => t.id === id && t.selectable !== false && t.availability !== 'candidate'));
+      if (missing.length) throw new Error(`历史工具版本不存在或不兼容当前环境：${missing.join(', ')}`);
       if (prior.model_profile) $('model').value = prior.model_profile;
       for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) if (prior[id] != null) config[id] = prior[id];
       if (prior.suite) { $('suite').value = prior.suite; tasks(); }

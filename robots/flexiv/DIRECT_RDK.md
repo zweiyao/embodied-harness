@@ -82,17 +82,22 @@ rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
 
 开始页和控制台的“工具简介与源码”共用仿真的 `/tools` 页面、`/api/tools`
 接口和工具卡片，按控制、感知、运行辅助分组，展示用途、参数与源码。
-真机目前为只读目录，不提供勾选；访问目录不会连接、启用或移动机械臂。
+启动页可为每轮选择兼容工具，源码和版本随实验冻结；访问目录不会连接、启用或移动机械臂。
 
-目录使用与 `FlexivToolkit` 注册相同的模式选择逻辑。空闲时展示当前控制模式
-支持的接口；任务运行时根据实际 Toolkit 标注“本轮已注册/未注册”，使用本轮
-声明与参数。目录覆盖 RPent 注册工具，不包含 Codex SDK 等规划器的内置能力。
+目录使用与 `FlexivToolkit` 注册相同的模式选择逻辑，展示当前控制模式支持的接口。
+启动时核对所选工具的版本、依赖与当前启用／标定状态，不可用时明确报错。
+目录覆盖 RPent 注册工具，不包含 Codex SDK 等规划器的内置能力。
 RDK 模式的网页复位属于操作员接口，不作为模型工具显示。
 
-可在 dashboard 进程中设置 `RPENT_FLEXIV_TOOL_LIBRARY`，指向现有感知工具版本库。
+选择与执行使用 dashboard 的 `RPENT_WORKBENCH` 配置，其中 `library_root` 指向
+感知工具版本库，`runs_root` 指向实验记录目录。旧变量 `RPENT_FLEXIV_TOOL_LIBRARY`
+仅用于未启用工作台时的只读展示，不能单独开启实验工具选择。
 目录复用版本库的哈希校验，只读取源码及元数据，不在主机执行生成代码。
-未接入真机执行器的工具显示“候选，尚未接入调用”；回放状态单独展示，不表示
-已取得任务增益。配置的库不存在时明确报错。
+`sensor_alignment_contact` 已接入 `flexiv.alignment.v1` 记录适配器，依赖
+`localize_target` 返回的 `record_step` 查询编号；源图像编号仍是 `step`。
+满足相同输入契约的其他程序可复用该适配器。其他未接入真机执行器的工具仍显示
+不兼容原因。未选工具不会注册给模型，原生动作后的图像仍自动返回。回放状态单独展示，不表示
+已取得任务增益。
 
 ## 网页复位
 
@@ -210,16 +215,20 @@ workspace/target bounds, finite inputs and fixed command deadlines remain;
 camera freshness no longer stops native motion. Calibrated observations still
 require valid synchronized frames and stationary capture.
 
-The setup page and console also link to the shared `/tools` catalog used by
-simulation. Flexiv browsing is read-only: idle pages show interfaces supported by
-the configured control mode; active tasks mark their actual Toolkit declarations
-as registered. Descriptions, parameters and source come from the tool declarations,
-using the same method-selection logic as runtime registration. No robot resources
-are opened by browsing. This catalog covers RPent tools, not planner SDK built-ins.
-`RPENT_FLEXIV_TOOL_LIBRARY` optionally points to the existing versioned perception
-library. Candidate source is hash-checked and displayed without execution; candidates
-remain explicitly unavailable to the physical planner. Replay validation does not
-establish task improvement. A missing configured library is an error.
+The setup page and console link to the shared `/tools` catalog used by simulation.
+The setup page selects compatible tools for each run and freezes their source and
+versions. Unselected tools are absent from both planner declarations and dispatch;
+native images after actions remain unchanged. Descriptions, parameters and source
+come from tool declarations. Browsing does not open robot resources. The catalog
+covers RPent tools, not planner SDK built-ins.
+Selection and execution use the Dashboard's `RPENT_WORKBENCH` configuration, with
+`library_root` for the versioned perception library and `runs_root` for experiment
+records. The legacy `RPENT_FLEXIV_TOOL_LIBRARY` variable only enables read-only
+browsing when no workbench is configured. The `flexiv.alignment.v1` input adapter connects `sensor_alignment_contact`
+and other programs with the same contract to measured recorded frames and the
+existing isolated Docker executor. `localize_target` returns both source-image
+`step` and localization-query `record_step`. Unsupported adapters remain unavailable
+with an explicit reason. Replay validation does not establish task improvement.
 
 Verification uses fake hardware and loopback HTTP before any explicitly started
 physical trial. Passing these checks does not establish physical task success.

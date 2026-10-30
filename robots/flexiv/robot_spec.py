@@ -110,8 +110,17 @@ def _parse_config(args):
 def get_toolkit(*, runtime_kwargs, dashboard_events, config):
     from robots.flexiv.toolkit import FlexivToolkit
 
+    toolkit_class, options = FlexivToolkit, {}
+    if "manual_tools" in config.prompt_vars:
+        from robots.flexiv.manual import ManualToolkit
+
+        toolkit_class = ManualToolkit
+        options = {
+            "selected": config.prompt_vars["manual_tools"],
+            "journal": config.prompt_vars.get("run_journal"),
+        }
     try:
-        return FlexivToolkit(
+        return toolkit_class(
             env=runtime_kwargs["env"],
             output_dir=config.output_dir,
             dashboard_events=dashboard_events,
@@ -119,6 +128,7 @@ def get_toolkit(*, runtime_kwargs, dashboard_events, config):
             memory=MemoryManager(
                 root=get_memory_dir("flexiv"), memory_access="read_only"
             ),
+            **options,
         )
     except Exception:
         runtime_kwargs["env"].close()

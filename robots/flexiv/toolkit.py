@@ -224,6 +224,7 @@ class FlexivToolkit(Toolkit):
                 command={"tool": "localize_target", "source_step": step},
                 result=result,
             ) as index:
+                result["record_step"] = index
                 self.state.save("localization.json", result)
                 picture = Image.open(
                     self.state.artifact_path(f"{camera}.png", step=step)

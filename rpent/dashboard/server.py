@@ -211,9 +211,8 @@ class DashboardServer:
                 {
                     "tools": self._catalog(),
                     "selectable": self._workbench is not None,
-                    "scope": "RPent 注册工具；目录不包含规划器 SDK 的内置能力。"
-                    if self._robot_name == "flexiv"
-                    else "当前环境的工具库",
+                    "scope": "已配置环境的 RPent 工具；仅适配当前环境的工具可选。",
+                    "robot": self._robot_name,
                 }
             )
 
