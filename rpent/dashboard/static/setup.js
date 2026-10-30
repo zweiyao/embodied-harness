@@ -1,7 +1,9 @@
 import {renderTools} from './tool-picker.js';
+import {resetControl} from './flexiv-reset.js';
 const $ = (id) => document.getElementById(id);
 let setup, profile, config, picker;
 let checksPassed = false;
+const physicalReset = resetControl($('resetPhysical'), $('resetPhysicalStatus'), physicalStatus, () => $('physicalMode').value === 'supervised');
 async function request(path, options) {
   const response = await fetch(path, options);
   const data = await response.json();
@@ -54,6 +56,7 @@ async function physicalStatus() {
   if (direct) $('physical').querySelector('.note').textContent = '通过非夕 RDK 服务器执行动作，到达目标后返回图像和状态。启用保持当前位姿，不归位。每次实验结束或停止后需重新启用。';
   $('physicalStatus').textContent = `${direct ? 'RDK 直连' : '采集器'} · ${data.armed ? '动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
   $('armPhysical').disabled = $('physicalMode').value !== 'supervised' || data.armed || data.lease_active;
+  physicalReset.update(data);
   return data;
 }
 async function physicalAction(action) {
@@ -113,7 +116,10 @@ try {
     options('inspection', profile.inspections.map(s => [s,s]));
     $('physicalInstruction').value = $('inspection').value;
     await physicalStatus();
-    setInterval(() => physicalStatus().catch(error => { $('physicalStatus').textContent = `状态不可用：${error.message}`; }), 3000);
+    setInterval(() => physicalStatus().catch(error => {
+      $('resetPhysical').disabled = true;
+      $('physicalStatus').textContent = `状态不可用：${error.message}`;
+    }), 3000);
   }
   const models = [...(setup.models || [])];
   if (config.model && !models.includes(config.model)) models.push(config.model);

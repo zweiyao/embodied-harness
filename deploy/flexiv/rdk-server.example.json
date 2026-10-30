@@ -4,6 +4,7 @@
   "workspace_max": [1.0, 0.8, 1.0],
   "gripper_name": "Flexiv-GN01",
   "audit_path": "/path/to/runtime/rdk-actions.jsonl",
+  "home_reference": null,
   "max_linear_vel": 0.02,
   "max_angular_vel": 0.15,
   "max_linear_acc": 0.1,

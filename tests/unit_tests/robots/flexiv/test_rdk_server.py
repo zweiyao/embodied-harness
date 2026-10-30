@@ -33,6 +33,8 @@ from robots.flexiv.rdk_server import (
 
 
 class FakeRobot:
+    _AUTO_REACHED = object()
+
     def __init__(self):
         self.calls = []
         self.pose = [0.4, 0, 0.2, 1, 0, 0, 0]
@@ -42,6 +44,14 @@ class FakeRobot:
         self.current_mode = "cartesian"
         self.bad = False
         self.on_send = None
+        self.q = [0.0] * 7
+        self.joint_target = None
+        self.primitive_pose = None
+        self.primitive_progress = 0
+        self.reached_flag = self._AUTO_REACHED
+        self.primitive_poll_count = 0
+        self.on_switch = None
+        self.on_primitive = None
 
     def states(self):
         if self.target is not None:
@@ -49,10 +59,17 @@ class FakeRobot:
             if self.progress >= self.arrival_after:
                 self.pose = self.target[:]
                 self.target = None
+        if self.joint_target is not None:
+            self.primitive_progress += 1
+            if self.primitive_progress >= self.arrival_after:
+                self.q = self.joint_target[:]
+                self.joint_target = None
+                if self.primitive_pose is not None:
+                    self.pose = self.primitive_pose[:]
         return SimpleNamespace(
             tcp_pose=self.pose[:],
-            q=[0.0] * 7,
-            dq=[0.01 if self.target else 0.0] * 7,
+            q=self.q[:],
+            dq=[0.01 if self.target or self.joint_target else 0.0] * 7,
             tcp_vel=[0.0] * 6,
             ext_wrench_in_world=[1.0] * 6,
             ext_wrench_in_tcp=[2.0] * 6,
@@ -76,10 +93,13 @@ class FakeRobot:
     def SwitchMode(self, mode):
         self.calls.append(("mode", mode))
         self.current_mode = mode
+        if self.on_switch:
+            self.on_switch(mode)
 
     def Stop(self):
         self.calls.append(("stop",))
         self.target = None
+        self.joint_target = None
         self.current_mode = "idle"
 
     def SendCartesianMotionForce(self, target, **kwargs):
@@ -87,6 +107,27 @@ class FakeRobot:
         self.target = target[:]
         if self.on_send:
             self.on_send()
+
+    def ExecutePrimitive(self, name, params):
+        self.calls.append(("primitive", name, params))
+        self.joint_target = np.deg2rad(params["target"].degrees).tolist()
+        self.primitive_progress = 0
+        if self.on_primitive:
+            self.on_primitive()
+
+    def primitive_states(self):
+        self.primitive_poll_count += 1
+        reached = (
+            self.reached_flag
+            if self.reached_flag is not self._AUTO_REACHED
+            else self.joint_target is None
+        )
+        return {"reachedTarget": reached}
+
+
+class FakeJPos:
+    def __init__(self, degrees):
+        self.degrees = list(degrees)
 
 
 class FakeGripper:
@@ -161,11 +202,41 @@ def direct(monkeypatch, tmp_path):
     rdk = SimpleNamespace(
         Tool=FakeTool,
         Gripper=FakeGripper,
-        Mode=SimpleNamespace(NRT_CARTESIAN_MOTION_FORCE="cartesian"),
+        JPos=FakeJPos,
+        Mode=SimpleNamespace(
+            NRT_CARTESIAN_MOTION_FORCE="cartesian",
+            NRT_PRIMITIVE_EXECUTION="primitive",
+        ),
     )
     robot = FakeRobot()
     controller = DirectRobot(config, rdk=rdk, robot=robot)
     return controller
+
+
+@pytest.fixture
+def home_reference(tmp_path):
+    reference = tmp_path / "home.json"
+    reference.write_text(
+        json.dumps(
+            {
+                "captured_state": {
+                    "robot_sn": "fake",
+                    "coordinate_frame": "robot_base",
+                    "quaternion_order": "wxyz",
+                    "tcp_pose": [0.45, 0, 0.25, 1, 0, 0, 0],
+                    "joint_position": [0.1, -0.2, 0.3, -0.4, 0.5, -0.6, 0.7],
+                }
+            }
+        )
+    )
+    return reference
+
+
+@pytest.fixture
+def homing(direct, home_reference):
+    config = direct.config.model_copy(update={"home_reference": str(home_reference)})
+    direct.robot.primitive_pose = [0.45, 0, 0.25, 1, 0, 0, 0]
+    return DirectRobot(config, rdk=direct.rdk, robot=direct.robot)
 
 
 def test_startup_reads_without_enabling_or_moving(direct):
@@ -368,3 +439,223 @@ def test_second_server_owner_is_rejected_before_connection():
                 pytest.fail("Second server acquired the robot")
     with robot_owner_lock("Fake-Robot-Test-Only"):
         pass
+
+
+def test_home_preview_is_read_only_and_reset_requires_explicit_enable(homing):
+    with TestClient(create_app(homing)) as client:
+        assert client.get("/home-preview").json()["available"]
+        assert client.get("/state").json()["home_available"]
+        assert client.post("/jointreset").status_code == 409
+    assert homing.robot.calls == []
+    assert not homing.armed
+
+
+def test_no_reference_cannot_reset(direct):
+    direct.enable()
+    before = direct.robot.calls[:]
+    with TestClient(create_app(direct)) as client:
+        assert not client.get("/home-preview").json()["available"]
+        assert not client.get("/state").json()["home_available"]
+        assert client.post("/jointreset").status_code == 422
+        assert direct.robot.calls == before
+        assert direct.armed
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("robot_sn", "another-robot"),
+        ("coordinate_frame", "camera"),
+        ("quaternion_order", "xyzw"),
+        ("tcp_pose", [0.45, 0, 0.25, 0, 0, 0, 0]),
+        ("tcp_pose", [2.0, 0, 0.25, 1, 0, 0, 0]),
+        ("joint_position", [0.0] * 6),
+        ("joint_position", [float("nan")] * 7),
+    ],
+)
+def test_invalid_home_is_rejected_before_robot_connection(
+    direct, home_reference, field, value
+):
+    data = json.loads(home_reference.read_text())
+    data["captured_state"][field] = value
+    home_reference.write_text(json.dumps(data))
+    config = direct.config.model_copy(update={"home_reference": str(home_reference)})
+    connections = []
+    sdk = SimpleNamespace(**vars(direct.rdk))
+    sdk.Robot = lambda serial: connections.append(serial)
+    with pytest.raises(ValueError):
+        DirectRobot(config, rdk=sdk)
+    assert connections == []
+
+
+@pytest.mark.parametrize("flag", [True, 1, np.int64(1)])
+def test_jointreset_uses_one_native_movej_and_keeps_gripper(homing, flag):
+    homing.enable()
+    homing.gripper.width = 0.013
+    homing.robot.reached_flag = flag
+    before = len(homing.robot.calls)
+    with TestClient(create_app(homing)) as client:
+        response = client.post("/jointreset")
+        assert response.status_code == 200, response.text
+        assert response.json()["reached"]
+        calls = homing.robot.calls[before:]
+        assert [entry[0] for entry in calls] == ["mode", "primitive", "mode"]
+        assert calls[0] == ("mode", "primitive")
+        assert calls[-1] == ("mode", "cartesian")
+        _, name, params = calls[1]
+        assert name == "MoveJ"
+        np.testing.assert_allclose(
+            params["target"].degrees,
+            np.rad2deg([0.1, -0.2, 0.3, -0.4, 0.5, -0.6, 0.7]),
+        )
+        assert params["jntVelScale"] == 30
+        assert homing.gripper.width == 0.013
+        assert homing.armed
+        np.testing.assert_allclose(homing.robot.pose, [0.45, 0, 0.25, 1, 0, 0, 0])
+
+
+def test_jointreset_uses_startup_reference_even_if_file_changes(homing, home_reference):
+    reference_hash = homing.home_preview()["reference_sha256"]
+    data = json.loads(home_reference.read_text())
+    data["captured_state"]["joint_position"] = [0.0] * 7
+    data["captured_state"]["tcp_pose"] = [0.4, 0, 0.2, 1, 0, 0, 0]
+    home_reference.write_text(json.dumps(data))
+    assert homing.home_preview()["reference_sha256"] == reference_hash
+    homing.enable()
+    result = homing.reset_home()
+    assert result["reached"]
+    assert result["reference_sha256"] == reference_hash
+    np.testing.assert_allclose(homing.robot.q, [0.1, -0.2, 0.3, -0.4, 0.5, -0.6, 0.7])
+
+
+@pytest.mark.parametrize("flag", [False, 0])
+def test_jointreset_waits_for_native_reached_flag(homing, flag):
+    homing.enable()
+    homing.config.timeout_s = 0.5
+    homing.robot.arrival_after = 1
+    homing.robot.reached_flag = flag
+    with pytest.raises(TimeoutError):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]
+    assert homing.robot.current_mode == "idle"
+
+
+@pytest.mark.parametrize("flag", [None, "0", "false", "1", "true", 2, 1.0])
+def test_jointreset_invalid_reached_flag_stops_without_polling_again(
+    homing, monkeypatch, flag
+):
+    homing.enable()
+    homing.robot.reached_flag = flag
+
+    def unexpected_wait(_):
+        pytest.fail("Invalid native feedback must stop before another wait")
+
+    monkeypatch.setattr("robots.flexiv.rdk_server.time.sleep", unexpected_wait)
+    with pytest.raises(ValueError):
+        homing.reset_home()
+    assert homing.robot.primitive_poll_count == 1
+    assert not homing.armed
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]
+    assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_native_reached_flag_does_not_replace_measured_arrival(homing):
+    homing.enable()
+    homing.config.timeout_s = 0.1
+    homing.robot.arrival_after = 10000
+    homing.robot.reached_flag = True
+    with pytest.raises(TimeoutError):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]
+
+
+def test_jointreset_rejects_joint_arrival_with_wrong_tcp(homing):
+    homing.enable()
+    homing.config.timeout_s = 0.5
+    homing.robot.arrival_after = 1
+    homing.robot.primitive_pose = [0.45, 0, 0.30, 1, 0, 0, 0]
+    with pytest.raises(RuntimeError, match="saved TCP reference"):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_requires_settled_joints(homing, monkeypatch):
+    homing.enable()
+    homing.config.timeout_s = 0.1
+    homing.robot.arrival_after = 1
+    measured = homing.robot.states
+
+    def moving_states():
+        state = measured()
+        state.dq = [0.006] * 7
+        return state
+
+    monkeypatch.setattr(homing.robot, "states", moving_states)
+    with pytest.raises(TimeoutError):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_fault_stops_and_does_not_restore_mode(homing):
+    homing.enable()
+    homing.robot.on_primitive = lambda: setattr(homing.robot, "bad", True)
+    with pytest.raises(HTTPException, match="hardware fault"):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]
+    assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_stop_before_primitive_prevents_dispatch(homing):
+    homing.enable()
+
+    def stop_after_mode_switch(mode):
+        if mode == "primitive":
+            homing.stop("stop before reset dispatch")
+
+    homing.robot.on_switch = stop_after_mode_switch
+    with pytest.raises(HTTPException, match="cancelled"):
+        homing.reset_home()
+    assert not any(call[0] == "primitive" for call in homing.robot.calls)
+    assert not homing.armed
+    assert homing.stop_reason == "stop before reset dispatch"
+    assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_stop_interrupts_wait_without_restoring_or_resending(
+    homing, monkeypatch
+):
+    homing.enable()
+    dispatched = threading.Event()
+    continue_worker = threading.Event()
+    errors = []
+    homing.robot.on_primitive = dispatched.set
+
+    def wait(_):
+        assert continue_worker.wait(2)
+
+    monkeypatch.setattr("robots.flexiv.rdk_server.time.sleep", wait)
+
+    def reset():
+        try:
+            homing.reset_home()
+        except HTTPException as exc:
+            errors.append(exc)
+
+    worker = threading.Thread(target=reset)
+    worker.start()
+    assert dispatched.wait(2)
+    with pytest.raises(HTTPException, match="Another robot command"):
+        homing.reset_home()
+    homing.stop("stop during reset")
+    count = len(homing.robot.calls)
+    continue_worker.set()
+    worker.join(2)
+    assert not worker.is_alive()
+    assert errors and len(homing.robot.calls) == count
+    assert not homing.armed
+    assert homing.robot.current_mode == "idle"

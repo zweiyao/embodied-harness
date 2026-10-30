@@ -58,6 +58,59 @@ def _client(server: DashboardServer) -> TestClient:
     return TestClient(server._app)
 
 
+def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkeypatch):
+    import io
+    from concurrent.futures import ThreadPoolExecutor
+
+    from robots.flexiv import operator_ui
+
+    entered = threading.Event()
+    release = threading.Event()
+
+    def urlopen(request, timeout):
+        if request.full_url.endswith("/home-preview"):
+            return io.BytesIO(b'{"available":true,"timeout_s":30}')
+        if request.full_url.endswith("/jointreset"):
+            entered.set()
+            assert release.wait(timeout=5)
+            return io.BytesIO(b'{"reached":true}')
+        assert request.full_url.endswith("/stop")
+        return io.BytesIO(b'{"stopped":true}')
+
+    monkeypatch.setenv("RPENT_FLEXIV_RDK_ENDPOINT", "http://fake-rdk:5000")
+    monkeypatch.setattr(operator_ui, "urlopen", urlopen)
+    state.shared_services_ready()
+    with _client(_server(state, robot_name="flexiv")) as client:
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            reset = pool.submit(client.post, "/api/flexiv/reset-home")
+            try:
+                assert entered.wait(timeout=5)
+                assert (
+                    client.post(
+                        "/api/session/messages", json={"text": "/rpent-task 1"}
+                    ).status_code
+                    == 409
+                )
+                assert (
+                    client.post(
+                        "/api/session/primitive", json={"name": "move", "arguments": {}}
+                    ).status_code
+                    == 409
+                )
+                assert client.post("/api/flexiv/stop").json()["stopped"]
+                assert state.session_state == "ready"
+            finally:
+                release.set()
+            assert reset.result().json()["reached"]
+        assert (
+            client.post(
+                "/api/session/messages", json={"text": "/rpent-task 1"}
+            ).status_code
+            == 202
+        )
+        assert client.post("/api/flexiv/reset-home").status_code == 409
+
+
 def test_model_change_applies_at_next_task_boundary(state):
     client = _client(_server(state, planner="codex", model="gpt-5.5"))
     state.shared_services_ready()

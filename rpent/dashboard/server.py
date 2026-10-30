@@ -132,10 +132,15 @@ class DashboardServer:
 
     def _build_app(self) -> FastAPI:
         app = FastAPI(title="RPent dashboard")
+        operator_lock = threading.Lock()
         if self._robot_name == "flexiv":
             from robots.flexiv.operator_ui import install_operator_routes
 
-            flexiv_interrupt_stop = install_operator_routes(app)
+            flexiv_interrupt_stop = install_operator_routes(
+                app,
+                session_state=lambda: self._state.session_state,
+                operator_lock=operator_lock,
+            )
         app.mount(
             "/static",
             StaticFiles(directory=self._static_dir),
@@ -224,7 +229,7 @@ class DashboardServer:
             if self._robot_name == "flexiv":
                 html = html.replace(
                     "</body>",
-                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-rdk-20261030"></script></body>',
+                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-reset-20261030"></script></body>',
                 )
             return HTMLResponse(html)
 
@@ -317,6 +322,12 @@ class DashboardServer:
         def api_submit_message(
             payload: dict[str, Any] = Body(default={}),
         ) -> JSONResponse:
+            if self._robot_name == "flexiv" and not operator_lock.acquire(
+                blocking=False
+            ):
+                return JSONResponse(
+                    {"error": "机械臂复位中，请等待完成后再开始实验"}, status_code=409
+                )
             try:
                 self._state.submit_input(
                     payload.get("text"),
@@ -326,6 +337,9 @@ class DashboardServer:
                 return JSONResponse({"error": str(exc)}, status_code=422)
             except InteractionUnavailableError as exc:
                 return JSONResponse({"error": str(exc)}, status_code=409)
+            finally:
+                if self._robot_name == "flexiv":
+                    operator_lock.release()
             return JSONResponse({"ok": True}, status_code=202)
 
         @app.delete(
@@ -414,6 +428,12 @@ class DashboardServer:
                     {"error": "arguments must be a JSON object"},
                     status_code=422,
                 )
+            if self._robot_name == "flexiv" and not operator_lock.acquire(
+                blocking=False
+            ):
+                return JSONResponse(
+                    {"error": "机械臂复位中，请等待完成后再执行动作"}, status_code=409
+                )
             try:
                 tool_result = self._state.execute_primitive(name, arguments)
             except InteractionUnavailableError as exc:
@@ -425,6 +445,9 @@ class DashboardServer:
                 return JSONResponse({"error": str(exc)}, status_code=500)
             except ValueError as exc:
                 return JSONResponse({"error": str(exc)}, status_code=403)
+            finally:
+                if self._robot_name == "flexiv":
+                    operator_lock.release()
             result = tool_result.to_dict()
             if isinstance(result, dict) and result.get("error") is not None:
                 error = " ".join(str(result["error"]).split())[:500]

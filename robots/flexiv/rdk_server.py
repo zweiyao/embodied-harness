@@ -35,6 +35,7 @@ class ServerConfig(BaseModel):
     workspace_max: list[float] = Field(min_length=3, max_length=3)
     gripper_name: str = "Flexiv-GN01"
     audit_path: str | None = None
+    home_reference: str | None = None
     max_linear_vel: float = Field(default=0.02, gt=0)
     max_angular_vel: float = Field(default=0.15, gt=0)
     max_linear_acc: float = Field(default=0.1, gt=0)
@@ -93,10 +94,42 @@ def _rotation(pose):
     return Rotation.from_quat(np.roll(pose[3:], -1))
 
 
+def _load_home(config):
+    if config.home_reference is None:
+        return None
+    raw = Path(config.home_reference).expanduser().read_bytes()
+    saved = json.loads(raw)["captured_state"]
+    if (
+        saved["robot_sn"] != config.robot_sn
+        or saved["coordinate_frame"] != "robot_base"
+        or saved["quaternion_order"] != "wxyz"
+    ):
+        raise ValueError("Home reference robot or coordinate frame does not match")
+    joints = _vector(saved["joint_position"], 7)
+    pose = _pose(saved["tcp_pose"])
+    if np.any(pose[:3] < config.workspace_min) or np.any(
+        pose[:3] > config.workspace_max
+    ):
+        raise ValueError("Home reference TCP is outside configured workspace")
+    return {
+        "target_joints_rad": joints.tolist(),
+        "target_tcp_pose": pose.tolist(),
+        "reference_sha256": hashlib.sha256(raw).hexdigest(),
+    }
+
+
+def _primitive_reached(value):
+    # RDK 1.9 reports an integer 0/1; the strings '0'/'1' are not booleans.
+    if not isinstance(value, (bool, np.bool_, int, np.integer)) or value not in (0, 1):
+        raise ValueError("Invalid reachedTarget feedback from RDK")
+    return value == 1
+
+
 class DirectRobot:
     """Serialize native commands while allowing an independent stop request."""
 
     def __init__(self, config: ServerConfig, *, rdk=None, robot=None):
+        self.home = _load_home(config)
         if rdk is None:
             import flexivrdk as rdk
         self.config = config
@@ -159,7 +192,7 @@ class DirectRobot:
                 gripper_is_moving=bool(grip.is_moving),
             )
         limits = self.config.model_dump(
-            exclude={"audit_path", "robot_sn", "gripper_name"}
+            exclude={"audit_path", "robot_sn", "gripper_name", "home_reference"}
         )
         if self.gripper is not None:
             params = self.gripper.params()
@@ -174,6 +207,7 @@ class DirectRobot:
                 "tcp_location": _pose(self.tool.params().tcp_location).tolist(),
             },
             "gripper_ready": self.gripper is not None,
+            "home_available": self.home is not None,
             "stop_reason": self.stop_reason,
             "config": limits,
         }
@@ -193,7 +227,7 @@ class DirectRobot:
         finally:
             self._operation.release()
 
-    def _check(self, generation, *, armed=True):
+    def _check(self, generation, *, armed=True, expected_mode=None):
         if generation != self._generation:
             raise HTTPException(409, "Command cancelled by stop")
         if armed and not self.armed:
@@ -202,15 +236,24 @@ class DirectRobot:
             raise HTTPException(409, "Robot disconnected or reporting a hardware fault")
         if armed and (
             not self.robot.operational()
-            or self.robot.mode() != self.rdk.Mode.NRT_CARTESIAN_MOTION_FORCE
+            or self.robot.mode()
+            != (
+                self.rdk.Mode.NRT_CARTESIAN_MOTION_FORCE
+                if expected_mode is None
+                else expected_mode
+            )
         ):
-            raise HTTPException(409, "Robot is not operational in Cartesian mode")
+            raise HTTPException(
+                409, "Robot is not operational in the expected control mode"
+            )
 
-    def _send(self, generation, function, *args, armed=True, **kwargs):
+    def _send(
+        self, generation, function, *args, armed=True, expected_mode=None, **kwargs
+    ):
         # Stop and native command submission share this lock. A cancelled command
         # cannot issue any later SDK command, even if its worker resumes afterwards.
         with self._dispatch:
-            self._check(generation, armed=armed)
+            self._check(generation, armed=armed, expected_mode=expected_mode)
             return function(*args, **kwargs)
 
     def stop(self, reason="Operator stop") -> dict[str, Any]:
@@ -290,6 +333,108 @@ class DirectRobot:
             result = self.state()
             self._audit("result", command="activate_gripper", result=result)
             return result
+
+    def home_preview(self) -> dict[str, Any]:
+        """Describe the frozen operator reference without enabling or moving."""
+        return {
+            "available": self.home is not None,
+            **(self.home or {"reason": "No saved home_reference configured"}),
+            "joint_velocity_scale": 30,
+            "timeout_s": self.config.timeout_s,
+            "current": self.state(),
+            "gripper_commanded": False,
+            "collision_checked": False,
+        }
+
+    def reset_home(self) -> dict[str, Any]:
+        """Execute one native MoveJ to the saved joints, preserving gripper width."""
+        with self._command("jointreset", self.home or {}) as generation:
+            self._check(generation)
+            if self.home is None:
+                raise ValueError("No saved home_reference configured")
+            if self.tool.name() != self.config.gripper_name:
+                raise ValueError("Active native tool changed since enable")
+            target = np.asarray(self.home["target_joints_rad"])
+            primitive_mode = self.rdk.Mode.NRT_PRIMITIVE_EXECUTION
+            started = time.monotonic()
+            try:
+                self._send(generation, self.robot.SwitchMode, primitive_mode)
+                self._send(
+                    generation,
+                    self.robot.ExecutePrimitive,
+                    "MoveJ",
+                    {
+                        "target": self.rdk.JPos(np.rad2deg(target).tolist()),
+                        "jntVelScale": 30,
+                    },
+                    expected_mode=primitive_mode,
+                )
+                while True:
+                    self._check(generation, expected_mode=primitive_mode)
+                    reached = _primitive_reached(
+                        self.robot.primitive_states().get("reachedTarget")
+                    )
+                    state = self.state()["state"]
+                    error = float(
+                        np.max(np.abs(np.asarray(state["joint_position"]) - target))
+                    )
+                    self._audit("state", command="jointreset", state=state)
+                    if (
+                        reached
+                        and error <= 0.0002
+                        and max(abs(v) for v in state["joint_velocity"]) < 0.005
+                    ):
+                        actual = _pose(state["tcp_pose"])
+                        expected = np.asarray(self.home["target_tcp_pose"])
+                        position_error = float(
+                            np.linalg.norm(actual[:3] - expected[:3])
+                        )
+                        angle_error = float(
+                            np.rad2deg(
+                                (
+                                    _rotation(actual) * _rotation(expected).inv()
+                                ).magnitude()
+                            )
+                        )
+                        if (
+                            position_error > self.config.arrival_position_m
+                            or angle_error > self.config.arrival_angle_deg
+                        ):
+                            raise RuntimeError(
+                                "Reached joints do not match saved TCP reference; check native tool configuration"
+                            )
+                        self._send(
+                            generation,
+                            self.robot.SwitchMode,
+                            self.rdk.Mode.NRT_CARTESIAN_MOTION_FORCE,
+                            expected_mode=primitive_mode,
+                        )
+                        with self._dispatch:
+                            self._check(generation)
+                            result = {
+                                "reached": True,
+                                "motion": "MoveJ",
+                                "commands": 1,
+                                **self.home,
+                                "joint_velocity_scale": 30,
+                                "measured_pose": actual.tolist(),
+                                "max_joint_error_rad": error,
+                                "position_error_m": position_error,
+                                "angle_error_deg": angle_error,
+                                "elapsed_s": time.monotonic() - started,
+                                "state": self.state()["state"],
+                                "gripper_commanded": False,
+                            }
+                        self._audit("result", command="jointreset", result=result)
+                        return result
+                    if time.monotonic() - started >= self.config.timeout_s:
+                        raise TimeoutError(
+                            "MoveJ did not reach the saved reference before timeout"
+                        )
+                    time.sleep(0.05)
+            except Exception as exc:
+                self._execution_failed(generation, exc)
+                raise
 
     def _target(self, current, target):
         target = _pose(target)
@@ -505,6 +650,14 @@ def create_app(controller: DirectRobot) -> FastAPI:
     @app.post("/activate_gripper")
     def activate_gripper():
         return call(controller.activate_gripper)
+
+    @app.get("/home-preview")
+    def home_preview():
+        return call(controller.home_preview)
+
+    @app.post("/jointreset")
+    def jointreset():
+        return call(controller.reset_home)
 
     @app.post("/pose")
     def pose(request: PoseRequest):

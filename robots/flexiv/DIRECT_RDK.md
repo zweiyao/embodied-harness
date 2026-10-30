@@ -63,7 +63,7 @@ rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
 ## HTTP 接口
 
 默认只绑定 `127.0.0.1:5000`；下面是远程主机上执行的 curl 示例。
-`/docs` 提供实际 OpenAPI 参数。除 `/health`、`/state` 为 GET，其余均为 POST。
+`/docs` 提供实际 OpenAPI 参数。除 `/health`、`/state`、`/home-preview` 为 GET，其余均为 POST。
 
 | 接口 | 输入/作用 |
 | --- | --- |
@@ -75,6 +75,34 @@ rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
 | `/delta` | `translation_m`、`rotation_vector_rad`；从当前TCP解析一次增量目标 |
 | `/move_gripper` | `width_m`；一次原生开度命令，返回实测开度与力 |
 | `/stop` | 中断当前命令并停止机械臂和夹爪，撤销启用 |
+| `/home-preview` | GET：查看保存的参考关节/TCP、当前状态和复位参数；不运动 |
+| `/jointreset` | POST：一次原生 MoveJ 回保存关节参考，保持夹爪开度 |
+
+## 网页复位
+
+在 RDK 配置中设置 `home_reference` 为操作员保存的参考 JSON 路径；未配置时
+复位不可用。文件沿用既有 `captured_state` 格式：`robot_sn`、七维弧度
+`joint_position`、七维 `tcp_pose`、`coordinate_frame="robot_base"`、
+`quaternion_order="wxyz"`。启动时验证并冻结文件内容与 SHA256，修改文件须重启
+RDK 服务才会生效。参考 TCP 必须在配置工作区内。
+
+开始页和控制台均提供“复位（回参考位）”。机械臂已启用且模型空闲时可点击，
+页面先显示参考目标、当前受力与夹爪，再由现场操作员确认工件已退出槽口、回程
+无障碍。按钮不自动启用、不张开夹爪、不清故障；实验运行和复位互斥，“停止”
+始终可以中断复位。复位使用保存的关节目标，不是按 100 mm 笛卡尔限制拆段。
+没有自动退离接触或路径碰撞检测，保存文件也没有记录旧工具的 TCP 配置。
+
+执行为一次 `MoveJ`、`jntVelScale=30`，使用现有 `timeout_s` 截止时间。
+原生到位标志、实测关节误差≤0.0002 rad和关节速度<0.005 rad/s必须同时满足，
+并核对最终 TCP 与参考位姿在现有到位容差内。成功后恢复 Cartesian 模式，
+保留启用状态；异常/超时停止并撤销启用。停止后的旧请求不会补发命令。
+该接口只用于现场操作员按钮，不加入模型工具清单。
+
+```bash
+curl -s http://127.0.0.1:5000/home-preview
+# 现场启用并确认回程后执行；不接受临时目标或速度参数。
+curl -X POST http://127.0.0.1:5000/jointreset
+```
 
 ```bash
 curl -s http://127.0.0.1:5000/state
@@ -143,6 +171,22 @@ The deployed episode limit is 3,600 seconds (`--planner-timeout-s 3600`), with
 25 model turns. This does not change the separate 30-second RDK command deadline.
 Keep the planner flag in the service launch script and verify its active value
 through `GET /api/session/config` after a restart.
+Set optional `home_reference` to a saved reference JSON containing the original
+`captured_state` robot identity, seven joint positions in radians, base-frame TCP
+pose and wxyz quaternion order. The server validates and freezes the reference at
+startup. `GET /home-preview` is read-only; operator-only `POST /jointreset` submits
+one native MoveJ with velocity scale 30 and preserves the gripper opening. It
+requires an enabled robot, verifies native arrival plus measured joints, quiet
+joint velocity and saved TCP agreement, then restores Cartesian mode. The existing
+command timeout applies. Error or stop disarms; a cancelled worker cannot restore
+the mode or resend motion. No auto-enable, contact retreat or collision checking
+is added. The saved file does not contain the old native tool TCP configuration.
+
+The setup page and console show the reset button and a return-path confirmation.
+Planner tasks and operator reset are mutually exclusive; Stop remains available.
+Reset is not exposed as a planner tool. With no configured reference the button
+is unavailable. Changing the reference file requires an RDK service restart.
+
 Only one program should own robot/cameras. The CLI process lock prevents duplicate
 copies of this server; deployment service conflicts exclude the old collector.
 External SDK programs are outside that lock. Native fault checks, configured
