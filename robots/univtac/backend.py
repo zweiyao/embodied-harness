@@ -27,6 +27,7 @@ from .control import (
     native_status,
     validate_command,
 )
+from .instructions import load_official_seen
 from .observations import array, sensor_observation
 
 UNIVTAC_COMMIT = "0dafa10262e22f486f160a55d6f11aeab12d8e7b"
@@ -197,8 +198,7 @@ class UniVTACBackend:
             raise RuntimeError(
                 "Native physics cadence differs from reviewed 120 Hz protocol"
             )
-        instruction_file = self.root / "instructions" / f"{self.task_name}.json"
-        instructions = json.loads(instruction_file.read_text())["seen"]
+        instructions = load_official_seen(self.root, self.task_name)
         # Native reset and pre_move remain intact: these tasks begin already held.
         self.task._rpent_recording = False
         self.task._rpent_video_frames = 0

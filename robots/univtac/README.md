@@ -13,6 +13,16 @@ and generated-tool guidance appears only when one is selected. The dashboard
 does not prepend the legacy LIBERO guide override. Changes apply to new runs;
 archived `prompts.json` files retain the original input.
 
+Task text uses the pinned upstream `seen` instructions verbatim for all three
+tasks. `instructions.py` holds their snapshot so the planner does not require
+an Isaac installation. Before native reset, the backend reads the upstream
+`instructions/<task>.json` and checks exact equality with that snapshot; drift
+is an error. In particular, the key task requires rotation to mechanical
+resistance before extraction, and the tube task includes its diameters and
+inclined surface. Task-specific experimental guidance remains a separate
+`GUIDANCE` section. Historical runs using the earlier paraphrases are unchanged
+and should be distinguished from runs using official instructions.
+
 Pinned sources:
 
 - UniVTAC `0dafa10262e22f486f160a55d6f11aeab12d8e7b`, Apache-2.0 according to
