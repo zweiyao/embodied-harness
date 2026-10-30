@@ -1,4 +1,4 @@
-import {renderTools} from './tool-picker.js';
+import {renderTools} from './tool-picker.js?v=flexiv-tools-20261030';
 import {resetControl} from './flexiv-reset.js';
 const $ = (id) => document.getElementById(id);
 let setup, profile, config, picker;
@@ -124,11 +124,21 @@ try {
   const models = [...(setup.models || [])];
   if (config.model && !models.includes(config.model)) models.push(config.model);
   options('model', setup.workbench ? setup.model_profiles.map(p => [p.id, `${p.label} · ${p.planner}`]) : models.map(m => [m,m.replace('openai-chat:', '')]), setup.workbench ? config.model_profile : config.model);
-  if (setup.workbench) {
+  if (setup.workbench || setup.tool_catalog) {
     $('workbenchTools').hidden = false;
-    const catalog = (await request('/api/tools')).tools;
-    const copied = sessionStorage.getItem('rpent.copyRun');
-    let selection = config.tools;
+    const {tools: catalog, selectable = true, scope} = await request('/api/tools');
+    const canSelect = Boolean(setup.workbench && selectable);
+    $('toolSelectionActions').hidden = !canSelect;
+    $('checkModels').hidden = !setup.workbench;
+    $('modelCheck').hidden = !setup.workbench;
+    $('toolsRunsLink').hidden = !setup.workbench;
+    if (!canSelect) {
+      $('toolsHeading').textContent = '工具简介';
+      $('toolsLibraryLink').textContent = '工具简介与源码';
+      $('toolsNote').textContent = `${scope ? `${scope} ` : ''}按控制、感知和运行辅助查看工具；注册状态取决于任务启动配置。候选工具尚未接入模型调用。`;
+    }
+    const copied = setup.workbench && sessionStorage.getItem('rpent.copyRun');
+    let selection = config.tools || [];
     if (copied) {
       const prior = JSON.parse(copied);
       selection = prior.tools;
@@ -141,8 +151,10 @@ try {
       if (prior.seed != null) $('seed').value = prior.seed;
       sessionStorage.removeItem('rpent.copyRun');
     }
-    picker = renderTools($('toolPicker'), catalog, selection);
-    for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
+    picker = renderTools($('toolPicker'), catalog, selection, canSelect);
+    if (canSelect) for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
+  }
+  if (setup.workbench) {
     const health = await request('/api/models/status');
     const selectedHealth = () => {
       checksPassed = Boolean(health[$('model').value]?.ok);

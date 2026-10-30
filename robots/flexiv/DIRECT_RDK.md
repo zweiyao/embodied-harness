@@ -78,6 +78,22 @@ rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
 | `/home-preview` | GET：查看保存的参考关节/TCP、当前状态和复位参数；不运动 |
 | `/jointreset` | POST：一次原生 MoveJ 回保存关节参考，保持夹爪开度 |
 
+## 网页工具简介
+
+开始页和控制台的“工具简介与源码”共用仿真的 `/tools` 页面、`/api/tools`
+接口和工具卡片，按控制、感知、运行辅助分组，展示用途、参数与源码。
+真机目前为只读目录，不提供勾选；访问目录不会连接、启用或移动机械臂。
+
+目录使用与 `FlexivToolkit` 注册相同的模式选择逻辑。空闲时展示当前控制模式
+支持的接口；任务运行时根据实际 Toolkit 标注“本轮已注册/未注册”，使用本轮
+声明与参数。目录覆盖 RPent 注册工具，不包含 Codex SDK 等规划器的内置能力。
+RDK 模式的网页复位属于操作员接口，不作为模型工具显示。
+
+可在 dashboard 进程中设置 `RPENT_FLEXIV_TOOL_LIBRARY`，指向现有感知工具版本库。
+目录复用版本库的哈希校验，只读取源码及元数据，不在主机执行生成代码。
+未接入真机执行器的工具显示“候选，尚未接入调用”；回放状态单独展示，不表示
+已取得任务增益。配置的库不存在时明确报错。
+
 ## 网页复位
 
 在 RDK 配置中设置 `home_reference` 为操作员保存的参考 JSON 路径；未配置时
@@ -193,6 +209,17 @@ External SDK programs are outside that lock. Native fault checks, configured
 workspace/target bounds, finite inputs and fixed command deadlines remain;
 camera freshness no longer stops native motion. Calibrated observations still
 require valid synchronized frames and stationary capture.
+
+The setup page and console also link to the shared `/tools` catalog used by
+simulation. Flexiv browsing is read-only: idle pages show interfaces supported by
+the configured control mode; active tasks mark their actual Toolkit declarations
+as registered. Descriptions, parameters and source come from the tool declarations,
+using the same method-selection logic as runtime registration. No robot resources
+are opened by browsing. This catalog covers RPent tools, not planner SDK built-ins.
+`RPENT_FLEXIV_TOOL_LIBRARY` optionally points to the existing versioned perception
+library. Candidate source is hash-checked and displayed without execution; candidates
+remain explicitly unavailable to the physical planner. Replay validation does not
+establish task improvement. A missing configured library is an error.
 
 Verification uses fake hardware and loopback HTTP before any explicitly started
 physical trial. Passing these checks does not establish physical task success.

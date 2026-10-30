@@ -149,6 +149,11 @@ def run_dashboard_session(
             "max_turns": args.max_turns,
             "max_tokens": args.max_tokens,
             "planner_timeout_s": args.planner_timeout_s,
+            **(
+                {"control_mode": getattr(args, "control_mode", "native")}
+                if robot_spec.name == "flexiv"
+                else {}
+            ),
         },
     )
     dashboard_url = dashboard_server.start()

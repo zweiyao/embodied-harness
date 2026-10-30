@@ -31,6 +31,41 @@ from rpent.tools.base import tool
 from rpent.tools.toolkit import Toolkit
 
 
+def tool_methods(meta: dict | None, control_mode: str) -> list[str]:
+    """Select method names for registration, or all supported names without meta."""
+    if control_mode not in ("native", "eef_delta", "rdk"):
+        raise ValueError("Unknown Flexiv control mode")
+
+    def enabled(key):
+        return meta is None or bool(meta.get(key))
+
+    methods = ["observe"]
+    if enabled("calibrated_readonly"):
+        methods += ["view_perception_setup", "localize_target"]
+    if enabled("motion_enabled"):
+        if control_mode == "rdk":
+            methods += [
+                "rdk_move_eef_delta",
+                "rdk_move_tcp",
+                "rdk_set_gripper",
+                "stop_motion",
+            ]
+        if control_mode == "native":
+            methods.append("move_delta")
+        if control_mode != "rdk" and enabled("supervised_control"):
+            if control_mode == "eef_delta":
+                methods.append("move_eef_delta")
+            else:
+                methods.append("move_tcp")
+                if enabled("eef_chunk_control"):
+                    methods.append("move_eef")
+                methods.append("align_tool_down")
+            methods += ["set_gripper", "stop_motion"]
+            if enabled("home_available") and control_mode == "native":
+                methods.append("reset_home")
+    return methods
+
+
 class FlexivToolkit(Toolkit):
     def __init__(
         self, *, env, output_dir, dashboard_events, memory, control_mode="native"
@@ -61,30 +96,8 @@ class FlexivToolkit(Toolkit):
             memory=memory,
             state=EnvState(Path(output_dir)),
         )
-        self.add_tool(self.observe)
-        if env.meta.get("calibrated_readonly"):
-            self.add_tool(self.view_perception_setup)
-            self.add_tool(self.localize_target)
-        if env.meta["motion_enabled"]:
-            if control_mode == "rdk":
-                self.add_tool(self.rdk_move_eef_delta)
-                self.add_tool(self.rdk_move_tcp)
-                self.add_tool(self.rdk_set_gripper)
-                self.add_tool(self.stop_motion)
-            if control_mode == "native":
-                self.add_tool(self.move_delta)
-            if control_mode != "rdk" and env.meta.get("supervised_control"):
-                if control_mode == "eef_delta":
-                    self.add_tool(self.move_eef_delta)
-                else:
-                    self.add_tool(self.move_tcp)
-                    if env.meta.get("eef_chunk_control"):
-                        self.add_tool(self.move_eef)
-                    self.add_tool(self.align_tool_down)
-                self.add_tool(self.set_gripper)
-                self.add_tool(self.stop_motion)
-                if env.meta.get("home_available") and control_mode == "native":
-                    self.add_tool(self.reset_home)
+        for method in tool_methods(env.meta, control_mode):
+            self.add_tool(getattr(self, method))
         try:
             self.observe()
             if env.meta.get("reset_before_task") and env.meta["motion_enabled"]:

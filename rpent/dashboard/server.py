@@ -128,6 +128,20 @@ class DashboardServer:
         self.port = port
         return f"http://{self.host}:{port}"
 
+    def _catalog(self) -> list[dict[str, Any]]:
+        """Reuse the tool-library schema for selectable and read-only catalogs."""
+        if self._workbench is not None:
+            return self._workbench.catalog()
+        if self._robot_name == "flexiv":
+            from robots.flexiv.catalog import catalog
+
+            return catalog(
+                control_mode=self._planner_config.get("control_mode", "native"),
+                declarations=self._state.tool_declarations(),
+                library_root=os.environ.get("RPENT_FLEXIV_TOOL_LIBRARY"),
+            )
+        return []
+
     # -- routes ------------------------------------------------------------
 
     def _build_app(self) -> FastAPI:
@@ -162,6 +176,8 @@ class DashboardServer:
                     **(self._setup or {}),
                     "robot": self._robot_name,
                     "workbench": self._workbench is not None,
+                    "tool_catalog": self._workbench is not None
+                    or self._robot_name == "flexiv",
                     "model_profiles": self._workbench.public_profiles()
                     if self._workbench
                     else [],
@@ -184,7 +200,7 @@ class DashboardServer:
 
         @app.get("/api/tools/{tool_id}")
         def tool_details(tool_id: str) -> JSONResponse:
-            for item in self._workbench.catalog() if self._workbench else []:
+            for item in self._catalog():
                 if item["id"] == tool_id:
                     return JSONResponse(item)
             return JSONResponse({"error": "Unknown tool/version"}, status_code=404)
@@ -192,7 +208,13 @@ class DashboardServer:
         @app.get("/api/tools")
         def tool_catalog() -> JSONResponse:
             return JSONResponse(
-                {"tools": self._workbench.catalog() if self._workbench else []}
+                {
+                    "tools": self._catalog(),
+                    "selectable": self._workbench is not None,
+                    "scope": "RPent 注册工具；目录不包含规划器 SDK 的内置能力。"
+                    if self._robot_name == "flexiv"
+                    else "当前环境的工具库",
+                }
             )
 
         @app.get("/api/runs")
@@ -229,7 +251,7 @@ class DashboardServer:
             if self._robot_name == "flexiv":
                 html = html.replace(
                     "</body>",
-                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-reset-20261030"></script></body>',
+                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-tools-20261030"></script></body>',
                 )
             return HTMLResponse(html)
 

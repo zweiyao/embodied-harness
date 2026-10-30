@@ -19,7 +19,9 @@ note.textContent = '无环境自动成功判定；抓放结果需看实测记录
 note.style.cssText = 'font-size:12px;color:#665';
 const board = document.createElement('a');
 board.href = '/static/flexiv-validation/index.html'; board.textContent = ' 验证看板';
-panel.append(status, reset, stop, link, board, note, resetStatus); document.querySelector('header').append(panel);
+const tools = document.createElement('a');
+tools.href = '/tools'; tools.textContent = ' 工具简介与源码';
+panel.append(status, reset, stop, link, tools, board, note, resetStatus); document.querySelector('header').append(panel);
 const physicalReset = resetControl(reset, resetStatus, update);
 const style = document.createElement('style');
 style.textContent = '#resultBadge{display:none!important}';

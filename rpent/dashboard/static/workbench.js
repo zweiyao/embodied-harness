@@ -1,4 +1,4 @@
-import {el,renderTools} from './tool-picker.js';
+import {el,renderTools} from './tool-picker.js?v=flexiv-tools-20261030';
 const $=id=>document.getElementById(id);
 const request=async url=>{const r=await fetch(url);if(!r.ok)throw Error(`请求失败 ${r.status}`);return r.json();};
 const link=(title,url)=>{const a=el('a',title);a.href=url;return a;};
@@ -33,8 +33,11 @@ async function showRun(id){
 }
 async function load(){
   if(location.pathname==='/tools'){
-    $('title').textContent='工具库';$('intro').textContent='查看原生与新增感知工具。制作与修改在 Codex 对话中进行；新版本不会自动启用。';
-    const {tools}=await request('/api/tools');renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · 新工具效果需由实验验证`;
+    const {tools,selectable=true,scope}=await request('/api/tools');
+    $('title').textContent=selectable?'工具库':'真机工具简介';
+    $('intro').textContent=selectable?'查看原生与新增感知工具。制作与修改在 Codex 对话中进行；新版本不会自动启用。':`${scope ? `${scope} ` : ''}查看真机控制、感知和运行辅助工具的说明、参数与源码。注册状态取决于任务启动配置；候选工具尚未接入模型调用。`;
+    $('runsNav').hidden=!selectable;
+    renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · ${selectable?'新工具效果需由实验验证':'只读查看，不改变实验配置'}`;
   }else{
     $('title').textContent='实验记录';$('intro').textContent='保留每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
     const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 只读查看';return;}

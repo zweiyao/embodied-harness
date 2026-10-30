@@ -58,6 +58,59 @@ def _client(server: DashboardServer) -> TestClient:
     return TestClient(server._app)
 
 
+def test_flexiv_catalog_idle_active_and_finished_are_readonly(state, monkeypatch):
+    from unittest.mock import MagicMock
+
+    from robots.flexiv.toolkit import FlexivToolkit
+    from rpent.tools.toolkit import Toolkit
+
+    monkeypatch.delenv("RPENT_FLEXIV_TOOL_LIBRARY", raising=False)
+    monkeypatch.setattr("rpent.tools.toolkit.substitute", lambda value: value)
+    server = _server(state, robot_name="flexiv", run_options={"control_mode": "rdk"})
+    client = _client(server)
+    assert client.get("/api/setup").json()["tool_catalog"] is True
+    idle = client.get("/api/tools").json()
+    assert idle["selectable"] is False
+    assert len(idle["tools"]) == 11
+    assert all(item["availability"] == "conditional" for item in idle["tools"])
+    move = client.get("/api/tools/native:move_eef_delta").json()
+    assert move["parameters"] == FlexivToolkit.rdk_move_eef_delta.input_schema
+    assert client.get("/api/tools/native:reset_home").status_code == 404
+    toolkit = MagicMock(spec=Toolkit)
+    toolkit.list_tools.return_value = (FlexivToolkit.observe,)
+    state.bind_toolkit(toolkit)
+    try:
+        active = client.get("/api/tools").json()["tools"]
+        assert [
+            item["name"] for item in active if item["availability"] == "registered"
+        ] == ["observe"]
+        assert all(
+            item["availability"] == "not_registered"
+            for item in active
+            if item["name"] != "observe"
+        )
+        toolkit.execute_tool.assert_not_called()
+    finally:
+        state.unbind_toolkit(toolkit)
+    assert all(
+        item["availability"] == "conditional"
+        for item in client.get("/api/tools").json()["tools"]
+    )
+    assert state.snapshot()["pending_task"] is None
+
+
+def test_workbench_catalog_keeps_its_existing_items(state):
+    from types import SimpleNamespace
+
+    server = _server(state, robot_name="libero")
+    items = [{"id": "native:example", "name": "example", "parameters": {}}]
+    server._workbench = SimpleNamespace(catalog=lambda: items)
+    client = _client(server)
+    assert client.get("/api/tools").json()["tools"] == items
+    assert client.get("/api/tools").json()["selectable"] is True
+    assert client.get("/api/tools/native:example").json() == items[0]
+
+
 def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkeypatch):
     import io
     from concurrent.futures import ThreadPoolExecutor

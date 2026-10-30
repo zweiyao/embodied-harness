@@ -51,6 +51,7 @@ from rpent.utils.templates import substitute
 
 if TYPE_CHECKING:
     from rpent.session import EnvState, StepRecord
+    from rpent.tools.base import Tool
     from rpent.tools.human_in_the_loop import HumanInTheLoopInput
     from rpent.tools.toolkit import Toolkit, ToolResult
 
@@ -279,6 +280,11 @@ class DashboardState:
                 raise RuntimeError("a Dashboard Toolkit is already bound")
             self._toolkit = toolkit
             self._projection_changed_locked()
+
+    def tool_declarations(self) -> tuple[Tool, ...] | None:
+        """Return the active run's declaration snapshot, without invoking tools."""
+        with self._condition:
+            return None if self._toolkit is None else self._toolkit.list_tools()
 
     def unbind_toolkit(self, toolkit: Toolkit) -> None:
         """Stop new calls, cancel the active operation, and drain this Toolkit."""
