@@ -35,8 +35,15 @@ class FlexivToolkit(Toolkit):
     def __init__(
         self, *, env, output_dir, dashboard_events, memory, control_mode="native"
     ):
-        if control_mode not in ("native", "eef_delta"):
+        if control_mode not in ("native", "eef_delta", "rdk"):
             raise ValueError("Unknown Flexiv control mode")
+        if (control_mode == "rdk") != (env.meta.get("control_backend") == "rdk"):
+            raise ValueError("rdk control mode requires the direct RDK environment")
+        if control_mode == "rdk":
+            if not isinstance(env.meta.get("motion_enabled"), bool):
+                raise ValueError("RDK environment must report motion_enabled")
+            if env.meta.get("reset_before_task"):
+                raise ValueError("rdk requires reset_before_task=false")
         if control_mode == "eef_delta":
             if not all(
                 env.meta.get(key)
@@ -59,9 +66,14 @@ class FlexivToolkit(Toolkit):
             self.add_tool(self.view_perception_setup)
             self.add_tool(self.localize_target)
         if env.meta["motion_enabled"]:
+            if control_mode == "rdk":
+                self.add_tool(self.rdk_move_eef_delta)
+                self.add_tool(self.rdk_move_tcp)
+                self.add_tool(self.rdk_set_gripper)
+                self.add_tool(self.stop_motion)
             if control_mode == "native":
                 self.add_tool(self.move_delta)
-            if env.meta.get("supervised_control"):
+            if control_mode != "rdk" and env.meta.get("supervised_control"):
                 if control_mode == "eef_delta":
                     self.add_tool(self.move_eef_delta)
                 else:
@@ -313,6 +325,57 @@ class FlexivToolkit(Toolkit):
         """
         self.raise_if_cancelled()
         return ToolResult(data=self.env.align_tool_down())
+
+    @tool(name="move_tcp")
+    def rdk_move_tcp(
+        self, position_m: list[float], quaternion_wxyz: list[float] | None = None
+    ) -> ToolResult:
+        """Move the native TCP to a base-frame pose and return measured arrival feedback.
+
+        Args:
+            position_m: Absolute [x,y,z] in robot-base metres.
+            quaternion_wxyz: Unit [w,x,y,z]; omit to preserve measured orientation.
+
+        The RDK controller follows one goal until arrival or the command deadline.
+        Gripper opening is unchanged. Use the reported control_limits and inspect
+        returned state and images before the next action.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(data=self.env.move_tcp(position_m, quaternion_wxyz))
+
+    @tool(name="move_eef_delta")
+    def rdk_move_eef_delta(
+        self, translation_m: list[float], rotation_vector_rad: list[float]
+    ) -> ToolResult:
+        """Apply one measured-TCP-relative goal and wait for measured arrival.
+
+        Args:
+            translation_m: [dx,dy,dz] in robot-base metres.
+            rotation_vector_rad: Right-hand axis-angle [rx,ry,rz] in base axes,
+                radians; [0,0,0] preserves orientation. Not Euler angles.
+
+        The server resolves p_target=p_current+translation_m and
+        R_target=Exp(rotation_vector_rad)*R_current once. The RDK follows this
+        goal until arrival or the command deadline. Use reported control_limits;
+        gripper opening is unchanged. Inspect the returned state and images.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(
+            data=self.env.move_eef_delta(translation_m, rotation_vector_rad)
+        )
+
+    @tool(name="set_gripper")
+    def rdk_set_gripper(self, width_m: float) -> ToolResult:
+        """Set the final gripper opening with one native RDK command.
+
+        Args:
+            width_m: Desired opening in metres, within the reported device limits.
+
+        Read measured width and force, then inspect object motion. Command
+        completion or contact feedback alone does not establish a secure grasp.
+        """
+        self.raise_if_cancelled()
+        return ToolResult(data=self.env.set_gripper(width_m))
 
     @tool
     def set_gripper(self, width_m: float) -> ToolResult:

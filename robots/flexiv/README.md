@@ -1,6 +1,10 @@
 # Flexiv 接入 / Flexiv integration
 
-本适配器将 RPent 接入已有的 Flexiv 采集器，复用其机械臂、夹爪和相机连接。
+支持独立 Flexiv RDK HTTP 服务和既有采集器两种后端。
+新直连方式见 [RDK服务、curl接口及RPent配置](DIRECT_RDK.md)：机械臂直接使用
+官方RDK，相机由独立进程采集，运动到位后返回，不使用采集器的小步控制。
+
+以下说明保留的采集器后端，复用其机械臂、夹爪和相机连接。
 采集器是独立部署的外部服务，本仓库不包含它的实现、Flexiv SDK、设备配置、
 相机标定数据或模型权重。仅克隆此仓库不能独立启动整套真机系统。
 
@@ -82,7 +86,11 @@ python -m pytest tests/unit_tests/robots/flexiv -q
 
 ## English
 
-This adapter connects RPent to an externally deployed Flexiv collector, which owns
+The independent [direct RDK backend](DIRECT_RDK.md) uses a standalone HTTP robot
+server and camera process. It follows native Cartesian goals until measured
+arrival. The collector configuration described below remains supported.
+
+The legacy backend connects RPent to an externally deployed Flexiv collector, which owns
 robot, gripper and camera connections. The collector implementation, vendor SDK,
 device configuration, calibration files and model weights are not bundled.
 Cloning this repository alone does not reproduce the complete hardware system.

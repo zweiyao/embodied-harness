@@ -25,9 +25,29 @@ from fastapi.responses import JSONResponse
 
 
 def install_operator_routes(app):
-    endpoint = os.environ.get("RPENT_FLEXIV_COLLECTOR", "http://127.0.0.1:9527").rstrip(
-        "/"
-    )
+    rdk_endpoint = os.environ.get("RPENT_FLEXIV_RDK_ENDPOINT")
+    endpoint = (
+        rdk_endpoint
+        or os.environ.get("RPENT_FLEXIV_COLLECTOR", "http://127.0.0.1:9527")
+    ).rstrip("/")
+
+    def path(action):
+        if rdk_endpoint:
+            return {"status": "/state", "arm": "/enable", "stop": "/stop"}[action]
+        return "/rpent/operator/" + action
+
+    def operator_status(data):
+        if not rdk_endpoint:
+            return data
+        state = data.get("state", data)
+        return {
+            **data,
+            "control_backend": "rdk",
+            "state": state,
+            "armed": bool(data.get("armed", data.get("enabled", False))),
+            "gripper_ready": bool(data.get("gripper_ready", False)),
+            "lease_active": False,
+        }
 
     def forward(request, action):
         origin = request.headers.get("origin")
@@ -41,24 +61,36 @@ def install_operator_routes(app):
             )
         body = b"{}" if request.method == "POST" else None
         command = URLRequest(
-            endpoint + "/rpent/operator/" + action,
+            endpoint + path(action),
             data=body,
             headers={"Content-Type": "application/json"},
         )
         try:
-            with urlopen(command, timeout=8) as response:
-                return JSONResponse(json.load(response))
+            timeout = 8
+            if rdk_endpoint and action == "arm":
+                state_request = URLRequest(endpoint + "/state")
+                with urlopen(state_request, timeout=8) as response:
+                    config = json.load(response).get("config", {})
+                timeout = config.get("timeout_s", 30) + 10
+            with urlopen(command, timeout=timeout) as response:
+                data = json.load(response)
+                return JSONResponse(
+                    operator_status(data) if action == "status" else data
+                )
         except HTTPError as error:
             detail = error.read().decode()
             return JSONResponse({"error": detail}, status_code=error.code)
         except (URLError, TimeoutError) as error:
             return JSONResponse(
-                {"error": f"Collector unavailable: {error}"}, status_code=502
+                {
+                    "error": f"{'RDK server' if rdk_endpoint else 'Collector'} unavailable: {error}"
+                },
+                status_code=502,
             )
 
     def interrupt_stop():
         command = URLRequest(
-            endpoint + "/rpent/operator/stop",
+            endpoint + path("stop"),
             data=b"{}",
             headers={"Content-Type": "application/json"},
         )

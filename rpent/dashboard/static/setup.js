@@ -48,7 +48,11 @@ $('inspection').addEventListener('change', () => { $('physicalInstruction').valu
 $('physicalInstruction').addEventListener('input', command);
 async function physicalStatus() {
   const data = await request('/api/flexiv/status');
-  $('physicalStatus').textContent = `${data.armed ? '受限动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
+  const direct = data.control_backend === 'rdk';
+  $('physicalMode').querySelector('[value="supervised"]').textContent = direct ? 'RDK 真机实验' : '受限真机实验';
+  $('armPhysical').textContent = direct ? '启用机械臂（RDK）' : '启用受限动作（原地恢复）';
+  if (direct) $('physical').querySelector('.note').textContent = '通过非夕 RDK 服务器执行动作，到达目标后返回图像和状态。启用保持当前位姿，不归位。每次实验结束或停止后需重新启用。';
+  $('physicalStatus').textContent = `${direct ? 'RDK 直连' : '采集器'} · ${data.armed ? '动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
   $('armPhysical').disabled = $('physicalMode').value !== 'supervised' || data.armed || data.lease_active;
   return data;
 }
@@ -74,7 +78,7 @@ $('setupForm').addEventListener('submit', async event => {
     if (!profile.suites) {
       if (!$('physicalInstruction').value.trim()) throw new Error('请输入实验指令');
       const hardware = await physicalStatus();
-      if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error('请先点击“启用受限动作”，核对状态后再进入控制台');
+      if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error(`请先点击“${$('armPhysical').textContent}”，核对状态后再进入控制台`);
       if ($('physicalMode').value === 'readonly' && hardware.armed && !await physicalAction('stop')) throw new Error('停止未确认，无法进入只读实验');
     }
     const payload = setup.workbench ? {model_profile: $('model').value, tools: picker.selected()} : {model: $('model').value};

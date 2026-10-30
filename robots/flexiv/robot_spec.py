@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Register a single-arm Flexiv using the existing collector as hardware owner."""
+"""Register a single-arm Flexiv with collector or direct RDK control."""
 
 import argparse
 import sys
@@ -39,7 +39,7 @@ DASHBOARD_SPEC = {
         "output_slug": "flexiv",
     },
     "runtime_components": (
-        {"name": "env", "label": "Flexiv Collector", "scope": "unique"},
+        {"name": "env", "label": "Flexiv Environment", "scope": "unique"},
     ),
     "primitives": (
         "observe",
@@ -76,12 +76,13 @@ def _prepare_memory(args, config):
 def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool):
     parser.add_argument("--env-endpoint", default=None)
     parser.add_argument("--collector-endpoint", default="http://127.0.0.1:9527")
+    parser.add_argument("--rdk-endpoint", default="http://127.0.0.1:5000")
     parser.add_argument("--instruction", default=INSPECTION)
     parser.add_argument(
         "--control-mode",
-        choices=("native", "eef_delta"),
+        choices=("native", "eef_delta", "rdk"),
         default="native",
-        help="Flexiv task tools and prompt; eef_delta requires an EEF-enabled external env.",
+        help="Flexiv task tools and prompt; rdk uses the independent RDK HTTP server.",
     )
 
 
@@ -96,7 +97,7 @@ def _parse_config(args):
         / (datetime.now().strftime("%Y%m%d-%H%M%S") + "_flexiv")
     )
     control_mode = getattr(args, "control_mode", "native")
-    if control_mode not in ("native", "eef_delta"):
+    if control_mode not in ("native", "eef_delta", "rdk"):
         raise ValueError("Unknown Flexiv control mode")
     return RunConfig(
         recipe_tag="flexiv",
@@ -135,6 +136,11 @@ def _init_runtime(args, output_dir, dashboard_events, components=None):
         if args.env_endpoint:
             return None, HttpRpcClient(args.env_endpoint)
         port = pick_free_port()
+        backend_args = (
+            ["--backend", "rdk", "--rdk-endpoint", args.rdk_endpoint]
+            if getattr(args, "control_mode", "native") == "rdk"
+            else ["--collector-endpoint", args.collector_endpoint]
+        )
         daemon = ProcessDaemon(
             name="flexiv_env_server",
             cmd=[
@@ -143,8 +149,7 @@ def _init_runtime(args, output_dir, dashboard_events, components=None):
                 "robots.flexiv.env_server",
                 "--port",
                 str(port),
-                "--collector-endpoint",
-                args.collector_endpoint,
+                *backend_args,
             ],
             log_path=str(output_dir / "flexiv_env_server.log"),
         )

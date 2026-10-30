@@ -20,7 +20,9 @@ async function update() {
     const response = await fetch('/api/flexiv/status');
     const data = await response.json();
     if (!response.ok) throw new Error(data.error);
-    status.textContent = data.armed ? '真机动作已启用' : `真机已停用 · ${data.state.mode}`;
+    const direct = data.control_backend === 'rdk';
+    link.textContent = direct ? ' 开始页 / 启用机械臂' : ' 开始页 / 原地恢复';
+    status.textContent = `${direct ? 'RDK 直连' : '采集器'} · ${data.armed ? '真机动作已启用' : `真机已停用 · ${data.state.mode}`}`;
   } catch { status.textContent = '真机状态不可用，请检查连接'; }
 }
 stop.onclick = async () => {

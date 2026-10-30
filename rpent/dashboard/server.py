@@ -224,7 +224,7 @@ class DashboardServer:
             if self._robot_name == "flexiv":
                 html = html.replace(
                     "</body>",
-                    '<script type="module" src="/static/flexiv-control.js"></script></body>',
+                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-rdk-20261030"></script></body>',
                 )
             return HTMLResponse(html)
 

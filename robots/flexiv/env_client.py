@@ -39,7 +39,9 @@ class FlexivEnvClient(BaseEnvClient):
         return self._client.call(
             "env.move_tcp",
             kwargs={"position_m": position_m, "quaternion_wxyz": quaternion_wxyz},
-            timeout_s=270,
+            timeout_s=self.meta["control_limits"]["timeout_s"] + 15
+            if self.meta.get("control_backend") == "rdk"
+            else 270,
         )
 
     def move_eef(self, position_m, quaternion_wxyz, steps):
@@ -53,15 +55,19 @@ class FlexivEnvClient(BaseEnvClient):
             timeout_s=40,
         )
 
-    def move_eef_delta(self, translation_m, rotation_vector_rad, steps):
+    def move_eef_delta(self, translation_m, rotation_vector_rad, steps=None):
+        kwargs = {
+            "translation_m": translation_m,
+            "rotation_vector_rad": rotation_vector_rad,
+        }
+        if steps is not None:
+            kwargs["steps"] = steps
         return self._client.call(
             "env.move_eef_delta",
-            kwargs={
-                "translation_m": translation_m,
-                "rotation_vector_rad": rotation_vector_rad,
-                "steps": steps,
-            },
-            timeout_s=40,
+            kwargs=kwargs,
+            timeout_s=40
+            if steps is not None
+            else max(40, self.meta.get("control_limits", {}).get("timeout_s", 30) + 15),
         )
 
     def align_tool_down(self):
@@ -69,7 +75,11 @@ class FlexivEnvClient(BaseEnvClient):
 
     def set_gripper(self, width_m):
         return self._client.call(
-            "env.set_gripper", kwargs={"width_m": width_m}, timeout_s=180
+            "env.set_gripper",
+            kwargs={"width_m": width_m},
+            timeout_s=self.meta["control_limits"]["timeout_s"] + 15
+            if self.meta.get("control_backend") == "rdk"
+            else 180,
         )
 
     def stop_motion(self):

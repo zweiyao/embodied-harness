@@ -1,0 +1,18 @@
+{
+  "robot_sn": "Rizon4-XXXXXX",
+  "workspace_min": [0.0, -0.8, -0.49],
+  "workspace_max": [1.0, 0.8, 1.0],
+  "gripper_name": "Flexiv-GN01",
+  "audit_path": "/path/to/runtime/rdk-actions.jsonl",
+  "max_linear_vel": 0.02,
+  "max_angular_vel": 0.15,
+  "max_linear_acc": 0.1,
+  "max_angular_acc": 0.5,
+  "max_translation_m": 0.1,
+  "max_rotation_deg": 30,
+  "arrival_position_m": 0.001,
+  "arrival_angle_deg": 0.5,
+  "timeout_s": 30,
+  "gripper_velocity": 0.02,
+  "gripper_force": 20
+}
