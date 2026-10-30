@@ -5,6 +5,14 @@ environment. RPent's planner runs in its existing environment and communicates
 through the existing loopback RPC transport. It does not load a VLA or alter
 LIBERO controllers.
 
+The shared API/Codex system prompt lives in `prompt_bundle.py`. It describes
+role, observations, control, available tools, tool use and completion. The tool
+overview is rendered from the run's frozen selection; complete arguments and
+descriptions are also sent as tool declarations. Deselected tools are omitted,
+and generated-tool guidance appears only when one is selected. The dashboard
+does not prepend the legacy LIBERO guide override. Changes apply to new runs;
+archived `prompts.json` files retain the original input.
+
 Pinned sources:
 
 - UniVTAC `0dafa10262e22f486f160a55d6f11aeab12d8e7b`, Apache-2.0 according to

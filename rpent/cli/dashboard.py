@@ -446,10 +446,13 @@ def _run_dashboard_task_inner(
                     from robots.libero.research.manual import availability_prompt
                     from rpent.dashboard.workbench import write_json
 
-                    system_prompt = (
-                        availability_prompt(claimed.request["frozen_tools"])
-                        + system_prompt
-                    )
+                    # UniVTAC renders its frozen selection inside its PromptBundle.
+                    # Legacy guides still need the selection override.
+                    if args.robot_name != "univtac":
+                        system_prompt = (
+                            availability_prompt(claimed.request["frozen_tools"])
+                            + system_prompt
+                        )
                     write_json(
                         Path(output_dir) / "prompts.json",
                         {"system": system_prompt, "user": session_message},

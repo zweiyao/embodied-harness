@@ -323,3 +323,66 @@ def test_finalizer_exports_real_tool_records_into_maker_ledger(
         assert any(
             c["name"] == "depth_points" and c["result"].get("error") for c in calls
         )
+
+
+@pytest.mark.parametrize("planner_name", ["api", "codex"])
+def test_dashboard_archives_selected_prompt_without_legacy_override(
+    tmp_path, monkeypatch, planner_name
+):
+    from dataclasses import replace
+
+    from rpent.cli import dashboard, main
+    from rpent.dashboard.state import ClaimedTask, DashboardState
+    from rpent.dashboard.workbench import RunJournal
+    from rpent.planner.base import PlannerResult
+
+    parser = main._build_argparser()
+    robot_spec._add_cli_args(parser, use_dashboard=True)
+    args = parser.parse_args(["--robot", "univtac", "--planner", planner_name])
+    output = tmp_path / "episode"
+    selected = [
+        item
+        for item in toolkit.native_catalog()
+        if item["name"] in {"finish", "observe"}
+    ]
+    spec = replace(
+        robot_spec.get_robot_spec(),
+        init_runtime=lambda *args: ([], {"env": FakeEnv()}),
+        finalize_run=None,
+    )
+    state = DashboardState(output_dir=output, dashboard_spec=robot_spec.DASHBOARD_SPEC)
+    state.workbench = SimpleNamespace(config={})
+    state.journal = RunJournal(output)
+    monkeypatch.setattr(main, "get_robot_spec", lambda name: spec)
+    monkeypatch.setattr("rpent.dashboard.workbench.source_snapshot", lambda *args: {})
+    captured = []
+
+    class Planner:
+        def solve(self, **kwargs):
+            captured.append(kwargs["system_prompt"])
+            assert {t.name for t in kwargs["toolkit"].list_tools()} == {
+                "observe",
+                "finish",
+            }
+            return PlannerResult(finish_result=None, messages=[], stats={})
+
+    monkeypatch.setattr(dashboard, "build_planner", lambda *args, **kwargs: Planner())
+    error = dashboard._run_dashboard_task_inner(
+        args=args,
+        robot_spec=spec,
+        state=state,
+        claimed=ClaimedTask(
+            number=1, request={"frozen_tools": selected}, output_dir=output
+        ),
+        shared_runtime_kwargs={},
+        unique_components={"env"},
+        session_root=tmp_path,
+    )
+    assert error is None
+    saved = json.loads((output / "prompts.json").read_text())["system"]
+    assert captured == [saved]
+    assert "AVAILABLE TOOLS" in saved and "observe:" in saved
+    assert "EXPERIMENT TOOL SELECTION" not in saved
+    assert "move_eef" not in saved and "Generated perception tools" not in saved
+    declarations = json.loads((output / "tool-declarations.json").read_text())
+    assert {item["name"] for item in declarations} == {"observe", "finish"}
