@@ -23,6 +23,11 @@ inclined surface. Task-specific experimental guidance remains a separate
 `GUIDANCE` section. Historical runs using the earlier paraphrases are unchanged
 and should be distinguished from runs using official instructions.
 
+The live console reads the completed run's `outcome.environment_success`, just
+like the history page. A clean planner exit or an environment termination flag
+is not a success verdict. Missing results display as unrecorded; the environment
+returning to its waiting state after cleanup does not mean the task failed.
+
 Pinned sources:
 
 - UniVTAC `0dafa10262e22f486f160a55d6f11aeab12d8e7b`, Apache-2.0 according to
