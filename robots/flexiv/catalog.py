@@ -86,6 +86,11 @@ def catalog(
                 "availability": availability,
                 "availability_note": note,
                 "input_contract": {
+                    "tactile_compare": (
+                        "输入两个已有观测步骤编号，读取左指原始触觉图像及元数据。"
+                        "返回原图像素位移和跟踪质量；图像 x 向右、y 向下，"
+                        "没有基座坐标或牛顿力标定。参考帧不假定为空载。"
+                    ),
                     "move_eef_delta": (
                         "相对当前实测 TCP：translation_m=[dx,dy,dz]，基座轴方向，米；"
                         "rotation_vector_rad=[rx,ry,rz]，基座轴方向的旋转向量"

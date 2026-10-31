@@ -71,7 +71,7 @@ def test_flexiv_catalog_idle_active_and_finished_are_readonly(state, monkeypatch
     assert client.get("/api/setup").json()["tool_catalog"] is True
     idle = client.get("/api/tools").json()
     assert idle["selectable"] is False
-    assert len(idle["tools"]) == 11
+    assert len(idle["tools"]) == 12
     assert all(item["availability"] == "conditional" for item in idle["tools"])
     move = client.get("/api/tools/native:move_eef_delta").json()
     assert move["parameters"] == FlexivToolkit.rdk_move_eef_delta.input_schema

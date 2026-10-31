@@ -262,6 +262,7 @@ function defaultFrameKind() {
 function renderFrameTabs() {
   const container = $(".frame-tabs");
   const labels = {
+    tactile_left: ["左指触觉", "Left tactile"],
     sensor_cameras_head_rgb: ["外部相机", "Head"],
     sensor_cameras_wrist_rgb: ["腕部相机", "Wrist"],
     sensor_tactile_left_rgb: ["左指触觉", "Left tactile"],

@@ -263,6 +263,7 @@ def main():
     parser.add_argument("--calibration-file", default=None)
     parser.add_argument("--tool-tcp-file", default=None)
     parser.add_argument("--rgbd-dir", default=None)
+    parser.add_argument("--tactile-dir", default=None)
     parser.add_argument("--supervised-control", action="store_true")
     parser.add_argument("--reset-before-task", action="store_true")
     parser.add_argument("--eef-chunk-control", action="store_true")
@@ -280,6 +281,8 @@ def main():
     )
     args = parser.parse_args()
     direct_rdk = args.backend == "rdk"
+    if args.tactile_dir and not direct_rdk:
+        parser.error("--tactile-dir requires --backend rdk")
     if direct_rdk and (
         args.supervised_control or args.eef_chunk_control or args.reset_before_task
     ):
@@ -329,7 +332,9 @@ def main():
     if direct_rdk:
         from robots.flexiv.rdk_backend import RdkBackend
 
-        backend = RdkBackend(args.rdk_endpoint, calibration, args.rgbd_dir)
+        backend = RdkBackend(
+            args.rdk_endpoint, calibration, args.rgbd_dir, args.tactile_dir
+        )
     else:
         backend = CollectorBackend(
             args.collector_endpoint,

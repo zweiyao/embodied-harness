@@ -28,10 +28,11 @@ class RdkBackend(CalibratedRGBD):
 
     control_backend = "rdk"
 
-    def __init__(self, endpoint, calibration=None, rgbd_dir=None):
+    def __init__(self, endpoint, calibration=None, rgbd_dir=None, tactile_dir=None):
         self.endpoint = endpoint.rstrip("/")
         self.calibration = calibration
         self.rgbd_dir = Path(rgbd_dir) if rgbd_dir else None
+        self.tactile_dir = Path(tactile_dir) if tactile_dir else None
         self.connection = None
 
     def request(self, path, data=None):
@@ -67,6 +68,7 @@ class RdkBackend(CalibratedRGBD):
             "control_limits": self.connection["config"],
             "reset_before_task": False,
             "calibrated_readonly": self.calibration is not None,
+            "tactile_configured": self.tactile_dir is not None,
             "calibration_provisional": bool(
                 getattr(self.calibration, "provisional", False)
             ),
@@ -120,6 +122,10 @@ class RdkBackend(CalibratedRGBD):
             stop_reason=feedback["stop_reason"],
             native_success=None,
         )
+        if self.tactile_dir is not None:
+            from robots.flexiv.tactile_camera import attach_snapshot
+
+            attach_snapshot(observed, self.tactile_dir)
         return observed
 
     def _motion(self, route, payload):

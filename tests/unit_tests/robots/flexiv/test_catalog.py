@@ -24,6 +24,7 @@ def test_rdk_catalog_uses_current_declarations_without_constructing_toolkit(
     tools = {item["name"]: item for item in catalog(control_mode="rdk")}
     assert set(tools) == {
         "observe",
+        "tactile_compare",
         "view_perception_setup",
         "localize_target",
         "move_tcp",
@@ -45,6 +46,8 @@ def test_rdk_catalog_uses_current_declarations_without_constructing_toolkit(
         tools["set_gripper"]["description"] == FlexivToolkit.rdk_set_gripper.description
     )
     assert tools["finish"]["required"] is True
+    assert "original image pixels" in tools["tactile_compare"]["description"]
+    assert "not calibrated force" in tools["tactile_compare"]["description"]
 
     # A generic quaternion contract must not override the delta schema.
     delta = tools["move_eef_delta"]
