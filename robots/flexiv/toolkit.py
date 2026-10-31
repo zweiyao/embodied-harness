@@ -361,12 +361,17 @@ class FlexivToolkit(Toolkit):
     def rdk_move_eef_delta(
         self, translation_m: list[float], rotation_vector_rad: list[float]
     ) -> ToolResult:
-        """Apply one measured-TCP-relative goal and wait for measured arrival.
+        """Move by a base-frame translation and rotation-vector increment from measured TCP.
+
+        Resolve the goal once; wait until arrival or the command deadline.
+        Gripper opening is unchanged.
 
         Args:
             translation_m: [dx,dy,dz] in robot-base metres.
-            rotation_vector_rad: Right-hand axis-angle [rx,ry,rz] in base axes,
-                radians; [0,0,0] preserves orientation. Not Euler angles.
+            rotation_vector_rad: Base-frame right-hand rotation vector [rx,ry,rz]
+                = unit axis * angle in radians, not Euler angles or a quaternion.
+                [0,0,0.08726646] rotates 5 degrees about base +Z;
+                [0,0,0] preserves orientation.
 
         The server resolves p_target=p_current+translation_m and
         R_target=Exp(rotation_vector_rad)*R_current once. The RDK follows this

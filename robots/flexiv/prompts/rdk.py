@@ -35,8 +35,10 @@ def system_prompt(variables=None):
         "EEF_ACTION": (
             "move_eef_delta(translation_m, rotation_vector_rad) sets one goal from "
             "the current measured TCP. Translation is base-axis [dx,dy,dz] in metres. "
-            "Rotation is a right-hand base-axis rotation vector in radians, not Euler "
-            "angles: p_target=p_current+translation_m; "
+            "Rotation [rx,ry,rz] is a right-hand base-axis unit vector times an angle "
+            "in radians, not Euler angles or the state's wxyz quaternion. "
+            "For example [0,0,0.08726646] rotates 5 degrees about base +Z. "
+            "p_target=p_current+translation_m; "
             "R_target=Exp(rotation_vector_rad)*R_current. [0,0,0] preserves orientation. "
             "move_tcp(position_m, quaternion_wxyz) sets an absolute native-TCP goal. "
             "The controller follows either goal until arrival or the command deadline; "

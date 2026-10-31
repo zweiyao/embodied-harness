@@ -85,9 +85,25 @@ def catalog(
                 "validation": "native",
                 "availability": availability,
                 "availability_note": note,
-                "input_contract": "参数与 RPent 工具声明一致；位置单位米，基座坐标，四元数 wxyz。"
-                if category == "control"
-                else "使用当前任务的观测与文件；具体输入见参数声明。",
+                "input_contract": {
+                    "move_eef_delta": (
+                        "相对当前实测 TCP：translation_m=[dx,dy,dz]，基座轴方向，米；"
+                        "rotation_vector_rad=[rx,ry,rz]，基座轴方向的旋转向量"
+                        "（单位轴×旋转角，弧度），不是欧拉角或四元数。"
+                        "例如 [0,0,0.08726646] 表示绕基座 +Z 旋转 5°。"
+                        "增量只应用一次；执行时长见参数声明。"
+                    ),
+                    "move_tcp": (
+                        "绝对 TCP 目标：position_m=[x,y,z]，基座坐标，米；"
+                        "quaternion_wxyz=[w,x,y,z] 为目标姿态单位四元数。"
+                        "省略姿态时保持当前姿态。"
+                    ),
+                    "move_eef": (
+                        "绝对 TCP 目标：position_m=[x,y,z]，基座坐标，米；"
+                        "quaternion_wxyz=[w,x,y,z] 为目标姿态单位四元数；"
+                        "steps 指向同一目标的短程控制次数，不保证到位。"
+                    ),
+                }.get(tool.name, "具体输入、单位与执行方式见参数声明。"),
                 "example": None,
             }
         )

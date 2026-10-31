@@ -44,7 +44,13 @@ def native_catalog() -> list[dict]:
                 "required": declaration.name == "finish",
                 "dependencies": [],
                 "validation": "native",
-                "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+                "input_contract": (
+                    "poses: 1..5 absolute Panda-hand targets in world coordinates; "
+                    "each [x,y,z,qw,qx,qy,qz,gripper], metres, unit wxyz quaternion, "
+                    "gripper 0 closed to 1 open. Short execution, not guaranteed arrival."
+                    if declaration.name == "move_eef"
+                    else "Recorded UniVTAC sensor data; no simulator object state."
+                ),
                 "example": None,
             }
         )
@@ -359,7 +365,7 @@ class UniVTACToolkit(Toolkit):
 
     @tool
     def move_eef(self, poses: list[list[float]]) -> ToolResult:
-        """Execute 1..5 short world-frame Panda-hand targets, then observe actual motion.
+        """Execute 1..5 absolute world-frame Panda-hand targets briefly, then observe actual motion.
 
         Each target is [x,y,z,qw,qx,qy,qz,gripper]: metres, unit wxyz quaternion,
         gripper 0 closed to 1 open. Local IK bounds joint changes. This is

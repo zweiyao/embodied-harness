@@ -46,6 +46,18 @@ def test_rdk_catalog_uses_current_declarations_without_constructing_toolkit(
     )
     assert tools["finish"]["required"] is True
 
+    # A generic quaternion contract must not override the delta schema.
+    delta = tools["move_eef_delta"]
+    assert "rotation_vector_rad=[rx,ry,rz]" in delta["input_contract"]
+    assert "wxyz" not in delta["input_contract"]
+    assert (
+        "unit axis * angle"
+        in delta["parameters"]["properties"]["rotation_vector_rad"]["description"]
+    )
+    assert "arrival or the command deadline" in delta["description"]
+    assert "quaternion_wxyz=[w,x,y,z]" in tools["move_tcp"]["input_contract"]
+    assert "四元数" not in tools["set_gripper"]["input_contract"]
+
 
 def test_live_declarations_supply_exact_description_schema_and_registration():
     actual = replace(
