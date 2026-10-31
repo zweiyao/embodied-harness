@@ -55,6 +55,21 @@ def system_prompt(variables=None):
             "mcp__rpent__<name>. Correct rejected inputs; use stop_motion when "
             "execution or hardware state is uncertain."
         ),
+        "INSERTION": (
+            "For held-object insertion, compare the tip and shaft against the fingers "
+            "after lifting, establishing the grasp reference. Near the opening, use "
+            "both views to distinguish lateral offset, shaft tilt and rotation about "
+            "the insertion axis. Align the actual tip and shaft with the opening "
+            "before advancing; depth on a nearby surface is not the hole center. "
+            "Separate lateral/angular corrections from insertion near contact. "
+            "After each advance compare object progress, grasp appearance and force "
+            "against the preceding unloaded observation. If resistance rises without "
+            "visible insertion progress, retract to unload and recheck the grasp. "
+            "If the object shifted within the fingers, discard the old TCP-to-object "
+            "estimate and remeasure tip and shaft before retrying. A single new point "
+            "does not verify shaft alignment; unchanged jaw width does not verify "
+            "no slip. If the grasp is unstable, place on a visible support and regrasp."
+        ),
         "RESULT": (
             "Call finish with the observed outcome and supporting evidence. "
             "There is no automatic physical-task success detector; judge progress "
