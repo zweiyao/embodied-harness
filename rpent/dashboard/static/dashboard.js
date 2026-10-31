@@ -99,6 +99,8 @@ const COPY = {
     },
     solved: "TASK SOLVED",
     notSolved: "not solved",
+    resultLoading: "Loading task result…",
+    resultUnknown: "Task result not recorded",
     full: "full",
     episodeVideo: "episode video",
     completeRunVideo: "complete run video",
@@ -207,6 +209,8 @@ const COPY = {
     },
     solved: "任务完成",
     notSolved: "未完成",
+    resultLoading: "读取任务判分…",
+    resultUnknown: "判分未记录",
     full: "全",
     episodeVideo: "完整回放",
     completeRunVideo: "整段运行视频",
@@ -912,6 +916,44 @@ function setResult(terminated, state) {
   }
 }
 
+// Run completion and environment success are separate. Read the same official
+// outcome as the history page, rather than inferring success from termination.
+let resultState = null;
+
+async function updateResult(snapshot) {
+  const key = `${snapshot.server_id}:${snapshot.run_id}:${snapshot.state}`;
+  if (resultState?.key !== key) resultState = { key, pending: false, outcome: null };
+  const current = resultState;
+  if (!snapshot.workbench) {
+    setResult(snapshot.terminated, snapshot.state);
+    return;
+  }
+  const badge = $("#resultBadge");
+  if (!snapshot.run_id || !["succeeded", "failed", "cancelled"].includes(snapshot.state)) {
+    badge.style.display = "none";
+    return;
+  }
+  if (current.pending) return;
+  badge.style.display = "";
+  if (!current.outcome) {
+    badge.className = "badge";
+    badge.textContent = copy.resultLoading;
+    current.pending = true;
+    try {
+      const run = await requestJSON(`/api/runs/${encodeURIComponent(snapshot.run_id)}`);
+      if (run.id === snapshot.run_id && run.outcome?.ended_at) current.outcome = run.outcome;
+    } catch {
+      // Keep unknown distinct from failure; a later snapshot retries the read.
+    } finally {
+      current.pending = false;
+    }
+  }
+  if (resultState !== current) return;
+  const success = current.outcome?.environment_success;
+  badge.className = "badge" + (success === true ? " b-ok" : success === false ? " b-fail" : "");
+  badge.textContent = success === true ? copy.solved : success === false ? copy.notSolved : copy.resultUnknown;
+}
+
 function renderTimeline(
   tl,
   totalSteps,
@@ -1217,7 +1259,7 @@ function applySessionSnapshot(snapshot) {
   if (generationState === "stale") return;
   setBadge(snapshot.state, snapshot.control_error || snapshot.error);
   if (snapshot.workbench && snapshot.run_id && snapshot.session_state === "ready") $("#statusBadge").textContent = "本轮已结束";
-  setResult(snapshot.terminated, snapshot.state);
+  updateResult(snapshot);
   renderRuntimeStatus(snapshot.runtime);
   syncPrimitiveAvailability(snapshot);
   interactionController.applySnapshot(snapshot);

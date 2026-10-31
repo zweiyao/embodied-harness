@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
+from robots.univtac.instructions import SEEN_INSTRUCTIONS
 from robots.univtac.prompt_bundle import system_prompt, user_prompt
 from rpent.memory import MemoryManager
 from rpent.robots.prompt_bundle import PromptBundle
@@ -19,15 +20,6 @@ from rpent.utils.daemon import ProcessDaemon, pick_free_port
 from rpent.utils.rpc.http_rpc import HttpRpcClient
 
 TASKS = ("insert_hole", "insert_tube", "pull_out_key")
-INSTRUCTIONS = {
-    "insert_hole": "Insert the held test tube fully into the hole while keeping it grasped. "
-    "The starting pose is near the opening, not necessarily aligned with its channel. "
-    "Use the observed opening and contact response to align the tube with the channel, "
-    "which need not be vertical. Entry at the rim or downward hand motion alone does "
-    "not establish completion; check that the tube itself advances and seats.",
-    "insert_tube": "Insert the held test tube into the narrow tube opening.",
-    "pull_out_key": "Extract the held key from its slot while keeping the slot fixed.",
-}
 DASHBOARD_SPEC = {
     "task": {
         "command": "/rpent-task",
@@ -111,7 +103,7 @@ def _parse_config(args) -> RunConfig:
         recipe_tag=f"univtac_{task_name}_s{args.seed}",
         output_dir=output,
         prompt_vars={
-            "instruction": INSTRUCTIONS[task_name],
+            "instruction": SEEN_INSTRUCTIONS[task_name],
             "task_guidance": "",
             "task_name": task_name,
             "seed": args.seed,

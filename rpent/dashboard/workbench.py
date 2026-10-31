@@ -116,7 +116,11 @@ class RunJournal:
                 os.fsync(f.fileno())
 
 
-def native_catalog(robot="libero"):
+def native_catalog(robot="libero", *, control_mode="native"):
+    if robot == "flexiv":
+        from robots.flexiv.catalog import catalog
+
+        return catalog(control_mode=control_mode)
     if robot != "libero":
         from rpent.robots.base import _resolve_robot
 
@@ -181,12 +185,15 @@ def native_catalog(robot="libero"):
 
 class Workbench:
     def __init__(self, config, *, robot="libero"):
+        from rpent.dashboard.catalog import load_sources
+
         self.config = config
         self.robot = robot
         if config.get("robot", "libero") != robot:
             raise ValueError("Workbench configuration belongs to another robot")
         self.root = Path(config["runs_root"]).resolve()
         self.library = Path(config["library_root"]).resolve()
+        self.catalog_sources = load_sources(os.environ.get("RPENT_TOOL_CATALOG"))
         self.profiles = {
             p["id"]: {**p, "reasoning_effort": p.get("reasoning_effort") or "none"}
             for p in config["models"]
@@ -391,42 +398,34 @@ class Workbench:
         ]
 
     def catalog(self):
-        from robots.libero.research.library import Library
+        from rpent.dashboard.catalog import combined_catalog, generated_catalog
 
-        result = native_catalog(self.robot)
-        invoked = set()
-        for run in self.root.glob("*/tasks/*/tool-invocations.json"):
-            try:
-                invoked.update(json.loads(run.read_text()))
-            except (OSError, ValueError):
-                pass
-        for path in sorted(self.library.glob("*.meta.json")):
-            metadata = json.loads(path.read_text())
-            version = path.name.removesuffix(".meta.json")
-            (tool,) = Library(self.library).load(version)
-            result.append(
-                {
-                    **metadata,
-                    **tool,
-                    "id": "generated:" + version,
-                    "origin": "generated",
-                    "category": "perception",
-                    "version": version,
-                    "invoked": version in invoked,
-                    "required": False,
-                }
+        result = (
+            native_catalog(
+                "flexiv", control_mode=self.config.get("control_mode", "native")
             )
-        return result
+            if self.robot == "flexiv"
+            else native_catalog(self.robot)
+        )
+        result += generated_catalog(self.library, runs_root=self.root)
+        return combined_catalog(result, robot=self.robot, sources=self.catalog_sources)
 
     def selection(self, ids=None):
         catalog = {t["id"]: t for t in self.catalog()}
         if ids is None:
-            ids = [i for i, t in catalog.items() if t["origin"] == "native"]
+            ids = [
+                i
+                for i, t in catalog.items()
+                if t["origin"] == "native" and t["selectable"]
+            ]
         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
             raise ValueError("tools must be a list of catalog IDs")
         if len(ids) != len(set(ids)) or any(i not in catalog for i in ids):
             raise ValueError("Unknown or duplicate tool/version")
         selected = [catalog[i] for i in ids]
+        for item in selected:
+            if not item["selectable"]:
+                raise ValueError(f"{item['name']}: {item['incompatibility_reason']}")
         names = [t["name"] for t in selected]
         if "finish" not in names or len(names) != len(set(names)):
             raise ValueError("finish is required; select one version per tool name")

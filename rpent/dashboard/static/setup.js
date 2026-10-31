@@ -1,7 +1,9 @@
-import {renderTools} from './tool-picker.js';
+import {renderTools} from './tool-picker.js?v=all-tools-20261030';
+import {resetControl} from './flexiv-reset.js';
 const $ = (id) => document.getElementById(id);
 let setup, profile, config, picker;
 let checksPassed = false;
+const physicalReset = resetControl($('resetPhysical'), $('resetPhysicalStatus'), physicalStatus, () => $('physicalMode').value === 'supervised');
 async function request(path, options) {
   const response = await fetch(path, options);
   const data = await response.json();
@@ -48,8 +50,13 @@ $('inspection').addEventListener('change', () => { $('physicalInstruction').valu
 $('physicalInstruction').addEventListener('input', command);
 async function physicalStatus() {
   const data = await request('/api/flexiv/status');
-  $('physicalStatus').textContent = `${data.armed ? '受限动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
+  const direct = data.control_backend === 'rdk';
+  $('physicalMode').querySelector('[value="supervised"]').textContent = direct ? 'RDK 真机实验' : '受限真机实验';
+  $('armPhysical').textContent = direct ? '启用机械臂（RDK）' : '启用受限动作（原地恢复）';
+  if (direct) $('physical').querySelector('.note').textContent = '通过非夕 RDK 服务器执行动作，到达目标后返回图像和状态。启用保持当前位姿，不归位。每次实验结束或停止后需重新启用。';
+  $('physicalStatus').textContent = `${direct ? 'RDK 直连' : '采集器'} · ${data.armed ? '动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
   $('armPhysical').disabled = $('physicalMode').value !== 'supervised' || data.armed || data.lease_active;
+  physicalReset.update(data);
   return data;
 }
 async function physicalAction(action) {
@@ -74,7 +81,7 @@ $('setupForm').addEventListener('submit', async event => {
     if (!profile.suites) {
       if (!$('physicalInstruction').value.trim()) throw new Error('请输入实验指令');
       const hardware = await physicalStatus();
-      if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error('请先点击“启用受限动作”，核对状态后再进入控制台');
+      if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error(`请先点击“${$('armPhysical').textContent}”，核对状态后再进入控制台`);
       if ($('physicalMode').value === 'readonly' && hardware.armed && !await physicalAction('stop')) throw new Error('停止未确认，无法进入只读实验');
     }
     const payload = setup.workbench ? {model_profile: $('model').value, tools: picker.selected()} : {model: $('model').value};
@@ -109,21 +116,35 @@ try {
     options('inspection', profile.inspections.map(s => [s,s]));
     $('physicalInstruction').value = $('inspection').value;
     await physicalStatus();
-    setInterval(() => physicalStatus().catch(error => { $('physicalStatus').textContent = `状态不可用：${error.message}`; }), 3000);
+    setInterval(() => physicalStatus().catch(error => {
+      $('resetPhysical').disabled = true;
+      $('physicalStatus').textContent = `状态不可用：${error.message}`;
+    }), 3000);
   }
   const models = [...(setup.models || [])];
   if (config.model && !models.includes(config.model)) models.push(config.model);
   options('model', setup.workbench ? setup.model_profiles.map(p => [p.id, `${p.label} · ${p.planner}`]) : models.map(m => [m,m.replace('openai-chat:', '')]), setup.workbench ? config.model_profile : config.model);
-  if (setup.workbench) {
+  if (setup.workbench || setup.tool_catalog) {
     $('workbenchTools').hidden = false;
-    const catalog = (await request('/api/tools')).tools;
-    const copied = sessionStorage.getItem('rpent.copyRun');
-    let selection = config.tools;
+    const {tools: catalog, selectable = true, scope} = await request('/api/tools');
+    const canSelect = Boolean(setup.workbench && selectable);
+    $('toolSelectionActions').hidden = !canSelect;
+    $('checkModels').hidden = !setup.workbench;
+    $('modelCheck').hidden = !setup.workbench;
+    $('toolsRunsLink').hidden = !setup.workbench;
+    $('toolsNote').textContent = `${scope ? `${scope} ` : ''}可查看所有环境的工具，勾选本环境已接入的工具用于本轮实验；其他工具会说明不可选原因。取消感知工具不会关闭动作后自动返回的图像。新工具默认不勾选；每轮冻结所选版本。`;
+    if (!canSelect) {
+      $('toolsHeading').textContent = '工具简介';
+      $('toolsLibraryLink').textContent = '工具简介与源码';
+      $('toolsNote').textContent = `${scope ? `${scope} ` : ''}可查看各环境工具的简介和源码。当前服务未启用工具选择；候选工具尚未接入模型调用。`;
+    }
+    const copied = setup.workbench && sessionStorage.getItem('rpent.copyRun');
+    let selection = config.tools || [];
     if (copied) {
       const prior = JSON.parse(copied);
       selection = prior.tools;
-      const missing = (selection || []).filter(id => !catalog.some(t => t.id === id));
-      if (missing.length) throw new Error(`历史工具版本不存在：${missing.join(', ')}`);
+      const missing = (selection || []).filter(id => !catalog.some(t => t.id === id && t.selectable !== false && t.availability !== 'candidate'));
+      if (missing.length) throw new Error(`历史工具版本不存在或不兼容当前环境：${missing.join(', ')}`);
       if (prior.model_profile) $('model').value = prior.model_profile;
       for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) if (prior[id] != null) config[id] = prior[id];
       if (prior.suite) { $('suite').value = prior.suite; tasks(); }
@@ -131,8 +152,10 @@ try {
       if (prior.seed != null) $('seed').value = prior.seed;
       sessionStorage.removeItem('rpent.copyRun');
     }
-    picker = renderTools($('toolPicker'), catalog, selection);
-    for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
+    picker = renderTools($('toolPicker'), catalog, selection, canSelect);
+    if (canSelect) for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
+  }
+  if (setup.workbench) {
     const health = await request('/api/models/status');
     const selectedHealth = () => {
       checksPassed = Boolean(health[$('model').value]?.ok);

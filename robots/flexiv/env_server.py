@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""RPent RPC facade borrowing the collector's Flexiv driver and camera streams."""
+"""RPent RPC facade for collector or standalone RDK control and RGB-D capture."""
 
 from __future__ import annotations
 
 import argparse
-import base64
-import io
 import json
 import signal
 import threading
@@ -28,10 +26,11 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from robots.flexiv.motion import BoundedControl, EEFInputRejected
+from robots.flexiv.rgbd_snapshot import CalibratedRGBD
 from rpent.robots.components.env_facade_base import BaseEnvFacade
 
 
-class CollectorBackend(BoundedControl):
+class CollectorBackend(CalibratedRGBD, BoundedControl):
     def __init__(
         self,
         endpoint: str,
@@ -148,78 +147,6 @@ class CollectorBackend(BoundedControl):
             return observed
         return self.request("/rpent/observation")
 
-    def rgbd_snapshot(self):
-        """Bracket newly acquired RGBD frames with stationary native TCP reads."""
-        import numpy as np
-        from PIL import Image
-
-        if self.rgbd_dir is None:
-            raise RuntimeError("Calibrated observation requires --rgbd-dir")
-        before = self.calibration_snapshot()
-        started = time.monotonic()
-        cameras = {}
-        while time.monotonic() - started < 2:
-            cameras = {}
-            for role in ("wrist", "side"):
-                serial = self.calibration.data["camera_intrinsics"][role]["serial"]
-                with np.load(
-                    self.rgbd_dir / f"{serial}.npz", allow_pickle=False
-                ) as bundle:
-                    meta = json.loads(str(bundle["metadata"].item()))
-                    if meta["serial"] != serial or meta["aligned_to"] != "color":
-                        raise ValueError("RGBD snapshot identity/alignment mismatch")
-                    if not started <= meta["frame_monotonic"] <= time.monotonic():
-                        break
-                    cameras[role] = dict(
-                        meta, color_bgr=bundle["color_bgr"], depth_m=bundle["depth_m"]
-                    )
-            if len(cameras) == 2:
-                skew = abs(
-                    cameras["wrist"]["frame_monotonic"]
-                    - cameras["side"]["frame_monotonic"]
-                )
-                acquired = time.monotonic()
-                for camera in cameras.values():
-                    camera["frame_age_s"] = acquired - camera["frame_monotonic"]
-                if skew <= 0.15 and all(
-                    0 <= camera["frame_age_s"] <= 0.15 for camera in cameras.values()
-                ):
-                    break
-            time.sleep(0.04)
-        else:
-            raise RuntimeError(
-                "Fresh aligned RGBD frames unavailable within two seconds"
-            )
-        after = self.calibration_snapshot()
-        if before["tool"] != after["tool"]:
-            raise ValueError("Native tool changed while acquiring RGBD")
-        after["state_before"] = before["state_before"]
-        after["cameras"] = {}
-        for role, camera in cameras.items():
-            color = camera.pop("color_bgr")
-            intr = camera["intrinsics"]
-            if (
-                color.shape != (intr["height"], intr["width"], 3)
-                or color.dtype != np.uint8
-            ):
-                raise ValueError("Invalid RGBD color dimensions or dtype")
-            buffer = io.BytesIO()
-            Image.fromarray(color[:, :, ::-1]).save(
-                buffer, format="PNG", compress_level=1
-            )
-            camera["png_base64"] = base64.b64encode(buffer.getvalue()).decode()
-            after["cameras"][self.calibration.data["board"][role]] = camera
-        for camera in after["cameras"].values():
-            # Keep acquisition freshness separate from HTTP/PNG delivery latency.
-            camera["delivery_age_s"] = time.monotonic() - camera["frame_monotonic"]
-            camera["frame_age_reference"] = (
-                "RGBD acquisition, before state read/encoding"
-            )
-        after["synchronization"] = (
-            "per-camera aligned RGBD frameset; stationary bracketing TCP; no cross-camera hardware sync"
-        )
-        return after
-
     def calibration_snapshot(self):
         # Wait for fresh, stationary feedback after a bounded physical action.
         # Rejections are retried, never converted to valid measurements.
@@ -280,6 +207,19 @@ class FlexivEnvFacade(BaseEnvFacade):
         super().__init__()
 
     def _register_rpc(self):
+        if getattr(self.backend, "control_backend", None) == "rdk":
+            for name in (
+                "open",
+                "get_env_meta",
+                "get_observation",
+                "close",
+                "move_tcp",
+                "move_eef_delta",
+                "set_gripper",
+                "stop_motion",
+            ):
+                self._rpc[f"env.{name}"] = getattr(self.backend, name)
+            return
         for name in ("open", "get_env_meta", "get_observation", "move_delta", "close"):
             if (
                 name == "move_delta"
@@ -315,6 +255,8 @@ class FlexivEnvFacade(BaseEnvFacade):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--backend", choices=("collector", "rdk"), default="collector")
+    parser.add_argument("--rdk-endpoint", default="http://127.0.0.1:5000")
     parser.add_argument("--collector-endpoint", default="http://127.0.0.1:9527")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, required=True)
@@ -337,6 +279,13 @@ def main():
         help="Use operator-accepted provisional calibration for read-only estimates",
     )
     args = parser.parse_args()
+    direct_rdk = args.backend == "rdk"
+    if direct_rdk and (
+        args.supervised_control or args.eef_chunk_control or args.reset_before_task
+    ):
+        parser.error(
+            "The RDK backend uses its own control configuration; omit collector motion flags"
+        )
     if bool(args.calibration_file) != bool(args.tool_tcp_file):
         parser.error("--calibration-file and --tool-tcp-file must be supplied together")
     if bool(args.calibration_file) != bool(args.rgbd_dir):
@@ -356,7 +305,9 @@ def main():
         parser.error(
             "Read-only calibration opt-in cannot enable control; use explicit side-control opt-in"
         )
-    if args.allow_provisional_side_control and not args.supervised_control:
+    if args.allow_provisional_side_control and not (
+        args.supervised_control or direct_rdk
+    ):
         parser.error("--allow-provisional-side-control requires --supervised-control")
     if (
         args.operator_confirmed_calibration_sha256 is not None
@@ -375,15 +326,20 @@ def main():
             allow_provisional_side_control=args.allow_provisional_side_control,
             operator_confirmed_calibration_sha256=args.operator_confirmed_calibration_sha256,
         )
-    backend = CollectorBackend(
-        args.collector_endpoint,
-        calibration,
-        args.rgbd_dir,
-        supervised=args.supervised_control,
-        control_log_dir=args.control_log_dir,
-        reset_before_task=args.reset_before_task,
-        eef_chunk_control=args.eef_chunk_control,
-    )
+    if direct_rdk:
+        from robots.flexiv.rdk_backend import RdkBackend
+
+        backend = RdkBackend(args.rdk_endpoint, calibration, args.rgbd_dir)
+    else:
+        backend = CollectorBackend(
+            args.collector_endpoint,
+            calibration,
+            args.rgbd_dir,
+            supervised=args.supervised_control,
+            control_log_dir=args.control_log_dir,
+            reset_before_task=args.reset_before_task,
+            eef_chunk_control=args.eef_chunk_control,
+        )
     facade = FlexivEnvFacade(backend)
     for signum in (signal.SIGTERM, signal.SIGINT):
         signal.signal(signum, lambda *_: facade._shutdown_event.set())

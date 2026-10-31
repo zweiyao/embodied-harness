@@ -66,7 +66,10 @@ def test_task_parser_and_runtime_requirements_fail_before_start(tmp_path):
         "task_name": "pull_out_key",
         "seed": 7,
     }
-    assert "Extract" in config.prompt_vars["instruction"]
+    assert config.prompt_vars["instruction"] == (
+        "Rotate the key in the slot until mechanical resistance is sensed, "
+        "then pull the key straight out."
+    )
     with pytest.raises(ValueError, match="seed"):
         robot_spec._parse_config(arguments(tmp_path, "--seed", "-1"))
     with pytest.raises(ValueError):

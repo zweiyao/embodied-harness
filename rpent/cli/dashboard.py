@@ -119,11 +119,15 @@ def run_dashboard_session(
         output_dir=session_root,
         dashboard_spec=dashboard_spec,
     )
-    if robot_spec.name in {"libero", "univtac"}:
+    if robot_spec.name in {"libero", "univtac", "flexiv"}:
         from rpent.dashboard.workbench import Workbench
 
         state.workbench = Workbench.from_env(robot=robot_spec.name)
         if state.workbench is not None:
+            if robot_spec.name == "flexiv":
+                state.workbench.config["control_mode"] = getattr(
+                    args, "control_mode", "native"
+                )
             state.workbench.recover_interrupted()
             if getattr(args, "pilot_root", None):
                 state.workbench.bind_pilot(
@@ -149,6 +153,11 @@ def run_dashboard_session(
             "max_turns": args.max_turns,
             "max_tokens": args.max_tokens,
             "planner_timeout_s": args.planner_timeout_s,
+            **(
+                {"control_mode": getattr(args, "control_mode", "native")}
+                if robot_spec.name == "flexiv"
+                else {}
+            ),
         },
     )
     dashboard_url = dashboard_server.start()
@@ -437,10 +446,13 @@ def _run_dashboard_task_inner(
                     from robots.libero.research.manual import availability_prompt
                     from rpent.dashboard.workbench import write_json
 
-                    system_prompt = (
-                        availability_prompt(claimed.request["frozen_tools"])
-                        + system_prompt
-                    )
+                    # UniVTAC renders its frozen selection inside its PromptBundle.
+                    # Legacy guides still need the selection override.
+                    if args.robot_name != "univtac":
+                        system_prompt = (
+                            availability_prompt(claimed.request["frozen_tools"])
+                            + system_prompt
+                        )
                     write_json(
                         Path(output_dir) / "prompts.json",
                         {"system": system_prompt, "user": session_message},

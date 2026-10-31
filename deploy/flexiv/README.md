@@ -60,7 +60,7 @@ The installed RDK 1.9 Python signature was inspected separately; acceleration
 limits are passed by keyword. Fake-hardware checks do not establish actual
 trajectory speed, stopping distance, or manipulation success.
 
-## 25 Hz EEF segments (review candidate)
+## 25 Hz EEF segments
 
 `eef_chunk.py` installs as the external collector's `collector/core/eef_chunk.py`.
 Apply `collector-eef-chunks.patch` only after checking the actual external file
@@ -89,7 +89,11 @@ FLEXIV_HOME_SOURCE=/path/to/candidate/collector/core \
   tests/unit_tests/robots/flexiv -q
 ```
 
-The isolated remote candidate passed 156 fake-hardware checks. This is not a
-physical timing, stopping-distance, contact, or manipulation validation. No live
-service has been switched to this candidate. See
+The initial review candidate passed 156 fake-hardware checks. The EEF delta
+extension subsequently passed 180 checks and was deployed on 2026-10-30. The
+first physical run has executed short segments and measured-pose holds; its
+manipulation outcome is recorded in
+[the EEF delta deployment note](../../docs/manual-workbench/flexiv-eef-delta-mode.md).
+These observations do not establish stopping distance, contact robustness or a
+task-success improvement. For the absolute-target contract, see
 [the field mapping and A06/A07 explanation](../../docs/manual-workbench/flexiv-eef-short-control.md).

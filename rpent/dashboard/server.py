@@ -128,14 +128,33 @@ class DashboardServer:
         self.port = port
         return f"http://{self.host}:{port}"
 
+    def _catalog(self) -> list[dict[str, Any]]:
+        """Reuse the tool-library schema for selectable and read-only catalogs."""
+        if self._workbench is not None:
+            return self._workbench.catalog()
+        if self._robot_name == "flexiv":
+            from robots.flexiv.catalog import catalog
+
+            return catalog(
+                control_mode=self._planner_config.get("control_mode", "native"),
+                declarations=self._state.tool_declarations(),
+                library_root=os.environ.get("RPENT_FLEXIV_TOOL_LIBRARY"),
+            )
+        return []
+
     # -- routes ------------------------------------------------------------
 
     def _build_app(self) -> FastAPI:
         app = FastAPI(title="RPent dashboard")
+        operator_lock = threading.Lock()
         if self._robot_name == "flexiv":
             from robots.flexiv.operator_ui import install_operator_routes
 
-            flexiv_interrupt_stop = install_operator_routes(app)
+            flexiv_interrupt_stop = install_operator_routes(
+                app,
+                session_state=lambda: self._state.session_state,
+                operator_lock=operator_lock,
+            )
         app.mount(
             "/static",
             StaticFiles(directory=self._static_dir),
@@ -157,6 +176,8 @@ class DashboardServer:
                     **(self._setup or {}),
                     "robot": self._robot_name,
                     "workbench": self._workbench is not None,
+                    "tool_catalog": self._workbench is not None
+                    or self._robot_name == "flexiv",
                     "model_profiles": self._workbench.public_profiles()
                     if self._workbench
                     else [],
@@ -179,7 +200,7 @@ class DashboardServer:
 
         @app.get("/api/tools/{tool_id}")
         def tool_details(tool_id: str) -> JSONResponse:
-            for item in self._workbench.catalog() if self._workbench else []:
+            for item in self._catalog():
                 if item["id"] == tool_id:
                     return JSONResponse(item)
             return JSONResponse({"error": "Unknown tool/version"}, status_code=404)
@@ -187,7 +208,12 @@ class DashboardServer:
         @app.get("/api/tools")
         def tool_catalog() -> JSONResponse:
             return JSONResponse(
-                {"tools": self._workbench.catalog() if self._workbench else []}
+                {
+                    "tools": self._catalog(),
+                    "selectable": self._workbench is not None,
+                    "scope": "已配置环境的 RPent 工具；仅适配当前环境的工具可选。",
+                    "robot": self._robot_name,
+                }
             )
 
         @app.get("/api/runs")
@@ -224,7 +250,7 @@ class DashboardServer:
             if self._robot_name == "flexiv":
                 html = html.replace(
                     "</body>",
-                    '<script type="module" src="/static/flexiv-control.js"></script></body>',
+                    '<script type="module" src="/static/flexiv-control.js?v=flexiv-tools-20261030"></script></body>',
                 )
             return HTMLResponse(html)
 
@@ -317,6 +343,12 @@ class DashboardServer:
         def api_submit_message(
             payload: dict[str, Any] = Body(default={}),
         ) -> JSONResponse:
+            if self._robot_name == "flexiv" and not operator_lock.acquire(
+                blocking=False
+            ):
+                return JSONResponse(
+                    {"error": "机械臂复位中，请等待完成后再开始实验"}, status_code=409
+                )
             try:
                 self._state.submit_input(
                     payload.get("text"),
@@ -326,6 +358,9 @@ class DashboardServer:
                 return JSONResponse({"error": str(exc)}, status_code=422)
             except InteractionUnavailableError as exc:
                 return JSONResponse({"error": str(exc)}, status_code=409)
+            finally:
+                if self._robot_name == "flexiv":
+                    operator_lock.release()
             return JSONResponse({"ok": True}, status_code=202)
 
         @app.delete(
@@ -414,6 +449,12 @@ class DashboardServer:
                     {"error": "arguments must be a JSON object"},
                     status_code=422,
                 )
+            if self._robot_name == "flexiv" and not operator_lock.acquire(
+                blocking=False
+            ):
+                return JSONResponse(
+                    {"error": "机械臂复位中，请等待完成后再执行动作"}, status_code=409
+                )
             try:
                 tool_result = self._state.execute_primitive(name, arguments)
             except InteractionUnavailableError as exc:
@@ -425,6 +466,9 @@ class DashboardServer:
                 return JSONResponse({"error": str(exc)}, status_code=500)
             except ValueError as exc:
                 return JSONResponse({"error": str(exc)}, status_code=403)
+            finally:
+                if self._robot_name == "flexiv":
+                    operator_lock.release()
             result = tool_result.to_dict()
             if isinstance(result, dict) and result.get("error") is not None:
                 error = " ".join(str(result["error"]).split())[:500]

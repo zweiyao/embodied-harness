@@ -275,6 +275,8 @@ def test_tool_saves_depth_and_uses_exact_step(
     )
     assert result.data["source"] == "color_aligned_realsense_depth"
     assert result.data["step"] == 0
+    assert result.data["record_step"] == kit.state.latest_step
+    assert result.data["record_step"] != result.data["step"]
     assert len(result.images) == 1
     assert kit.state.exists("side_depth.npy", step=0)
     kit.close()

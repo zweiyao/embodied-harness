@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shared prompt for the collector-backed physical Flexiv adapter."""
+"""Robot-owned prompts for physical Flexiv control modes."""
 
 
 def system_prompt(variables=None):
+    if (variables or {}).get("control_mode", "native") == "rdk":
+        from robots.flexiv.prompts.rdk import system_prompt as rdk_prompt
+
+        return rdk_prompt(variables)
     if (variables or {}).get("control_mode", "native") == "eef_delta":
         from robots.flexiv.prompts.eef import system_prompt as eef_prompt
 

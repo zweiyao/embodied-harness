@@ -1,4 +1,4 @@
-import {el,renderTools} from './tool-picker.js';
+import {el,renderTools,environmentName} from './tool-picker.js?v=all-tools-20261030';
 const $=id=>document.getElementById(id);
 const request=async url=>{const r=await fetch(url);if(!r.ok)throw Error(`请求失败 ${r.status}`);return r.json();};
 const link=(title,url)=>{const a=el('a',title);a.href=url;return a;};
@@ -33,8 +33,11 @@ async function showRun(id){
 }
 async function load(){
   if(location.pathname==='/tools'){
-    $('title').textContent='工具库';$('intro').textContent='查看原生与新增感知工具。制作与修改在 Codex 对话中进行；新版本不会自动启用。';
-    const {tools}=await request('/api/tools');renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · 新工具效果需由实验验证`;
+    const {tools,selectable=true,scope,robot}=await request('/api/tools');
+    $('title').textContent='工具库 · 全部组件';
+    $('intro').textContent=`${robot ? `当前环境：${environmentName(robot)}。` : ''}${scope ? `${scope} ` : ''}按来源和已接入环境查看控制、感知与辅助工具。每次实验在开始页勾选本环境可用工具；其他环境的工具保留简介、源码和不可选原因。新版本不会自动启用。`;
+    $('runsNav').hidden=!selectable;
+    renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · 目录只读查看${selectable?'，前往开始页选择本轮工具':'，当前服务未启用工具选择'}`;
   }else{
     $('title').textContent='实验记录';$('intro').textContent='保留每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
     const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 只读查看';return;}

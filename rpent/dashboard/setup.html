@@ -5,7 +5,7 @@
 <title>RPent · 实验开始</title>
 <link rel="stylesheet" href="/static/setup.css">
 <link rel="stylesheet" href="/static/workbench.css">
-<script type="module" src="/static/setup.js"></script>
+<script type="module" src="/static/setup.js?v=all-tools-20261030"></script>
 </head>
 <body>
 <main>
@@ -33,7 +33,9 @@
           <label>控制模式<select id="physicalMode"><option value="readonly">只读观察与定位</option><option value="supervised">受限真机实验</option></select></label>
           <p id="physicalStatus" role="status">正在读取机械臂状态…</p>
           <button type="button" id="armPhysical">启用受限动作（原地恢复）</button>
+          <button type="button" id="resetPhysical" hidden disabled>复位（回参考位）</button>
           <button type="button" id="stopPhysical" style="background:#a71919;color:white">停止机械臂和夹爪</button>
+          <p id="resetPhysicalStatus" role="status"></p>
           <p class="note">启用后可执行实际动作，请在机械臂旁观察。恢复保持当前位姿和夹爪，不归位或初始化。每次实验结束或保护停止后需要重新启用。保留控制器急停作为硬件停止方式。</p>
         </div>
       </section>
@@ -48,10 +50,10 @@
         <p class="note">决策轮数是 Agent 调用模型的预算，不是机械臂动作步数。参数仅影响后续新任务；模型服务和凭据由服务器管理。</p>
       </section>
       <section id="workbenchTools" hidden>
-        <h2><span>04</span> 本轮工具</h2>
-        <nav><a href="/tools">工具库与源码</a> · <a href="/runs">实验记录</a></nav>
-        <p class="note">取消感知工具不会关闭动作后自动返回的原生图像。新工具默认不勾选；每轮冻结所选版本。</p>
-        <p><button type="button" id="allTools">全选</button> <button type="button" id="clearTools">清空可选工具</button> <button type="button" id="nativeTools">恢复原生默认</button></p>
+        <h2><span>04</span> <strong id="toolsHeading">本轮工具</strong></h2>
+        <nav><a id="toolsLibraryLink" href="/tools">工具库与源码</a><span id="toolsRunsLink"> · <a href="/runs">实验记录</a></span></nav>
+        <p id="toolsNote" class="note">取消感知工具不会关闭动作后自动返回的原生图像。新工具默认不勾选；每轮冻结所选版本。</p>
+        <p id="toolSelectionActions"><button type="button" id="allTools">全选本环境可选工具</button> <button type="button" id="clearTools">清空可选工具</button> <button type="button" id="nativeTools">恢复原生默认</button></p>
         <div id="toolPicker"></div>
         <button type="button" id="checkModels">检查所选模型连接</button>
         <p id="modelCheck" role="status">启动前需要完成模型最小请求检查。</p>

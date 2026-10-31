@@ -16,6 +16,7 @@
 
 import json
 import os
+import threading
 from urllib.error import HTTPError, URLError
 from urllib.request import Request as URLRequest
 from urllib.request import urlopen
@@ -24,10 +25,52 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 
-def install_operator_routes(app):
-    endpoint = os.environ.get("RPENT_FLEXIV_COLLECTOR", "http://127.0.0.1:9527").rstrip(
-        "/"
-    )
+def install_operator_routes(app, *, session_state=None, operator_lock=None):
+    operator_lock = operator_lock or threading.Lock()
+    rdk_endpoint = os.environ.get("RPENT_FLEXIV_RDK_ENDPOINT")
+    endpoint = (
+        rdk_endpoint
+        or os.environ.get("RPENT_FLEXIV_COLLECTOR", "http://127.0.0.1:9527")
+    ).rstrip("/")
+
+    def path(action):
+        if rdk_endpoint:
+            return {
+                "status": "/state",
+                "arm": "/enable",
+                "stop": "/stop",
+                "home-preview": "/home-preview",
+                "reset-home": "/jointreset",
+            }[action]
+        return "/rpent/operator/" + action
+
+    def operator_status(data):
+        if not rdk_endpoint:
+            return data
+        state = data.get("state", data)
+        idle = session_state is not None and session_state() == "ready"
+        armed = bool(data.get("armed", data.get("enabled", False)))
+        reason = (
+            "复位正在执行"
+            if operator_lock.locked()
+            else "请先结束当前实验"
+            if not idle
+            else "未配置保存的参考位"
+            if not data.get("home_available")
+            else "请先启用机械臂"
+            if not armed
+            else ""
+        )
+        return {
+            **data,
+            "control_backend": "rdk",
+            "state": state,
+            "armed": armed,
+            "gripper_ready": bool(data.get("gripper_ready", False)),
+            "lease_active": False,
+            "reset_available": not reason,
+            "reset_reason": reason,
+        }
 
     def forward(request, action):
         origin = request.headers.get("origin")
@@ -41,24 +84,39 @@ def install_operator_routes(app):
             )
         body = b"{}" if request.method == "POST" else None
         command = URLRequest(
-            endpoint + "/rpent/operator/" + action,
+            endpoint + path(action),
             data=body,
             headers={"Content-Type": "application/json"},
         )
         try:
-            with urlopen(command, timeout=8) as response:
-                return JSONResponse(json.load(response))
+            timeout = 8
+            if rdk_endpoint and action in {"arm", "reset-home"}:
+                state_request = URLRequest(
+                    endpoint + ("/state" if action == "arm" else "/home-preview")
+                )
+                with urlopen(state_request, timeout=8) as response:
+                    preview = json.load(response)
+                config = preview.get("config", {}) if action == "arm" else preview
+                timeout = config.get("timeout_s", 30) + 10
+            with urlopen(command, timeout=timeout) as response:
+                data = json.load(response)
+                return JSONResponse(
+                    operator_status(data) if action == "status" else data
+                )
         except HTTPError as error:
             detail = error.read().decode()
             return JSONResponse({"error": detail}, status_code=error.code)
         except (URLError, TimeoutError) as error:
             return JSONResponse(
-                {"error": f"Collector unavailable: {error}"}, status_code=502
+                {
+                    "error": f"{'RDK server' if rdk_endpoint else 'Collector'} unavailable: {error}"
+                },
+                status_code=502,
             )
 
     def interrupt_stop():
         command = URLRequest(
-            endpoint + "/rpent/operator/stop",
+            endpoint + path("stop"),
             data=b"{}",
             headers={"Content-Type": "application/json"},
         )
@@ -76,5 +134,30 @@ def install_operator_routes(app):
     @app.post("/api/flexiv/stop")
     def stop(request: Request):
         return forward(request, "stop")
+
+    @app.get("/api/flexiv/home-preview")
+    def home_preview(request: Request):
+        if not rdk_endpoint:
+            return JSONResponse(
+                {"error": "回参考位仅支持 RDK 控制服务"}, status_code=409
+            )
+        return forward(request, "home-preview")
+
+    @app.post("/api/flexiv/reset-home")
+    def reset_home(request: Request):
+        if not rdk_endpoint:
+            return JSONResponse(
+                {"error": "回参考位仅支持 RDK 控制服务"}, status_code=409
+            )
+        if not operator_lock.acquire(blocking=False):
+            return JSONResponse({"error": "机械臂操作正在执行"}, status_code=409)
+        try:
+            if session_state is None or session_state() != "ready":
+                return JSONResponse(
+                    {"error": "请先结束当前实验，再复位"}, status_code=409
+                )
+            return forward(request, "reset-home")
+        finally:
+            operator_lock.release()
 
     return interrupt_stop

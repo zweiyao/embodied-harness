@@ -142,6 +142,32 @@ def test_catalog_and_execution_use_the_same_selected_allowlist(create_toolkit):
     assert not restricted.env.chunk_calls
 
 
+@pytest.mark.parametrize("enabled", [None, {"finish", "observe"}])
+def test_prompt_overview_matches_executable_selection(create_toolkit, enabled):
+    from robots.univtac.robot_spec import get_robot_spec
+
+    selected = [
+        item
+        for item in module.native_catalog()
+        if enabled is None or item["name"] in enabled
+    ]
+    api = create_toolkit(selected=selected)
+    rendered = get_robot_spec().prompts.render(
+        "system", variables={"manual_tools": selected}
+    )
+    overview_names = {
+        line.removeprefix("- ").split(":", 1)[0]
+        for line in rendered.splitlines()
+        if line.startswith("- ")
+    }
+    assert overview_names == {tool.name for tool in api.list_tools()}
+    assert "Generated perception tools" not in rendered
+    assert ("unit quaternion wxyz" in rendered) == ("move_eef" in overview_names)
+    for item in module.native_catalog():
+        if item["name"] not in overview_names:
+            assert item["name"] not in rendered
+
+
 @pytest.mark.parametrize("field", ["version", "source", "parameters", "description"])
 def test_native_selection_cannot_silently_use_a_changed_definition(
     create_toolkit, field
@@ -297,6 +323,13 @@ def test_generated_program_gets_last_four_independent_sensor_frames(
         ]
     )
     api = create_toolkit(selected=[*module.native_catalog(), generated])
+    from robots.univtac.robot_spec import get_robot_spec
+
+    rendered = get_robot_spec().prompts.render(
+        "system", variables={"manual_tools": api.selection}
+    )
+    assert "sensor_probe: Probe recorded sensors" in rendered
+    assert "Generated perception tools" in rendered
     assert not api.execute_tool("move_eef", {"poses": [POSE] * 5}).is_error
     result = api.execute_tool("sensor_probe", {})
     assert result.data["observed_steps"] == [2, 3, 4, 5]
