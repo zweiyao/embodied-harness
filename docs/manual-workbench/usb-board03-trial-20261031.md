@@ -23,3 +23,27 @@
 保存 prompts、SDK 事件、工具声明与源码快照、recipe、audit、多视角 RGB、深度、触觉与状态。`video_recorded=false`，本轮没有完整录像，不把保存帧描述为完整视频。复核记录位于 `/home/zwy/work/embodied_harness/validation/usb-board03-20261031/`。
 
 [网页实验记录](http://127.0.0.1:18083/runs?id=46968d5099eb52253c68)。本提交仅保存小型文字摘要，不提交原始图像、运行数据或凭据。
+
+
+## 同配置第二轮
+
+运行 `b9b163c4df5158154453` 于北京时间 16:25 结束，`budget_exhausted`，未完成插入。开始前实读 armed=true、夹爪就绪、无故障；实时画面确认 USB 已回到红色支架、蓝色槽为空。本对话仅提交相同任务，没有调整策略、工具、经验或追加控制。
+
+两轮 config、profile、工具版本逐项一致，初始观测的标定哈希相同。机器人初始 TCP 位置差约 0.1005 mm，归一化四元数的姿态差约 0.0063°；物体由人工重新摆放，没有严格复现或测量物体初始位姿。现场画面的视角差异不应被当作机械臂初始姿态显著变化的证据。
+
+| 指标 | 首轮 | 第二轮 |
+| --- | --- | --- |
+| 结果 | 画面支持插入并释放 | 抓取恢复后预算耗尽，未插入 |
+| 总耗时 | 271.0 s | 374.7 s |
+| 模型响应 | 20 | 25 |
+| 工具调用 | 25 | 31 |
+| 控制调用 | 12 | 16 |
+| 定位调用 | 5 | 10（其中腕部 2 次失败） |
+
+第二轮首次夹持试抬后 USB 未随动。模型反复调整抓取点和夹爪，之后尝试的两次腕部定位受 provisional side-only 规则拒绝，再改回侧面定位。最后张夹到 14 mm、4 mm 后抬升 35 mm，结束画面显示 USB 离开红色支架，但蓝色槽仍为空。没有进入插入阶段，也没有 finish(success)。这是决策预算耗尽，不是 3600 秒墙钟上限或网络错误。
+
+Web session 的 succeeded 表示 planner 正常结束；任务结果以 outcome 的 budget_exhausted 及轨迹为准。第二轮 summary.actions=24 含 8 次成功定位，实际控制为 move_tcp 5、set_gripper 9、move_eef_delta 2，共 16 次。结束 IDLE、armed=false、无 fault；未自动再试、复位或松开夹爪。
+
+两轮一成一败说明完整流程还不稳定，不能把上一轮成功解释为已经解决了鲁棒性。本轮失败集中于抓取与恢复效率，未提供第二次插入阶段的重复性证据。仍不能分离标定、经验、选点和物体重摆的影响。
+
+本轮目录为同一 session 下的 `tasks/0002_flexiv`；检查摘要在 `/home/zwy/work/embodied_harness/validation/usb-board03-repeat-20261031/summary.json`。原始观测和 SDK 记录留在远程，`video_recorded=false`。[第二轮记录](http://127.0.0.1:18083/runs?id=b9b163c4df5158154453)。
