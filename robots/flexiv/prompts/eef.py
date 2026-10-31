@@ -45,6 +45,12 @@ def system_prompt(variables=None):
             "increments. The arm then holds; returned images and measured pose show "
             "actual progress. The target may not be reached; holding/capture add latency."
         ),
+        "PERCEPTION": (
+            "Both side and wrist support localization. Choose the view with the clearer "
+            "visible feature and valid depth; compare views when estimates disagree. "
+            "Calibration checks describe uncertainty, not a camera-use restriction. "
+            "Image clarity alone does not establish 3D accuracy."
+        ),
         "WORKFLOW": (
             "Start with observe(). Choose a short action from images, measured pose "
             "and task history; inspect its returned images/state before the next action. "

@@ -189,7 +189,8 @@ class FlexivToolkit(Toolkit):
         Args:
             step: Exact observe step; do not mix images from different steps.
             target: Named object and surface feature, not just its color.
-            camera: wrist or side; choose a view showing the entire named surface feature.
+            camera: wrist or side; both support localization. Choose the clearer visible
+                feature with valid depth; calibration status is returned with the estimate.
             pixel: Interior surface [x,y] pixel in the original full-resolution image.
             box: Visible feature [x0,y0,x1,y1] box inside the image, enclosing the pixel.
 
@@ -207,15 +208,6 @@ class FlexivToolkit(Toolkit):
             )
         if camera not in ("wrist", "side"):
             raise ValueError("Choose wrist or side")
-        if (
-            self.env.meta.get("motion_enabled")
-            and self.env.meta.get("calibration_provisional")
-            and camera != "side"
-            and camera not in self.env.meta.get("operator_confirmed_cameras", [])
-        ):
-            raise ValueError(
-                "Use side for this provisional control session; wrist is observation-only"
-            )
         with self._observation_lock:
             metadata = self.state.load("perception.json", step=step)
             depth = self.state.load(f"{camera}_depth.npy", step=step)

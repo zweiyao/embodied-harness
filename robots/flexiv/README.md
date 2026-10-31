@@ -116,14 +116,16 @@ interrupt a running movement; cancellation requests stop before draining calls.
 现场操作员实测当前标定与任务区域后，可在受限控制服务已有
 `--supervised-control --allow-provisional-side-control` 的基础上添加
 `--operator-confirmed-calibration-sha256 <当前标定文件的 SHA256>`。
-这会允许侧面和腕部定位，并在观测中记录现场确认依据；文件变化后确认失效。
+侧面和腕部均可进行只读定位，模型根据可见特征与深度质量选择视角。
+该参数只在观测中记录现场确认依据；文件变化后确认失效。
 历史标定通过标志不修改，也不推断未提供的毫米误差。操作员启用动作、
 相机同步检查、工作区与力限制仍然有效。
 
 After onsite testing of the current calibration in the task area, add
 `--operator-confirmed-calibration-sha256 <calibration file SHA256>` to a service
 already using `--supervised-control --allow-provisional-side-control`.
-Both cameras become available for localization, with operator-report provenance
-in observations. A changed file is rejected. Historical validation flags remain
+Both cameras support read-only localization; choose by feature visibility and
+depth quality. This parameter records operator-report provenance in observations.
+A changed file is rejected. Historical validation flags remain
 unchanged, and no numerical accuracy is inferred. Operator arming, capture checks
 and existing motion protections remain required.

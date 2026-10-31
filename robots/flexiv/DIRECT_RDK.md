@@ -37,6 +37,8 @@ python -m robots.flexiv.env_server --backend rdk \
 RealSense 对齐到 1280×720 彩色图。记录保留原生深度尺寸，不将对齐后的
 尺寸当作原生深度分辨率。
 
+侧面和腕部均支持只读定位；选择可见特征更清楚、深度有效的视角，
+并在估计不一致时交叉检查。原始标定检查结果随定位返回，不限制相机选择。
 已有现场确认的标定可继续使用 `--allow-provisional-side-control` 与
 `--operator-confirmed-calibration-sha256`；原始验证结果和确认来源均保留。
 不要给 RDK 后端传旧的 `--supervised-control` 或 `--eef-chunk-control`。
