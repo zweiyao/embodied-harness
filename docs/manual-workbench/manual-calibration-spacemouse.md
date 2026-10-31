@@ -66,3 +66,14 @@ cd /home/zwy/work/flexiv/calibration
 - 同目录 `solve-statistics.json`、`solve-diagnostics.json`
 
 下一步应在任务区域补充独立定位核验，并针对超限姿态重新采样检查可重复性；保留本次样本和失败结论，不能仅靠重新划分训练/验证或删掉最大残差来宣布通过。
+
+
+## 选用 board-03（2026-10-31）
+
+按用户要求，远程 `flexiv-rgbd.service` 与 `harnessvla-flexiv-env.service` 的两份标定相关 drop-in 配置已改用 `sessions/board-03-20261031/result.json`。systemd 已重新加载配置；采集工作台仍在运行，RPent 真机服务仍停止，下一次启动时加载新结果。本次未切换硬件所有权或执行动作。
+
+新旧结果的机器人、原生工具 TCP、相机内参相同。继续使用原 `tool_tcp.json` 的工具局部 +Z 8.37 mm 抓取补偿；这是之前确认的抓取参考，并非独立实测指尖长度。该文件及旧 board-02 结果的字节校验均保持一致。
+
+新结果 SHA256：`540e8bd203f0a07ec8afa6f37823a0a8525bd49767bd5118c287951601cb7c18`。保留 `wrist_consistency_passed=false`、`side_consistency_passed=true` 和 `deployment_approved=false`。旧双相机现场确认绑定旧文件，故移除服务参数中的旧确认哈希，没有把该确认改写到新标定。沿用现有 provisional side control 配置：侧面可定位，腕部可观察，新标定尚无双相机现场验证记录。
+
+远程实际 `Calibration` 加载成功，`test_perception.py` 为 24 passed；systemd 的有效启动参数已核对。备份、加载检查及测试日志在 `/home/zwy/work/embodied_harness/validation/activate-board03-20261031T075931Z/`。未做新标定下的实时相机或机械臂定位验证。
