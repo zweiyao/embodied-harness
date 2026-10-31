@@ -1,5 +1,5 @@
 import {renderTools} from './tool-picker.js?v=all-tools-20261030';
-import {resetControl} from './flexiv-reset.js';
+import {resetControl} from './flexiv-reset.js?v=open-after-home-20261031';
 const $ = (id) => document.getElementById(id);
 let setup, profile, config, picker;
 let checksPassed = false;

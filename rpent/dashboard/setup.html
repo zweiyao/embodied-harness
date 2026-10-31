@@ -5,7 +5,7 @@
 <title>RPent · 实验开始</title>
 <link rel="stylesheet" href="/static/setup.css">
 <link rel="stylesheet" href="/static/workbench.css">
-<script type="module" src="/static/setup.js?v=all-tools-20261030"></script>
+<script type="module" src="/static/setup.js?v=reset-open-20261031"></script>
 </head>
 <body>
 <main>
@@ -33,7 +33,7 @@
           <label>控制模式<select id="physicalMode"><option value="readonly">只读观察与定位</option><option value="supervised">受限真机实验</option></select></label>
           <p id="physicalStatus" role="status">正在读取机械臂状态…</p>
           <button type="button" id="armPhysical">启用受限动作（原地恢复）</button>
-          <button type="button" id="resetPhysical" hidden disabled>复位（回参考位）</button>
+          <button type="button" id="resetPhysical" hidden disabled>复位（回参考位并张开夹爪）</button>
           <button type="button" id="stopPhysical" style="background:#a71919;color:white">停止机械臂和夹爪</button>
           <p id="resetPhysicalStatus" role="status"></p>
           <p class="note">启用后可执行实际动作，请在机械臂旁观察。恢复保持当前位姿和夹爪，不归位或初始化。每次实验结束或保护停止后需要重新启用。保留控制器急停作为硬件停止方式。</p>

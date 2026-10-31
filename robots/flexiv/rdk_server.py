@@ -347,11 +347,13 @@ class DirectRobot:
         }
 
     def reset_home(self) -> dict[str, Any]:
-        """Execute one native MoveJ to the saved joints, preserving gripper width."""
+        """Return to the saved joints, then open the gripper to its native maximum."""
         with self._command("jointreset", self.home or {}) as generation:
             self._check(generation)
             if self.home is None:
                 raise ValueError("No saved home_reference configured")
+            if self.gripper is None:
+                raise HTTPException(409, "Activate the gripper first")
             if self.tool.name() != self.config.gripper_name:
                 raise ValueError("Active native tool changed since enable")
             target = np.asarray(self.home["target_joints_rad"])
@@ -409,12 +411,22 @@ class DirectRobot:
                             self.rdk.Mode.NRT_CARTESIAN_MOTION_FORCE,
                             expected_mode=primitive_mode,
                         )
+                        gripper_result = self._move_gripper(
+                            GripperRequest(
+                                width_m=float(self.gripper.params().max_width)
+                            ),
+                            generation,
+                        )
+                        if not gripper_result["reached"]:
+                            raise RuntimeError(
+                                "Home reached but gripper did not fully open"
+                            )
                         with self._dispatch:
                             self._check(generation)
                             result = {
                                 "reached": True,
                                 "motion": "MoveJ",
-                                "commands": 1,
+                                "commands": 2,
                                 **self.home,
                                 "joint_velocity_scale": 30,
                                 "measured_pose": actual.tolist(),
@@ -423,7 +435,8 @@ class DirectRobot:
                                 "angle_error_deg": angle_error,
                                 "elapsed_s": time.monotonic() - started,
                                 "state": self.state()["state"],
-                                "gripper_commanded": False,
+                                "gripper_commanded": True,
+                                "gripper": gripper_result,
                             }
                         self._audit("result", command="jointreset", result=result)
                         return result
@@ -528,84 +541,82 @@ class DirectRobot:
     def move_gripper(self, request: GripperRequest) -> dict[str, Any]:
         """Issue one native Move, retaining native force-limited finger behavior."""
         with self._command("move_gripper", request.model_dump()) as generation:
-            self._check(generation)
-            if self.gripper is None:
-                raise HTTPException(409, "Activate the gripper first")
-            params = self.gripper.params()
-            width = float(request.width_m)
-            if (
-                not np.isfinite(width)
-                or not params.min_width <= width <= params.max_width
-            ):
-                raise ValueError("Width is outside native gripper limits")
-            if (
-                not params.min_vel <= self.config.gripper_velocity <= params.max_vel
-                or not params.min_force <= self.config.gripper_force <= params.max_force
-            ):
-                raise ValueError("Configured gripper speed/force exceeds native limits")
-            before = float(self.gripper.states().width)
-            started = time.monotonic()
-            quiet_since = None
-            previous = before
-            try:
-                self._send(
-                    generation,
-                    self.gripper.Move,
-                    width,
-                    self.config.gripper_velocity,
-                    self.config.gripper_force,
+            return self._move_gripper(request, generation)
+
+    def _move_gripper(self, request: GripperRequest, generation: int) -> dict[str, Any]:
+        """Move fingers within the caller's command lock and cancellation scope."""
+        self._check(generation)
+        if self.gripper is None:
+            raise HTTPException(409, "Activate the gripper first")
+        params = self.gripper.params()
+        width = float(request.width_m)
+        if not np.isfinite(width) or not params.min_width <= width <= params.max_width:
+            raise ValueError("Width is outside native gripper limits")
+        if (
+            not params.min_vel <= self.config.gripper_velocity <= params.max_vel
+            or not params.min_force <= self.config.gripper_force <= params.max_force
+        ):
+            raise ValueError("Configured gripper speed/force exceeds native limits")
+        before = float(self.gripper.states().width)
+        started = time.monotonic()
+        quiet_since = None
+        previous = before
+        try:
+            self._send(
+                generation,
+                self.gripper.Move,
+                width,
+                self.config.gripper_velocity,
+                self.config.gripper_force,
+            )
+            while True:
+                self._check(generation)
+                grip = self.gripper.states()
+                actual, force = _vector([grip.width, grip.force], 2)
+                moving = bool(grip.is_moving) or abs(actual - previous) > 0.0001
+                previous = actual
+                quiet_since = (
+                    None
+                    if moving
+                    else (quiet_since if quiet_since is not None else time.monotonic())
                 )
-                while True:
-                    self._check(generation)
-                    grip = self.gripper.states()
-                    actual, force = _vector([grip.width, grip.force], 2)
-                    moving = bool(grip.is_moving) or abs(actual - previous) > 0.0001
-                    previous = actual
-                    quiet_since = (
-                        None
-                        if moving
-                        else (
-                            quiet_since if quiet_since is not None else time.monotonic()
-                        )
+                reached = bool(abs(actual - width) <= 0.0005 and not moving)
+                stopped_short = (
+                    quiet_since is not None and time.monotonic() - quiet_since >= 0.5
+                )
+                self._audit(
+                    "state",
+                    command="move_gripper",
+                    width_m=float(actual),
+                    force_n=float(force),
+                    is_moving=bool(grip.is_moving),
+                )
+                if reached or stopped_short:
+                    if not reached:
+                        self._send(generation, self.gripper.Stop)
+                    with self._dispatch:
+                        self._check(generation)
+                        result = {
+                            "reached": reached,
+                            "commands": 1,
+                            "width_m": float(actual),
+                            "force_n": float(force),
+                            "stopped_short": bool(not reached),
+                            "reason": "target_reached"
+                            if reached
+                            else "stationary_before_target",
+                            "elapsed_s": time.monotonic() - started,
+                        }
+                    self._audit("result", command="move_gripper", result=result)
+                    return result
+                if time.monotonic() - started >= self.config.timeout_s:
+                    raise TimeoutError(
+                        "Native gripper command did not finish before timeout"
                     )
-                    reached = bool(abs(actual - width) <= 0.0005 and not moving)
-                    stopped_short = (
-                        quiet_since is not None
-                        and time.monotonic() - quiet_since >= 0.5
-                    )
-                    self._audit(
-                        "state",
-                        command="move_gripper",
-                        width_m=float(actual),
-                        force_n=float(force),
-                        is_moving=bool(grip.is_moving),
-                    )
-                    if reached or stopped_short:
-                        if not reached:
-                            self._send(generation, self.gripper.Stop)
-                        with self._dispatch:
-                            self._check(generation)
-                            result = {
-                                "reached": reached,
-                                "commands": 1,
-                                "width_m": float(actual),
-                                "force_n": float(force),
-                                "stopped_short": bool(not reached),
-                                "reason": "target_reached"
-                                if reached
-                                else "stationary_before_target",
-                                "elapsed_s": time.monotonic() - started,
-                            }
-                        self._audit("result", command="move_gripper", result=result)
-                        return result
-                    if time.monotonic() - started >= self.config.timeout_s:
-                        raise TimeoutError(
-                            "Native gripper command did not finish before timeout"
-                        )
-                    time.sleep(0.02)
-            except Exception as exc:
-                self._execution_failed(generation, exc)
-                raise
+                time.sleep(0.02)
+        except Exception as exc:
+            self._execution_failed(generation, exc)
+            raise
 
 
 def create_app(controller: DirectRobot) -> FastAPI:
