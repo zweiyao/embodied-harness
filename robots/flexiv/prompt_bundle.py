@@ -71,4 +71,16 @@ def system_prompt(variables=None):
 
 
 def user_prompt(variables=None):
-    return {"TASK": "{{instruction}}", "OUTPUT": "Save records under {{output_dir}}."}
+    from rpent.utils.config import get_memory_dir
+
+    memory_dir = (variables or {}).get("memory_dir") or get_memory_dir("flexiv")
+    return {
+        "TASK": "{{instruction}}",
+        "MEMORY": (
+            "When past experience is useful and read_text_file is enabled, read "
+            f"{memory_dir}/MEMORY.md, then only relevant linked entries. "
+            f"Resolve entry paths relative to {memory_dir}. Use their applicability "
+            "and confidence to decide whether they fit the current observations."
+        ),
+        "OUTPUT": "Save records under {{output_dir}}.",
+    }

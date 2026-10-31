@@ -32,7 +32,7 @@
 
 ## 已落地的经验
 
-通过机器人自有的 `robots/flexiv/prompts/rdk.py` 增加条件性的 `INSERTION` 段，沿用 RPent PromptBundle；不改共享系统提示词和动作接口，也不依赖模型主动读取不存在的真机经验库。
+经验保存在 `memory/flexiv/global/insertion_grasp_revalidation.md`，按 RPent YAML 元信息格式标记 `scope: global`、`kind: failure`、`confidence: single-shot`，由 `memory/flexiv/MEMORY.md` 登记标题和适用条件。具体经验不进入系统提示词；Flexiv 的任务提示仅提供索引入口，启用 `read_text_file` 后按需读取相关条目。动作接口不变。
 
 1. 抓起后记住插头、物体轴线相对两指的关系。
 2. 近孔时用两路图像分别判断横向偏移、轴线倾斜和绕插入轴的旋转；深度辅助测距，不把孔旁表面当孔中心。
@@ -43,7 +43,7 @@
 
 ## 后续验证
 
-本次只读复核和提示更新不启动机械臂。下一轮应检查：是否在第一次接触前分别完成位置与姿态检查；遇阻是否卸载并检查物体相对夹爪变化；是否出现重复硬压或无依据旋转；最终插入证据及决策数。尚未证明该经验提高成功率。
+本次复核和经验库更新不启动机械臂。下一轮应检查：是否在第一次接触前分别完成位置与姿态检查；遇阻是否卸载并检查物体相对夹爪变化；是否出现重复硬压或无依据旋转；最终插入证据及决策数。尚未证明该经验提高成功率。
 
 源记录位于远程：`/home/zwy/work/embodied_harness/flexiv-runs/session-20261031-032625-3890718/tasks/0001_flexiv/`。
 复核图像位于远程：`/home/zwy/work/embodied_harness/analysis/usb-slip-20261031/`。
