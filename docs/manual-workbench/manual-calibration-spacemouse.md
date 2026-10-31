@@ -77,3 +77,10 @@ cd /home/zwy/work/flexiv/calibration
 新结果 SHA256：`540e8bd203f0a07ec8afa6f37823a0a8525bd49767bd5118c287951601cb7c18`。保留 `wrist_consistency_passed=false`、`side_consistency_passed=true` 和 `deployment_approved=false`。旧双相机现场确认绑定旧文件，故移除服务参数中的旧确认哈希，没有把该确认改写到新标定。沿用现有 provisional side control 配置：侧面可定位，腕部可观察，新标定尚无双相机现场验证记录。
 
 远程实际 `Calibration` 加载成功，`test_perception.py` 为 24 passed；systemd 的有效启动参数已核对。备份、加载检查及测试日志在 `/home/zwy/work/embodied_harness/validation/activate-board03-20261031T075931Z/`。未做新标定下的实时相机或机械臂定位验证。
+
+
+### 重启后的实读核验
+
+用户在现场结束练习后，接口确认 `idle`；停止采集后台并启动 RDK、RGB-D、Flexiv env 与 dashboard。`http://127.0.0.1:18083/healthz` 返回成功。运行进程使用 board-03 路径，直接调用运行中 env 的 `get_observation` 得到与新文件一致的 SHA256 和 `T_base_board`，不是仅核对磁盘配置。
+
+观测包含 wrist、side、tactile_left，`missing_cameras=[]`；TCP 抓取补偿仍为 `[0, 0, 0.00837]` m，检查标志保持 wrist=false、side=true。RDK 为 IDLE、armed=false；本次未调用动作或模型实验。实时证据位于上述备份目录的 `restarted-observation.json`。新标定已加载生效，物理绝对精度仍未经独立验证。
