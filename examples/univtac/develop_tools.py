@@ -119,6 +119,22 @@ def better(candidate, best):
     )
 
 
+def valid_tool_calls(rows):
+    """Count successful executions, preserving errors separately from adoption."""
+    valid, failed = 0, 0
+    for row in rows:
+        for line in (Path(row["path"]) / "events.jsonl").read_text().splitlines():
+            event = json.loads(line)
+            payload = event["payload"]
+            if event["kind"] == "tool_response" and payload.get("name") == NAME:
+                result = payload.get("result", {})
+                if result.get("error") is not None or result.get("errors"):
+                    failed += 1
+                else:
+                    valid += 1
+    return {"valid_calls": valid, "error_calls": failed}
+
+
 def early_stop(candidate, baseline, judgement):
     return (
         candidate["successes"] == candidate["trials"] == 3
@@ -483,6 +499,7 @@ def main():
             return
         best = {"score": baseline_score, "tool": None, "version": None, "iteration": 0}
         previous, feedback = None, {}
+        last_published = None
         latest = baseline
         history = []
         for iteration in range(1, 6):
@@ -527,7 +544,10 @@ def main():
                     for step in (0, None):
                         frames = load_frames(ref["files"]["sensors"]["path"], step=step)
                         result = sandbox.run(tool, params, frames)
-                        if result.get("error") or len(json.dumps(result)) > 6000:
+                        if (
+                            result.get("error") is not None
+                            or len(json.dumps(result)) > 6000
+                        ):
                             raise ValueError(
                                 "Replay returned error or oversized result"
                             )
@@ -549,20 +569,28 @@ def main():
                         "example": reports[-1]["result"],
                         "input_contract": "1..4 recorded UniVTAC RGB-D/tactile/state frames; camera metres, tactile depth mm, marker pixels, world hand pose wxyz; no evaluator",
                         "experiment_iteration": iteration,
+                        **(
+                            {"previous_version": last_published}
+                            if last_published
+                            else {}
+                        ),
                     },
                 )
+                last_published = version
                 rows = experiment.group(
                     f"development-{iteration}",
                     [(0, s) for s in range(3)],
                     NATIVE + ["generated:" + version],
                 )
                 candidate_score = score(rows)
-                adopted = sum(r["tool_calls"].get(NAME, 0) for r in rows)
+                usage = valid_tool_calls(rows)
+                adopted = usage["valid_calls"]
                 kept = adopted > 0 and better(candidate_score, best["score"])
                 measured = {
                     "score": candidate_score,
                     "adopted_calls": adopted,
                     "kept": kept,
+                    "tool_execution": usage,
                 }
                 if kept:
                     best = {
@@ -570,6 +598,7 @@ def main():
                         "tool": tool,
                         "version": version,
                         "iteration": iteration,
+                        "source_run": rows[-1]["run_id"],
                     }
                 previous, latest = tool, rows
                 judgement = completion(
@@ -581,15 +610,14 @@ def main():
                         "tool": tool,
                         "trials": rows,
                         "replay_examples": reports[-2:],
+                        "tool_execution": usage,
                     },
                     [],
                     JUDGE_SCHEMA,
                 )
                 feedback = {
-                    "score": candidate_score,
+                    **measured,
                     "judgement": judgement,
-                    "adopted_calls": adopted,
-                    "kept": kept,
                 }
                 history.append({"iteration": iteration, **feedback})
                 write_json(directory / "evaluation.json", feedback)
@@ -619,9 +647,10 @@ def main():
                 best["tool"],
                 {
                     "validation": "replay_passed",
-                    "source_run": "development-only",
+                    "source_run": best["source_run"],
                     "reason": "Selected by development success then token consumption",
-                    "input_contract": "Recorded UniVTAC RGB-D/tactile/state; no evaluator",
+                    "input_contract": "1..4 recorded UniVTAC RGB-D/tactile/state frames; camera metres, tactile depth mm, marker pixels, world hand pose wxyz; no evaluator",
+                    **({"previous_version": last_published} if last_published else {}),
                 },
             )
             tools = NATIVE + ["generated:" + version]

@@ -54,7 +54,7 @@
   ],
   "tests": {
     "focused": "288 passed",
-    "latest_orchestrator": "4 passed",
+    "latest_orchestrator": "5 passed",
     "full_unit_suite": {
       "passed": 1828,
       "skipped": 12,
@@ -76,5 +76,6 @@
     "decisions": 25
   },
   "generated_tool": "not_yet_created",
-  "root": "/home/zwy/work/embodied_harness/experiments/univtac-tool-development-20261102"
+  "root": "/home/zwy/work/embodied_harness/experiments/univtac-tool-development-20261102",
+  "tool_adoption": "counts normal tool returns; parameter/runtime errors recorded separately"
 }

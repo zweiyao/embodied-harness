@@ -52,6 +52,22 @@ def test_held_out_task_is_rejected_before_reading_observations(tmp_path):
         module.development_inputs([{"task": 0, "path": str(tmp_path)}])
 
 
+def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
+    events = [
+        {"kind": "tool_response", "payload": {"name": module.NAME, "result": result}}
+        for result in (
+            {"value": 1},
+            {"error": "invalid parameters"},
+            {"errors": ["missing frame"]},
+        )
+    ]
+    (tmp_path / "events.jsonl").write_text("\n".join(json.dumps(e) for e in events))
+    assert module.valid_tool_calls([{"path": str(tmp_path)}]) == {
+        "valid_calls": 1,
+        "error_calls": 2,
+    }
+
+
 def test_five_optimizations_then_frozen_test_without_test_feedback(
     tmp_path, monkeypatch
 ):
@@ -136,6 +152,9 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
     monkeypatch.setattr(module, "publish", lambda *a, **k: "v1")
     monkeypatch.setattr(module, "load_frames", lambda *a, **k: [{"step": 0}])
     monkeypatch.setattr(module, "log_iteration", lambda *a: None)
+    monkeypatch.setattr(
+        module, "valid_tool_calls", lambda rows: {"valid_calls": 3, "error_calls": 0}
+    )
     monkeypatch.setattr(
         "sys.argv",
         [
