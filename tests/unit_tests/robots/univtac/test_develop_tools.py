@@ -69,9 +69,12 @@ def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
     }
 
 
-@pytest.mark.parametrize("scenario", ["improve", "no_gain", "input_error"])
+@pytest.mark.parametrize(
+    "scenario,optimizations",
+    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3)],
+)
 def test_five_optimizations_then_frozen_test_without_test_feedback(
-    tmp_path, monkeypatch, scenario
+    tmp_path, monkeypatch, scenario, optimizations
 ):
     calls = []
 
@@ -172,6 +175,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
             str(tmp_path / "experiment"),
             "--library",
             str(tmp_path / "library"),
+            "--max-optimizations",
+            str(optimizations),
         ],
     )
     if scenario == "input_error":
@@ -182,14 +187,14 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
         assert not (tmp_path / "experiment/freeze.json").exists()
         return
     module.main()
-    assert len(makers) == 5
+    assert len(makers) == optimizations
     if scenario == "no_gain":
-        assert len(calls) == 6
+        assert len(calls) == optimizations + 1
         assert (
             json.loads((tmp_path / "experiment/final.json").read_text())["test"] == []
         )
         return
-    assert len(calls) == 7  # baseline, five revisions, frozen evaluation
+    assert len(calls) == optimizations + 2  # baseline, revisions, frozen evaluation
     assert all(task == 0 for _, trials, _ in calls[:-1] for task, _ in trials)
     assert calls[-1][1] == [(task, seed) for task in (1, 2) for seed in range(5)]
     assert len([name for name in calls[-1][2] if name.startswith("generated:")]) == 1
@@ -234,7 +239,7 @@ def test_compact_input_keeps_paired_markers_call_order_errors_and_source_once():
     assert sampled["marker_current"]["original_shape"] == [1500, 2]
     feedback = compact["user_feedback"][0]["feedback"]
     assert len(feedback["call_sequence"]) == 80
-    assert {0, 17, 79}.issubset(feedback["selected_call_indices"])
+    assert {17, 79}.issubset(feedback["selected_call_indices"])
     assert feedback["omitted_call_details"] > 0
 
 

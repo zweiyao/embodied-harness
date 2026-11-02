@@ -66,6 +66,11 @@ Use only supplied DEVELOPMENT records. This is program generation, not a replaye
 When a previous candidate is supplied, revise it using the observed failures. Explain one
 testable change in reason; distinguish program changes from documentation changes. Keep the
 response under 10000 output tokens (soft, checked afterward).
+Prefer a small program (about 120 source lines, under 4000 output tokens).
+Runtime numeric sensor values are NumPy arrays, not the maker's sampled summary dictionaries;
+use that documented contract rather than building a generic serialization compatibility layer.
+If previous source is omitted for a redesign, start from the empty function skeleton and use
+the observed failures, rather than reconstructing the previous broad program.
 """
 MAKER_SCHEMA = {
     "type": "object",
@@ -232,7 +237,7 @@ def compact_maker_input(payload):
         chosen = set()
         for name in sorted({c["name"] for c in calls}):
             group = [i for i, c in enumerate(calls) if c["name"] == name]
-            chosen.update(group[i] for i in indices(len(group), 3))
+            chosen.add(group[-1])
             errors = [
                 i
                 for i in group
@@ -265,7 +270,7 @@ def compact_maker_input(payload):
     compact["maker_sampling"] = {
         "numeric_decimals": 6,
         "marker_rows_per_frame": 32,
-        "feedback": "up to three evenly spaced calls and three errors per tool/run; complete call order and measured pose/command trace retained, chunk receipts only on command frames",
+        "feedback": "latest full result and up to three errors per tool/run; complete call order and measured pose/command trace retained, chunk receipts only on command frames",
         "scope": "Maker text only; archived images and runtime tool arrays unchanged",
     }
     return compact
@@ -490,7 +495,7 @@ def development_inputs(rows):
                 },
             }
         )
-    payload, images, _ = summarize_inputs(refs, "G1", frames_per_run=3)
+    payload, images, _ = summarize_inputs(refs, "G1", frames_per_run=2)
     last = Path(rows[-1]["path"])
     payload.update(
         development_instruction=SEEN_INSTRUCTIONS["insert_hole"],
@@ -581,6 +586,12 @@ def main():
     parser.add_argument("--library", type=Path, required=True)
     parser.add_argument("--baseline-only", action="store_true")
     parser.add_argument("--resume-baseline", action="store_true")
+    parser.add_argument("--max-optimizations", type=int, choices=range(1, 6), default=5)
+    parser.add_argument(
+        "--restart-tool",
+        action="store_true",
+        help="First maker starts with an empty program; retain prior development evidence and failure assessment",
+    )
     parser.add_argument(
         "--continue-from",
         type=Path,
@@ -622,7 +633,7 @@ def main():
     ).write_text(Path(__file__).read_text())
     protocol = {
         "development_seeds": [0, 1, 2],
-        "max_optimizations": 5,
+        "max_optimizations": args.max_optimizations,
         "test_trials": [(t, s) for t in (1, 2) for s in range(5)],
         "sources": experiment.hashes,
         "base_config": experiment.base_config,
@@ -634,6 +645,7 @@ def main():
         "maker_input_chars": MAKER_INPUT_CHARS,
         "tool_result_chars": TOOL_RESULT_CHARS,
         "previous_batch": str(args.continue_from) if args.continue_from else None,
+        "restart_tool": args.restart_tool,
     }
     if args.resume_baseline or args.continue_from:
         reference = args.continue_from or args.output
@@ -710,7 +722,7 @@ def main():
                 if (args.library / f"{prior_version}.json").is_file():
                     last_published = prior_version
         history = []
-        for iteration in range(1, 6):
+        for iteration in range(1, args.max_optimizations + 1):
             directory = args.output / f"iteration-{iteration}"
             directory.mkdir()
             experiment.status(phase="making", iteration=iteration)
@@ -723,6 +735,12 @@ def main():
                     previous_feedback=feedback,
                     required_tool_name=NAME,
                 )
+                if args.restart_tool and iteration == 1 and previous:
+                    payload["previous_candidate"] = {
+                        "name": previous["name"],
+                        "description": previous["description"],
+                        "source_omitted": "Redesign from an empty program; previous source preserved in the prior batch",
+                    }
                 payload = compact_maker_input(payload)
                 wire = completion(
                     directory / "maker", MAKER, payload, images, MAKER_SCHEMA
@@ -836,7 +854,10 @@ def main():
                     candidate_score, baseline_score, judgement
                 )
             except Exception as exc:
-                feedback = {**(measured or {}), "error": clean(str(exc))}
+                feedback = {
+                    **(measured or {}),
+                    "error": clean(str(exc) or type(exc).__name__),
+                }
                 history.append({"iteration": iteration, **feedback})
                 write_json(directory / "error.json", feedback)
                 if input_budget_failure(exc):
