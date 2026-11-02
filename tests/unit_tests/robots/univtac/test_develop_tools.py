@@ -35,7 +35,8 @@ def test_early_stop_requires_measurement_and_astra_assessment():
         ("token_benefit", "success_benefit", "stop_recommended"), True
     )
     assert module.early_stop(candidate, base, judge)
-    assert not module.early_stop(candidate, base, {**judge, "success_benefit": False})
+    assert module.early_stop(candidate, base, {**judge, "success_benefit": False})
+    assert not module.early_stop(candidate, base, {**judge, "token_benefit": False})
     assert not module.early_stop(module.score([row(tokens=95)] * 3), base, judge)
     assert not module.early_stop(
         module.score([row(tokens=10), row(tokens=10), row(False, 10)]), base, judge
@@ -68,18 +69,20 @@ def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
     }
 
 
+@pytest.mark.parametrize("scenario", ["improve", "no_gain", "input_error"])
 def test_five_optimizations_then_frozen_test_without_test_feedback(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, scenario
 ):
     calls = []
 
     class FakeExperiment:
         def __init__(self, url, root):
             self.hashes, self.base_config = {}, {}
+            self.server_id = "test"
 
         def api(self, path, payload=None):
             return (
-                {"session_state": "ready"}
+                {"session_state": "ready", "server_id": self.server_id}
                 if path.endswith("state")
                 else {"tools": []}
                 if path.endswith("tools")
@@ -97,7 +100,11 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
                     "seed": seed,
                     "run_id": str(seed),
                     "tool_calls": {module.NAME: 1},
-                    **row(tokens=100 if label == "development-baseline" else 90),
+                    **row(
+                        tokens=90
+                        if scenario == "improve" and label != "development-baseline"
+                        else 100
+                    ),
                 }
                 for task, seed in trials
             ]
@@ -114,6 +121,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
     makers = []
 
     def complete(output, system, payload, images, schema):
+        if scenario == "input_error":
+            raise module.MakerInputBudgetError("input exceeds budget")
         if schema == module.JUDGE_SCHEMA:
             return {
                 "token_benefit": True,
@@ -165,10 +174,82 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
             str(tmp_path / "library"),
         ],
     )
+    if scenario == "input_error":
+        with pytest.raises(module.MakerInputBudgetError):
+            module.main()
+        assert len(makers) == 1
+        assert len(calls) == 1
+        assert not (tmp_path / "experiment/freeze.json").exists()
+        return
     module.main()
     assert len(makers) == 5
+    if scenario == "no_gain":
+        assert len(calls) == 6
+        assert (
+            json.loads((tmp_path / "experiment/final.json").read_text())["test"] == []
+        )
+        return
     assert len(calls) == 7  # baseline, five revisions, frozen evaluation
     assert all(task == 0 for _, trials, _ in calls[:-1] for task, _ in trials)
     assert calls[-1][1] == [(task, seed) for task in (1, 2) for seed in range(5)]
     assert len([name for name in calls[-1][2] if name.startswith("generated:")]) == 1
     assert (tmp_path / "experiment/freeze.json").exists()
+
+
+def test_compact_input_keeps_paired_markers_call_order_errors_and_source_once():
+    markers = [[float(i), float(i + 1)] for i in range(1500)]
+    sensor = {
+        name: {"shape": [1500, 2], "values": markers}
+        for name in ("marker_reference", "marker_current", "marker_displacement")
+    }
+    calls = [
+        {
+            "name": module.NAME,
+            "arguments": {},
+            "result": {"step": i, "text": "x" * 6000},
+        }
+        for i in range(80)
+    ]
+    calls[17]["result"] = {"step": 17, "error": "invalid region"}
+    payload = {
+        "base_source": "UNIQUE_SOURCE",
+        "previous_candidate": {"source": "UNIQUE_SOURCE"},
+        "development": [{"frames": [{"step": 8, "tactile": {"left": sensor}}]}],
+        "user_feedback": [{"feedback": {"calls": calls}}],
+    }
+    original = json.dumps(payload)
+    compact = module.compact_maker_input(payload)
+    assert json.dumps(payload) == original
+    assert (
+        len(module.codex_sdk.request_prompt(module.MAKER, compact))
+        < module.MAKER_INPUT_CHARS
+    )
+    assert json.dumps(compact).count("UNIQUE_SOURCE") == 1
+    sampled = compact["development"][0]["frames"][0]["tactile"]["left"]
+    assert (
+        sampled["marker_reference"]["sample_indices"]
+        == sampled["marker_current"]["sample_indices"]
+    )
+    assert len(sampled["marker_current"]["values"]) == 32
+    assert sampled["marker_current"]["original_shape"] == [1500, 2]
+    feedback = compact["user_feedback"][0]["feedback"]
+    assert len(feedback["call_sequence"]) == 80
+    assert {0, 17, 79}.issubset(feedback["selected_call_indices"])
+    assert feedback["omitted_call_details"] > 0
+
+
+def test_exact_sdk_text_budget_checked_before_any_model_request(tmp_path, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("Oversized input must not reach the SDK")
+
+    monkeypatch.setattr(module.codex_sdk, "complete", forbidden)
+    # JSON ASCII escaping means Python string length alone is insufficient.
+    payload = {"text": "深" * (module.MAKER_INPUT_CHARS // 5)}
+    with pytest.raises(module.MakerInputBudgetError):
+        module.completion(tmp_path / "maker", "test", payload, [], module.MAKER_SCHEMA)
+    audit = json.loads((tmp_path / "maker/input-budget.json").read_text())
+    assert audit["characters"] > audit["limit"]
+    assert module.input_budget_failure(
+        RuntimeError("Input exceeds the maximum length of 1048576 characters.")
+    )
+    assert not module.input_budget_failure(ValueError("invalid tool JSON"))

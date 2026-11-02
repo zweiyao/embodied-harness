@@ -3,11 +3,13 @@
 """Task-0-only tool development, followed by a frozen ten-episode evaluation."""
 
 import argparse
+import copy
 import csv
 import hashlib
 import json
 import time
 import urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,6 +24,8 @@ from rpent.dashboard.workbench import RunJournal, clean, publish, write_json
 
 NATIVE = ["native:" + name for name in sorted(TOOLS)]
 NAME = "sensor_modal_evidence"
+MAKER_INPUT_CHARS = 320000
+TOOL_RESULT_CHARS = 1500
 FIELDS = (
     "prompt_bundle.py",
     "toolkit.py",
@@ -48,7 +52,16 @@ Tools receive full arrays, although maker depth inputs are explicitly sampled su
 Read image/coordinate metadata. Do not interpret pixel displacement as calibrated force.
 Write a concise, easy-to-use description explaining when to call, parameters, output and
 limitations. Provide valid replay_params_json. Prefer few parameters with defaults. Handle
-one-frame and missing-sensor cases honestly. Keep tool results below 6000 JSON characters.
+one-frame and missing-sensor cases honestly. Keep tool results below 1500 JSON characters
+and the description below 700 characters. Focus on ONE repeated inference evident in the
+records, with a small set of decisive outputs. Do not produce a catalogue of sensor statistics.
+The previous broad statistics tools were frequently called without reducing policy reasoning.
+Compute a useful relationship or supported diagnosis rather than delegating all interpretation
+back to the policy. Distinguish measured evidence from hypotheses and unknowns. Describe when
+the result can replace redundant raw queries; do not demand a call on every observation.
+Do not remove native observations or alter the control interface to manufacture token savings.
+Maker-only sampling/rounding and omitted feedback are explicitly labelled; runtime arrays
+remain complete. No sample statistics are claimed to represent every marker or pixel.
 Use only supplied DEVELOPMENT records. This is program generation, not a replayed policy trial.
 When a previous candidate is supplied, revise it using the observed failures. Explain one
 testable change in reason; distinguish program changes from documentation changes. Keep the
@@ -106,6 +119,16 @@ def score(rows):
         if len(values) == len(rows)
         else None,
         "mean_elapsed_s": sum(r["elapsed_s"] for r in rows) / len(rows),
+        "mean_uncached_input_tokens": sum(
+            r["input_tokens"] - r["cached_input_tokens"] for r in rows
+        )
+        / len(rows)
+        if all(
+            r.get("input_tokens") is not None
+            and r.get("cached_input_tokens") is not None
+            for r in rows
+        )
+        else None,
     }
 
 
@@ -141,10 +164,116 @@ def early_stop(candidate, baseline, judgement):
         and candidate["mean_total_tokens"] is not None
         and baseline["mean_total_tokens"] is not None
         and candidate["mean_total_tokens"] <= baseline["mean_total_tokens"] * 0.8
-        and all(
-            judgement[k]
-            for k in ("token_benefit", "success_benefit", "stop_recommended")
-        )
+        and judgement["token_benefit"]
+        and judgement["stop_recommended"]
+    )
+
+
+class MakerInputBudgetError(ValueError):
+    """Input construction must be fixed before spending another maker attempt."""
+
+
+def compact_maker_input(payload):
+    """Bound maker evidence without changing sensor archives or policy inputs."""
+    compact = copy.deepcopy(payload)
+
+    def indices(length, count):
+        if length <= count:
+            return list(range(length))
+        return sorted({round(i * (length - 1) / (count - 1)) for i in range(count)})
+
+    for run in compact.get("development", []):
+        for frame in run.get("frames", []):
+            for sensor in frame.get("tactile", {}).values():
+                arrays = [
+                    sensor[name]
+                    for name in (
+                        "marker_reference",
+                        "marker_current",
+                        "marker_displacement",
+                    )
+                    if isinstance(sensor.get(name), dict)
+                    and isinstance(sensor[name].get("values"), list)
+                ]
+                # Shared indices preserve each sampled reference/current pairing.
+                for array in arrays:
+                    values = array["values"]
+                    selected = indices(len(values), 32)
+                    array["original_shape"] = array.get("shape")
+                    array["sample_indices"] = selected
+                    array["values"] = [values[i] for i in selected]
+                    if array.get("shape"):
+                        array["shape"] = [len(selected), *array["shape"][1:]]
+        # Preserve every measured pose and issued command without repeating the
+        # same chunk receipt at every intermediate physics frame.
+        for action in run.get("actions", {}).get("steps", []):
+            state = action.get("state", {})
+            action["state"] = {
+                key: state[key] for key in ("eef_pose_wxyz", "gripper") if key in state
+            }
+            receipt = action.pop("receipt", {})
+            if "command" in action:
+                action["receipt"] = {
+                    key: receipt[key]
+                    for key in (
+                        "exec_success",
+                        "reason",
+                        "error",
+                        "executed_commands",
+                        "position_error_m",
+                        "orientation_error_rad",
+                    )
+                    if key in receipt
+                }
+
+    for run in compact.get("user_feedback", []):
+        feedback = run.get("feedback", {})
+        calls = feedback.get("calls", [])
+        chosen = set()
+        for name in sorted({c["name"] for c in calls}):
+            group = [i for i, c in enumerate(calls) if c["name"] == name]
+            chosen.update(group[i] for i in indices(len(group), 3))
+            errors = [
+                i
+                for i in group
+                if calls[i].get("result", {}).get("error")
+                or calls[i].get("result", {}).get("errors")
+            ]
+            chosen.update(errors[i] for i in indices(len(errors), 3))
+        feedback["call_counts"] = dict(Counter(c["name"] for c in calls))
+        feedback["call_sequence"] = [
+            {"index": i, "name": c["name"], "step": c.get("result", {}).get("step")}
+            for i, c in enumerate(calls)
+        ]
+        feedback["selected_call_indices"] = sorted(chosen)
+        feedback["omitted_call_details"] = len(calls) - len(chosen)
+        feedback["calls"] = [calls[i] for i in sorted(chosen)]
+
+    if compact.get("previous_candidate"):
+        compact.pop("base_source", None)
+
+    def rounded(value):
+        if isinstance(value, float):
+            return round(value, 6)
+        if isinstance(value, dict):
+            return {k: rounded(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [rounded(v) for v in value]
+        return value
+
+    compact = rounded(compact)
+    compact["maker_sampling"] = {
+        "numeric_decimals": 6,
+        "marker_rows_per_frame": 32,
+        "feedback": "up to three evenly spaced calls and three errors per tool/run; complete call order and measured pose/command trace retained, chunk receipts only on command frames",
+        "scope": "Maker text only; archived images and runtime tool arrays unchanged",
+    }
+    return compact
+
+
+def input_budget_failure(exc):
+    return isinstance(exc, MakerInputBudgetError) or (
+        "Input exceeds the maximum length" in str(exc)
     )
 
 
@@ -365,6 +494,32 @@ def development_inputs(rows):
     last = Path(rows[-1]["path"])
     payload.update(
         development_instruction=SEEN_INSTRUCTIONS["insert_hole"],
+        development_outcomes=[
+            {
+                key: row.get(key)
+                for key in (
+                    "run_id",
+                    "official_success",
+                    "termination",
+                    "decisions",
+                    "input_tokens",
+                    "output_tokens",
+                )
+            }
+            for row in rows
+        ],
+        policy_finishes=[
+            {"run_id": row["run_id"], "arguments": event["payload"]["arguments"]}
+            for row in rows
+            for event in (
+                json.loads(line)
+                for line in (Path(row["path"]) / "events.jsonl")
+                .read_text()
+                .splitlines()
+            )
+            if event["kind"] == "tool_request"
+            and event["payload"].get("name") == "finish"
+        ],
         consumer_prompts=json.loads((last / "prompts.json").read_text()),
         consumer_tool_declarations=json.loads(
             (last / "tool-declarations.json").read_text()
@@ -375,6 +530,15 @@ def development_inputs(rows):
 
 def completion(output, system, payload, images, schema):
     output.mkdir(exist_ok=False)
+    prompt_chars = len(codex_sdk.request_prompt(system, payload))
+    write_json(
+        output / "input-budget.json",
+        {"characters": prompt_chars, "limit": MAKER_INPUT_CHARS},
+    )
+    if prompt_chars > MAKER_INPUT_CHARS:
+        raise MakerInputBudgetError(
+            f"Maker input {prompt_chars} characters exceeds local budget {MAKER_INPUT_CHARS}; no request sent"
+        )
     journal = RunJournal(output)
     journal.append(
         "maker_request",
@@ -417,7 +581,16 @@ def main():
     parser.add_argument("--library", type=Path, required=True)
     parser.add_argument("--baseline-only", action="store_true")
     parser.add_argument("--resume-baseline", action="store_true")
+    parser.add_argument(
+        "--continue-from",
+        type=Path,
+        help="Reuse a compatible prior batch's task-0 baseline and last validated candidate; never read test episodes",
+    )
     args = parser.parse_args()
+    if args.continue_from and (args.resume_baseline or args.baseline_only):
+        parser.error(
+            "--continue-from cannot be combined with baseline-only/resume-baseline"
+        )
     if not args.resume_baseline:
         args.output.mkdir(parents=True, exist_ok=False)
         (args.output / "research.md").write_text(Path("research.md").read_text())
@@ -454,13 +627,17 @@ def main():
         "sources": experiment.hashes,
         "base_config": experiment.base_config,
         "sandbox_image": sandbox.image,
-        "stop": "3/3 development success; >=20% mean input+output token reduction; Astra positive assessment",
+        "stop": "retain 3/3 development success; >=20% mean input+output token reduction; Astra efficiency assessment agrees",
         "no_test_feedback": True,
         "one_generated_tool": True,
         "retries": 0,
+        "maker_input_chars": MAKER_INPUT_CHARS,
+        "tool_result_chars": TOOL_RESULT_CHARS,
+        "previous_batch": str(args.continue_from) if args.continue_from else None,
     }
-    if args.resume_baseline:
-        original = json.loads((args.output / "protocol.json").read_text())
+    if args.resume_baseline or args.continue_from:
+        reference = args.continue_from or args.output
+        original = json.loads((reference / "protocol.json").read_text())
         if (
             original["sources"] != protocol["sources"]
             or original["sandbox_image"] != protocol["sandbox_image"]
@@ -476,13 +653,15 @@ def main():
             )
         ):
             raise ValueError("Baseline runtime changed")
-    else:
+    if not args.resume_baseline:
         write_json(args.output / "protocol.json", protocol)
     try:
-        baseline_path = args.output / "development-baseline/results.json"
+        baseline_path = (
+            args.continue_from or args.output
+        ) / "development-baseline/results.json"
         baseline = (
             json.loads(baseline_path.read_text())
-            if args.resume_baseline
+            if args.resume_baseline or args.continue_from
             else experiment.group(
                 "development-baseline", [(0, s) for s in range(3)], NATIVE
             )
@@ -492,6 +671,13 @@ def main():
         }:
             raise ValueError("Expected three complete development baseline trials")
         baseline_score = score(baseline)
+        if args.continue_from:
+            (args.output / "development-baseline").mkdir()
+            write_json(args.output / "development-baseline/results.json", baseline)
+            write_json(
+                args.output / "development-baseline/provenance.json",
+                {"reused_from": str(baseline_path), "new_simulations": 0},
+            )
         if not args.resume_baseline:
             log_iteration(args.output, 0, {"score": baseline_score}, baseline_score)
         if args.baseline_only:
@@ -501,6 +687,28 @@ def main():
         previous, feedback = None, {}
         last_published = None
         latest = baseline
+        if args.continue_from:
+            old_history = json.loads((args.continue_from / "history.json").read_text())
+            validated = [r for r in old_history if "score" in r]
+            if validated:
+                prior = validated[-1]
+                index = prior["iteration"]
+                previous = json.loads(
+                    (
+                        args.continue_from / f"iteration-{index}/candidate.json"
+                    ).read_text()
+                )
+                latest = json.loads(
+                    (
+                        args.continue_from / f"development-{index}/results.json"
+                    ).read_text()
+                )
+                if any(row["task"] != 0 for row in latest):
+                    raise ValueError("Previous batch includes non-development task")
+                feedback = prior
+                prior_version = digest([previous])
+                if (args.library / f"{prior_version}.json").is_file():
+                    last_published = prior_version
         history = []
         for iteration in range(1, 6):
             directory = args.output / f"iteration-{iteration}"
@@ -515,8 +723,7 @@ def main():
                     previous_feedback=feedback,
                     required_tool_name=NAME,
                 )
-                if previous:
-                    payload["base_source"] = previous["source"]
+                payload = compact_maker_input(payload)
                 wire = completion(
                     directory / "maker", MAKER, payload, images, MAKER_SCHEMA
                 )
@@ -526,6 +733,10 @@ def main():
                 if tool["name"] != NAME:
                     raise ValueError("Use the one stable tool name")
                 validate_tools([tool])
+                if len(tool["description"]) > 700:
+                    raise ValueError(
+                        "Tool description exceeds 700 characters; simplify the interface"
+                    )
                 if any(
                     word in tool["source"]
                     for word in (
@@ -546,7 +757,7 @@ def main():
                         result = sandbox.run(tool, params, frames)
                         if (
                             result.get("error") is not None
-                            or len(json.dumps(result)) > 6000
+                            or len(json.dumps(result)) > TOOL_RESULT_CHARS
                         ):
                             raise ValueError(
                                 "Replay returned error or oversized result"
@@ -603,7 +814,7 @@ def main():
                 previous, latest = tool, rows
                 judgement = completion(
                     directory / "assessment",
-                    "Assess only these DEVELOPMENT results. Be critical: three seeds are not proof of generalization. Do the tool usage and outcomes support reduced tokens and improved task reliability? Recommend stopping only if both have evidence. No new program or task recipe.",
+                    "Assess only these DEVELOPMENT results. Three seeds are not proof of generalization. Report token_benefit and success_benefit separately. Recommend stopping if the tool was used, all three trials succeed, and mean input+output tokens fall at least 20% versus baseline. Retaining 3/3 baseline success is sufficient for this efficiency criterion; do not claim success improvement at the ceiling. No new program or task recipe.",
                     {
                         "baseline": baseline_score,
                         "candidate": candidate_score,
@@ -628,6 +839,11 @@ def main():
                 feedback = {**(measured or {}), "error": clean(str(exc))}
                 history.append({"iteration": iteration, **feedback})
                 write_json(directory / "error.json", feedback)
+                if input_budget_failure(exc):
+                    history[-1]["failure_class"] = "maker_input_budget"
+                    write_json(args.output / "history.json", history)
+                    log_iteration(args.output, iteration, history[-1], baseline_score)
+                    raise
                 # Infrastructure loss cannot be fixed by another generated program.
                 state = experiment.api("/api/session/state")
                 if (
@@ -655,7 +871,22 @@ def main():
             )
             tools = NATIVE + ["generated:" + version]
         else:
-            tools = NATIVE
+            # A native-only repeat cannot establish generated-tool transfer.
+            experiment.api("/api/session/config", {"tools": NATIVE})
+            write_json(
+                args.output / "final.json",
+                {
+                    "baseline": baseline_score,
+                    "best_iteration": 0,
+                    "iterations": len(history),
+                    "test": [],
+                    "reason": "No improving generated tool; held-out evaluation not started",
+                },
+            )
+            experiment.status(
+                phase="completed_no_improving_tool", completed=0, best_iteration=0
+            )
+            return
         config = experiment.api("/api/session/config", {"tools": tools})
         freeze = {
             "selected": best,

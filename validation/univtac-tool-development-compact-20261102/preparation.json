@@ -1,0 +1,20 @@
+{
+  "status": "prepared",
+  "focused_tests": "9 passed",
+  "full_tests": {
+    "passed": 1833,
+    "skipped": 12,
+    "preexisting_failures": [
+      "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
+      "test_validation_requires_bound_freeze_and_exact_selected_tools"
+    ]
+  },
+  "pre_commit": "passed",
+  "max_new_iterations": 5,
+  "max_new_simulations": 25,
+  "maker_exact_text_chars_check": 292111,
+  "maker_text_limit": 320000,
+  "tool_result_chars": 1500,
+  "tool_description_chars": 700,
+  "new_simulations_completed": 0
+}
