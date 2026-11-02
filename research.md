@@ -39,7 +39,10 @@
 
 examples/univtac/develop_tools.py --continue-from 仅继承上一批task0基线和最后有效候选的开发记录。
 第二批前两次制作在univtac-tool-development-compact-20261102留档：第一次300秒超时，第二次主动中断以修复；尚无新仿真。
-剩余最多三次在univtac-tool-development-compact-reduced-20261102执行，--max-optimizations 3 --restart-tool。
+随后compact-reduced启动三次制作：前两次产出候选并通过程序回放，但发布到了工具库父目录，网页启动均返回422；第三次被主动中断。
+本批五次新制作请求额度已用完，尚无新仿真。恢复流程仅复用这两份原始SDK响应及候选，不再生成。
+恢复目录univtac-tool-development-recovery-20261102；实际库为tool-library/univtac。两版候选分别跑三个开发seed，
+按原成功数/token准则选择后才冻结测试；第二候选生成早于新仿真，不能称为吸收第一候选新反馈的修订。
 制作每run使用两个时刻、24幅原始图，首次不携带旧程序源码，从最小函数重写；SDK文本192727字符。
 真实仿真在原18093网页可见。
 

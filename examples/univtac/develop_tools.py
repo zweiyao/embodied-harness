@@ -587,6 +587,7 @@ def main():
     parser.add_argument("--baseline-only", action="store_true")
     parser.add_argument("--resume-baseline", action="store_true")
     parser.add_argument("--max-optimizations", type=int, choices=range(1, 6), default=5)
+    parser.add_argument("--candidates-from", type=Path, nargs="+", help="Validate these already generated iteration directories without new maker requests")
     parser.add_argument(
         "--restart-tool",
         action="store_true",
@@ -598,6 +599,8 @@ def main():
         help="Reuse a compatible prior batch's task-0 baseline and last validated candidate; never read test episodes",
     )
     args = parser.parse_args()
+    if args.candidates_from and len(args.candidates_from) != args.max_optimizations:
+        parser.error("--max-optimizations must equal the number of recorded candidates")
     if args.continue_from and (args.resume_baseline or args.baseline_only):
         parser.error(
             "--continue-from cannot be combined with baseline-only/resume-baseline"
@@ -608,6 +611,13 @@ def main():
     elif list(args.output.glob("iteration-*")):
         raise ValueError("Only a completed initial baseline can be resumed")
     experiment = Experiment(args.url, args.output)
+    active_generated = [
+        tool["id"].removeprefix("generated:")
+        for tool in experiment.api("/api/tools")["tools"]
+        if tool["id"].startswith("generated:") and tool.get("selectable", True)
+    ]
+    if any(not (args.library / f"{version}.json").is_file() for version in active_generated):
+        raise ValueError("--library does not contain the dashboard's active generated tools")
     sandbox = Sandbox("embodied-sensor:pilot")
     driver = {
         str(path): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -646,6 +656,8 @@ def main():
         "tool_result_chars": TOOL_RESULT_CHARS,
         "previous_batch": str(args.continue_from) if args.continue_from else None,
         "restart_tool": args.restart_tool,
+        "recorded_candidates": [str(p) for p in args.candidates_from] if args.candidates_from else [],
+        "new_maker_requests": 0 if args.candidates_from else args.max_optimizations,
     }
     if args.resume_baseline or args.continue_from:
         reference = args.continue_from or args.output
@@ -742,9 +754,21 @@ def main():
                         "source_omitted": "Redesign from an empty program; previous source preserved in the prior batch",
                     }
                 payload = compact_maker_input(payload)
-                wire = completion(
-                    directory / "maker", MAKER, payload, images, MAKER_SCHEMA
-                )
+                if args.candidates_from:
+                    origin = args.candidates_from[iteration - 1]
+                    response_path = origin / "maker/response.json"
+                    wire = json.loads(json.loads(response_path.read_text())["text"])
+                    recorded = json.loads((origin / "candidate.json").read_text())
+                    if recorded != {
+                        **{k: wire[k] for k in ("name", "description", "source")},
+                        "parameters": json.loads(wire["parameters_json"]),
+                    }:
+                        raise ValueError("Recorded candidate differs from maker response")
+                    write_json(directory / "maker-reused.json", {"path": str(response_path), "sha256": hashlib.sha256(response_path.read_bytes()).hexdigest(), "new_maker_requests": 0, "note": "Predates this simulator feedback; not a revision based on this batch"})
+                else:
+                    wire = completion(
+                        directory / "maker", MAKER, payload, images, MAKER_SCHEMA
+                    )
                 tool = {k: wire[k] for k in ("name", "description", "source")}
                 tool["parameters"] = json.loads(wire["parameters_json"])
                 previous = tool

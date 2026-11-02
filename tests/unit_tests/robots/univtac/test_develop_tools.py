@@ -71,7 +71,7 @@ def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
 
 @pytest.mark.parametrize(
     "scenario,optimizations",
-    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3)],
+    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3), ("recorded", 2), ("wrong_library", 1)],
 )
 def test_five_optimizations_then_frozen_test_without_test_feedback(
     tmp_path, monkeypatch, scenario, optimizations
@@ -84,6 +84,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
             self.server_id = "test"
 
         def api(self, path, payload=None):
+            if scenario == "wrong_library" and path.endswith("tools"):
+                return {"tools": [{"id": "generated:missing", "selectable": True}]}
             return (
                 {"session_state": "ready", "server_id": self.server_id}
                 if path.endswith("state")
@@ -105,7 +107,7 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
                     "tool_calls": {module.NAME: 1},
                     **row(
                         tokens=90
-                        if scenario == "improve" and label != "development-baseline"
+                        if scenario in ("improve", "recorded") and label != "development-baseline"
                         else 100
                     ),
                 }
@@ -133,6 +135,7 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
                 "stop_recommended": False,
                 "reason": "not enough evidence",
             }
+        assert scenario != "recorded", "Recorded candidates must not issue maker requests"
         assert all(row["task"] == 0 for row in makers[-1])
         return {
             "name": module.NAME,
@@ -179,6 +182,25 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
             str(optimizations),
         ],
     )
+    if scenario == "recorded":
+        import sys
+
+        origins = []
+        for index in range(optimizations):
+            origin = tmp_path / f"recorded-{index}"
+            (origin / "maker").mkdir(parents=True)
+            tool = {"name": module.NAME, "description": "test", "source": "def run(frames, params):\n    return {}\n", "parameters": {"type": "object"}}
+            wire = {k: v for k, v in tool.items() if k != "parameters"}
+            wire.update(parameters_json=json.dumps(tool["parameters"]), replay_params_json="{}", reason="test")
+            (origin / "candidate.json").write_text(json.dumps(tool))
+            (origin / "maker/response.json").write_text(json.dumps({"text": json.dumps(wire)}))
+            origins.append(str(origin))
+        sys.argv.extend(["--candidates-from", *origins])
+    if scenario == "wrong_library":
+        with pytest.raises(ValueError, match="dashboard's active generated tools"):
+            module.main()
+        assert not calls and not makers
+        return
     if scenario == "input_error":
         with pytest.raises(module.MakerInputBudgetError):
             module.main()
@@ -187,6 +209,11 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
         assert not (tmp_path / "experiment/freeze.json").exists()
         return
     module.main()
+    if scenario == "recorded":
+        for index in range(1, optimizations + 1):
+            reused = json.loads((tmp_path / f"experiment/iteration-{index}/maker-reused.json").read_text())
+            assert reused["new_maker_requests"] == 0
+            assert not (tmp_path / f"experiment/iteration-{index}/maker").exists()
     assert len(makers) == optimizations
     if scenario == "no_gain":
         assert len(calls) == optimizations + 1
