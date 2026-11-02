@@ -1,0 +1,48 @@
+[
+  {
+    "iteration": 1,
+    "score": {
+      "successes": 1,
+      "trials": 3,
+      "token_records": 3,
+      "mean_total_tokens": 1169589.3333333333,
+      "mean_elapsed_s": 580.8333333333334,
+      "mean_uncached_input_tokens": 53277.333333333336
+    },
+    "adopted_calls": 24,
+    "kept": false,
+    "tool_execution": {
+      "valid_calls": 24,
+      "error_calls": 0
+    },
+    "judgement": {
+      "token_benefit": false,
+      "success_benefit": false,
+      "stop_recommended": false,
+      "reason": "Development results: mean input+output tokens increased 29.1% (906,258 to 1,169,589), and success fell from 3/3 to 1/3. The tool was used successfully in 24 calls, but neither the 3/3 task-success requirement nor the ≥20% token-reduction requirement was met. These three seeds do not establish generalization."
+    }
+  },
+  {
+    "iteration": 2,
+    "score": {
+      "successes": 2,
+      "trials": 3,
+      "token_records": 3,
+      "mean_total_tokens": 1368014.3333333333,
+      "mean_elapsed_s": 637.5333333333333,
+      "mean_uncached_input_tokens": 73534.0
+    },
+    "adopted_calls": 15,
+    "kept": false,
+    "tool_execution": {
+      "valid_calls": 15,
+      "error_calls": 0
+    },
+    "judgement": {
+      "token_benefit": false,
+      "success_benefit": false,
+      "stop_recommended": false,
+      "reason": "On these DEVELOPMENT trials, mean input+output tokens increased 51.0% (906,258 to 1,368,014), and success fell from 3/3 to 2/3. The tool was used successfully 15 times, but neither the 3/3 success requirement nor the ≥20% token reduction was met. Three seeds do not establish generalization."
+    }
+  }
+]

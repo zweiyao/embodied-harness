@@ -1,0 +1,74 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "fa19bfdfb6ebfb2c2895",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0011_univtac_t0_s0",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 425.2,
+    "planner_elapsed_s": 332.3,
+    "tool_execution_s": 45.429,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 5,
+      "tactile_stats": 10,
+      "move_eef": 18
+    },
+    "decisions": 25,
+    "input_tokens": 785074,
+    "cached_input_tokens": 738560,
+    "output_tokens": 7216,
+    "reasoning_output_tokens": 3039,
+    "batch_wall_s": 430.5
+  },
+  {
+    "task": 0,
+    "seed": 1,
+    "run_id": "98c21a54de8354655e3f",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0012_univtac_t0_s1",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 315.1,
+    "planner_elapsed_s": 264.0,
+    "tool_execution_s": 24.142,
+    "tool_calls": {
+      "observe": 1,
+      "tactile_stats": 7,
+      "read_depth": 4,
+      "move_eef": 16
+    },
+    "decisions": 25,
+    "input_tokens": 749943,
+    "cached_input_tokens": 694656,
+    "output_tokens": 5306,
+    "reasoning_output_tokens": 2191,
+    "batch_wall_s": 320.4
+  },
+  {
+    "task": 0,
+    "seed": 2,
+    "run_id": "4fabb471c8476bfc8be6",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0013_univtac_t0_s2",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 469.2,
+    "planner_elapsed_s": 416.4,
+    "tool_execution_s": 29.696,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 1,
+      "tactile_stats": 29,
+      "move_eef": 29
+    },
+    "decisions": 32,
+    "input_tokens": 1164304,
+    "cached_input_tokens": 1104128,
+    "output_tokens": 6931,
+    "reasoning_output_tokens": 2275,
+    "batch_wall_s": 470.6
+  }
+]

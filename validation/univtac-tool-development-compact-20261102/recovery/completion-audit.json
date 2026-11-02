@@ -1,0 +1,160 @@
+{
+  "scope": "task0 development only; two completed candidates recovered from five maker attempts; no held-out test",
+  "groups": {
+    "development-baseline": {
+      "successes": 3,
+      "trials": 3,
+      "mean_total_tokens": 906258.0,
+      "mean_uncached_input_plus_output": 60476.666666666664,
+      "mean_elapsed_s": 403.1666666666667,
+      "mean_planner_elapsed_s": 337.56666666666666,
+      "mean_decisions": 27.333333333333332,
+      "mean_control_calls": 21.0
+    },
+    "development-1": {
+      "successes": 1,
+      "trials": 3,
+      "mean_total_tokens": 1169589.3333333333,
+      "mean_uncached_input_plus_output": 60640.0,
+      "mean_elapsed_s": 580.8333333333334,
+      "mean_planner_elapsed_s": 527.0333333333333,
+      "mean_decisions": 35.0,
+      "mean_control_calls": 21.666666666666668,
+      "details": [
+        {
+          "run_id": "9c11dc1682bbeba86cc4",
+          "seed": 0,
+          "evaluator": {
+            "official_success": false,
+            "early_stop": false,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": false,
+            "attempted_commands": 30
+          },
+          "finish_calls": [
+            {
+              "status": "success",
+              "summary": "Explored contact with small vertical and lateral probes, then progressively tilted the tube toward world -X. Opposing lateral probes and tilt adjustments reduced visible bilateral deflection. Inserted with short axial advances; final hand pose is approximately (0.6282,-0.02757,0.27498) m, with tube axis about 14 degrees toward -X from downward vertical. Head images show substantially reduced exposed tube length and the tube entering the hole; final hold frames 27–30 retain this insertion. Grasp retained. Tactile changes had native-depth support and continued during the hold, so force and complete mechanical settling are not established."
+            }
+          ],
+          "diagnoses": {
+            "small_bilateral_change_moving_hand": 1,
+            "marker_change_with_depth_support": 6
+          },
+          "tool_errors": 0
+        },
+        {
+          "run_id": "43378c87d482f0e73661",
+          "seed": 1,
+          "evaluator": {
+            "official_success": false,
+            "early_stop": true,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": true,
+            "attempted_commands": 54
+          },
+          "finish_calls": [],
+          "diagnoses": {
+            "small_bilateral_change_moving_hand": 2,
+            "marker_change_with_depth_support": 7,
+            "marker_change_without_depth_support": 2
+          },
+          "tool_errors": 0
+        },
+        {
+          "run_id": "b78c30845380f115c057",
+          "seed": 2,
+          "evaluator": {
+            "official_success": true,
+            "early_stop": false,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": true,
+            "attempted_commands": 58
+          },
+          "finish_calls": [],
+          "diagnoses": {
+            "small_bilateral_change_moving_hand": 1,
+            "marker_change_with_depth_support": 2,
+            "marker_change_without_depth_support": 3
+          },
+          "tool_errors": 0
+        }
+      ]
+    },
+    "development-2": {
+      "successes": 2,
+      "trials": 3,
+      "mean_total_tokens": 1368014.3333333333,
+      "mean_uncached_input_plus_output": 81699.66666666667,
+      "mean_elapsed_s": 637.5333333333333,
+      "mean_planner_elapsed_s": 584.0666666666667,
+      "mean_decisions": 37.0,
+      "mean_control_calls": 27.666666666666668,
+      "details": [
+        {
+          "run_id": "7eb720c78511868e5619",
+          "seed": 0,
+          "evaluator": {
+            "official_success": true,
+            "early_stop": false,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": true,
+            "attempted_commands": 53
+          },
+          "finish_calls": [],
+          "diagnoses": {
+            "small_bilateral_change_moving_hand": 3,
+            "marker_change_with_depth_support": 2
+          },
+          "tool_errors": 0
+        },
+        {
+          "run_id": "e6172b637a38b0e0fa11",
+          "seed": 1,
+          "evaluator": {
+            "official_success": true,
+            "early_stop": false,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": true,
+            "attempted_commands": 61
+          },
+          "finish_calls": [],
+          "diagnoses": {
+            "small_bilateral_change_moving_hand": 3,
+            "marker_change_with_depth_support": 3,
+            "marker_change_without_depth_support": 1
+          },
+          "tool_errors": 0
+        },
+        {
+          "run_id": "b504f4fbbf679af107dc",
+          "seed": 2,
+          "evaluator": {
+            "official_success": false,
+            "early_stop": true,
+            "budget_exhausted": false,
+            "plan_failed": false,
+            "done": true,
+            "attempted_commands": 26
+          },
+          "finish_calls": [],
+          "diagnoses": {
+            "marker_change_with_depth_support": 3
+          },
+          "tool_errors": 0
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Three trials per candidate, stochastic model and physics; not a causal estimate of population performance",
+    "Provider cached input belongs to input; reasoning belongs to output; no actual dollar bill",
+    "Recovered candidate 2 predates candidate 1 simulator feedback; not a revision informed by that feedback",
+    "The latest dashboard state=succeeded denotes planner completion; evaluator official_success=false is the task result"
+  ]
+}
