@@ -1,0 +1,42 @@
+{
+  "name": "sensor_modal_evidence",
+  "tool_version": "95fa278251b44a64017d4e8134d5886babe80fb61d23b34b152a10a7ad5eeef2",
+  "reason": "Program change from the empty base: deduplicate marker reference locations and spatially match them before computing temporal differences, retaining the strongest bilateral interval even when later evidence returns near baseline. This addresses the supplied records' duplicate/resampled markers and transient opposing image displacements. A testable property is invariance to joint permutation of each frame's marker rows and repetition of identical rows. Documentation separately clarifies loaded references, visible-plane scope, and uncalibrated pixel units. No execution or replay test was performed.",
+  "maker_elapsed_s": 240.47611191798933,
+  "maker_usage": {
+    "last": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 0,
+      "input_tokens": 235525,
+      "output_tokens": 7074,
+      "reasoning_output_tokens": 1552,
+      "total_tokens": 242599
+    },
+    "model_context_window": 258400,
+    "total": {
+      "cache_write_input_tokens": 0,
+      "cached_input_tokens": 0,
+      "input_tokens": 235525,
+      "output_tokens": 7074,
+      "reasoning_output_tokens": 1552,
+      "total_tokens": 242599
+    }
+  },
+  "development_baseline": {
+    "successes": 3,
+    "trials": 3,
+    "token_records": 3,
+    "mean_total_tokens": 906258.0,
+    "mean_elapsed_s": 403.1666666666667
+  },
+  "replay_windows_passed": 6,
+  "scope": "Execution and parameter checks only; simulator validation in progress",
+  "runtime_status": {
+    "phase": "development-1",
+    "task": 0,
+    "seed": 0,
+    "completed": 0,
+    "run_id": "63d2c0645e7909b95fb7",
+    "state": "running"
+  }
+}
