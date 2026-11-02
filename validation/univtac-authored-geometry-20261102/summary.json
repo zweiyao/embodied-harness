@@ -1,0 +1,41 @@
+{
+  "state": "development_budget_exhausted",
+  "selected_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5",
+  "selected_iteration": 1,
+  "development_launches": 9,
+  "policy_trials_completed": 5,
+  "infrastructure_attempts": 4,
+  "remote_maker_requests": 0,
+  "connection_probes": 1,
+  "baseline": {
+    "mean_input_plus_output": 906258.0,
+    "mean_uncached_input_plus_output": 60476.666666666664,
+    "mean_output": 6484.333333333333,
+    "mean_elapsed_s": 403.1666666666667,
+    "successes": 3,
+    "policy_trials": 3
+  },
+  "selected_tool": {
+    "mean_input_plus_output": 807655.3333333334,
+    "mean_uncached_input_plus_output": 49554.0,
+    "mean_output": 5035.333333333333,
+    "mean_elapsed_s": 376.8333333333333,
+    "successes": 3,
+    "policy_trials": 3
+  },
+  "v2": {
+    "completed_policy_trials": 2,
+    "official_successes": 2,
+    "third_trial": "reset timeout before any model decision; incomplete comparison"
+  },
+  "test_started": false,
+  "qwen_tested": false,
+  "authoring_cost": "current chat usage/billing unavailable; not zero",
+  "limitations": [
+    "Three development seeds, no stable causal or generalization conclusion",
+    "Proxy/startup time changed; elapsed-time gains not solely attributable to tool",
+    "Same seed is not bit-identical physical state",
+    "Do not choose only the weaker of the two historic native test groups when comparing future held-out results",
+    "Concurrent code checks occurred during development; future timed evaluation should run without them."
+  ]
+}

@@ -1,0 +1,71 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "0e40ca38bf4788217382",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-154444-1230903/tasks/0005_univtac_t0_s0",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 412.5,
+    "planner_elapsed_s": 350.5,
+    "tool_execution_s": 23.704,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 2,
+      "tactile_stats": 10,
+      "sensor_modal_evidence": 6,
+      "move_eef": 16
+    },
+    "decisions": 23,
+    "input_tokens": 595770,
+    "cached_input_tokens": 557312,
+    "output_tokens": 5693,
+    "reasoning_output_tokens": 1784,
+    "batch_wall_s": 421.3
+  },
+  {
+    "task": 0,
+    "seed": 1,
+    "run_id": "dd1e9fa2a480b47b35f8",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-154444-1230903/tasks/0006_univtac_t0_s1",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 343.4,
+    "planner_elapsed_s": 293.1,
+    "tool_execution_s": 21.867,
+    "tool_calls": {
+      "observe": 1,
+      "tactile_stats": 11,
+      "sensor_modal_evidence": 4,
+      "move_eef": 16,
+      "read_depth": 1
+    },
+    "decisions": 22,
+    "input_tokens": 546729,
+    "cached_input_tokens": 498560,
+    "output_tokens": 4643,
+    "reasoning_output_tokens": 1577,
+    "batch_wall_s": 351.1
+  },
+  {
+    "task": 0,
+    "seed": 2,
+    "run_id": "e561b4eeb5eceb19925b",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-154444-1230903/tasks/0007_univtac_t0_s2",
+    "official_success": null,
+    "termination": "timeout",
+    "error": "[env] wait / client connect failed: env.reset: Traceback (most recent call last):\n  File \"/home/zwy/work/harnessvla/rpent/utils/rpc/main_thread_serve.py\", line 137, in serve\n    req[\"result\"] = self._dispatch(\n  File \"/home/zwy/work/harnessvla/rpent/utils/rpc/rpc_facade.py\", line 141, in _dispatch\n    return self._dispatch_nosession(method, args, kwargs)\n  File \"/home/zwy/work/harnessvla/rpent/utils/rpc/rpc_facade.py\", line 151, in _dispatch_nosession\n    return handler(*args, **kwargs)\n  File \"/home/zwy/work/harnessvla/robots/univtac/env_server.py\", line 57, in reset\n    return self.backend.reset(task_name=task_name, seed=seed)\n  File \"/home/zwy/work/harnessvla/robots/univtac/backend.py\", line 205, in reset\n    self.task.reset(seed=self.seed, instructions=instructions)\n  File \"/home/zwy/work/embodied_harness/external/UniVTAC/envs/_base_task.py\", line 393, in reset\n    raise RuntimeError(\nRuntimeError: Timeout: reset exceed time limit of 120.0 s, cost 133.25347621296532 s.\n",
+    "elapsed_s": 156.2,
+    "planner_elapsed_s": null,
+    "tool_execution_s": 0.0,
+    "tool_calls": {},
+    "decisions": null,
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "output_tokens": null,
+    "reasoning_output_tokens": null,
+    "batch_wall_s": 160.5
+  }
+]

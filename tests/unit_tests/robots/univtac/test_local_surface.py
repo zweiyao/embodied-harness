@@ -9,9 +9,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from examples.univtac.tools.local_surface import _common_tangent
-from examples.univtac.tools.local_surface import _surface as run
-from examples.univtac.tools.local_surface import run as batch_run
+from examples.univtac.tools.local_surface import run
 from robots.libero.research.library import validate_tools
 
 PARAMS = {"camera": "head", "region_rc": [0, 0, 24, 24]}
@@ -123,57 +121,3 @@ def test_declared_source_and_frame_selection():
         np.array(selected["center_world_m"]) * 2, latest["center_world_m"], atol=2e-6
     )
     assert run([], PARAMS)["status"] == "unknown"
-
-
-def test_common_tangent_of_known_cylinder_and_ambiguity():
-    axis = np.array([0.3, -0.4, 0.8])
-    axis /= np.linalg.norm(axis)
-    first = np.cross(axis, [1.0, 0, 0])
-    first /= np.linalg.norm(first)
-    second = np.cross(axis, first)
-    normals = [np.cos(a) * first + np.sin(a) * second for a in (0.1, 0.7, 1.3, 1.9)]
-    result = _common_tangent(normals)
-    assert result["axis_status"] == "measured"
-    np.testing.assert_allclose(result["common_tangent_world"], axis, atol=1e-6)
-    assert _common_tangent(normals[:2])["axis_status"] == "unknown"
-    assert _common_tangent([first] * 3)["axis_status"] == "unknown"
-    assert _common_tangent(np.eye(3))["axis_status"] == "unknown"
-
-
-def test_batch_rejects_single_plane_as_unique_axis_and_is_compact():
-    result = batch_run(
-        [frame()],
-        {
-            "camera": "head",
-            "regions_rc": [
-                [0, 0, 12, 12],
-                [0, 12, 12, 24],
-                [12, 0, 24, 12],
-                [12, 12, 24, 24],
-            ],
-        },
-    )
-    assert all(p["status"] == "measured" for p in result["patches"])
-    assert result["axis_status"] == "unknown"
-    assert "common_tangent_world" not in result
-    assert len(json.dumps(result, allow_nan=False)) < 1500
-
-
-def test_common_tangent_rejects_one_outlier_and_reports_support():
-    axis = np.array([0.3, -0.4, 0.8])
-    axis /= np.linalg.norm(axis)
-    first = np.cross(axis, [1.0, 0, 0])
-    first /= np.linalg.norm(first)
-    second = np.cross(axis, first)
-    normals = [np.cos(a) * first + np.sin(a) * second for a in (0.1, 0.7, 1.3)] + [axis]
-    result = _common_tangent(normals)
-    assert result["axis_status"] == "measured"
-    assert result["normal_indices"] == [0, 1, 2]
-    np.testing.assert_allclose(result["common_tangent_world"], axis, atol=1e-6)
-
-
-def test_equal_support_for_distinct_directions_is_ambiguous():
-    assert (
-        _common_tangent([[1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 1]])["axis_status"]
-        == "unknown"
-    )

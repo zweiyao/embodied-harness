@@ -1,12 +1,13 @@
 {
   "environment": "remote /home/zwy/work/harnessvla/.venv/bin/python",
-  "focused": "35 passed: local geometry, freeze gates and batch stopping",
-  "full_unit": "1860 passed, 12 skipped, same 2 existing failures",
+  "focused": "31 passed: selected v1 geometry, freeze gates and batch stopping",
+  "full_unit": "1856 passed, 12 skipped, same 2 existing failures (70.90 seconds)",
   "existing_failures": [
     "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
     "test_validation_requires_bound_freeze_and_exact_selected_tools"
   ],
   "precommit": "all-files passed; new files explicitly checked",
-  "task_success": "Authored v1: 3/3 completed policy trials; three infrastructure attempts separately archived. v2 running.",
-  "remote_maker_requests": 0
+  "task_success": "9 development launches: v1 3/3 completed policy trials, v2 2 completed successes and one initialization timeout; four infrastructure attempts total. v1 selected and frozen; heldout and Qwen testing not started.",
+  "remote_maker_requests": 0,
+  "selected_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5"
 }

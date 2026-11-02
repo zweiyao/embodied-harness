@@ -5,7 +5,7 @@
 import numpy as np
 
 
-def _surface(frames, params):
+def run(frames, params):
     """Fit one selected surface; report world geometry and observable fit quality."""
     if not frames:
         return {"status": "unknown", "reason": "no recorded frame"}
@@ -128,95 +128,4 @@ def _surface(frames, params):
         normal_world=np.round(rotation @ normal, 6).tolist(),
         limitation="Visible patch only. Normal points toward camera; it is not necessarily an object/hole axis or evidence of insertion.",
     )
-    return result
-
-
-def _common_tangent(normals):
-    """Find a redundant common tangent; exclude at most one inconsistent patch."""
-    from itertools import combinations
-
-    n = np.asarray(normals, dtype=float)
-    if len(n) < 3:
-        return {
-            "axis_status": "unknown",
-            "axis_reason": "need at least three measured patches on the same feature",
-        }
-    candidates = []
-    for subset in combinations(range(len(n)), 3):
-        _, singular, vectors = np.linalg.svd(n[list(subset)], full_matrices=False)
-        if singular[1] / singular[0] < 0.15 or singular[-1] / singular[1] > 0.15:
-            continue
-        axis = vectors[-1]
-        angles = np.degrees(np.arcsin(np.clip(np.abs(n @ axis), 0, 1)))
-        support = np.flatnonzero(angles <= 5)
-        if len(support) >= 3:
-            candidates.append((support, axis, float(np.mean(angles[support] ** 2))))
-    if not candidates:
-        return {
-            "axis_status": "unknown",
-            "axis_reason": "normals parallel or inconsistent; common tangent not identifiable",
-        }
-    candidates.sort(key=lambda c: (-len(c[0]), c[2]))
-    support, axis, _ = candidates[0]
-    if any(
-        len(other[0]) == len(support) and abs(axis @ other[1]) < np.cos(np.radians(10))
-        for other in candidates[1:]
-    ):
-        return {
-            "axis_status": "unknown",
-            "axis_reason": "multiple incompatible common tangent directions",
-        }
-    _, singular, vectors = np.linalg.svd(n[support], full_matrices=False)
-    axis = vectors[-1]
-    axis *= 1 if axis[np.argmax(np.abs(axis))] >= 0 else -1
-    error = float(
-        np.degrees(np.arcsin(np.clip(np.max(np.abs(n[support] @ axis)), 0, 1)))
-    )
-    if error > 5:
-        return {
-            "axis_status": "unknown",
-            "axis_reason": "refitted normals are inconsistent",
-        }
-    return {
-        "axis_status": "measured",
-        "common_tangent_world": np.round(axis, 6).tolist(),
-        "axis_residual_deg": round(error, 3),
-        "normal_diversity": round(float(singular[1] / singular[0]), 4),
-        "normal_indices": support.tolist(),
-    }
-
-
-def run(frames, params):
-    """Measure selected patches and their common tangent, without task semantics."""
-    patches = [
-        _surface(
-            frames,
-            {
-                "camera": params["camera"],
-                "step": params.get("step", -1),
-                "region_rc": region,
-            },
-        )
-        for region in params["regions_rc"]
-    ]
-    fields = ("status", "center_world_m", "normal_world", "rms_m", "reason")
-    summaries = [
-        {"index": i, **{k: p[k] for k in fields if k in p}}
-        for i, p in enumerate(patches)
-    ]
-    normals = [p["normal_world"] for p in patches if p["status"] == "measured"]
-    result = {
-        "step": patches[0].get("step"),
-        "camera": params["camera"],
-        "coordinate_frame": "world",
-        "units": "m",
-        "patches": summaries,
-        **_common_tangent(normals),
-        "limitation": "Common tangent assumes patches on the same straight feature (e.g. channel walls). Axis sign is arbitrary; this is not a target pose, motion command or success measurement.",
-    }
-    if "normal_indices" in result:
-        measured = [
-            i for i, patch in enumerate(patches) if patch["status"] == "measured"
-        ]
-        result["axis_patches"] = [measured[i] for i in result.pop("normal_indices")]
     return result
