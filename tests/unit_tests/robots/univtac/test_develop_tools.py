@@ -69,6 +69,16 @@ def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
     }
 
 
+def test_maker_keeps_the_queried_geometry_frame_and_final_temporal_pair():
+    def query(step, region):
+        return {"kind": "tool_response", "payload": {"name": "read_depth", "result": {"step": step, "region_rc": region}}}
+
+    events = [query(4, [1, 2, 3, 4]), query(7, None), query(99, [1, 2, 3, 4])]
+    assert module.maker_frame_steps(events, 10) == [4, 9, 10]
+    assert module.maker_frame_steps([], 10) == [0, 9, 10]
+    assert module.maker_frame_steps([], 0) == [0]
+
+
 @pytest.mark.parametrize(
     "scenario,optimizations",
     [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3), ("recorded", 2), ("wrong_library", 1)],

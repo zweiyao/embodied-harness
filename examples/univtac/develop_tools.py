@@ -55,9 +55,21 @@ limitations. Provide valid replay_params_json. Prefer few parameters with defaul
 one-frame and missing-sensor cases honestly. Keep tool results below 1500 JSON characters
 and the description below 700 characters. Focus on ONE repeated inference evident in the
 records, with a small set of decisive outputs. Do not produce a catalogue of sensor statistics.
-The previous broad statistics tools were frequently called without reducing policy reasoning.
-Compute a useful relationship or supported diagnosis rather than delegating all interpretation
-back to the policy. Distinguish measured evidence from hypotheses and unknowns. Describe when
+The previous tactile change classifiers were frequently called without reducing policy reasoning.
+Development policy traces show a more specific bottleneck: repeated raw depth-region queries
+and manual geometric interpretation. Successful development traces inspected visible local
+geometry before alignment; failed traces also mistook shortening visible extent or hand travel
+for object progress. Investigate a compact geometric measurement from calibrated RGB-D, such
+as a local 3D direction/normal with fit residuals, or observable motion relative to the hand.
+Choose ONE measurement justified by the records, rather than another tactile change classifier.
+This is a proposed hypothesis, not a supplied solution. Do not force every modality into it.
+Let the policy select an observable pixel/region if needed. Report the actual sampled geometry,
+coordinate frame, support and ambiguity. A patch direction/normal is NOT automatically an
+object axis, goal direction or insertion depth. Occlusion and multiple surfaces need explicit
+handling; do not invent geometry. Do not encode particular colors, angles, object dimensions,
+positions, success predicates or task instructions. Use only recorded calibration conventions.
+Compute a useful relationship rather than delegating numerical geometry back to the policy.
+Distinguish measured evidence from hypotheses and unknowns. Describe when
 the result can replace redundant raw queries; do not demand a call on every observation.
 Do not remove native observations or alter the control interface to manufacture token savings.
 Maker-only sampling/rounding and omitted feedback are explicitly labelled; runtime arrays
@@ -462,16 +474,33 @@ class Experiment:
         return results
 
 
+def maker_frame_steps(events, last_step):
+    """Keep a queried geometry frame and a final temporal pair; no evaluator access."""
+    queried = [
+        event["payload"]["result"]["step"]
+        for event in events
+        if event["kind"] == "tool_response"
+        and event["payload"].get("name") == "read_depth"
+        and event["payload"].get("result", {}).get("region_rc") is not None
+        and type(event["payload"]["result"].get("step")) is int
+        and 0 <= event["payload"]["result"]["step"] <= last_step
+    ]
+    return sorted({queried[-1] if queried else 0, max(0, last_step - 1), last_step})
+
+
 def development_inputs(rows):
     """Reject held-out trials before opening any evidence files."""
     if any(r["task"] != 0 for r in rows):
         raise ValueError("Maker inputs must all be task 0")
-    refs = []
+    refs, selected_steps = [], {}
     for row in rows:
         root = Path(row["path"])
         config = json.loads((root / "dashboard_config.json").read_text())
         if config.get("robot") != "univtac" or config["task"]["task"] != 0:
             raise ValueError("Actual archived task must be development task 0")
+        events = [json.loads(line) for line in (root / "events.jsonl").read_text().splitlines()]
+        last_step = json.loads((root / "states.json").read_text())["steps"][-1]["step_idx"]
+        selected_steps[row["run_id"]] = maker_frame_steps(events, last_step)
         if (root / "maker-inputs").exists():
             files = {
                 key: str(root / "maker-inputs" / name)
@@ -495,7 +524,11 @@ def development_inputs(rows):
                 },
             }
         )
-    payload, images, _ = summarize_inputs(refs, "G1", frames_per_run=2)
+    payload, images, _ = summarize_inputs(refs, "G1", selected_steps=selected_steps)
+    payload["frame_selection"] = {
+        "rule": "latest observed local depth query plus final consecutive sensor pair; initial frame fallback; no evaluator geometry",
+        "steps_by_run": selected_steps,
+    }
     last = Path(rows[-1]["path"])
     payload.update(
         development_instruction=SEEN_INSTRUCTIONS["insert_hole"],
