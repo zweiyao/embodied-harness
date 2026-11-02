@@ -1,6 +1,7 @@
 # UniVTAC 原始深度基线准备（2026-11-02）
 
-状态：准备完成，用户要求等待明确指令后再开始。尚未运行实验。
+状态：用户明确开始后，已于 2026-11-02 15:00（Asia/Shanghai）启动批次。
+首轮为 insert_tube / seed 0，实验 ID `f4c67d3ca0e4ec5a3002`；尚无完成结果。
 
 ## 固定条件
 
@@ -38,7 +39,7 @@
 成功率分母固定为每任务 5 次，基础设施失败保留并另列；中途停止不得称为完成 10 次。
 最终报告还需从逐轮结果汇总平均耗时和 token，并注明有效记录数。
 
-待用户明确开始后，在远程仓库执行（此命令尚未执行）：
+批次已通过远程用户级 systemd 服务启动，等效命令为：
 
 ```bash
 cd /home/zwy/work/harnessvla
@@ -60,4 +61,6 @@ PYTHONPATH=. .venv/bin/python examples/univtac/raw_depth_baseline.py \
 - 重启空闲 UniVTAC 网页后，目录包含 read_depth，实际配置为上面的 6 个工具。
 - Astra SDK 最小连接检查返回 `ok`，耗时 20.058 秒；这不是仿真实验，
   不进入成功率或机器人任务耗时。
-- 未运行本批仿真，未得到任务成功率或工具增益结论。
+- 批次已启动；启动记录时首轮处于 task_starting，未得到任务成功率或工具增益结论。
+- 托管服务：`rpent-univtac-raw-depth-baseline-20261102.service`。
+  运行中配置或服务身份变化会停止提交后续轮次。
