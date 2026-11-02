@@ -1,5 +1,5 @@
 {
-  "status": "development_baseline_running",
+  "status": "completed_without_tool_gain",
   "model": "gpt-6-astra",
   "reasoning_effort": "high",
   "development_task": 0,
@@ -75,7 +75,14 @@
     "elapsed_s": 425.2,
     "decisions": 25
   },
-  "generated_tool": "not_yet_created",
+  "generated_tool": "two_candidates_tested_neither_selected",
   "root": "/home/zwy/work/embodied_harness/experiments/univtac-tool-development-20261102",
-  "tool_adoption": "counts normal tool returns; parameter/runtime errors recorded separately"
+  "tool_adoption": "counts normal tool returns; parameter/runtime errors recorded separately",
+  "actual_simulator_episodes": 19,
+  "selected_iteration": 0,
+  "final_test_condition": "native_only_repeat",
+  "optimization_outcome": {
+    "valid_candidates": 2,
+    "maker_infrastructure_failures": 3
+  }
 }

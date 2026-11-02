@@ -1,0 +1,310 @@
+{
+  "selected": {
+    "score": {
+      "successes": 3,
+      "trials": 3,
+      "token_records": 3,
+      "mean_total_tokens": 906258.0,
+      "mean_elapsed_s": 403.1666666666667
+    },
+    "tool": null,
+    "version": null,
+    "iteration": 0
+  },
+  "config": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "max_turns": 60,
+    "max_tokens": 10000,
+    "planner_timeout_s": 3600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:finish",
+      "native:move_eef",
+      "native:observe",
+      "native:read_depth",
+      "native:read_image",
+      "native:tactile_stats"
+    ],
+    "reasoning_effort": "high"
+  },
+  "tools": [
+    {
+      "id": "native:observe",
+      "name": "observe",
+      "origin": "native",
+      "category": "perception",
+      "description": "Return the latest recorded camera/tactile images and measured hand pose without advancing physics.",
+      "parameters": {
+        "properties": {},
+        "type": "object"
+      },
+      "version": "0ea2f7bf1ca282a4e86e6cba0437a84c19a6877ca82ba94a4ed62a8694f7411f",
+      "source": "    @tool(readonly=True)\n    def observe(self) -> ToolResult:\n        \"\"\"Return the latest recorded camera/tactile images and measured hand pose without advancing physics.\"\"\"\n        with self._capture_lock:\n            return self._observation_result(self.state.latest_record().step_idx)\n",
+      "required": false,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+      "example": null,
+      "source_robot": "univtac",
+      "supported_environments": [
+        "univtac"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    },
+    {
+      "id": "native:read_image",
+      "name": "read_image",
+      "origin": "native",
+      "category": "perception",
+      "description": "Read an image listed in a recorded observation, including tactile reference images.",
+      "parameters": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "step": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "version": "62d1eba433f61a019fd8d480f51373c58547268c90ba69b8d3e5f1bdf4812983",
+      "source": "    @tool(readonly=True)\n    def read_image(self, name: str, step: int = -1) -> ToolResult:\n        \"\"\"Read an image listed in a recorded observation, including tactile reference images.\"\"\"\n        record = self.state.get(step)\n        if name not in record.artifacts or not name.endswith(\".png\"):\n            return ToolResult(data={\"error\": \"Unknown recorded image\"})\n        return ToolResult(\n            data={\n                \"step\": record.step_idx,\n                \"artifact\": name,\n                \"image_metadata\": self.state.load(\n                    \"sensor_frame.json\", step=record.step_idx\n                )\n                .get(\"image_previews\", {})\n                .get(name),\n            },\n            images=[self.state.load_bytes(name, step=record.step_idx)],\n        )\n",
+      "required": false,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+      "example": null,
+      "source_robot": "univtac",
+      "supported_environments": [
+        "univtac"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    },
+    {
+      "id": "native:tactile_stats",
+      "name": "tactile_stats",
+      "origin": "native",
+      "category": "perception",
+      "description": "Compute bilateral image change and marker displacement from one recorded frame.\n\nReports image/reference difference and displacement in pixels, not force,\ncontact success or insertion direction. Reference kind is explicit.",
+      "parameters": {
+        "properties": {
+          "step": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "version": "4343eba05b2ccd0a1212d17083902bbdba1690dd9c2db604053a33dc67d63f68",
+      "source": "    @tool(readonly=True)\n    def tactile_stats(self, step: int = -1) -> ToolResult:\n        \"\"\"Compute bilateral image change and marker displacement from one recorded frame.\n\n        Reports image/reference difference and displacement in pixels, not force,\n        contact success or insertion direction. Reference kind is explicit.\n        \"\"\"\n        return ToolResult(data=tactile_statistics(self._frame(step)))\n",
+      "required": false,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+      "example": null,
+      "source_robot": "univtac",
+      "supported_environments": [
+        "univtac"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    },
+    {
+      "id": "native:read_depth",
+      "name": "read_depth",
+      "origin": "native",
+      "category": "perception",
+      "description": "Read a native metric depth map as an image, with optional exact raw pixel values.\n\nSelect a recorded camera (head or wrist) and step (-1 is latest).\nThe full native-resolution array is preserved in the returned NPZ artifact;\nthe image is an 8-bit preview, not the raw array. Black is nearer, white\nfarther within the reported range; magenta is invalid. For exact metres,\nrequest region_rc=[row_start,column_start,row_end,column_end], exclusive\nends and at most 1024 pixels. No smoothing, resizing or 3D inference is\napplied. Region values are row-major; invalid depth is null.",
+      "parameters": {
+        "properties": {
+          "camera": {
+            "type": "string"
+          },
+          "step": {
+            "type": "integer"
+          },
+          "region_rc": {
+            "items": {
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "camera"
+        ],
+        "type": "object"
+      },
+      "version": "3e974d5be087d6e4c04941d736d241df6f1d4d62a6c965a274897f9989abc6dd",
+      "source": "    @tool(readonly=True)\n    def read_depth(\n        self, camera: str, step: int = -1, region_rc: list[int] | None = None\n    ) -> ToolResult:\n        \"\"\"Read a native metric depth map as an image, with optional exact raw pixel values.\n\n        Select a recorded camera (head or wrist) and step (-1 is latest).\n        The full native-resolution array is preserved in the returned NPZ artifact;\n        the image is an 8-bit preview, not the raw array. Black is nearer, white\n        farther within the reported range; magenta is invalid. For exact metres,\n        request region_rc=[row_start,column_start,row_end,column_end], exclusive\n        ends and at most 1024 pixels. No smoothing, resizing or 3D inference is\n        applied. Region values are row-major; invalid depth is null.\n        \"\"\"\n        import io\n\n        from PIL import Image\n\n        frame = self._frame(step)\n        sensor = frame[\"cameras\"].get(camera, {})\n        if \"depth\" not in sensor:\n            return ToolResult(data={\"error\": \"Depth not recorded for this camera\"})\n        depth = np.asarray(sensor[\"depth\"])\n        plane = depth.squeeze()\n        if plane.ndim != 2:\n            raise ValueError(\"Expected a two-dimensional depth map\")\n        valid = np.isfinite(plane) & (plane > 0)\n        low = float(plane[valid].min()) if valid.any() else None\n        high = float(plane[valid].max()) if valid.any() else None\n        preview = np.zeros((*plane.shape, 3), dtype=np.uint8)\n        if low is not None and high > low:\n            gray = np.rint((plane[valid] - low) / (high - low) * 255).astype(np.uint8)\n            preview[valid] = gray[:, None]\n        preview[~valid] = [255, 0, 255]\n        data = {\n            \"step\": frame[\"step\"],\n            \"camera\": camera,\n            \"raw_artifact\": f\"sensor_cameras_{camera}_depth.npz\",\n            \"raw_shape\": list(depth.shape),\n            \"raw_dtype\": str(depth.dtype),\n            \"image_size\": list(plane.shape),\n            \"depth_units\": \"m\",\n            \"image_origin\": \"top_left\",\n            \"pixel_order\": \"row,column\",\n            \"preview_range_m\": [low, high],\n            \"preview_encoding\": \"linear grayscale, near=0 far=255; constant valid depth=0; invalid=magenta\",\n            \"invalid_pixels\": int((~valid).sum()),\n        }\n        if region_rc is not None:\n            if len(region_rc) != 4:\n                raise ValueError(\"region_rc must contain four bounds\")\n            r0, c0, r1, c1 = region_rc\n            if not (0 <= r0 < r1 <= plane.shape[0] and 0 <= c0 < c1 <= plane.shape[1]):\n                raise ValueError(\"Region outside recorded depth resolution\")\n            if (r1 - r0) * (c1 - c0) > 1024:\n                raise ValueError(\"Region must contain at most 1024 pixels\")\n            values = plane[r0:r1, c0:c1].astype(object)\n            values[~valid[r0:r1, c0:c1]] = None\n            data.update(region_rc=region_rc, raw_depth_m=values.tolist())\n        image = io.BytesIO()\n        Image.fromarray(preview).save(image, format=\"PNG\")\n        return ToolResult(data=data, images=[image.getvalue()])\n",
+      "required": false,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+      "example": null,
+      "source_robot": "univtac",
+      "supported_environments": [
+        "univtac"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    },
+    {
+      "id": "native:move_eef",
+      "name": "move_eef",
+      "origin": "native",
+      "category": "control",
+      "description": "Execute 1..5 absolute world-frame Panda-hand targets briefly, then observe actual motion.\n\nEach target is [x,y,z,qw,qx,qy,qz,gripper]: metres, unit wxyz quaternion,\ngripper 0 closed to 1 open. Local IK bounds joint changes. This is\nposition control, not force control or a collision-free path guarantee.\nAn accepted target directly applies two IK joint-position updates over\nat most two 120 Hz physics steps (normally 16.7 ms), without extra\nsettling. IK rejection advances no physics. Model thinking and observe\ndo not advance physics either. Use small increments during contact;\naccurate hand arrival does not establish object progress or stability.",
+      "parameters": {
+        "properties": {
+          "poses": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "poses"
+        ],
+        "type": "object"
+      },
+      "version": "fe6764ffc49824bfc7cf4e0ec5fcaa763dc9cf62892e9611ea0998b4d9ad1c62",
+      "source": "    @tool\n    def move_eef(self, poses: list[list[float]]) -> ToolResult:\n        \"\"\"Execute 1..5 absolute world-frame Panda-hand targets briefly, then observe actual motion.\n\n        Each target is [x,y,z,qw,qx,qy,qz,gripper]: metres, unit wxyz quaternion,\n        gripper 0 closed to 1 open. Local IK bounds joint changes. This is\n        position control, not force control or a collision-free path guarantee.\n        An accepted target directly applies two IK joint-position updates over\n        at most two 120 Hz physics steps (normally 16.7 ms), without extra\n        settling. IK rejection advances no physics. Model thinking and observe\n        do not advance physics either. Use small increments during contact;\n        accurate hand arrival does not establish object progress or stability.\n        \"\"\"\n        if self._model_finish is not None:\n            return ToolResult(data={\"error\": \"Model already finished this episode\"})\n        if self._environment_stopped:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        if not 1 <= len(poses) <= 5:\n            raise ValueError(\"Supply 1..5 target poses\")\n        self.raise_if_cancelled()\n        observations, _, terminated, truncated, info = self.env.chunk_step(\n            poses, return_all_frames=True\n        )\n        self._pending = (\n            observations if isinstance(observations, list) else [observations]\n        )\n        self._environment_stopped = bool(terminated or truncated)\n        return ToolResult(data=info)\n",
+      "required": false,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "poses: 1..5 absolute Panda-hand targets in world coordinates; each [x,y,z,qw,qx,qy,qz,gripper], metres, unit wxyz quaternion, gripper 0 closed to 1 open. Short execution, not guaranteed arrival.",
+      "example": null,
+      "source_robot": "univtac",
+      "supported_environments": [
+        "univtac"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    },
+    {
+      "id": "native:finish",
+      "name": "finish",
+      "origin": "native",
+      "category": "auxiliary",
+      "description": "Call when the task is complete or unrecoverable. Halts the agent loop. Save any artifacts (recipe, audit) BEFORE calling finish.",
+      "parameters": {
+        "properties": {
+          "status": {
+            "description": "Outcome, e.g. 'success', 'failure', or 'stuck'.",
+            "type": "string"
+          },
+          "summary": {
+            "description": "Short natural-language summary of the run.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "summary"
+        ],
+        "type": "object"
+      },
+      "version": "0c2069c30df75e18a6fed9074be76703957b263936a0bb14d09babdcdc34acc8",
+      "source": "    @tool(readonly=True)\n    def finish(self, status: str, summary: str) -> ToolResult:\n        \"\"\"Call when the task is complete or unrecoverable. Halts the agent loop. Save any artifacts (recipe, audit) BEFORE calling finish.\n\n        Args:\n            status: Outcome, e.g. 'success', 'failure', or 'stuck'.\n            summary: Short natural-language summary of the run.\n        \"\"\"\n        return ToolResult(data={\"_finish\": True, \"status\": status, \"summary\": summary})\n",
+      "required": true,
+      "dependencies": [],
+      "validation": "native",
+      "input_contract": "Recorded UniVTAC sensor data; no simulator object state.",
+      "example": null,
+      "source_robot": "shared",
+      "supported_environments": [
+        "univtac",
+        "libero",
+        "flexiv"
+      ],
+      "selectable": true,
+      "incompatibility_reason": null
+    }
+  ],
+  "history": [
+    {
+      "iteration": 1,
+      "score": {
+        "successes": 3,
+        "trials": 3,
+        "token_records": 3,
+        "mean_total_tokens": 942371.6666666666,
+        "mean_elapsed_s": 379.7333333333333
+      },
+      "adopted_calls": 55,
+      "kept": false,
+      "tool_execution": {
+        "valid_calls": 55,
+        "error_calls": 0
+      },
+      "judgement": {
+        "token_benefit": false,
+        "success_benefit": false,
+        "stop_recommended": false,
+        "reason": "Mean tokens increased from 906,258 to 942,372 (+4.0%), so reduced token use is unsupported. Both configurations succeeded on 3/3 trials; this shows no observed reliability improvement, and three development seeds on one task do not establish generalization. The tool's 55 valid calls with zero errors support operational usability, not improved task reliability or causal benefit. Replay examples demonstrate descriptive measurements and explicit uncertainty, not outcome validation. Mean elapsed time fell 5.8%, but faster execution does not establish either requested benefit. Neither stopping criterion is met."
+      }
+    },
+    {
+      "iteration": 2,
+      "score": {
+        "successes": 1,
+        "trials": 3,
+        "token_records": 3,
+        "mean_total_tokens": 1600156.0,
+        "mean_elapsed_s": 516.6666666666666
+      },
+      "adopted_calls": 80,
+      "kept": false,
+      "tool_execution": {
+        "valid_calls": 80,
+        "error_calls": 0
+      },
+      "judgement": {
+        "token_benefit": false,
+        "success_benefit": false,
+        "stop_recommended": false,
+        "reason": "Development results oppose both benefits: mean total tokens rose from 906,258 to 1,600,156 (+76.6%), while success fell from 3/3 to 1/3. Mean elapsed time also increased by 28.2%. All 80 tool calls executed without errors, demonstrating operational execution, not improved task reliability. Failed trials used 25 and 43 calls; the successful trial used 12. Without baseline call counts or controlled comparisons, this does not establish causation. Replay outputs demonstrate descriptive measurements and explicit uncertainty, not task completion or token savings. Three seeds cannot establish generalization, and aggregate means lack variability estimates. Neither required benefit has supporting evidence, so stopping is not recommended."
+      }
+    },
+    {
+      "iteration": 3,
+      "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+    },
+    {
+      "iteration": 4,
+      "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+    },
+    {
+      "iteration": 5,
+      "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+    }
+  ],
+  "runtime_sources": {
+    "prompt_bundle.py": "b3f0e52bc974ed2518a184a7b040a784f07d1b8ec6caa5db6f56ea6b72dbf72a",
+    "toolkit.py": "781f7ee398a0aefc9b1bf1d58e5aa9ce09745b9b567cdfff858b7e3bd0d81f0b",
+    "control.py": "6d0d9d384fb934027ca6ad82c840ac51b83dafece859f055f3a1532dd633f166",
+    "backend.py": "7a369874fd1fbc25f150975c4ac0893b89bd819e367acb97215e81b5e14e172b",
+    "observations.py": "9936cdbea566f7164b45cb9a9eb7f74722edde772af1751bca6acdfc84dd17f8",
+    "instructions.py": "181dc8c07119ecdc13fff8ece35f1cf50e4461f49ed2ec21f7f7a8768cd87fc7"
+  },
+  "development_driver": {
+    "/home/zwy/work/harnessvla/examples/univtac/develop_tools.py": "babbb424e013099d52b1378647e38fb9721a63434486876ddf80be44a2bdad20",
+    "/home/zwy/work/harnessvla/robots/libero/research/codex_sdk.py": "c8213325649237fd0f9bca5961bc8b70bbe0234025b748be74988cae0b66282a",
+    "robots/univtac/pilot/maker.py": "c4f62efd1cfd1e86eca6e851371cafeb206c5748a4ebd2525d3d6007ecd3f9f0",
+    "robots/univtac/pilot/evidence.py": "a57bd542b06318b1c1d6d5160ff6bf43322d08d5591e025d325127f0078faa98"
+  }
+}

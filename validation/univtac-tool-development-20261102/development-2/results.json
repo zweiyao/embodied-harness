@@ -1,0 +1,76 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "8a6bcfbff641e5887d28",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0017_univtac_t0_s0",
+    "official_success": false,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 506.2,
+    "planner_elapsed_s": 455.9,
+    "tool_execution_s": 47.7,
+    "tool_calls": {
+      "observe": 1,
+      "sensor_modal_evidence": 25,
+      "read_depth": 2,
+      "move_eef": 24,
+      "finish": 1
+    },
+    "decisions": 32,
+    "input_tokens": 1277737,
+    "cached_input_tokens": 1220864,
+    "output_tokens": 7320,
+    "reasoning_output_tokens": 1734,
+    "batch_wall_s": 510.9
+  },
+  {
+    "task": 0,
+    "seed": 1,
+    "run_id": "345594092d16892c6cf8",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0018_univtac_t0_s1",
+    "official_success": false,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 784.7,
+    "planner_elapsed_s": 733.0,
+    "tool_execution_s": 115.878,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 3,
+      "sensor_modal_evidence": 43,
+      "move_eef": 42,
+      "finish": 1
+    },
+    "decisions": 49,
+    "input_tokens": 3061518,
+    "cached_input_tokens": 2965632,
+    "output_tokens": 13958,
+    "reasoning_output_tokens": 5165,
+    "batch_wall_s": 791.4
+  },
+  {
+    "task": 0,
+    "seed": 2,
+    "run_id": "6792eca9688c7c947add",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0019_univtac_t0_s2",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 259.1,
+    "planner_elapsed_s": 207.6,
+    "tool_execution_s": 21.76,
+    "tool_calls": {
+      "observe": 1,
+      "sensor_modal_evidence": 12,
+      "read_depth": 1,
+      "move_eef": 11
+    },
+    "decisions": 14,
+    "input_tokens": 436426,
+    "cached_input_tokens": 391168,
+    "output_tokens": 3509,
+    "reasoning_output_tokens": 933,
+    "batch_wall_s": 260.5
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "result": "passed",
+  "checks": [
+    "archive equals original run results",
+    "four group counts/time/token means recomputed",
+    "both candidate sources match originals",
+    "native-only freeze confirmed",
+    "two candidates and three input-limit failures distinguished",
+    "19 actual simulator episodes"
+  ],
+  "new_model_requests": 0,
+  "new_simulations": 0
+}

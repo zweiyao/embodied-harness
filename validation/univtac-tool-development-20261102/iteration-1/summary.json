@@ -30,13 +30,18 @@
     "mean_elapsed_s": 403.1666666666667
   },
   "replay_windows_passed": 6,
-  "scope": "Execution and parameter checks only; simulator validation in progress",
+  "scope": "Replay execution passed; actual simulator development 3/3 but no token gain.",
   "runtime_status": {
-    "phase": "development-1",
-    "task": 0,
-    "seed": 0,
-    "completed": 0,
-    "run_id": "63d2c0645e7909b95fb7",
-    "state": "running"
-  }
+    "phase": "completed"
+  },
+  "development_score": {
+    "successes": 3,
+    "trials": 3,
+    "token_records": 3,
+    "mean_total_tokens": 942371.6666666666,
+    "mean_elapsed_s": 379.7333333333333
+  },
+  "valid_calls": 55,
+  "error_calls": 0,
+  "kept": false
 }

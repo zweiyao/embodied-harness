@@ -1,0 +1,58 @@
+[
+  {
+    "iteration": 1,
+    "score": {
+      "successes": 3,
+      "trials": 3,
+      "token_records": 3,
+      "mean_total_tokens": 942371.6666666666,
+      "mean_elapsed_s": 379.7333333333333
+    },
+    "adopted_calls": 55,
+    "kept": false,
+    "tool_execution": {
+      "valid_calls": 55,
+      "error_calls": 0
+    },
+    "judgement": {
+      "token_benefit": false,
+      "success_benefit": false,
+      "stop_recommended": false,
+      "reason": "Mean tokens increased from 906,258 to 942,372 (+4.0%), so reduced token use is unsupported. Both configurations succeeded on 3/3 trials; this shows no observed reliability improvement, and three development seeds on one task do not establish generalization. The tool's 55 valid calls with zero errors support operational usability, not improved task reliability or causal benefit. Replay examples demonstrate descriptive measurements and explicit uncertainty, not outcome validation. Mean elapsed time fell 5.8%, but faster execution does not establish either requested benefit. Neither stopping criterion is met."
+    }
+  },
+  {
+    "iteration": 2,
+    "score": {
+      "successes": 1,
+      "trials": 3,
+      "token_records": 3,
+      "mean_total_tokens": 1600156.0,
+      "mean_elapsed_s": 516.6666666666666
+    },
+    "adopted_calls": 80,
+    "kept": false,
+    "tool_execution": {
+      "valid_calls": 80,
+      "error_calls": 0
+    },
+    "judgement": {
+      "token_benefit": false,
+      "success_benefit": false,
+      "stop_recommended": false,
+      "reason": "Development results oppose both benefits: mean total tokens rose from 906,258 to 1,600,156 (+76.6%), while success fell from 3/3 to 1/3. Mean elapsed time also increased by 28.2%. All 80 tool calls executed without errors, demonstrating operational execution, not improved task reliability. Failed trials used 25 and 43 calls; the successful trial used 12. Without baseline call counts or controlled comparisons, this does not establish causation. Replay outputs demonstrate descriptive measurements and explicit uncertainty, not task completion or token savings. Three seeds cannot establish generalization, and aggregate means lack variability estimates. Neither required benefit has supporting evidence, so stopping is not recommended."
+    }
+  },
+  {
+    "iteration": 3,
+    "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+  },
+  {
+    "iteration": 4,
+    "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+  },
+  {
+    "iteration": 5,
+    "error": "JSON-RPC error -32602: Input exceeds the maximum length of 1048576 characters."
+  }
+]

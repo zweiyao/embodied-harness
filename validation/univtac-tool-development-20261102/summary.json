@@ -1,0 +1,95 @@
+{
+  "status": "completed_without_tool_gain",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "simulator_episodes": 19,
+  "optimization_attempts": 5,
+  "produced_and_simulator_tested_candidates": 2,
+  "maker_infrastructure_failures": 3,
+  "selected_iteration": 0,
+  "generated_tool_in_final_tests": false,
+  "groups": {
+    "development-baseline": {
+      "trials": 3,
+      "official_successes": 3,
+      "mean_elapsed_s": 403.1666666666667,
+      "total_elapsed_s": 1209.5,
+      "input_tokens": 2699321,
+      "cached_input_tokens": 2537344,
+      "output_tokens": 19453,
+      "reasoning_output_tokens": 7505,
+      "mean_total_tokens": 906258
+    },
+    "development-1": {
+      "trials": 3,
+      "official_successes": 3,
+      "mean_elapsed_s": 379.73333333333335,
+      "total_elapsed_s": 1139.2,
+      "input_tokens": 2808903,
+      "cached_input_tokens": 2660864,
+      "output_tokens": 18212,
+      "reasoning_output_tokens": 5708,
+      "mean_total_tokens": 942371.6666666666
+    },
+    "development-2": {
+      "trials": 3,
+      "official_successes": 1,
+      "mean_elapsed_s": 516.6666666666667,
+      "total_elapsed_s": 1550.0,
+      "input_tokens": 4775681,
+      "cached_input_tokens": 4577664,
+      "output_tokens": 24787,
+      "reasoning_output_tokens": 7832,
+      "mean_total_tokens": 1600156
+    },
+    "final_native_repeat": {
+      "trials": 10,
+      "official_successes": 8,
+      "mean_elapsed_s": 321.87,
+      "total_elapsed_s": 3218.7,
+      "input_tokens": 8947176,
+      "cached_input_tokens": 8433536,
+      "output_tokens": 52197,
+      "reasoning_output_tokens": 13975,
+      "mean_total_tokens": 899937.3
+    },
+    "final_native_task_1": {
+      "trials": 5,
+      "official_successes": 3,
+      "mean_elapsed_s": 337.58,
+      "total_elapsed_s": 1687.9,
+      "input_tokens": 4167435,
+      "cached_input_tokens": 3927424,
+      "output_tokens": 23842,
+      "reasoning_output_tokens": 9263,
+      "mean_total_tokens": 838255.4
+    },
+    "final_native_task_2": {
+      "trials": 5,
+      "official_successes": 5,
+      "mean_elapsed_s": 306.16,
+      "total_elapsed_s": 1530.8,
+      "input_tokens": 4779741,
+      "cached_input_tokens": 4506112,
+      "output_tokens": 28355,
+      "reasoning_output_tokens": 4712,
+      "mean_total_tokens": 961619.2
+    }
+  },
+  "maker_and_assessment_known_usage": {
+    "input_tokens": 601527,
+    "cached_input_tokens": 0,
+    "output_tokens": 16704,
+    "reasoning_output_tokens": 3234
+  },
+  "failed_maker_usage": null,
+  "failed_maker_usage_note": "No provider usage returned for attempts 3-5; do not impute zero billing.",
+  "conclusion": "Neither generated candidate demonstrated success or token gain. Final 8/10 is native-only repeat testing, not generated-tool treatment.",
+  "limitations": [
+    "Only two valid candidates; attempts 3-5 rejected before generation at JSON-RPC 1048576-character limit.",
+    "Oversized evidence was resubmitted without compaction; this is an orchestration fault.",
+    "Same seeds do not establish identical initial physics; repeat variation cannot be attributed to a tool.",
+    "Physical failure mechanisms for development-2 require separate trajectory review.",
+    "No Qwen evaluation in this batch."
+  ]
+}

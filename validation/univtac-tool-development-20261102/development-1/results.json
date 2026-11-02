@@ -1,0 +1,75 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "63d2c0645e7909b95fb7",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0014_univtac_t0_s0",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 389.4,
+    "planner_elapsed_s": 339.5,
+    "tool_execution_s": 32.445,
+    "tool_calls": {
+      "observe": 1,
+      "sensor_modal_evidence": 16,
+      "read_depth": 2,
+      "move_eef": 20
+    },
+    "decisions": 24,
+    "input_tokens": 805315,
+    "cached_input_tokens": 754944,
+    "output_tokens": 5711,
+    "reasoning_output_tokens": 1367,
+    "batch_wall_s": 390.5
+  },
+  {
+    "task": 0,
+    "seed": 1,
+    "run_id": "05c92fc4042e202e27f8",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0015_univtac_t0_s1",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 304.2,
+    "planner_elapsed_s": 254.4,
+    "tool_execution_s": 44.621,
+    "tool_calls": {
+      "observe": 1,
+      "sensor_modal_evidence": 15,
+      "read_depth": 1,
+      "move_eef": 17,
+      "tactile_stats": 1
+    },
+    "decisions": 20,
+    "input_tokens": 704786,
+    "cached_input_tokens": 660224,
+    "output_tokens": 4443,
+    "reasoning_output_tokens": 1151,
+    "batch_wall_s": 310.4
+  },
+  {
+    "task": 0,
+    "seed": 2,
+    "run_id": "252cb016c2071a310cd7",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0016_univtac_t0_s2",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 445.6,
+    "planner_elapsed_s": 394.5,
+    "tool_execution_s": 41.512,
+    "tool_calls": {
+      "observe": 1,
+      "sensor_modal_evidence": 24,
+      "read_depth": 2,
+      "move_eef": 26
+    },
+    "decisions": 31,
+    "input_tokens": 1298802,
+    "cached_input_tokens": 1245696,
+    "output_tokens": 8058,
+    "reasoning_output_tokens": 3190,
+    "batch_wall_s": 450.7
+  }
+]
