@@ -1,0 +1,110 @@
+{
+  "development": "/home/zwy/work/embodied_harness/experiments/univtac-authored-geometry-20261102/development-v1-warm",
+  "tool_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5",
+  "tool": {
+    "name": "sensor_modal_evidence",
+    "description": "Measure a visible flat patch in 3D instead of manually interpreting repeated depth queries. Choose camera and region_rc=[row_start,column_start,row_end,column_end] at native resolution; ends exclusive, 4x4 minimum, 4096 pixels maximum. Uses the latest frame unless step is supplied (latest four only). Returns world centre, camera-facing unit normal, depth support and fit errors; unknown for insufficient/mixed/curved support. Select one surface, avoiding edges and occlusion. The normal is a measured surface direction, not automatically an object axis, movement direction or insertion depth.",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "camera",
+        "region_rc"
+      ],
+      "properties": {
+        "camera": {
+          "type": "string",
+          "enum": [
+            "head",
+            "wrist"
+          ]
+        },
+        "region_rc": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "step": {
+          "type": "integer",
+          "minimum": -1,
+          "default": -1
+        }
+      }
+    },
+    "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Measure a visible local surface from UniVTAC's optical-Z depth.\"\"\"\n\nimport numpy as np\n\n\ndef run(frames, params):\n    \"\"\"Fit one selected surface; report world geometry and observable fit quality.\"\"\"\n    if not frames:\n        return {\"status\": \"unknown\", \"reason\": \"no recorded frame\"}\n    step = params.get(\"step\", -1)\n    frame = (\n        frames[-1]\n        if step == -1\n        else next((f for f in frames if f[\"step\"] == step), None)\n    )\n    if frame is None:\n        return {\"status\": \"unknown\", \"reason\": \"step outside latest four frames\"}\n    camera = params[\"camera\"]\n    result = {\n        \"status\": \"unknown\",\n        \"step\": frame[\"step\"],\n        \"camera\": camera,\n        \"coordinate_frame\": \"world\",\n        \"units\": \"m\",\n    }\n\n    def unknown(reason):\n        return {**result, \"reason\": reason}\n\n    sensor = frame.get(\"cameras\", {}).get(camera, {})\n    calibration = sensor.get(\"calibration\", {})\n    if \"depth\" not in sensor or not all(\n        k in calibration\n        for k in (\"intrinsics\", \"position_w\", \"quaternion_wxyz\", \"height\", \"width\")\n    ):\n        return unknown(\"missing depth or calibration\")\n    if (\n        calibration.get(\"camera_convention\") != \"ros_optical\"\n        or sensor.get(\"depth_units\", calibration.get(\"depth_units\")) != \"m\"\n    ):\n        return unknown(\"requires native UniVTAC optical-Z depth in metres\")\n    depth = np.asarray(sensor[\"depth\"]).squeeze()\n    if depth.shape != (calibration[\"height\"], calibration[\"width\"]):\n        return unknown(\"depth and calibration resolution differ\")\n    r0, c0, r1, c1 = params[\"region_rc\"]\n    if not (0 <= r0 < r1 <= depth.shape[0] and 0 <= c0 < c1 <= depth.shape[1]):\n        return unknown(\"region outside native image\")\n    if min(r1 - r0, c1 - c0) < 4 or (r1 - r0) * (c1 - c0) > 4096:\n        return unknown(\n            \"select a 2D surface patch, at least 4x4 and at most 4096 pixels\"\n        )\n    k = np.asarray(calibration[\"intrinsics\"], dtype=float)\n    q = np.asarray(calibration[\"quaternion_wxyz\"], dtype=float)\n    origin = np.asarray(calibration[\"position_w\"], dtype=float)\n    if (\n        k.shape != (3, 3)\n        or q.shape != (4,)\n        or origin.shape != (3,)\n        or not all(np.isfinite(a).all() for a in (k, q, origin))\n        or abs(np.linalg.det(k)) < 1e-9\n        or abs(np.linalg.norm(q) - 1) > 1e-3\n    ):\n        return unknown(\"invalid camera calibration\")\n    rows, cols = np.mgrid[r0:r1, c0:c1]\n    z = depth[r0:r1, c0:c1]\n    valid = np.isfinite(z) & (z > 0)\n    result.update(region_rc=[r0, c0, r1, c1], points=int(valid.sum()))\n    if valid.sum() < 16 or valid.mean() < 0.8:\n        return unknown(\"insufficient valid depth coverage\")\n    rays = (\n        np.stack([cols[valid], rows[valid], np.ones(valid.sum())], axis=1)\n        @ np.linalg.inv(k).T\n    )\n    points = rays * (z[valid] / rays[:, 2])[:, None]\n    center = points.mean(axis=0)\n    _, singular, vh = np.linalg.svd(points - center, full_matrices=False)\n    normal = vh[-1]\n    if normal @ center > 0:\n        normal = -normal  # Choose the camera-facing sign; not an insertion direction.\n    residual = np.abs((points - center) @ normal)\n    rms = float(np.sqrt(np.mean(residual**2)))\n    ratio = float(singular[-1] / max(singular[-2], 1e-12))\n    result.update(\n        rms_m=round(rms, 6),\n        p95_residual_m=round(float(np.quantile(residual, 0.95)), 6),\n        normal_to_tangent_ratio=round(ratio, 5),\n    )\n    if singular[-2] < 1e-5 or ratio > 0.1 or rms > 0.002:\n        return unknown(\n            \"patch is narrow, curved or contains multiple surfaces; choose one visible flat patch\"\n        )\n    # A low global residual alone can hide curvature or a foreground/background boundary.\n    angles = []\n    for top in (True, False):\n        for left in (True, False):\n            mask = ((rows[valid] < (r0 + r1) / 2) == top) & (\n                (cols[valid] < (c0 + c1) / 2) == left\n            )\n            part = points[mask]\n            if len(part) < 4:\n                continue\n            _, values, basis = np.linalg.svd(\n                part - part.mean(axis=0), full_matrices=False\n            )\n            if values[1] > 1e-5:\n                angles.append(\n                    float(np.degrees(np.arccos(np.clip(abs(basis[-1] @ normal), 0, 1))))\n                )\n    spread = max(angles) if angles else None\n    result[\"quadrant_normal_spread_deg\"] = (\n        round(spread, 2) if spread is not None else None\n    )\n    if len(angles) < 3 or spread > 10:\n        return unknown(\"local surface directions disagree or have insufficient support\")\n    w, x, y, z = q / np.linalg.norm(q)\n    rotation = np.array(\n        [\n            [1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],\n            [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],\n            [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)],\n        ]\n    )\n    result.update(\n        status=\"measured\",\n        center_world_m=np.round(rotation @ center + origin, 6).tolist(),\n        normal_world=np.round(rotation @ normal, 6).tolist(),\n        limitation=\"Visible patch only. Normal points toward camera; it is not necessarily an object/hole axis or evidence of insertion.\",\n    )\n    return result\n"
+  },
+  "sources": {
+    "prompt_bundle.py": "b3f0e52bc974ed2518a184a7b040a784f07d1b8ec6caa5db6f56ea6b72dbf72a",
+    "toolkit.py": "781f7ee398a0aefc9b1bf1d58e5aa9ce09745b9b567cdfff858b7e3bd0d81f0b",
+    "control.py": "6d0d9d384fb934027ca6ad82c840ac51b83dafece859f055f3a1532dd633f166",
+    "backend.py": "7a369874fd1fbc25f150975c4ac0893b89bd819e367acb97215e81b5e14e172b",
+    "observations.py": "9936cdbea566f7164b45cb9a9eb7f74722edde772af1751bca6acdfc84dd17f8",
+    "instructions.py": "181dc8c07119ecdc13fff8ece35f1cf50e4461f49ed2ec21f7f7a8768cd87fc7"
+  },
+  "trials": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ]
+  ],
+  "configuration": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "max_turns": 60,
+    "max_tokens": 10000,
+    "planner_timeout_s": 3600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:finish",
+      "native:move_eef",
+      "native:observe",
+      "native:read_depth",
+      "native:read_image",
+      "native:tactile_stats"
+    ],
+    "reasoning_effort": "high"
+  },
+  "rule": "No tool, prompt or threshold changes during testing; stop on infrastructure error; no retries",
+  "author": "current Codex conversation",
+  "remote_maker_requests": 0
+}
