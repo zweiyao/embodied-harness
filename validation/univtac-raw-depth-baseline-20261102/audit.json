@@ -1,0 +1,162 @@
+[
+  {
+    "task": 1,
+    "seed": 0,
+    "run_id": "f4c67d3ca0e4ec5a3002",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": true,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 1,
+    "seed": 1,
+    "run_id": "5c6a4296ba2c934ce283",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 1,
+    "seed": 2,
+    "run_id": "790e8c1dadd1f1ee21a6",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 1,
+    "seed": 3,
+    "run_id": "0442d32b6c74f629c7a0",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 1,
+    "seed": 4,
+    "run_id": "26aeeca32e8a2c628b3a",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 2,
+    "seed": 0,
+    "run_id": "fac480df7a372a255b3a",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": true,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 2,
+    "seed": 1,
+    "run_id": "5ff823c9f386d735e75f",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": false,
+    "model_finish_status": "stuck"
+  },
+  {
+    "task": 2,
+    "seed": 2,
+    "run_id": "2275f2163801632f1919",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  },
+  {
+    "task": 2,
+    "seed": 3,
+    "run_id": "6337f5b6e3da08805830",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": false,
+    "model_finish_status": "stuck"
+  },
+  {
+    "task": 2,
+    "seed": 4,
+    "run_id": "bc377f408a5177804462",
+    "tool_names_match": true,
+    "declarations_hash": "d7a12729a74d5f5bd93896d78a8ef0440cf9fa8a217d30d412e0c60e6f3ce9aa",
+    "system_prompt_hash": "882b365eeb156864f4ba130a5f69cab6d294ad74ea366c26ced53e46ef9ee181",
+    "prompt_keys": [
+      "system",
+      "user"
+    ],
+    "evaluator_agrees": true,
+    "early_stop": false,
+    "environment_done": true,
+    "model_finish_status": "stopped"
+  }
+]
