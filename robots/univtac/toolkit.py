@@ -326,6 +326,69 @@ class UniVTACToolkit(Toolkit):
         return ToolResult(data=tactile_statistics(self._frame(step)))
 
     @tool(readonly=True)
+    def read_depth(
+        self, camera: str, step: int = -1, region_rc: list[int] | None = None
+    ) -> ToolResult:
+        """Read a native metric depth map as an image, with optional exact raw pixel values.
+
+        Select a recorded camera (head or wrist) and step (-1 is latest).
+        The full native-resolution array is preserved in the returned NPZ artifact;
+        the image is an 8-bit preview, not the raw array. Black is nearer, white
+        farther within the reported range; magenta is invalid. For exact metres,
+        request region_rc=[row_start,column_start,row_end,column_end], exclusive
+        ends and at most 1024 pixels. No smoothing, resizing or 3D inference is
+        applied. Region values are row-major; invalid depth is null.
+        """
+        import io
+
+        from PIL import Image
+
+        frame = self._frame(step)
+        sensor = frame["cameras"].get(camera, {})
+        if "depth" not in sensor:
+            return ToolResult(data={"error": "Depth not recorded for this camera"})
+        depth = np.asarray(sensor["depth"])
+        plane = depth.squeeze()
+        if plane.ndim != 2:
+            raise ValueError("Expected a two-dimensional depth map")
+        valid = np.isfinite(plane) & (plane > 0)
+        low = float(plane[valid].min()) if valid.any() else None
+        high = float(plane[valid].max()) if valid.any() else None
+        preview = np.zeros((*plane.shape, 3), dtype=np.uint8)
+        if low is not None and high > low:
+            gray = np.rint((plane[valid] - low) / (high - low) * 255).astype(np.uint8)
+            preview[valid] = gray[:, None]
+        preview[~valid] = [255, 0, 255]
+        data = {
+            "step": frame["step"],
+            "camera": camera,
+            "raw_artifact": f"sensor_cameras_{camera}_depth.npz",
+            "raw_shape": list(depth.shape),
+            "raw_dtype": str(depth.dtype),
+            "image_size": list(plane.shape),
+            "depth_units": "m",
+            "image_origin": "top_left",
+            "pixel_order": "row,column",
+            "preview_range_m": [low, high],
+            "preview_encoding": "linear grayscale, near=0 far=255; constant valid depth=0; invalid=magenta",
+            "invalid_pixels": int((~valid).sum()),
+        }
+        if region_rc is not None:
+            if len(region_rc) != 4:
+                raise ValueError("region_rc must contain four bounds")
+            r0, c0, r1, c1 = region_rc
+            if not (0 <= r0 < r1 <= plane.shape[0] and 0 <= c0 < c1 <= plane.shape[1]):
+                raise ValueError("Region outside recorded depth resolution")
+            if (r1 - r0) * (c1 - c0) > 1024:
+                raise ValueError("Region must contain at most 1024 pixels")
+            values = plane[r0:r1, c0:c1].astype(object)
+            values[~valid[r0:r1, c0:c1]] = None
+            data.update(region_rc=region_rc, raw_depth_m=values.tolist())
+        image = io.BytesIO()
+        Image.fromarray(preview).save(image, format="PNG")
+        return ToolResult(data=data, images=[image.getvalue()])
+
+    @tool(readonly=True)
     def depth_points(
         self, camera: str, pixels_rc: list[list[int]], step: int = -1
     ) -> ToolResult:
