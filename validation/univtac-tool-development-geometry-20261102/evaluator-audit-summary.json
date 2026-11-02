@@ -1,0 +1,144 @@
+{
+  "scope": "Evaluator-only retrospective audit, excluded from maker payload and generated tool runtime",
+  "task_source": "/home/zwy/work/embodied_harness/external/UniVTAC/envs/insert_hole.py",
+  "task_source_sha256": "8b199327e549f979076e03082b0a8883cc71de351c90c30901c6af6c432ce1cb",
+  "method": "Reconstruct fixed target from initial slot snapshot using official task convention; compare native actor/EE poses. Fixed gripper translation cancels in within-gripper axial differences. Geometry is approximate; archived official outcome remains authoritative.",
+  "predicates_match_official": true,
+  "trials": [
+    {
+      "group": "development-baseline",
+      "seed": 0,
+      "run_id": "fa19bfdfb6ebfb2c2895",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 1.8721070732019964,
+      "final_target_relative_xyz_mm": [
+        -1.8403489810621487,
+        0.07169507443904877,
+        -41.2003586532448
+      ],
+      "final_inhand_change_mm": 8.372661824091992,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-baseline",
+      "seed": 1,
+      "run_id": "98c21a54de8354655e3f",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 1.8273057726145454,
+      "final_target_relative_xyz_mm": [
+        -0.21740568910653757,
+        -0.10957755148410797,
+        -41.87819897288559
+      ],
+      "final_inhand_change_mm": 0.6557533642976565,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-baseline",
+      "seed": 2,
+      "run_id": "4fabb471c8476bfc8be6",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 0.06469437519315967,
+      "final_target_relative_xyz_mm": [
+        -0.8697714164173107,
+        -0.43355487287044525,
+        -40.63864473428773
+      ],
+      "final_inhand_change_mm": 7.730669540991276,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-1",
+      "seed": 0,
+      "run_id": "9c11dc1682bbeba86cc4",
+      "official_success": false,
+      "early_stop": false,
+      "final_axis_error_deg": 14.838868601084812,
+      "final_target_relative_xyz_mm": [
+        1.7266477500513389,
+        -0.06337091326713562,
+        -21.101870572734505
+      ],
+      "final_inhand_change_mm": 31.590727866175282,
+      "reconstructed_success": false
+    },
+    {
+      "group": "development-1",
+      "seed": 1,
+      "run_id": "43378c87d482f0e73661",
+      "official_success": false,
+      "early_stop": true,
+      "final_axis_error_deg": 3.3083209795078337,
+      "final_target_relative_xyz_mm": [
+        15.282656239830464,
+        -0.11916644871234894,
+        -7.715549301060743
+      ],
+      "final_inhand_change_mm": 40.1178095938694,
+      "reconstructed_success": false
+    },
+    {
+      "group": "development-1",
+      "seed": 2,
+      "run_id": "b78c30845380f115c057",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 0.20875696366833713,
+      "final_target_relative_xyz_mm": [
+        -1.397264744855383,
+        0.33785030245780945,
+        -41.0342751159156
+      ],
+      "final_inhand_change_mm": 7.745923182195968,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-2",
+      "seed": 0,
+      "run_id": "7eb720c78511868e5619",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 0.8975533995996307,
+      "final_target_relative_xyz_mm": [
+        -1.2073765455497631,
+        0.22533908486366272,
+        -41.59622528594248
+      ],
+      "final_inhand_change_mm": 0.07278385014133915,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-2",
+      "seed": 1,
+      "run_id": "e6172b637a38b0e0fa11",
+      "official_success": true,
+      "early_stop": false,
+      "final_axis_error_deg": 2.824407193345694,
+      "final_target_relative_xyz_mm": [
+        0.03592485452368261,
+        -0.3507528454065323,
+        -40.5536925788467
+      ],
+      "final_inhand_change_mm": 9.098794531798488,
+      "reconstructed_success": true
+    },
+    {
+      "group": "development-2",
+      "seed": 2,
+      "run_id": "b504f4fbbf679af107dc",
+      "official_success": false,
+      "early_stop": true,
+      "final_axis_error_deg": 26.615857872212718,
+      "final_target_relative_xyz_mm": [
+        4.213730327572269,
+        0.12215226888656616,
+        -16.460344174463867
+      ],
+      "final_inhand_change_mm": 40.07873967054998,
+      "reconstructed_success": false
+    }
+  ]
+}
