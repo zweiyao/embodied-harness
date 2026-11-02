@@ -39,3 +39,32 @@ maker原先只看到起点/终点，未必看到模型查询局部深度的中�
 代码改变仅在制作材料/制作提示，不改变运行策略提示；26项定向测试通过，全仓1838 passed、12 skipped、同两项旧失败；全仓pre-commit通过。
 
 新批已启动：maker实际输入192482字符（含上一版反馈），36图。制作请求尚未返回，无新工具效果结论。
+
+
+## 用户更新：工具由当前对话直接编写
+
+远程制作服务已停止：一次300秒超时、第二次人工停止，均未产生完整候选，未启动该批新仿真。
+不再发送远程制作或评议请求。原制作记录保留，不能把当前代码记为远程Astra产物。
+
+当前工具源码：`examples/univtac/tools/local_surface.py`；声明：同名JSON。
+库内仍使用一个稳定名称`sensor_modal_evidence`。它把模型选定的原生像素区域反投影，
+拟合可见平面，返回世界坐标中心、朝相机的单位法向、有效点数、残差和分区法向差异。
+至少4×4且最多4096像素；缺失/分辨率不符/窄区域/非平面支持返回unknown。
+不把局部法向当成物体轴线、运动命令或插入成功，也不读取评测器状态。
+
+深度契约核对：官方`CameraManager`直接读取`TiledCamera.data.output['depth']`；
+安装的IsaacLab `sensors/camera/tiled_camera.py`明确depth是distance_to_image_plane别名，
+即光轴Z而非径向距离。RPent记录`quat_w_ros`及同帧内外参；工具按ROS optical + wxyz转换。
+历史导出相机单位存在calibration中，运行时可在camera中，两者均遵循原记录而非猜测单位。
+
+验证：39项定向测试通过，包括已知斜面、世界旋转/平移、混合曲面、错误标定和帧选择；
+Docker回放三个历史查询区域均为unknown，残差/分布不支持可靠单平面；同沙箱合成斜面正确。
+这仅验证程序行为，不能算任务改善。
+
+`examples/univtac/evaluate_authored_tool.py`复用原实验执行器，一次评测一版工具的任务0三个seed，
+核对基线配置/控制等源码摘要，保存来源、源码、版本和实际结果，然后恢复原生工具选择。
+不请求远程模型制作，不自动进入正式测试。失败后由当前对话分析再修改，最多三版。
+当前对话制作成本没有独立provider usage，不登记为零费用；仿真token依旧逐轮记账。
+
+首版开发目录：`/home/zwy/work/embodied_harness/experiments/univtac-authored-geometry-20261102/development-v1`。
+首轮run_id `fc7d15cfae24c80860ee`，正在运行，尚无效果结论。

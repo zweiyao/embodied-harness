@@ -922,6 +922,11 @@ def main():
                     write_json(args.output / "history.json", history)
                     log_iteration(args.output, iteration, history[-1], baseline_score)
                     raise
+                if isinstance(exc, TimeoutError):
+                    history[-1]["failure_class"] = "model_request_timeout"
+                    write_json(args.output / "history.json", history)
+                    log_iteration(args.output, iteration, history[-1], baseline_score)
+                    raise
                 # Infrastructure loss cannot be fixed by another generated program.
                 state = experiment.api("/api/session/state")
                 if (

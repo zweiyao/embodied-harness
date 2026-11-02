@@ -81,7 +81,7 @@ def test_maker_keeps_the_queried_geometry_frame_and_final_temporal_pair():
 
 @pytest.mark.parametrize(
     "scenario,optimizations",
-    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3), ("recorded", 2), ("wrong_library", 1)],
+    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3), ("recorded", 2), ("wrong_library", 1), ("timeout", 3)],
 )
 def test_five_optimizations_then_frozen_test_without_test_feedback(
     tmp_path, monkeypatch, scenario, optimizations
@@ -136,6 +136,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
     makers = []
 
     def complete(output, system, payload, images, schema):
+        if scenario == "timeout":
+            raise TimeoutError()
         if scenario == "input_error":
             raise module.MakerInputBudgetError("input exceeds budget")
         if schema == module.JUDGE_SCHEMA:
@@ -211,8 +213,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
             module.main()
         assert not calls and not makers
         return
-    if scenario == "input_error":
-        with pytest.raises(module.MakerInputBudgetError):
+    if scenario in ("input_error", "timeout"):
+        with pytest.raises(module.MakerInputBudgetError if scenario == "input_error" else TimeoutError):
             module.main()
         assert len(makers) == 1
         assert len(calls) == 1
