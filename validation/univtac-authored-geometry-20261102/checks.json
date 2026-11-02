@@ -1,12 +1,12 @@
 {
   "environment": "remote /home/zwy/work/harnessvla/.venv/bin/python",
-  "focused": "40 passed (including group stops on first connection error)",
-  "full_unit": "1852 passed, 12 skipped, same 2 existing failures",
+  "focused": "35 passed: local geometry, freeze gates and batch stopping",
+  "full_unit": "1860 passed, 12 skipped, same 2 existing failures",
   "existing_failures": [
     "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
     "test_validation_requires_bound_freeze_and_exact_selected_tools"
   ],
   "precommit": "all-files passed; new files explicitly checked",
-  "task_success": "not yet measured",
+  "task_success": "Authored v1: 3/3 completed policy trials; three infrastructure attempts separately archived. v2 running.",
   "remote_maker_requests": 0
 }

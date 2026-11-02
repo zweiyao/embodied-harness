@@ -1,0 +1,50 @@
+{
+  "validation": "replay_passed",
+  "scope": "Parameter and execution check; not task improvement evidence",
+  "sensors": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0011_univtac_t0_s0/maker-inputs/sensors.zip",
+  "input_sha256": "336afbffc2b0b36e7cfb2fc648c449c68a9018ebc7eb4bb694c18089be22358c",
+  "steps": [
+    0
+  ],
+  "tool_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5",
+  "params": {
+    "camera": "wrist",
+    "step": 0,
+    "region_rc": [
+      130,
+      180,
+      165,
+      220
+    ]
+  },
+  "sandbox_image": "sha256:5b39471628bc35a7d34a2a5af7e688493135c35cfdb7dddf26e976b7bfc066c0",
+  "result": {
+    "status": "measured",
+    "step": 0,
+    "camera": "wrist",
+    "coordinate_frame": "world",
+    "units": "m",
+    "region_rc": [
+      130,
+      180,
+      165,
+      220
+    ],
+    "points": 1400,
+    "rms_m": 0.0,
+    "p95_residual_m": 0.0,
+    "normal_to_tangent_ratio": 0.0,
+    "quadrant_normal_spread_deg": 0.0,
+    "center_world_m": [
+      0.625461,
+      -0.006163,
+      0.101008
+    ],
+    "normal_world": [
+      0.000249,
+      9e-06,
+      1.0
+    ],
+    "limitation": "Visible patch only. Normal points toward camera; it is not necessarily an object/hole axis or evidence of insertion."
+  }
+}

@@ -81,6 +81,8 @@ def main():
         for t in active
     ):
         raise ValueError("Library differs from the active dashboard")
+    previous_version = next((t["id"].removeprefix("generated:") for t in active
+                             if t["id"].startswith("generated:") and t.get("name") == tool["name"]), None)
     version = publish(
         args.library,
         tool,
@@ -88,9 +90,10 @@ def main():
             "validation": "replay_passed",
             "author": "current Codex conversation",
             "source_run": "task0 development; see " + str(args.replay),
-            "reason": "Replace repeated raw depth interpretation with a calibrated local plane measurement; evaluate rather than assume alignment benefits.",
+            "reason": "Compute calibrated local geometry from selected depth patches; evaluate effect on repeated queries and alignment reasoning.",
             "input_contract": "Latest four UniVTAC sensor frames; native metric optical-Z depth, camera intrinsics and world ROS optical pose. Select an ROI at its recorded resolution. No evaluator state.",
-            "example": {"camera": "wrist", "region_rc": [100, 100, 108, 108]},
+            "example": replay["reports"][-1]["result"],
+            **({"previous_version": previous_version} if previous_version else {}),
         },
     )
     try:
