@@ -106,6 +106,15 @@ def test_incomplete_development_does_not_dispatch_or_charge(tmp_path, monkeypatc
     assert pilot.summary()["offline_requests"] == 0
 
 
+def test_maker_can_bound_frames_without_loading_additional_tasks(pilot):
+    _, refs, _, _, _ = module.build_inputs(pilot, "G1")
+    payload, images, _ = module.summarize_inputs(refs, "G1", frames_per_run=3)
+    assert len(images) == 24
+    assert all(len(run["frames"]) == 3 for run in payload["development"])
+    with pytest.raises(ValueError, match="one to four"):
+        module.summarize_inputs(refs, "G1", frames_per_run=5)
+
+
 @pytest.mark.parametrize(
     "usage,status",
     [

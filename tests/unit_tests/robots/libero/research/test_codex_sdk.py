@@ -117,3 +117,23 @@ def test_sdk_completion_timeout_waits_for_cleanup(tmp_path, monkeypatch, cancell
         codex_sdk.complete("gpt-6-astra", "test", {}, [], timeout_s=0.01)
     assert seen["cleaned"]
     assert not seen["cwd"].exists()
+
+
+def test_tool_maker_can_explicitly_select_high_reasoning(tmp_path, monkeypatch):
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / "existing-codex"))
+    monkeypatch.setattr(
+        "rpent.robots.components.grounding_agent._check_codex_mcp_isolation",
+        lambda config: None,
+    )
+    seen = {}
+
+    async def complete(config, *args, **kwargs):
+        seen["overrides"] = config.config_overrides
+        return "{}", {}
+
+    monkeypatch.setattr(codex_sdk, "_complete", complete)
+    assert codex_sdk.complete(
+        "gpt-6-astra", "test", {}, [], reasoning_effort="high"
+    ) == ("{}", {})
+    assert 'model_reasoning_effort="high"' in seen["overrides"]
+    assert 'model_reasoning_effort="low"' not in seen["overrides"]

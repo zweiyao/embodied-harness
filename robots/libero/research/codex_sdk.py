@@ -106,6 +106,7 @@ def complete(
     timeout_s=540,
     output_schema=None,
     on_event=None,
+    reasoning_effort="low",
 ) -> tuple[str, dict]:
     """Reuse RPent's configuration and credential isolation, without any MCP."""
     from rpent.planner.codex import build_codex_config
@@ -113,6 +114,9 @@ def complete(
         _check_codex_mcp_isolation,
         _isolated_codex_environment,
     )
+
+    if reasoning_effort not in {"minimal", "low", "medium", "high", "xhigh"}:
+        raise ValueError("Unsupported maker reasoning effort")
 
     with tempfile.TemporaryDirectory(prefix="sensor-teacher-") as directory:
         root = Path(directory)
@@ -153,7 +157,7 @@ def complete(
                 "tools.experimental_request_user_input.enabled=false",
                 'web_search="disabled"',
                 "apps._default.enabled=false",
-                'model_reasoning_effort="low"',
+                f'model_reasoning_effort="{reasoning_effort}"',
             ),
         )
         _check_codex_mcp_isolation(config)

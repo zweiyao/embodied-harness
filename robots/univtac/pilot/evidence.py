@@ -159,6 +159,22 @@ def _feedback(root):
                 result.update(_receipt(value.get("control_result", value)))
             elif call["name"] == "observe":
                 result["state"] = _pick(value.get("state", {}), STATE)
+            elif call["name"] == "read_depth":
+                result.update(
+                    _pick(
+                        value,
+                        {
+                            "camera",
+                            "image_size",
+                            "raw_shape",
+                            "depth_units",
+                            "region_rc",
+                            "raw_depth_m",
+                            "preview_range_m",
+                            "invalid_pixels",
+                        },
+                    )
+                )
             elif call["name"] == "depth_points":
                 result.update(
                     _pick(value, {"camera", "image_size", "pixels_rc", "depth_m"})

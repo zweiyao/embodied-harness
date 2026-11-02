@@ -92,8 +92,10 @@ def _depth(value):
     }
 
 
-def summarize_inputs(refs, variant):
-    """Select four evenly spaced frames/run without inspecting any outcome."""
+def summarize_inputs(refs, variant, *, frames_per_run=4):
+    """Select up to four evenly spaced frames/run without inspecting outcomes."""
+    if not 1 <= frames_per_run <= 4:
+        raise ValueError("Select one to four maker frames per run")
     common, feedback, images, identities = [], [], [], []
     for entry in refs:
         files, attempt = entry["files"], entry["attempt_id"]
@@ -101,7 +103,11 @@ def summarize_inputs(refs, variant):
         with ZipFile(archive_path) as archive:
             steps = json.loads(archive.read("manifest.json"))["steps"]
         selected = sorted(
-            set(np.linspace(0, len(steps) - 1, min(4, len(steps)), dtype=int))
+            set(
+                np.linspace(
+                    0, len(steps) - 1, min(frames_per_run, len(steps)), dtype=int
+                )
+            )
         )
         frames = []
         for index in selected:

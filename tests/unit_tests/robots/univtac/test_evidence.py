@@ -57,6 +57,9 @@ def test_export_is_self_contained_and_does_not_read_private_records(
     recorded, monkeypatch
 ):
     root, api = recorded
+    assert not api.execute_tool(
+        "read_depth", {"camera": "head", "region_rc": [0, 0, 2, 2]}
+    ).is_error
     for name in ("outcome.json", "evaluator.json"):
         (root / name).write_text(
             json.dumps({"official_success": True, "actor": "ORACLE"})
@@ -147,6 +150,10 @@ def test_export_is_self_contained_and_does_not_read_private_records(
     assert "ORACLE" not in feedback and "official_success" not in feedback
     assert "never-export-this" not in feedback and "traceback" not in feedback
     calls = json.loads(feedback)["calls"]
+    raw_depth = next(call["result"] for call in calls if call["name"] == "read_depth")
+    assert raw_depth["region_rc"] == [0, 0, 2, 2]
+    assert raw_depth["raw_depth_m"] == [[2.5, 2.5], [2.5, 2.5]]
+    assert raw_depth["depth_units"] == "m"
     assert any(
         call["name"] == "depth_points" and call["result"].get("error") for call in calls
     )

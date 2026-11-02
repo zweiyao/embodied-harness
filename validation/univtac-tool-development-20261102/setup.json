@@ -1,0 +1,80 @@
+{
+  "status": "development_baseline_running",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "development_task": 0,
+  "development_seeds": [
+    0,
+    1,
+    2
+  ],
+  "max_tool_optimizations": 5,
+  "max_simulator_episodes": 28,
+  "test_trials": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ]
+  ],
+  "tests": {
+    "focused": "288 passed",
+    "latest_orchestrator": "4 passed",
+    "full_unit_suite": {
+      "passed": 1828,
+      "skipped": 12,
+      "preexisting_failures": [
+        "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
+        "test_validation_requires_bound_freeze_and_exact_selected_tools"
+      ]
+    },
+    "pre_commit": "passed",
+    "plot_and_research_journal": "passed",
+    "continuation_shell_syntax": "passed"
+  },
+  "first_development_episode": {
+    "id": "fa19bfdfb6ebfb2c2895",
+    "task": 0,
+    "seed": 0,
+    "official_success": true,
+    "elapsed_s": 425.2,
+    "decisions": 25
+  },
+  "generated_tool": "not_yet_created",
+  "root": "/home/zwy/work/embodied_harness/experiments/univtac-tool-development-20261102"
+}
