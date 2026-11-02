@@ -68,3 +68,17 @@ Docker回放三个历史查询区域均为unknown，残差/分布不支持可靠
 
 首版开发目录：`/home/zwy/work/embodied_harness/experiments/univtac-authored-geometry-20261102/development-v1`。
 首轮run_id `fc7d15cfae24c80860ee`，正在运行，尚无效果结论。
+
+
+### 连接故障与恢复
+
+首版开发首轮在0次模型决策、0次工具调用时因`workspace routing discovery failed`结束。
+随后已启动的第二轮在停止批次/中断未完成后通过服务重启结束，记录为abnormal_exit。
+两次均留档，不计作工具能力失败，也不从尝试总数中删除。
+远程7900代理TLS失败；既有Mac反向代理17997可到达服务端（匿名请求401，而非TLS失败）。
+仅将UniVTAC启动脚本的代理从7900切到17997，备份原脚本，保持本机/MCP/仿真通信直连。
+已核对重启后实际进程代理。这个网络检查不等于模型推理成功。
+
+执行器增加遇到episode error立即记录并停止后续seed的检查，回归测试确认仅启动一次。
+同一候选从新目录`development-v1-retry`再运行三个开发seed；原候选、控制与模型配置不变。
+本轮研发最多9次仿真启动，含这2次基础设施尝试，修复后最多剩7次；不无限补跑。

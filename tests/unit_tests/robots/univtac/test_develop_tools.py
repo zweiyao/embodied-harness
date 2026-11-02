@@ -297,3 +297,31 @@ def test_exact_sdk_text_budget_checked_before_any_model_request(tmp_path, monkey
         RuntimeError("Input exceeds the maximum length of 1048576 characters.")
     )
     assert not module.input_budget_failure(ValueError("invalid tool JSON"))
+
+
+def test_group_stops_after_first_connection_error(tmp_path, monkeypatch):
+    experiment = module.Experiment.__new__(module.Experiment)
+    experiment.root = tmp_path
+    experiment.server_id = "server"
+    experiment.hashes = {}
+    config = {k: 1 for k in ("model", "reasoning_effort", "max_turns", "max_tokens", "planner_timeout_s")}
+    experiment.base_config = config
+    started = []
+
+    def api(path, payload=None):
+        if path == "/api/session/state":
+            return {"server_id": "server", "session_state": "ready"}
+        if path == "/api/session/config":
+            return config
+        if path == "/api/session/messages":
+            started.append(payload)
+            return {}
+        return {"runs": [{"id": "failed", "outcome": True}] if started else []}
+
+    experiment.api = api
+    monkeypatch.setattr(module.time, "sleep", lambda _: None)
+    monkeypatch.setattr(module, "summarize", lambda _: {"error": "workspace routing discovery failed"})
+    with pytest.raises(RuntimeError, match="subsequent trials stopped"):
+        experiment.group("test", [(0,0), (0,1)], module.NATIVE)
+    assert len(started) == 1
+    assert json.loads((tmp_path / "test/results.json").read_text())[0]["error"]

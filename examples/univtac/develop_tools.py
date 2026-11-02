@@ -470,6 +470,9 @@ class Experiment:
             )
             write_json(output / "results.json", results)
             print(json.dumps({"phase": label, **results[-1]}), flush=True)
+            if results[-1].get("error"):
+                self.status(state="infrastructure_error", run_id=run["id"], error=results[-1]["error"])
+                raise RuntimeError("Episode infrastructure error; subsequent trials stopped: " + results[-1]["error"])
         write_json(output / "score.json", score(results))
         return results
 

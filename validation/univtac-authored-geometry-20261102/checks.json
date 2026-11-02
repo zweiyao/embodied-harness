@@ -1,7 +1,7 @@
 {
   "environment": "remote /home/zwy/work/harnessvla/.venv/bin/python",
-  "focused": "39 passed",
-  "full_unit": "1851 passed, 12 skipped, 2 existing failures",
+  "focused": "40 passed (including group stops on first connection error)",
+  "full_unit": "1852 passed, 12 skipped, same 2 existing failures",
   "existing_failures": [
     "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
     "test_validation_requires_bound_freeze_and_exact_selected_tools"
