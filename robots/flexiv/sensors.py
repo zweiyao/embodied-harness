@@ -125,3 +125,47 @@ def alignment_frames(
             }
         )
     return frames
+
+
+def visual_alignment_frames(records, load, params):
+    """Load only selected original RGB, frame identity and measured robot motion."""
+    selected = [params["anchor_step"], *params["compare_steps"]]
+    if not 1 <= len(selected) <= 4 or selected != sorted(set(selected)):
+        raise ValueError("Choose increasing observation IDs, at most four")
+    camera = params["camera"]
+    if camera not in {"side", "wrist"}:
+        raise ValueError("Choose side or wrist")
+    by_step = {record["step_idx"]: record for record in records}
+    observations = [
+        r["step_idx"] for r in records if "perception.json" in r["artifacts"]
+    ]
+    frames = []
+    for step in selected:
+        if (
+            step not in observations
+            or f"{camera}.png" not in by_step[step]["artifacts"]
+        ):
+            raise ValueError("Selected step lacks an original camera observation")
+        record = by_step[step]
+        index = observations.index(step)
+        previous = observations[index - 1] if index else None
+        if previous is not None and any(
+            previous < r["step_idx"] < step and (r.get("command") or {}).get("action")
+            for r in records
+        ):
+            previous = None
+        frames.append(
+            {
+                "step": step,
+                "camera": camera,
+                "rgb": load(f"{camera}.png", step),
+                "previous_observation_step": previous,
+                "state": {"tcp_pose": record["state"]["tcp_pose"]},
+                "command": {
+                    k: v
+                    for k, v in (record.get("command") or {}).items()
+                    if k in ("action", "translation_m", "rotation_vector_rad")
+                },
+            }
+        )
+    return frames

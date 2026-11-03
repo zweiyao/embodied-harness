@@ -1,0 +1,113 @@
+{
+  "version": "dab7b9c5ce4f0e88f1abb7352b7429828b932604c3de6400e8f8d1ce49371cd6",
+  "checks": {
+    "tracked_known_shift": true,
+    "preserve_robot_displacement_units": true,
+    "no_fabricated_angle": true,
+    "occlusion_returns_unknown": true,
+    "reselection_is_labeled_and_angle_measured": true,
+    "skipped_actions_not_attributed": true,
+    "out_of_frame_rejected": true
+  },
+  "known_shift_result": {
+    "status": "evidence_computed",
+    "camera": "wrist",
+    "samples": [
+      {
+        "step": 0,
+        "image_size_wh": [
+          160,
+          128
+        ],
+        "status": "selected_anchor",
+        "landmarks_px": [
+          [
+            30.0,
+            50.0
+          ],
+          [
+            30.0,
+            75.0
+          ],
+          [
+            90.0,
+            50.0
+          ],
+          [
+            90.0,
+            75.0
+          ]
+        ],
+        "feature_minus_reference_px": [
+          -60.0,
+          0.0
+        ],
+        "offset_along_reference_axis_px": 0.0,
+        "offset_across_reference_axis_px": 60.0,
+        "axis_angle_error_deg": 0.0,
+        "center_distance_px": 60.0
+      },
+      {
+        "step": 1,
+        "image_size_wh": [
+          160,
+          128
+        ],
+        "tracking_ncc": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "status": "tracked",
+        "landmarks_px": [
+          [
+            34.0,
+            50.0
+          ],
+          [
+            34.0,
+            75.0
+          ],
+          [
+            90.0,
+            50.0
+          ],
+          [
+            90.0,
+            75.0
+          ]
+        ],
+        "feature_minus_reference_px": [
+          -56.0,
+          0.0
+        ],
+        "offset_along_reference_axis_px": 0.0,
+        "offset_across_reference_axis_px": 56.0,
+        "axis_angle_error_deg": 0.0,
+        "center_distance_px": 56.0,
+        "change": {
+          "center_distance_px": -4.0,
+          "absolute_angle_deg": 0.0
+        },
+        "actual_tcp_delta_mm": [
+          4.0,
+          0.0,
+          0.0
+        ],
+        "command": {
+          "action": "move_eef_delta",
+          "translation_m": [
+            0.004,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "units": "original image pixels; x right, y down; angle clockwise modulo 180 degrees",
+    "interpretation": "Negative change means smaller projected center distance/absolute angle. Selected center identity is supplied by the caller, not detected by this program.",
+    "limits": "2D evidence only: perspective, occlusion and grasp slip can change projection. Pixel offsets are not robot-base millimetres. No motion target, insertion clearance or success verdict. Large changes require a new anchor."
+  },
+  "limitations": "Synthetic tracking and geometry checks; not robot effectiveness or autonomous landmark selection."
+}
