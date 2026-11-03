@@ -1,0 +1,33 @@
+{
+  "tool": {
+    "n": 10,
+    "success": 8,
+    "mean_total_tokens": 675950.6,
+    "mean_uncached_plus_output": 47329.8,
+    "mean_elapsed_s": 310.21
+  },
+  "native_repeat": {
+    "n": 10,
+    "success": 8,
+    "mean_total_tokens": 899937.3,
+    "mean_uncached_plus_output": 56583.7,
+    "mean_elapsed_s": 321.87,
+    "tool_change_pct": {
+      "mean_total_tokens": -24.889145054883276,
+      "mean_uncached_plus_output": -16.354356466614938,
+      "mean_elapsed_s": -3.6225805449405124
+    }
+  },
+  "native_initial": {
+    "n": 10,
+    "success": 6,
+    "mean_total_tokens": 922013.8,
+    "mean_uncached_plus_output": 65143.40000000002,
+    "mean_elapsed_s": 356.46999999999997,
+    "tool_change_pct": {
+      "mean_total_tokens": -26.68758320103235,
+      "mean_uncached_plus_output": -27.345210719735245,
+      "mean_elapsed_s": -12.977249137374812
+    }
+  }
+}
