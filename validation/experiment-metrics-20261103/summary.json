@@ -1,0 +1,36 @@
+{
+  "change": "Display persisted timing, interaction rounds and token usage in console results and run history",
+  "validation": {
+    "remote_full_unit_tests": {
+      "passed": 1996,
+      "skipped": 15,
+      "seconds": 73.31
+    },
+    "remote_dashboard_tests_with_node": {
+      "passed": 112,
+      "seconds": 2.04
+    },
+    "pre_commit": "all files passed"
+  },
+  "deployment": {
+    "frontends": [
+      "UniVTAC",
+      "LIBERO",
+      "Flexiv"
+    ],
+    "health_checks": "passed",
+    "browser_history_check": {
+      "elapsed_s": 220.0,
+      "turns_used": 22,
+      "input_tokens": 553443,
+      "output_tokens": 3700,
+      "total_tokens": 557143,
+      "cached_input_tokens": 508032
+    }
+  },
+  "limitations": [
+    "No new robot or simulation episode launched",
+    "Existing missing/partial provider usage is not reconstructed",
+    "Full CI Python matrix not run"
+  ]
+}
