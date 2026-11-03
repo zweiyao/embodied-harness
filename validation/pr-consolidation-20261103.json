@@ -1,0 +1,11 @@
+{
+  "base_commit": "9728c8211fbe847b97384334f0e718ef250e5cc8",
+  "change": "Ruff fixes in four orchestration/test files; selected tool source and deployed runtime unchanged",
+  "environment": "remote /home/zwy/work/embodied_harness/pr-validation-20261103 with /home/zwy/work/harnessvla/.venv/bin/python",
+  "checks": {
+    "pre_commit_all_files": "passed after fixes",
+    "unit_tests": "1996 passed, 14 skipped in 72.99s",
+    "git_diff_check": "passed"
+  },
+  "scope": "PR source isolated from live runtime; no robot or simulator experiment started"
+}

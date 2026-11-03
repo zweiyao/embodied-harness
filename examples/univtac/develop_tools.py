@@ -471,8 +471,15 @@ class Experiment:
             write_json(output / "results.json", results)
             print(json.dumps({"phase": label, **results[-1]}), flush=True)
             if results[-1].get("error"):
-                self.status(state="infrastructure_error", run_id=run["id"], error=results[-1]["error"])
-                raise RuntimeError("Episode infrastructure error; subsequent trials stopped: " + results[-1]["error"])
+                self.status(
+                    state="infrastructure_error",
+                    run_id=run["id"],
+                    error=results[-1]["error"],
+                )
+                raise RuntimeError(
+                    "Episode infrastructure error; subsequent trials stopped: "
+                    + results[-1]["error"]
+                )
         write_json(output / "score.json", score(results))
         return results
 
@@ -501,8 +508,13 @@ def development_inputs(rows):
         config = json.loads((root / "dashboard_config.json").read_text())
         if config.get("robot") != "univtac" or config["task"]["task"] != 0:
             raise ValueError("Actual archived task must be development task 0")
-        events = [json.loads(line) for line in (root / "events.jsonl").read_text().splitlines()]
-        last_step = json.loads((root / "states.json").read_text())["steps"][-1]["step_idx"]
+        events = [
+            json.loads(line)
+            for line in (root / "events.jsonl").read_text().splitlines()
+        ]
+        last_step = json.loads((root / "states.json").read_text())["steps"][-1][
+            "step_idx"
+        ]
         selected_steps[row["run_id"]] = maker_frame_steps(events, last_step)
         if (root / "maker-inputs").exists():
             files = {
@@ -623,7 +635,12 @@ def main():
     parser.add_argument("--baseline-only", action="store_true")
     parser.add_argument("--resume-baseline", action="store_true")
     parser.add_argument("--max-optimizations", type=int, choices=range(1, 6), default=5)
-    parser.add_argument("--candidates-from", type=Path, nargs="+", help="Validate these already generated iteration directories without new maker requests")
+    parser.add_argument(
+        "--candidates-from",
+        type=Path,
+        nargs="+",
+        help="Validate these already generated iteration directories without new maker requests",
+    )
     parser.add_argument(
         "--restart-tool",
         action="store_true",
@@ -652,8 +669,12 @@ def main():
         for tool in experiment.api("/api/tools")["tools"]
         if tool["id"].startswith("generated:") and tool.get("selectable", True)
     ]
-    if any(not (args.library / f"{version}.json").is_file() for version in active_generated):
-        raise ValueError("--library does not contain the dashboard's active generated tools")
+    if any(
+        not (args.library / f"{version}.json").is_file() for version in active_generated
+    ):
+        raise ValueError(
+            "--library does not contain the dashboard's active generated tools"
+        )
     sandbox = Sandbox("embodied-sensor:pilot")
     driver = {
         str(path): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -692,7 +713,9 @@ def main():
         "tool_result_chars": TOOL_RESULT_CHARS,
         "previous_batch": str(args.continue_from) if args.continue_from else None,
         "restart_tool": args.restart_tool,
-        "recorded_candidates": [str(p) for p in args.candidates_from] if args.candidates_from else [],
+        "recorded_candidates": [str(p) for p in args.candidates_from]
+        if args.candidates_from
+        else [],
         "new_maker_requests": 0 if args.candidates_from else args.max_optimizations,
     }
     if args.resume_baseline or args.continue_from:
@@ -799,8 +822,20 @@ def main():
                         **{k: wire[k] for k in ("name", "description", "source")},
                         "parameters": json.loads(wire["parameters_json"]),
                     }:
-                        raise ValueError("Recorded candidate differs from maker response")
-                    write_json(directory / "maker-reused.json", {"path": str(response_path), "sha256": hashlib.sha256(response_path.read_bytes()).hexdigest(), "new_maker_requests": 0, "note": "Predates this simulator feedback; not a revision based on this batch"})
+                        raise ValueError(
+                            "Recorded candidate differs from maker response"
+                        )
+                    write_json(
+                        directory / "maker-reused.json",
+                        {
+                            "path": str(response_path),
+                            "sha256": hashlib.sha256(
+                                response_path.read_bytes()
+                            ).hexdigest(),
+                            "new_maker_requests": 0,
+                            "note": "Predates this simulator feedback; not a revision based on this batch",
+                        },
+                    )
                 else:
                     wire = completion(
                         directory / "maker", MAKER, payload, images, MAKER_SCHEMA

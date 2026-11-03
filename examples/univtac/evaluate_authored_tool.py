@@ -81,8 +81,14 @@ def main():
         for t in active
     ):
         raise ValueError("Library differs from the active dashboard")
-    previous_version = next((t["id"].removeprefix("generated:") for t in active
-                             if t["id"].startswith("generated:") and t.get("name") == tool["name"]), None)
+    previous_version = next(
+        (
+            t["id"].removeprefix("generated:")
+            for t in active
+            if t["id"].startswith("generated:") and t.get("name") == tool["name"]
+        ),
+        None,
+    )
     version = publish(
         args.library,
         tool,

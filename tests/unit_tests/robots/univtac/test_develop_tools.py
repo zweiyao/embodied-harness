@@ -71,7 +71,13 @@ def test_failed_tool_calls_are_not_counted_as_adoption(tmp_path):
 
 def test_maker_keeps_the_queried_geometry_frame_and_final_temporal_pair():
     def query(step, region):
-        return {"kind": "tool_response", "payload": {"name": "read_depth", "result": {"step": step, "region_rc": region}}}
+        return {
+            "kind": "tool_response",
+            "payload": {
+                "name": "read_depth",
+                "result": {"step": step, "region_rc": region},
+            },
+        }
 
     events = [query(4, [1, 2, 3, 4]), query(7, None), query(99, [1, 2, 3, 4])]
     assert module.maker_frame_steps(events, 10) == [4, 9, 10]
@@ -81,7 +87,15 @@ def test_maker_keeps_the_queried_geometry_frame_and_final_temporal_pair():
 
 @pytest.mark.parametrize(
     "scenario,optimizations",
-    [("improve", 5), ("no_gain", 5), ("input_error", 5), ("improve", 3), ("recorded", 2), ("wrong_library", 1), ("timeout", 3)],
+    [
+        ("improve", 5),
+        ("no_gain", 5),
+        ("input_error", 5),
+        ("improve", 3),
+        ("recorded", 2),
+        ("wrong_library", 1),
+        ("timeout", 3),
+    ],
 )
 def test_five_optimizations_then_frozen_test_without_test_feedback(
     tmp_path, monkeypatch, scenario, optimizations
@@ -117,7 +131,8 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
                     "tool_calls": {module.NAME: 1},
                     **row(
                         tokens=90
-                        if scenario in ("improve", "recorded") and label != "development-baseline"
+                        if scenario in ("improve", "recorded")
+                        and label != "development-baseline"
                         else 100
                     ),
                 }
@@ -147,7 +162,9 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
                 "stop_recommended": False,
                 "reason": "not enough evidence",
             }
-        assert scenario != "recorded", "Recorded candidates must not issue maker requests"
+        assert scenario != "recorded", (
+            "Recorded candidates must not issue maker requests"
+        )
         assert all(row["task"] == 0 for row in makers[-1])
         return {
             "name": module.NAME,
@@ -201,11 +218,22 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
         for index in range(optimizations):
             origin = tmp_path / f"recorded-{index}"
             (origin / "maker").mkdir(parents=True)
-            tool = {"name": module.NAME, "description": "test", "source": "def run(frames, params):\n    return {}\n", "parameters": {"type": "object"}}
+            tool = {
+                "name": module.NAME,
+                "description": "test",
+                "source": "def run(frames, params):\n    return {}\n",
+                "parameters": {"type": "object"},
+            }
             wire = {k: v for k, v in tool.items() if k != "parameters"}
-            wire.update(parameters_json=json.dumps(tool["parameters"]), replay_params_json="{}", reason="test")
+            wire.update(
+                parameters_json=json.dumps(tool["parameters"]),
+                replay_params_json="{}",
+                reason="test",
+            )
             (origin / "candidate.json").write_text(json.dumps(tool))
-            (origin / "maker/response.json").write_text(json.dumps({"text": json.dumps(wire)}))
+            (origin / "maker/response.json").write_text(
+                json.dumps({"text": json.dumps(wire)})
+            )
             origins.append(str(origin))
         sys.argv.extend(["--candidates-from", *origins])
     if scenario == "wrong_library":
@@ -214,7 +242,9 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
         assert not calls and not makers
         return
     if scenario in ("input_error", "timeout"):
-        with pytest.raises(module.MakerInputBudgetError if scenario == "input_error" else TimeoutError):
+        with pytest.raises(
+            module.MakerInputBudgetError if scenario == "input_error" else TimeoutError
+        ):
             module.main()
         assert len(makers) == 1
         assert len(calls) == 1
@@ -223,7 +253,11 @@ def test_five_optimizations_then_frozen_test_without_test_feedback(
     module.main()
     if scenario == "recorded":
         for index in range(1, optimizations + 1):
-            reused = json.loads((tmp_path / f"experiment/iteration-{index}/maker-reused.json").read_text())
+            reused = json.loads(
+                (
+                    tmp_path / f"experiment/iteration-{index}/maker-reused.json"
+                ).read_text()
+            )
             assert reused["new_maker_requests"] == 0
             assert not (tmp_path / f"experiment/iteration-{index}/maker").exists()
     assert len(makers) == optimizations
@@ -304,7 +338,9 @@ def test_group_stops_after_first_connection_error(tmp_path, monkeypatch):
     experiment.root = tmp_path
     experiment.server_id = "server"
     experiment.hashes = {}
-    config = {k: 1 for k in ("model", "reasoning_effort", "max_turns", "max_tokens", "planner_timeout_s")}
+    config = dict.fromkeys(
+        ("model", "reasoning_effort", "max_turns", "max_tokens", "planner_timeout_s"), 1
+    )
     experiment.base_config = config
     started = []
 
@@ -320,8 +356,10 @@ def test_group_stops_after_first_connection_error(tmp_path, monkeypatch):
 
     experiment.api = api
     monkeypatch.setattr(module.time, "sleep", lambda _: None)
-    monkeypatch.setattr(module, "summarize", lambda _: {"error": "workspace routing discovery failed"})
+    monkeypatch.setattr(
+        module, "summarize", lambda _: {"error": "workspace routing discovery failed"}
+    )
     with pytest.raises(RuntimeError, match="subsequent trials stopped"):
-        experiment.group("test", [(0,0), (0,1)], module.NATIVE)
+        experiment.group("test", [(0, 0), (0, 1)], module.NATIVE)
     assert len(started) == 1
     assert json.loads((tmp_path / "test/results.json").read_text())[0]["error"]
