@@ -1,0 +1,14 @@
+{
+  "name": "sensor_modal_evidence",
+  "description": "Measure a visible flat patch in 3D instead of manually interpreting repeated depth queries. Choose camera and region_rc=[row_start,column_start,row_end,column_end] at native resolution; ends exclusive, 4x4 minimum, 4096 pixels maximum. Uses the latest frame unless step is supplied (latest four only). Returns world centre, camera-facing unit normal, depth support and fit errors; unknown for insufficient/mixed/curved support. Select one surface, avoiding edges and occlusion. The normal is a measured surface direction, not automatically an object axis, movement direction or insertion depth.",
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["camera", "region_rc"],
+    "properties": {
+      "camera": {"type": "string", "enum": ["head", "wrist"]},
+      "region_rc": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 4, "maxItems": 4},
+      "step": {"type": "integer", "minimum": -1, "default": -1}
+    }
+  }
+}

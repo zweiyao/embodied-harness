@@ -1,0 +1,14 @@
+[Unit]
+Description=RPent left Xense fingertip camera
+
+[Service]
+Type=simple
+WorkingDirectory=%h/work/harnessvla
+ExecStart=%h/work/harnessvla/.venv/bin/python -m robots.flexiv.tactile_camera --device /dev/v4l/by-id/usb-Xense_Robotics_Co_._Ltd._OG001506_OG001506-video-index0 --serial OG001506 --output-dir /dev/shm/rpent-flexiv/tactile
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=5
+
+[Install]
+WantedBy=default.target

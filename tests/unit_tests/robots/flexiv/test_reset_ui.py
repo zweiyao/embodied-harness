@@ -36,11 +36,11 @@ const {resetControl} = await import('data:text/javascript;base64,' + Buffer.from
 const ready = {control_backend:'rdk',reset_available:true,reset_reason:''};
 const preview = {available:true,target_tcp_pose:[.4,0,.2,1,0,0,0],joint_velocity_scale:30,current:{gripper_width_m:.003,ext_wrench_in_world:[0,0,14,0,0,0]}};
 let calls = [], accepted = false, confirmations = 0, refreshes = 0;
-let resetReply = {reached:true,elapsed_s:1.2}, resetOk = true;
+let resetReply = {reached:true,gripper:{reached:true},elapsed_s:1.2}, resetOk = true;
 globalThis.confirm = text => {
   confirmations++;
   assert.match(text, /MoveJ/);
-  assert.match(text, /保持夹爪开度/);
+  assert.match(text, /到位后完全张开夹爪/);
   assert.match(text, /工件已脱离槽口/);
   return accepted;
 };

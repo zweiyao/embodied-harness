@@ -40,6 +40,8 @@ def tool_methods(meta: dict | None, control_mode: str) -> list[str]:
         return meta is None or bool(meta.get(key))
 
     methods = ["observe"]
+    if control_mode == "rdk" and enabled("tactile_configured"):
+        methods.append("tactile_compare")
     if enabled("calibrated_readonly"):
         methods += ["view_perception_setup", "localize_target"]
     if enabled("motion_enabled"):
@@ -123,6 +125,8 @@ class FlexivToolkit(Toolkit):
             elapsed_s=elapsed_s,
             extras={"native_success": None},
         ) as index:
+            if "tactile" in observed:
+                self.state.save("tactile.json", observed["tactile"])
             calibration = observed.get("camera_calibration")
             if calibration is not None:
                 self.state.save("perception.json", calibration)
@@ -185,7 +189,8 @@ class FlexivToolkit(Toolkit):
         Args:
             step: Exact observe step; do not mix images from different steps.
             target: Named object and surface feature, not just its color.
-            camera: wrist or side; choose a view showing the entire named surface feature.
+            camera: wrist or side; both support localization. Choose the clearer visible
+                feature with valid depth; calibration status is returned with the estimate.
             pixel: Interior surface [x,y] pixel in the original full-resolution image.
             box: Visible feature [x0,y0,x1,y1] box inside the image, enclosing the pixel.
 
@@ -203,15 +208,6 @@ class FlexivToolkit(Toolkit):
             )
         if camera not in ("wrist", "side"):
             raise ValueError("Choose wrist or side")
-        if (
-            self.env.meta.get("motion_enabled")
-            and self.env.meta.get("calibration_provisional")
-            and camera != "side"
-            and camera not in self.env.meta.get("operator_confirmed_cameras", [])
-        ):
-            raise ValueError(
-                "Use side for this provisional control session; wrist is observation-only"
-            )
         with self._observation_lock:
             metadata = self.state.load("perception.json", step=step)
             depth = self.state.load(f"{camera}_depth.npy", step=step)
@@ -242,10 +238,45 @@ class FlexivToolkit(Toolkit):
 
     @tool(readonly=True)
     def observe(self) -> ToolResult:
-        """Read fresh joint/TCP state and currently available collector camera images."""
+        """Read joint/TCP state and available RGB-D and left fingertip tactile images."""
         # Toolkit can schedule readonly calls concurrently; state recording cannot.
         with self._observation_lock:
             return self._capture()
+
+    @tool(readonly=True)
+    def tactile_compare(self, before_step: int, after_step: int) -> ToolResult:
+        """Measure left fingertip surface image motion between two recorded observations.
+
+        Returns displacement in original image pixels (x right, y down), tracking
+        quality and evidence steps. Compare with TCP motion and RGB object pose.
+        Neither frame is assumed unloaded. Large motion or poor tracking may be
+        ambiguous; this is not calibrated force, robot direction, slip classification
+        or an insertion-success judgment.
+
+        Args:
+            before_step: Earlier observe/action step containing tactile_left.png.
+            after_step: Later observe/action step, ideally immediately after a short action.
+        """
+        from robots.flexiv.tactile import compare
+
+        if before_step < 0 or after_step <= before_step:
+            raise ValueError("Select two recorded observation steps in ascending order")
+        with self._observation_lock:
+            metadata = [
+                self.state.load("tactile.json", step=step)["left"]
+                for step in (before_step, after_step)
+            ]
+            images = [
+                np.asarray(
+                    Image.open(
+                        self.state.artifact_path("tactile_left.png", step=step)
+                    ).convert("RGB")
+                )
+                for step in (before_step, after_step)
+            ]
+            result = compare(*images, *metadata)
+            result.update(before_step=before_step, after_step=after_step, side="left")
+            return ToolResult(data=result)
 
     @tool
     def move_delta(self, xyz: list[float]) -> ToolResult:
@@ -361,12 +392,17 @@ class FlexivToolkit(Toolkit):
     def rdk_move_eef_delta(
         self, translation_m: list[float], rotation_vector_rad: list[float]
     ) -> ToolResult:
-        """Apply one measured-TCP-relative goal and wait for measured arrival.
+        """Move by a base-frame translation and rotation-vector increment from measured TCP.
+
+        Resolve the goal once; wait until arrival or the command deadline.
+        Gripper opening is unchanged.
 
         Args:
             translation_m: [dx,dy,dz] in robot-base metres.
-            rotation_vector_rad: Right-hand axis-angle [rx,ry,rz] in base axes,
-                radians; [0,0,0] preserves orientation. Not Euler angles.
+            rotation_vector_rad: Base-frame right-hand rotation vector [rx,ry,rz]
+                = unit axis * angle in radians, not Euler angles or a quaternion.
+                [0,0,0.08726646] rotates 5 degrees about base +Z;
+                [0,0,0] preserves orientation.
 
         The server resolves p_target=p_current+translation_m and
         R_target=Exp(rotation_vector_rad)*R_current once. The RDK follows this

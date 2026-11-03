@@ -1,0 +1,21 @@
+{
+  "score": {
+    "successes": 3,
+    "trials": 3,
+    "token_records": 3,
+    "mean_total_tokens": 942371.6666666666,
+    "mean_elapsed_s": 379.7333333333333
+  },
+  "adopted_calls": 55,
+  "kept": false,
+  "tool_execution": {
+    "valid_calls": 55,
+    "error_calls": 0
+  },
+  "judgement": {
+    "token_benefit": false,
+    "success_benefit": false,
+    "stop_recommended": false,
+    "reason": "Mean tokens increased from 906,258 to 942,372 (+4.0%), so reduced token use is unsupported. Both configurations succeeded on 3/3 trials; this shows no observed reliability improvement, and three development seeds on one task do not establish generalization. The tool's 55 valid calls with zero errors support operational usability, not improved task reliability or causal benefit. Replay examples demonstrate descriptive measurements and explicit uncertainty, not outcome validation. Mean elapsed time fell 5.8%, but faster execution does not establish either requested benefit. Neither stopping criterion is met."
+  }
+}

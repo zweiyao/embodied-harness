@@ -1,0 +1,24 @@
+{
+  "score": {
+    "successes": 3,
+    "trials": 3,
+    "token_records": 3,
+    "mean_total_tokens": 807655.3333333334,
+    "mean_elapsed_s": 376.8333333333333,
+    "mean_uncached_input_tokens": 44518.666666666664
+  },
+  "baseline": {
+    "successes": 3,
+    "trials": 3,
+    "token_records": 3,
+    "mean_total_tokens": 906258.0,
+    "mean_elapsed_s": 403.1666666666667,
+    "mean_uncached_input_tokens": 53992.333333333336
+  },
+  "calls": {
+    "valid_calls": 24,
+    "error_calls": 0
+  },
+  "improved": true,
+  "note": "Development only. Authoring effort in this chat has no provider usage record; not zero-cost. Held-out evaluation has not run."
+}

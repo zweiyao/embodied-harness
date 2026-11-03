@@ -13,6 +13,20 @@ and generated-tool guidance appears only when one is selected. The dashboard
 does not prepend the legacy LIBERO guide override. Changes apply to new runs;
 archived `prompts.json` files retain the original input.
 
+The initial grasp and release requirement are environment context in the user
+message. The system prompt contains no task-specific procedure or experience.
+
+`read_depth(camera, step=-1, region_rc=None)` exposes the recorded head/wrist
+depth map. Its NPZ artifact preserves the native array and dtype in metres. The
+attached image is a native-resolution grayscale preview with an explicit metric
+range and magenta invalid pixels; it is not the raw numeric array. Optional
+exclusive `[row_start, column_start, row_end, column_end]` bounds return exact
+row-major values for up to 1024 pixels, with invalid values represented as null.
+This tool performs no filtering, resizing, deprojection, or task inference.
+The raw-depth baseline selects `observe`, `read_image`, `read_depth`, and
+`tactile_stats`, plus `move_eef` and `finish`; it excludes `depth_points` and
+generated perception tools.
+
 Task text uses the pinned upstream `seen` instructions verbatim for all three
 tasks. `instructions.py` holds their snapshot so the planner does not require
 an Isaac installation. Before native reset, the backend reads the upstream

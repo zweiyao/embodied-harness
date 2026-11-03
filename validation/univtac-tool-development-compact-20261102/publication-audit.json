@@ -1,0 +1,60 @@
+{
+  "maker_attempts_started_in_second_batch": 5,
+  "new_simulations_before_recovery": 0,
+  "failure": "Published to tool-library parent instead of tool-library/univtac; dashboard rejected config with 422",
+  "completed_candidates": [
+    {
+      "iteration": 1,
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 100137,
+          "output_tokens": 5065,
+          "reasoning_output_tokens": 2070,
+          "total_tokens": 105202
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 100137,
+          "output_tokens": 5065,
+          "reasoning_output_tokens": 2070,
+          "total_tokens": 105202
+        }
+      },
+      "elapsed_s": 257.0368697750382,
+      "error": {
+        "error": "HTTP Error 422: Unprocessable Entity"
+      }
+    },
+    {
+      "iteration": 2,
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 102466,
+          "output_tokens": 4083,
+          "reasoning_output_tokens": 1183,
+          "total_tokens": 106549
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 102466,
+          "output_tokens": 4083,
+          "reasoning_output_tokens": 1183,
+          "total_tokens": 106549
+        }
+      },
+      "elapsed_s": 141.04194025718607,
+      "error": {
+        "error": "HTTP Error 422: Unprocessable Entity"
+      }
+    }
+  ],
+  "incomplete_attempt_usage": "Provider did not report final usage; unknown, not zero"
+}

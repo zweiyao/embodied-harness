@@ -225,6 +225,73 @@ def test_recorded_images_depth_and_tactile_round_trip_without_privileged_fields(
     assert saved["scene"]["actor"] == "private_evaluator"
 
 
+def test_raw_depth_preserves_native_array_and_exposes_exact_region(create_toolkit):
+    env = FakeEnv()
+    raw = np.linspace(0.1, 0.9, 24, dtype=np.float32).reshape(4, 6)
+    raw[0, :3] = [np.nan, np.inf, 0]
+    env.last_obs["cameras"]["head"]["depth"] = raw.copy()
+    enabled = {
+        "observe",
+        "read_image",
+        "read_depth",
+        "tactile_stats",
+        "move_eef",
+        "finish",
+    }
+    api = create_toolkit(
+        env=env, selected=[t for t in module.native_catalog() if t["name"] in enabled]
+    )
+    result = api.execute_tool(
+        "read_depth", {"camera": "head", "region_rc": [0, 0, 2, 4]}
+    )
+    assert not result.is_error
+    assert result.data["raw_depth_m"][0][:3] == [None, None, None]
+    assert result.data["raw_depth_m"][1] == raw[1, :4].tolist()
+    assert result.data["raw_dtype"] == "float32"
+    assert result.data["depth_units"] == "m"
+    assert result.data["invalid_pixels"] == 3
+    saved = api.state.load(result.data["raw_artifact"], step=result.data["step"])
+    np.testing.assert_array_equal(saved, raw)
+    image = np.asarray(Image.open(io.BytesIO(result.images[0])))
+    assert image.shape == (4, 6, 3)
+    np.testing.assert_array_equal(image[0, 0], [255, 0, 255])
+    np.testing.assert_array_equal(image[-1, -1], [255, 255, 255])
+    assert api.execute_tool(
+        "depth_points", {"camera": "head", "pixels_rc": [[1, 1]]}
+    ).is_error
+    assert not env.chunk_calls
+
+
+def test_raw_depth_reports_missing_or_invalid_data(create_toolkit):
+    env = FakeEnv()
+    env.last_obs["cameras"]["head"]["depth"][:] = np.nan
+    api = create_toolkit(env=env)
+    result = api.execute_tool("read_depth", {"camera": "head"})
+    assert result.data["preview_range_m"] == [None, None]
+    assert result.data["invalid_pixels"] == 24
+    assert "raw_depth_m" not in result.data
+    assert api.execute_tool("read_depth", {"camera": "wrist"}).is_error
+    assert api.execute_tool(
+        "read_depth", {"camera": "head", "region_rc": [-1, 0, 2, 3]}
+    ).is_error
+
+
+def test_task_environment_context_is_not_in_system_prompt():
+    from robots.univtac.robot_spec import get_robot_spec
+
+    prompts = get_robot_spec().prompts
+    variables = {
+        "instruction": "official task sentinel",
+        "task_guidance": "",
+        "manual_tools": [],
+    }
+    system = prompts.render("system", variables=variables)
+    user = prompts.render("user", variables=variables)
+    for text in ("starts grasped", "releasing the object", "official task sentinel"):
+        assert text not in system
+        assert text in user
+
+
 def test_float_tactile_previews_reach_model_and_keep_raw_arrays(create_toolkit):
     env = FakeEnv()
     raw = np.tile(

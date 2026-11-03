@@ -96,6 +96,20 @@ def test_branches_share_pixels_and_arrays_only_g1_has_max_feedback(pilot):
     assert g0["base_source"] == "def run(frames, params):\n    return {}\n"
 
 
+def test_selected_sensor_frames_are_exact_and_out_of_range_is_rejected(pilot):
+    _, refs, _, _, _ = module.build_inputs(pilot, "G1")
+    selected = {ref["attempt_id"]: [1, 4, 5] for ref in refs}
+    payload, images, _ = module.summarize_inputs(refs, "G1", selected_steps=selected)
+    assert all(
+        [f["step"] for f in run["frames"]] == [1, 4, 5]
+        for run in payload["development"]
+    )
+    assert len(images) == 24
+    selected[refs[0]["attempt_id"]] = [1, 99]
+    with pytest.raises(ValueError, match="recorded sensor steps"):
+        module.summarize_inputs(refs, "G1", selected_steps=selected)
+
+
 def test_incomplete_development_does_not_dispatch_or_charge(tmp_path, monkeypatch):
     pilot = Pilot.create(tmp_path / "pilot")
     monkeypatch.setattr(
@@ -104,6 +118,15 @@ def test_incomplete_development_does_not_dispatch_or_charge(tmp_path, monkeypatc
     with pytest.raises(KeyError):
         module.run(pilot.root, "G0")
     assert pilot.summary()["offline_requests"] == 0
+
+
+def test_maker_can_bound_frames_without_loading_additional_tasks(pilot):
+    _, refs, _, _, _ = module.build_inputs(pilot, "G1")
+    payload, images, _ = module.summarize_inputs(refs, "G1", frames_per_run=3)
+    assert len(images) == 24
+    assert all(len(run["frames"]) == 3 for run in payload["development"])
+    with pytest.raises(ValueError, match="one to four"):
+        module.summarize_inputs(refs, "G1", frames_per_run=5)
 
 
 @pytest.mark.parametrize(

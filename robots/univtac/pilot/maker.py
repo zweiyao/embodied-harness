@@ -92,8 +92,10 @@ def _depth(value):
     }
 
 
-def summarize_inputs(refs, variant):
-    """Select four evenly spaced frames/run without inspecting any outcome."""
+def summarize_inputs(refs, variant, *, frames_per_run=4, selected_steps=None):
+    """Summarize explicit sensor steps or evenly spaced frames, without evaluator data."""
+    if not 1 <= frames_per_run <= 4:
+        raise ValueError("Select one to four maker frames per run")
     common, feedback, images, identities = [], [], [], []
     for entry in refs:
         files, attempt = entry["files"], entry["attempt_id"]
@@ -101,8 +103,20 @@ def summarize_inputs(refs, variant):
         with ZipFile(archive_path) as archive:
             steps = json.loads(archive.read("manifest.json"))["steps"]
         selected = sorted(
-            set(np.linspace(0, len(steps) - 1, min(4, len(steps)), dtype=int))
+            set(
+                np.linspace(
+                    0, len(steps) - 1, min(frames_per_run, len(steps)), dtype=int
+                )
+            )
         )
+        if selected_steps is not None:
+            selected = selected_steps[attempt]
+            if (
+                not 1 <= len(selected) <= 4
+                or selected != sorted(set(selected))
+                or any(type(step) is not int or step not in steps for step in selected)
+            ):
+                raise ValueError("Select one to four ordered recorded sensor steps")
         frames = []
         for index in selected:
             frame = load_frames(archive_path, step=int(index))[-1]

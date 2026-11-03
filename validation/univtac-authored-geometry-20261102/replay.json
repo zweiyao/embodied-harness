@@ -1,0 +1,141 @@
+{
+  "tool_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5",
+  "sandbox_image": "sha256:5b39471628bc35a7d34a2a5af7e688493135c35cfdb7dddf26e976b7bfc066c0",
+  "reports": [
+    {
+      "run": "0031_univtac_t0_s1",
+      "params": {
+        "camera": "wrist",
+        "step": 0,
+        "region_rc": [
+          185,
+          225,
+          217,
+          257
+        ]
+      },
+      "result": {
+        "status": "unknown",
+        "step": 0,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "region_rc": [
+          185,
+          225,
+          217,
+          257
+        ],
+        "points": 1024,
+        "rms_m": 0.00362,
+        "p95_residual_m": 0.006792,
+        "normal_to_tangent_ratio": 0.79653,
+        "reason": "patch is narrow, curved or contains multiple surfaces; choose one visible flat patch"
+      }
+    },
+    {
+      "run": "0031_univtac_t0_s1",
+      "params": {
+        "camera": "wrist",
+        "step": 21,
+        "region_rc": [
+          201,
+          257,
+          233,
+          289
+        ]
+      },
+      "result": {
+        "status": "unknown",
+        "step": 21,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "region_rc": [
+          201,
+          257,
+          233,
+          289
+        ],
+        "points": 1024,
+        "rms_m": 0.004722,
+        "p95_residual_m": 0.009072,
+        "normal_to_tangent_ratio": 0.89898,
+        "reason": "patch is narrow, curved or contains multiple surfaces; choose one visible flat patch"
+      }
+    },
+    {
+      "run": "0035_univtac_t0_s2",
+      "params": {
+        "camera": "wrist",
+        "step": 11,
+        "region_rc": [
+          190,
+          235,
+          206,
+          245
+        ]
+      },
+      "result": {
+        "status": "unknown",
+        "step": 11,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "region_rc": [
+          190,
+          235,
+          206,
+          245
+        ],
+        "points": 160,
+        "rms_m": 0.000561,
+        "p95_residual_m": 0.001092,
+        "normal_to_tangent_ratio": 0.495,
+        "reason": "patch is narrow, curved or contains multiple surfaces; choose one visible flat patch"
+      }
+    },
+    {
+      "run": "synthetic_tilted_plane",
+      "params": {
+        "camera": "head",
+        "region_rc": [
+          0,
+          0,
+          24,
+          24
+        ]
+      },
+      "result": {
+        "status": "measured",
+        "step": 7,
+        "camera": "head",
+        "coordinate_frame": "world",
+        "units": "m",
+        "region_rc": [
+          0,
+          0,
+          24,
+          24
+        ],
+        "points": 576,
+        "rms_m": 0.0,
+        "p95_residual_m": 0.0,
+        "normal_to_tangent_ratio": 0.0,
+        "quadrant_normal_spread_deg": 0.0,
+        "center_world_m": [
+          -0.007432,
+          -0.005019,
+          1.003716
+        ],
+        "normal_world": [
+          -0.447214,
+          0.0,
+          -0.894427
+        ],
+        "limitation": "Visible patch only. Normal points toward camera; it is not necessarily an object/hole axis or evidence of insertion."
+      }
+    }
+  ],
+  "scope": "execution/geometry check, not policy or success evaluation"
+}

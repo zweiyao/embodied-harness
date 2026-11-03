@@ -1,0 +1,200 @@
+{
+  "1": {
+    "maker": {
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 235525,
+          "output_tokens": 7074,
+          "reasoning_output_tokens": 1552,
+          "total_tokens": 242599
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 235525,
+          "output_tokens": 7074,
+          "reasoning_output_tokens": 1552,
+          "total_tokens": 242599
+        }
+      },
+      "elapsed_s": 240.47611191798933
+    },
+    "request_audit": {
+      "journal_payload_chars": 528250,
+      "system_chars": 2006,
+      "maker_payload_chars": 522198,
+      "images": 36,
+      "field_serialized_chars": {
+        "serializer": 18,
+        "base_source": 43,
+        "development": 348045,
+        "images": 6080,
+        "user_feedback": 161223,
+        "development_instruction": 114,
+        "consumer_prompts": 3348,
+        "consumer_tool_declarations": 2926,
+        "previous_candidate": 4,
+        "baseline_score": 117,
+        "previous_feedback": 2,
+        "required_tool_name": 23
+      }
+    },
+    "assessment": {
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 18394,
+          "output_tokens": 206,
+          "reasoning_output_tokens": 55,
+          "total_tokens": 18600
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 18394,
+          "output_tokens": 206,
+          "reasoning_output_tokens": 55,
+          "total_tokens": 18600
+        }
+      },
+      "elapsed_s": 24.67301052901894
+    }
+  },
+  "2": {
+    "maker": {
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 326902,
+          "output_tokens": 9168,
+          "reasoning_output_tokens": 1552,
+          "total_tokens": 336070
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 326902,
+          "output_tokens": 9168,
+          "reasoning_output_tokens": 1552,
+          "total_tokens": 336070
+        }
+      },
+      "elapsed_s": 233.60297723603435
+    },
+    "request_audit": {
+      "journal_payload_chars": 779826,
+      "system_chars": 2006,
+      "maker_payload_chars": 773774,
+      "images": 36,
+      "field_serialized_chars": {
+        "serializer": 18,
+        "base_source": 16500,
+        "development": 342916,
+        "images": 6080,
+        "user_feedback": 378507,
+        "development_instruction": 114,
+        "consumer_prompts": 4679,
+        "consumer_tool_declarations": 5016,
+        "previous_candidate": 18600,
+        "baseline_score": 117,
+        "previous_feedback": 949,
+        "required_tool_name": 23
+      }
+    },
+    "assessment": {
+      "usage": {
+        "last": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 20706,
+          "output_tokens": 256,
+          "reasoning_output_tokens": 75,
+          "total_tokens": 20962
+        },
+        "model_context_window": 258400,
+        "total": {
+          "cache_write_input_tokens": 0,
+          "cached_input_tokens": 0,
+          "input_tokens": 20706,
+          "output_tokens": 256,
+          "reasoning_output_tokens": 75,
+          "total_tokens": 20962
+        }
+      },
+      "elapsed_s": 22.4125614031218
+    }
+  },
+  "3": {
+    "request_audit": {
+      "journal_payload_chars": 1066984,
+      "system_chars": 2006,
+      "maker_payload_chars": 1060932,
+      "images": 36,
+      "field_serialized_chars": {
+        "serializer": 18,
+        "base_source": 23220,
+        "development": 441098,
+        "images": 6084,
+        "user_feedback": 552881,
+        "development_instruction": 114,
+        "consumer_prompts": 4946,
+        "consumer_tool_declarations": 5403,
+        "previous_candidate": 25707,
+        "baseline_score": 117,
+        "previous_feedback": 1066,
+        "required_tool_name": 23
+      }
+    }
+  },
+  "4": {
+    "request_audit": {
+      "journal_payload_chars": 1066009,
+      "system_chars": 2006,
+      "maker_payload_chars": 1059957,
+      "images": 36,
+      "field_serialized_chars": {
+        "serializer": 18,
+        "base_source": 23220,
+        "development": 441098,
+        "images": 6084,
+        "user_feedback": 552881,
+        "development_instruction": 114,
+        "consumer_prompts": 4946,
+        "consumer_tool_declarations": 5403,
+        "previous_candidate": 25707,
+        "baseline_score": 117,
+        "previous_feedback": 91,
+        "required_tool_name": 23
+      }
+    }
+  },
+  "5": {
+    "request_audit": {
+      "journal_payload_chars": 1066009,
+      "system_chars": 2006,
+      "maker_payload_chars": 1059957,
+      "images": 36,
+      "field_serialized_chars": {
+        "serializer": 18,
+        "base_source": 23220,
+        "development": 441098,
+        "images": 6084,
+        "user_feedback": 552881,
+        "development_instruction": 114,
+        "consumer_prompts": 4946,
+        "consumer_tool_declarations": 5403,
+        "previous_candidate": 25707,
+        "baseline_score": 117,
+        "previous_feedback": 91,
+        "required_tool_name": 23
+      }
+    }
+  }
+}

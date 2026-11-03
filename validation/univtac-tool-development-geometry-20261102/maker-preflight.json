@@ -1,0 +1,27 @@
+{
+  "text_characters": 190806,
+  "limit": 320000,
+  "image_count": 36,
+  "frame_selection": {
+    "rule": "latest observed local depth query plus final consecutive sensor pair; initial frame fallback; no evaluator geometry",
+    "steps_by_run": {
+      "7eb720c78511868e5619": [
+        22,
+        52,
+        53
+      ],
+      "e6172b637a38b0e0fa11": [
+        59,
+        60,
+        61
+      ],
+      "b504f4fbbf679af107dc": [
+        11,
+        25,
+        26
+      ]
+    }
+  },
+  "model_requests": 0,
+  "evaluator_geometry_included": false
+}

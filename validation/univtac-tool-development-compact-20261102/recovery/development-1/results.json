@@ -1,0 +1,78 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "9c11dc1682bbeba86cc4",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0030_univtac_t0_s0",
+    "official_success": false,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 397.1,
+    "planner_elapsed_s": 340.9,
+    "tool_execution_s": 27.526,
+    "tool_calls": {
+      "observe": 1,
+      "tactile_stats": 1,
+      "read_depth": 2,
+      "move_eef": 19,
+      "sensor_modal_evidence": 7,
+      "finish": 1
+    },
+    "decisions": 31,
+    "input_tokens": 818743,
+    "cached_input_tokens": 768640,
+    "output_tokens": 5040,
+    "reasoning_output_tokens": 1255,
+    "batch_wall_s": 400.9
+  },
+  {
+    "task": 0,
+    "seed": 1,
+    "run_id": "43378c87d482f0e73661",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0031_univtac_t0_s1",
+    "official_success": false,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 640.8,
+    "planner_elapsed_s": 589.9,
+    "tool_execution_s": 49.386,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 2,
+      "tactile_stats": 1,
+      "move_eef": 25,
+      "sensor_modal_evidence": 11
+    },
+    "decisions": 40,
+    "input_tokens": 1622893,
+    "cached_input_tokens": 1557376,
+    "output_tokens": 8263,
+    "reasoning_output_tokens": 3685,
+    "batch_wall_s": 641.7
+  },
+  {
+    "task": 0,
+    "seed": 2,
+    "run_id": "b78c30845380f115c057",
+    "path": "/home/zwy/work/embodied_harness/univtac-runs-current/session-20261102-065543-948124/tasks/0032_univtac_t0_s2",
+    "official_success": true,
+    "termination": "completed",
+    "error": null,
+    "elapsed_s": 704.6,
+    "planner_elapsed_s": 650.3,
+    "tool_execution_s": 50.437,
+    "tool_calls": {
+      "observe": 1,
+      "read_depth": 5,
+      "tactile_stats": 1,
+      "move_eef": 21,
+      "sensor_modal_evidence": 6
+    },
+    "decisions": 34,
+    "input_tokens": 1045044,
+    "cached_input_tokens": 1000832,
+    "output_tokens": 8785,
+    "reasoning_output_tokens": 3494,
+    "batch_wall_s": 711.8
+  }
+]

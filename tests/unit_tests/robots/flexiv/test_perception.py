@@ -364,10 +364,13 @@ def test_operator_confirmation_preserves_history_and_binds_file(scene, monkeypat
 
 
 @pytest.mark.parametrize("confirmed", [False, True])
-def test_wrist_localization_requires_operator_confirmation_in_provisional_control(
-    scene, tmp_path, monkeypatch, confirmed
+@pytest.mark.parametrize("camera", ["side", "wrist"])
+def test_both_views_localize_with_provisional_calibration(
+    scene, tmp_path, monkeypatch, confirmed, camera
 ):
     model, snapshot = scene
+    model.data["wrist_consistency_passed"] = False
+    model.provisional = True
     monkeypatch.setattr("rpent.tools.toolkit.substitute", lambda x: x)
     monkeypatch.setattr(FlexivToolkit, "_register_common_tools", lambda self: None)
     env = SimpleNamespace(
@@ -391,13 +394,14 @@ def test_wrist_localization_requires_operator_confirmation_in_provisional_contro
         {
             "step": 0,
             "target": "surface",
-            "camera": "wrist",
+            "camera": camera,
             "pixel": [50, 40],
             "box": [10, 10, 90, 70],
         },
     )
-    assert result.is_error is not confirmed
-    if confirmed:
-        assert result.data["camera"] == "wrist"
-        assert not result.data["motion_authorized"]
+    assert not result.is_error
+    assert result.data["camera"] == camera
+    assert not result.data["motion_authorized"]
+    assert not result.data["calibration_validation"]["wrist_passed"]
+    assert result.data["calibration_validation"]["control_camera"] is None
     kit.close()

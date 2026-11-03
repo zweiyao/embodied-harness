@@ -1,0 +1,310 @@
+{
+  "tool_version": "e4622a7e4132552309875913de9db1fb536900d0d1a7fabf4707d8ac03470798",
+  "sandbox_image": "sha256:5b39471628bc35a7d34a2a5af7e688493135c35cfdb7dddf26e976b7bfc066c0",
+  "reports": [
+    {
+      "run": "0002_univtac_t0_s0",
+      "params": {
+        "camera": "wrist",
+        "step": 9,
+        "regions_rc": [
+          [
+            224,
+            276,
+            228,
+            284
+          ],
+          [
+            216,
+            288,
+            223,
+            292
+          ],
+          [
+            212,
+            275,
+            216,
+            283
+          ]
+        ]
+      },
+      "result": {
+        "step": 9,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "patches": [
+          {
+            "index": 0,
+            "status": "measured",
+            "center_world_m": [
+              0.572573,
+              -0.033083,
+              0.051683
+            ],
+            "normal_world": [
+              -0.732151,
+              0.537006,
+              0.419022
+            ],
+            "rms_m": 8.2e-05
+          },
+          {
+            "index": 1,
+            "status": "measured",
+            "center_world_m": [
+              0.581987,
+              -0.036348,
+              0.074235
+            ],
+            "normal_world": [
+              -0.47684,
+              0.83479,
+              0.275227
+            ],
+            "rms_m": 4.8e-05
+          },
+          {
+            "index": 2,
+            "status": "measured",
+            "center_world_m": [
+              0.584129,
+              -0.03039,
+              0.069198
+            ],
+            "normal_world": [
+              -0.831647,
+              0.286448,
+              0.475722
+            ],
+            "rms_m": 7.9e-05
+          }
+        ],
+        "axis_status": "measured",
+        "common_tangent_world": [
+          0.495445,
+          -0.00315,
+          0.868633
+        ],
+        "axis_residual_deg": 0.026,
+        "normal_diversity": 0.2926,
+        "limitation": "Common tangent assumes patches on the same straight feature (e.g. channel walls). Axis sign is arbitrary; this is not a target pose, motion command or success measurement.",
+        "axis_patches": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "run": "0003_univtac_t0_s1",
+      "params": {
+        "camera": "wrist",
+        "step": 6,
+        "regions_rc": [
+          [
+            158,
+            227,
+            178,
+            231
+          ],
+          [
+            156,
+            237,
+            180,
+            241
+          ],
+          [
+            158,
+            248,
+            178,
+            252
+          ]
+        ]
+      },
+      "result": {
+        "step": 6,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "patches": [
+          {
+            "index": 0,
+            "status": "measured",
+            "center_world_m": [
+              0.619144,
+              -0.014599,
+              0.08301
+            ],
+            "normal_world": [
+              0.692531,
+              -0.600112,
+              0.400332
+            ],
+            "rms_m": 2.9e-05
+          },
+          {
+            "index": 1,
+            "status": "measured",
+            "center_world_m": [
+              0.618704,
+              -0.020234,
+              0.079582
+            ],
+            "normal_world": [
+              0.861494,
+              -0.092878,
+              0.499201
+            ],
+            "rms_m": 5e-06
+          },
+          {
+            "index": 2,
+            "status": "measured",
+            "center_world_m": [
+              0.618832,
+              -0.026491,
+              0.082173
+            ],
+            "normal_world": [
+              0.753598,
+              0.48991,
+              0.438268
+            ],
+            "rms_m": 2.1e-05
+          }
+        ],
+        "axis_status": "measured",
+        "common_tangent_world": [
+          -0.501666,
+          -0.002009,
+          0.865059
+        ],
+        "axis_residual_deg": 0.009,
+        "normal_diversity": 0.4984,
+        "limitation": "Common tangent assumes patches on the same straight feature (e.g. channel walls). Axis sign is arbitrary; this is not a target pose, motion command or success measurement.",
+        "axis_patches": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "run": "0004_univtac_t0_s2",
+      "params": {
+        "camera": "wrist",
+        "step": 31,
+        "regions_rc": [
+          [
+            195,
+            250,
+            199,
+            254
+          ],
+          [
+            195,
+            228,
+            199,
+            232
+          ],
+          [
+            204,
+            238,
+            208,
+            242
+          ],
+          [
+            185,
+            239,
+            189,
+            243
+          ]
+        ]
+      },
+      "result": {
+        "step": 31,
+        "camera": "wrist",
+        "coordinate_frame": "world",
+        "units": "m",
+        "patches": [
+          {
+            "index": 0,
+            "status": "measured",
+            "center_world_m": [
+              0.552854,
+              0.012406,
+              0.050714
+            ],
+            "normal_world": [
+              0.68597,
+              0.617995,
+              -0.384092
+            ],
+            "rms_m": 5.6e-05
+          },
+          {
+            "index": 1,
+            "status": "measured",
+            "center_world_m": [
+              0.554013,
+              0.026528,
+              0.051847
+            ],
+            "normal_world": [
+              0.64565,
+              -0.668797,
+              -0.368574
+            ],
+            "rms_m": 5.1e-05
+          },
+          {
+            "index": 2,
+            "status": "measured",
+            "center_world_m": [
+              0.558971,
+              0.020141,
+              0.066083
+            ],
+            "normal_world": [
+              0.862367,
+              -0.098068,
+              -0.496694
+            ],
+            "rms_m": 0.0
+          },
+          {
+            "index": 3,
+            "status": "measured",
+            "center_world_m": [
+              0.549637,
+              0.019423,
+              0.036292
+            ],
+            "normal_world": [
+              0.773123,
+              -0.018022,
+              0.634
+            ],
+            "rms_m": 3.8e-05
+          }
+        ],
+        "axis_status": "measured",
+        "common_tangent_world": [
+          0.494996,
+          -0.005359,
+          0.868879
+        ],
+        "axis_residual_deg": 0.239,
+        "normal_diversity": 0.6184,
+        "limitation": "Common tangent assumes patches on the same straight feature (e.g. channel walls). Axis sign is arbitrary; this is not a target pose, motion command or success measurement.",
+        "axis_patches": [
+          0,
+          1,
+          2
+        ]
+      }
+    }
+  ],
+  "scope": "real development sensor replay, not policy success evidence; no evaluator inputs"
+}

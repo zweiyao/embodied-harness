@@ -489,7 +489,7 @@ def test_invalid_home_is_rejected_before_robot_connection(
 
 
 @pytest.mark.parametrize("flag", [True, 1, np.int64(1)])
-def test_jointreset_uses_one_native_movej_and_keeps_gripper(homing, flag):
+def test_jointreset_uses_one_native_movej_then_opens_gripper(homing, flag):
     homing.enable()
     homing.gripper.width = 0.013
     homing.robot.reached_flag = flag
@@ -499,9 +499,14 @@ def test_jointreset_uses_one_native_movej_and_keeps_gripper(homing, flag):
         assert response.status_code == 200, response.text
         assert response.json()["reached"]
         calls = homing.robot.calls[before:]
-        assert [entry[0] for entry in calls] == ["mode", "primitive", "mode"]
+        assert [entry[0] for entry in calls] == [
+            "mode",
+            "primitive",
+            "mode",
+            "gripper_move",
+        ]
         assert calls[0] == ("mode", "primitive")
-        assert calls[-1] == ("mode", "cartesian")
+        assert calls[2] == ("mode", "cartesian")
         _, name, params = calls[1]
         assert name == "MoveJ"
         np.testing.assert_allclose(
@@ -509,7 +514,9 @@ def test_jointreset_uses_one_native_movej_and_keeps_gripper(homing, flag):
             np.rad2deg([0.1, -0.2, 0.3, -0.4, 0.5, -0.6, 0.7]),
         )
         assert params["jntVelScale"] == 30
-        assert homing.gripper.width == 0.013
+        assert homing.gripper.width == homing.gripper.params().max_width
+        assert response.json()["gripper"]["reached"]
+        assert response.json()["gripper_commanded"]
         assert homing.armed
         np.testing.assert_allclose(homing.robot.pose, [0.45, 0, 0.25, 1, 0, 0, 0])
 
@@ -659,3 +666,41 @@ def test_jointreset_stop_interrupts_wait_without_restoring_or_resending(
     assert errors and len(homing.robot.calls) == count
     assert not homing.armed
     assert homing.robot.current_mode == "idle"
+
+
+def test_jointreset_stop_after_arrival_does_not_open_gripper(homing):
+    homing.enable()
+    homing.robot.on_switch = lambda mode: (
+        homing.stop("stop before opening") if mode == "cartesian" else None
+    )
+    with pytest.raises(HTTPException, match="cancelled"):
+        homing.reset_home()
+    assert not any(call[0] == "gripper_move" for call in homing.robot.calls)
+    assert not homing.armed
+
+
+def test_jointreset_incomplete_opening_is_not_success(homing):
+    homing.enable()
+    homing.gripper.contact = True
+    with pytest.raises(RuntimeError, match="gripper did not fully open"):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]
+
+
+def test_jointreset_opening_keeps_command_lock_and_can_be_stopped(homing):
+    homing.enable()
+    move = homing.gripper.Move
+
+    def stop_during_opening(*args):
+        with pytest.raises(HTTPException, match="Another robot command"):
+            homing.move_gripper(GripperRequest(width_m=0.02))
+        move(*args)
+        homing.stop("stop during opening")
+
+    homing.gripper.Move = stop_during_opening
+    with pytest.raises(HTTPException, match="cancelled"):
+        homing.reset_home()
+    assert not homing.armed
+    assert homing.stop_reason == "stop during opening"
+    assert homing.robot.calls[-2:] == [("stop",), ("gripper_stop",)]

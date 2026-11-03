@@ -1,0 +1,21 @@
+{
+  "focused": {
+    "passed": 12
+  },
+  "unit_suite": {
+    "passed": 1836,
+    "skipped": 12,
+    "failed": 2,
+    "failures": [
+      "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
+      "test_validation_requires_bound_freeze_and_exact_selected_tools"
+    ],
+    "status": "same pre-existing failures"
+  },
+  "pre_commit": "passed",
+  "actual_library": "/home/zwy/work/embodied_harness/tool-library/univtac",
+  "recovered_candidates": 2,
+  "new_maker_requests": 0,
+  "first_simulation_run": "9c11dc1682bbeba86cc4",
+  "results": "pending"
+}

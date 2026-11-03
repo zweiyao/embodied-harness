@@ -205,7 +205,7 @@ class Calibration:
                 "side_passed": self.data["side_consistency_passed"],
                 "provisional_readonly": self.provisional_readonly,
                 "provisional": self.provisional,
-                "control_camera": "side" if self.side_control else None,
+                "control_camera": None,
             },
             "synchronization": snapshot["synchronization"],
             "frame_skew_s": skew,

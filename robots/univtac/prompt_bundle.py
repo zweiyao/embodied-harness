@@ -10,8 +10,7 @@ def system_prompt(variables=None):
     names = {item["name"] for item in selected}
     generated = any(item["origin"] == "generated" for item in selected)
     return {
-        "ROLE": "Complete the instructed contact manipulation task. "
-        "The object starts grasped near the target; determine its alignment and progress from observations.",
+        "ROLE": "Complete the instructed contact manipulation task using observations and tools.",
         "OBSERVATION": "Use the returned camera images, metric depth, bilateral tactile images and measured robot state. "
         "Match observations by recorded step number and compare motion and contact changes after each action. "
         "The initial tactile reference may already be loaded. Pixel or marker displacement is not calibrated force; "
@@ -39,10 +38,14 @@ def system_prompt(variables=None):
             else ""
         ),
         "FINISH": "Call finish when observable evidence supports completion or recovery is exhausted. "
-        "These insertion and extraction tasks do not require releasing the object. "
         "Report the outcome and supporting evidence; the official evaluator records success separately.",
     }
 
 
 def user_prompt(variables=None):
-    return {"TASK": "{{instruction}}", "GUIDANCE": "{{task_guidance}}"}
+    return {
+        "ENVIRONMENT": "The object starts grasped near the target; this does not guarantee alignment or completion. "
+        "The task does not require releasing the object.",
+        "TASK": "{{instruction}}",
+        "GUIDANCE": "{{task_guidance}}",
+    }

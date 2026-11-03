@@ -1,0 +1,140 @@
+{
+  "insert_tube": {
+    "trials": 5,
+    "successes": 4,
+    "errors": 0,
+    "success_rate": 0.8,
+    "elapsed_s": {
+      "recorded": 5,
+      "sum": 1427.5,
+      "mean": 285.5
+    },
+    "batch_wall_s": {
+      "recorded": 5,
+      "sum": 1451.2,
+      "mean": 290.24
+    },
+    "planner_elapsed_s": {
+      "recorded": 5,
+      "sum": 1135.2,
+      "mean": 227.04000000000002
+    },
+    "input_tokens": {
+      "recorded": 5,
+      "sum": 3068087,
+      "mean": 613617.4
+    },
+    "cached_input_tokens": {
+      "recorded": 5,
+      "sum": 2822272,
+      "mean": 564454.4
+    },
+    "output_tokens": {
+      "recorded": 5,
+      "sum": 20535,
+      "mean": 4107.0
+    },
+    "reasoning_output_tokens": {
+      "recorded": 5,
+      "sum": 7313,
+      "mean": 1462.6
+    },
+    "decisions": {
+      "recorded": 5,
+      "sum": 107,
+      "mean": 21.4
+    }
+  },
+  "pull_out_key": {
+    "trials": 5,
+    "successes": 2,
+    "errors": 0,
+    "success_rate": 0.4,
+    "elapsed_s": {
+      "recorded": 5,
+      "sum": 2137.2,
+      "mean": 427.43999999999994
+    },
+    "batch_wall_s": {
+      "recorded": 5,
+      "sum": 2172.2000000000003,
+      "mean": 434.44000000000005
+    },
+    "planner_elapsed_s": {
+      "recorded": 5,
+      "sum": 1932.3999999999999,
+      "mean": 386.47999999999996
+    },
+    "input_tokens": {
+      "recorded": 5,
+      "sum": 6096591,
+      "mean": 1219318.2
+    },
+    "cached_input_tokens": {
+      "recorded": 5,
+      "sum": 5746432,
+      "mean": 1149286.4
+    },
+    "output_tokens": {
+      "recorded": 5,
+      "sum": 34925,
+      "mean": 6985.0
+    },
+    "reasoning_output_tokens": {
+      "recorded": 5,
+      "sum": 6989,
+      "mean": 1397.8
+    },
+    "decisions": {
+      "recorded": 5,
+      "sum": 163,
+      "mean": 32.6
+    }
+  },
+  "overall": {
+    "trials": 10,
+    "successes": 6,
+    "errors": 0,
+    "success_rate": 0.6,
+    "elapsed_s": {
+      "recorded": 10,
+      "sum": 3564.7,
+      "mean": 356.46999999999997
+    },
+    "batch_wall_s": {
+      "recorded": 10,
+      "sum": 3623.4,
+      "mean": 362.34000000000003
+    },
+    "planner_elapsed_s": {
+      "recorded": 10,
+      "sum": 3067.6,
+      "mean": 306.76
+    },
+    "input_tokens": {
+      "recorded": 10,
+      "sum": 9164678,
+      "mean": 916467.8
+    },
+    "cached_input_tokens": {
+      "recorded": 10,
+      "sum": 8568704,
+      "mean": 856870.4
+    },
+    "output_tokens": {
+      "recorded": 10,
+      "sum": 55460,
+      "mean": 5546.0
+    },
+    "reasoning_output_tokens": {
+      "recorded": 10,
+      "sum": 14302,
+      "mean": 1430.2
+    },
+    "decisions": {
+      "recorded": 10,
+      "sum": 270,
+      "mean": 27.0
+    }
+  }
+}

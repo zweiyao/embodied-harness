@@ -1,0 +1,33 @@
+{
+  "overall": {
+    "successes": 8,
+    "trials": 10,
+    "token_records": 10,
+    "mean_total_tokens": 675950.6,
+    "mean_elapsed_s": 310.21000000000004,
+    "mean_uncached_input_tokens": 42355.7
+  },
+  "calls": {
+    "valid_calls": 43,
+    "error_calls": 0
+  },
+  "by_task": {
+    "1": {
+      "successes": 4,
+      "trials": 5,
+      "token_records": 5,
+      "mean_total_tokens": 672493.8,
+      "mean_elapsed_s": 362.32,
+      "mean_uncached_input_tokens": 43123.6
+    },
+    "2": {
+      "successes": 4,
+      "trials": 5,
+      "token_records": 5,
+      "mean_total_tokens": 679407.4,
+      "mean_elapsed_s": 258.1,
+      "mean_uncached_input_tokens": 41587.8
+    }
+  },
+  "scope": "Astra only; small-sample frozen-task reuse, not Qwen or unseen-model transfer evidence"
+}

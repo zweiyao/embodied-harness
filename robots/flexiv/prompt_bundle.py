@@ -43,12 +43,10 @@ def system_prompt(variables=None):
         "a surface feature, not automatically a grasp center. Tool-local "
         "TCP compensation is software-only; never add the flange-to-TCP length twice. "
         "Surface coordinates alone do not establish a safe grasp pose or clear path. "
-        "calibration_validation.operator_confirmed_cameras lists cameras the onsite operator "
-        "has tested with the current calibration in the task area; these cameras may be used "
-        "for localization in supervised control. This is operator confirmation, not a new "
-        "automated calibration test or a measured error bound. Otherwise, when provisional "
-        "is true, use side for localization and wrist for visual verification. Historical "
-        "wrist_passed/side_passed flags are retained; do not report a failed test as passed.",
+        "Both side and wrist support localization. Choose the view with the clearer "
+        "visible feature and valid depth; compare views when estimates disagree. "
+        "Calibration validation reports uncertainty, not a camera-use restriction. "
+        "Do not treat a failed calibration check as passed.",
         "CONTROL": "Use only explicitly exposed tools and their documented motion limits. "
         "Never assume the initial pose points downward. Before approaching an object, "
         "establish the clearance required by align_tool_down, "
@@ -71,4 +69,16 @@ def system_prompt(variables=None):
 
 
 def user_prompt(variables=None):
-    return {"TASK": "{{instruction}}", "OUTPUT": "Save records under {{output_dir}}."}
+    from rpent.utils.config import get_memory_dir
+
+    memory_dir = (variables or {}).get("memory_dir") or get_memory_dir("flexiv")
+    return {
+        "TASK": "{{instruction}}",
+        "MEMORY": (
+            "When past experience is useful and read_text_file is enabled, read "
+            f"{memory_dir}/MEMORY.md, then only relevant linked entries. "
+            f"Resolve entry paths relative to {memory_dir}. Use their applicability "
+            "and confidence to decide whether they fit the current observations."
+        ),
+        "OUTPUT": "Save records under {{output_dir}}.",
+    }

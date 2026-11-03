@@ -37,6 +37,8 @@ python -m robots.flexiv.env_server --backend rdk \
 RealSense 对齐到 1280×720 彩色图。记录保留原生深度尺寸，不将对齐后的
 尺寸当作原生深度分辨率。
 
+侧面和腕部均支持只读定位；选择可见特征更清楚、深度有效的视角，
+并在估计不一致时交叉检查。原始标定检查结果随定位返回，不限制相机选择。
 已有现场确认的标定可继续使用 `--allow-provisional-side-control` 与
 `--operator-confirmed-calibration-sha256`；原始验证结果和确认来源均保留。
 不要给 RDK 后端传旧的 `--supervised-control` 或 `--eef-chunk-control`。
@@ -76,7 +78,7 @@ rpent --robot flexiv --control-mode rdk --env-endpoint http://127.0.0.1:8084 \
 | `/move_gripper` | `width_m`；一次原生开度命令，返回实测开度与力 |
 | `/stop` | 中断当前命令并停止机械臂和夹爪，撤销启用 |
 | `/home-preview` | GET：查看保存的参考关节/TCP、当前状态和复位参数；不运动 |
-| `/jointreset` | POST：一次原生 MoveJ 回保存关节参考，保持夹爪开度 |
+| `/jointreset` | POST：一次原生 MoveJ 回保存关节参考，到位后完全张开夹爪 |
 
 ## 网页工具简介
 
@@ -107,16 +109,16 @@ RDK 模式的网页复位属于操作员接口，不作为模型工具显示。
 `quaternion_order="wxyz"`。启动时验证并冻结文件内容与 SHA256，修改文件须重启
 RDK 服务才会生效。参考 TCP 必须在配置工作区内。
 
-开始页和控制台均提供“复位（回参考位）”。机械臂已启用且模型空闲时可点击，
+开始页和控制台均提供“复位（回参考位并张开夹爪）”。机械臂已启用且模型空闲时可点击，
 页面先显示参考目标、当前受力与夹爪，再由现场操作员确认工件已退出槽口、回程
-无障碍。按钮不自动启用、不张开夹爪、不清故障；实验运行和复位互斥，“停止”
+无障碍。按钮不自动启用、不清故障；实验运行和复位互斥，“停止”
 始终可以中断复位。复位使用保存的关节目标，不是按 100 mm 笛卡尔限制拆段。
 没有自动退离接触或路径碰撞检测，保存文件也没有记录旧工具的 TCP 配置。
 
 执行为一次 `MoveJ`、`jntVelScale=30`，使用现有 `timeout_s` 截止时间。
 原生到位标志、实测关节误差≤0.0002 rad和关节速度<0.005 rad/s必须同时满足，
-并核对最终 TCP 与参考位姿在现有到位容差内。成功后恢复 Cartesian 模式，
-保留启用状态；异常/超时停止并撤销启用。停止后的旧请求不会补发命令。
+并核对最终 TCP 与参考位姿在现有到位容差内。到位后恢复 Cartesian 模式，随后以设备最大开度张开夹爪。两阶段共用操作锁与停止取消状态；
+夹爪未到位不报告复位完成。成功后保留启用状态；异常/超时停止并撤销启用。停止后的旧请求不会补发命令。
 该接口只用于现场操作员按钮，不加入模型工具清单。
 
 ```bash
@@ -196,9 +198,10 @@ Set optional `home_reference` to a saved reference JSON containing the original
 `captured_state` robot identity, seven joint positions in radians, base-frame TCP
 pose and wxyz quaternion order. The server validates and freezes the reference at
 startup. `GET /home-preview` is read-only; operator-only `POST /jointreset` submits
-one native MoveJ with velocity scale 30 and preserves the gripper opening. It
+one native MoveJ with velocity scale 30, then opens the gripper to its native maximum. It
 requires an enabled robot, verifies native arrival plus measured joints, quiet
-joint velocity and saved TCP agreement, then restores Cartesian mode. The existing
+joint velocity and saved TCP agreement, then restores Cartesian mode before opening the gripper. Both stages share the command
+lock and stop cancellation scope; an incomplete opening fails the reset. The existing
 command timeout applies. Error or stop disarms; a cancelled worker cannot restore
 the mode or resend motion. No auto-enable, contact retreat or collision checking
 is added. The saved file does not contain the old native tool TCP configuration.

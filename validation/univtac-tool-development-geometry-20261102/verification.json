@@ -1,0 +1,16 @@
+{
+  "focused_passed": 26,
+  "unit_suite": {
+    "passed": 1838,
+    "skipped": 12,
+    "failed": 2,
+    "failures": [
+      "test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
+      "test_validation_requires_bound_freeze_and_exact_selected_tools"
+    ],
+    "classification": "same pre-existing failures"
+  },
+  "pre_commit_all": "passed",
+  "runtime_policy_control_and_evaluator": "unchanged",
+  "candidate_and_simulation_results": "pending"
+}

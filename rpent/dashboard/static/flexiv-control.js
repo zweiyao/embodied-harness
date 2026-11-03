@@ -1,10 +1,10 @@
-import {resetControl} from './flexiv-reset.js';
+import {resetControl} from './flexiv-reset.js?v=open-after-home-20261031';
 const panel = document.createElement('div');
 panel.style.cssText = 'display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;background:#fff7ed;color:#222;border:1px solid #d6b589;border-radius:8px;padding:8px;box-shadow:0 2px 8px #0002;font:13px sans-serif';
 const status = document.createElement('span');
 const stop = document.createElement('button');
 const reset = document.createElement('button');
-reset.textContent = '复位（回参考位）';
+reset.textContent = '复位（回参考位并张开夹爪）';
 reset.hidden = true;
 reset.disabled = true;
 reset.style.cssText = 'border:1px solid #849f98;border-radius:4px;padding:8px;cursor:pointer';

@@ -1,0 +1,23 @@
+{
+  "new_simulator_episodes": 0,
+  "attempts": [
+    {
+      "iteration": 1,
+      "first_event": "2026-11-02T12:14:57.585626+00:00",
+      "last_event": "2026-11-02T12:19:41.219696+00:00",
+      "completed_response": false,
+      "final_provider_usage": null,
+      "termination": "request_timeout_300s"
+    },
+    {
+      "iteration": 2,
+      "first_event": "2026-11-02T12:20:00.110551+00:00",
+      "last_event": "2026-11-02T12:24:11.946130+00:00",
+      "completed_response": false,
+      "final_provider_usage": null,
+      "termination": "operator_interrupted_to_reduce_context"
+    }
+  ],
+  "continuation": "univtac-tool-development-compact-reduced-20261102",
+  "remaining_budget": 3
+}
