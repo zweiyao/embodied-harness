@@ -1,5 +1,5 @@
 {
-  "status": "stopped_on_expected_budget_timeout_awaiting_batch_rule_fix",
+  "status": "resumed_remaining34_with_budget_timeouts_as_failures",
   "planned_evaluations": 50,
   "valid_evaluations": 16,
   "successes": 14,
@@ -76,7 +76,7 @@
     "No unit tests or pre-commit rerun for result JSON records"
   ],
   "repair_evidence": "repair.json",
-  "checked_at": "2026-11-05T12:33:32.508678+00:00",
+  "checked_at": "2026-11-05T12:40:40.541646+00:00",
   "task_failures": 2,
   "current_blocker": {
     "run_id": "f8e244f4c3df87354c4b",
@@ -88,7 +88,9 @@
     "elapsed_s": 609.4,
     "cause": "Batch runner stops on every nonempty error, including expected planner budget timeout",
     "proposed_fix": "Continue only explicit full-planner 600s budget timeouts with official_success=false; preserve stop on model-request, network, setup and unknown errors",
-    "approval": "pending",
-    "deployed": false
-  }
+    "approval": "approved",
+    "deployed": true,
+    "resolved": true
+  },
+  "batch_rule_evidence": "../libero-batch-budget-rule-20261105/summary.json"
 }

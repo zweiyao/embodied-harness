@@ -1,10 +1,10 @@
 {
-  "checked_at": "2026-11-05T12:33:32.508678+00:00",
-  "phase": "stopped",
-  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/continuation",
-  "astra_phase": "stopped",
-  "astra_continuation_completed": 6,
+  "checked_at": "2026-11-05T12:40:40.541646+00:00",
+  "phase": "queued",
+  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume34",
+  "astra_phase": "running",
+  "astra_resume34_completed": 0,
   "completed": 0,
-  "error": "Astra batch stopped; Qwen remains unstarted pending inspection",
-  "model_trials_started": 0
+  "model_trials_started": 0,
+  "rule_evidence": "../libero-batch-budget-rule-20261105/summary.json"
 }
