@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-05T12:33:32.508678+00:00",
+  "phase": "stopped",
+  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/continuation",
+  "astra_phase": "stopped",
+  "astra_continuation_completed": 6,
+  "completed": 0,
+  "error": "Astra batch stopped; Qwen remains unstarted pending inspection",
+  "model_trials_started": 0
+}

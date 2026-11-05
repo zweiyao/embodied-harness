@@ -1,10 +1,10 @@
 {
-  "status": "data_repaired_initialization_verified_continuation_running",
+  "status": "stopped_on_expected_budget_timeout_awaiting_batch_rule_fix",
   "planned_evaluations": 50,
-  "valid_evaluations": 10,
-  "successes": 10,
+  "valid_evaluations": 16,
+  "successes": 14,
   "infrastructure_attempts": 1,
-  "remaining_valid_evaluations": 40,
+  "remaining_valid_evaluations": 34,
   "per_task": {
     "0": {
       "successes": 5,
@@ -13,6 +13,14 @@
     "1": {
       "successes": 5,
       "trials": 5
+    },
+    "2": {
+      "successes": 4,
+      "trials": 5
+    },
+    "3": {
+      "successes": 0,
+      "trials": 1
     }
   },
   "failure": {
@@ -63,9 +71,24 @@
     "deployed": true
   },
   "limits": [
-    "No overall 50-trial success rate yet",
+    "Only 16/50 valid trials complete; no full-task-set success rate",
     "Current language-memory workbench is not an exact paper reproduction",
     "No unit tests or pre-commit rerun for result JSON records"
   ],
-  "repair_evidence": "repair.json"
+  "repair_evidence": "repair.json",
+  "checked_at": "2026-11-05T12:33:32.508678+00:00",
+  "task_failures": 2,
+  "current_blocker": {
+    "run_id": "f8e244f4c3df87354c4b",
+    "task": 3,
+    "seed": 0,
+    "outcome": "timeout",
+    "error": "Codex SDK timed out after 600s",
+    "official_success": false,
+    "elapsed_s": 609.4,
+    "cause": "Batch runner stops on every nonempty error, including expected planner budget timeout",
+    "proposed_fix": "Continue only explicit full-planner 600s budget timeouts with official_success=false; preserve stop on model-request, network, setup and unknown errors",
+    "approval": "pending",
+    "deployed": false
+  }
 }
