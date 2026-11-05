@@ -1,0 +1,100 @@
+{
+  "deployment": {
+    "time": "2026-11-05T11:33:34.035640+00:00",
+    "upstream_revision": "c86fc3b8293185a6f373677018ff3e37f8391602",
+    "backup": "/home/zwy/work/embodied_harness/backups/libero-task2-data-20261105",
+    "files": [
+      {
+        "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/init_files/libero_10_task/KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.pruned_init",
+        "before": "031ef7f9af0e3d30cdae0c2bc57c4032bedbbda045ea4f2707f6ab1601320e48",
+        "after": "ed7831ef48eac50a6adc3e3b16e09e41cf5bda3648b819f31014da8a545bc5d7"
+      },
+      {
+        "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.bddl",
+        "before": "41e17c41f4c807f34f1997c4f157a7f659efb3f16d96e579b1915785bfd9f340",
+        "after": "cfa0b51a4ee20f3ee5fdcaa63bfa456b4b27e99a3572cffdd50fb5928b7cdf5e"
+      }
+    ]
+  },
+  "initialization_checks": [
+    {
+      "seed": 0,
+      "task_id": 2,
+      "trial_id": 0,
+      "reset": "passed",
+      "language": "turn on the stove and put the pan on it",
+      "observation_keys": [
+        "main_images",
+        "wrist_images",
+        "states",
+        "task_descriptions"
+      ],
+      "policy_actions": 0
+    },
+    {
+      "seed": 1,
+      "task_id": 2,
+      "trial_id": 1,
+      "reset": "passed",
+      "language": "turn on the stove and put the pan on it",
+      "observation_keys": [
+        "main_images",
+        "wrist_images",
+        "states",
+        "task_descriptions"
+      ],
+      "policy_actions": 0
+    },
+    {
+      "seed": 2,
+      "task_id": 2,
+      "trial_id": 2,
+      "reset": "passed",
+      "language": "turn on the stove and put the pan on it",
+      "observation_keys": [
+        "main_images",
+        "wrist_images",
+        "states",
+        "task_descriptions"
+      ],
+      "policy_actions": 0
+    },
+    {
+      "seed": 3,
+      "task_id": 2,
+      "trial_id": 3,
+      "reset": "passed",
+      "language": "turn on the stove and put the pan on it",
+      "observation_keys": [
+        "main_images",
+        "wrist_images",
+        "states",
+        "task_descriptions"
+      ],
+      "policy_actions": 0
+    },
+    {
+      "seed": 4,
+      "task_id": 2,
+      "trial_id": 4,
+      "reset": "passed",
+      "language": "turn on the stove and put the pan on it",
+      "observation_keys": [
+        "main_images",
+        "wrist_images",
+        "states",
+        "task_descriptions"
+      ],
+      "policy_actions": 0
+    }
+  ],
+  "validation_scope": "Actual simulator construction and reset for task 2 seeds 0–4; no policy actions or model calls; all passed",
+  "check_script_first_attempt": "Exited before simulator creation due to EGL import ordering; corrected diagnostic script then all five passed",
+  "continuation_service": "rpent-libero10-task-astra-remaining40-20261105",
+  "continuation_scope": "Tasks 2–9, seeds 0–4; same configuration and original source/memory hashes; retain first 10 valid trials and original infrastructure failure",
+  "limitations": [
+    "Installed-package data files only; source checkout untouched",
+    "No full unit-test suite or pre-commit rerun for data-only repair",
+    "Initialization checks are not task-success evidence; remaining 40 trials still pending"
+  ]
+}

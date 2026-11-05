@@ -1,5 +1,5 @@
 {
-  "status": "stopped_awaiting_task2_data_repair_approval",
+  "status": "data_repaired_initialization_verified_continuation_running",
   "planned_evaluations": 50,
   "valid_evaluations": 10,
   "successes": 10,
@@ -39,7 +39,8 @@
       50
     ],
     "first_five_run_configs_init_indices_memory_outcomes": "verified",
-    "runner_syntax": "remote py_compile passed"
+    "runner_syntax": "remote py_compile passed",
+    "task2_real_initialization_seeds_0_to_4": "5 passed, no policy actions or model calls"
   },
   "proposal": {
     "upstream": "https://huggingface.co/datasets/zhouxueyang/LIBERO-Pro/tree/c86fc3b8293185a6f373677018ff3e37f8391602",
@@ -59,11 +60,12 @@
     },
     "bddl_before_sha256": "41e17c41f4c807f34f1997c4f157a7f659efb3f16d96e579b1915785bfd9f340",
     "bddl_after_sha256": "cfa0b51a4ee20f3ee5fdcaa63bfa456b4b27e99a3572cffdd50fb5928b7cdf5e",
-    "deployed": false
+    "deployed": true
   },
   "limits": [
     "No overall 50-trial success rate yet",
     "Current language-memory workbench is not an exact paper reproduction",
     "No unit tests or pre-commit rerun for result JSON records"
-  ]
+  ],
+  "repair_evidence": "repair.json"
 }
