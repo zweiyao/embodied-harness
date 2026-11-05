@@ -73,3 +73,12 @@ Skill sources live in `.agents/skills/`. `.claude/skills` links to that whole
 directory, and `CLAUDE.md` links to this file. Edit the canonical files so both
 clients share the same instructions. Keep each skill self-contained in its
 `SKILL.md` and link to existing repository resources.
+
+## 经验与 harness 修改审批
+
+- 新增或修改经验前，先判断它是可迁移的通用经验，还是有明确适用条件的任务／任务族经验；只适用于一次摆放或一次轨迹的动作记录，不进入 agent 经验库。任务经验必须说明适用条件，不能作为所有任务的默认策略。
+- 经验正文保留观察依据、判断方法、失效条件、来源实验 ID 和验证状态；不写入特定轨迹的固定坐标、正负方向、位移、角度、力值或动作序列，即使附有“仅供参考”也不保留。具体数值留在实验记录或独立复盘报告中，不能把单次成功或失败推广为通用规律。
+- 坐标系、单位、参数格式等接口契约仍由工具说明提供；当前容差、设备参数和控制限制读取运行配置或接口反馈，不硬编码成经验。不得以清理经验为由删除控制保护或修改控制参数。
+- 经验继续按 RPent 格式保存为独立文件并登记 MEMORY.md，按需加载；不把任务经验加入系统提示词。
+- 新增、修改或删除经验，以及修改 harness 的提示词、工具说明、工具实现、观测／动作／记忆流程或实验行为配置之前，先向用户展示拟修改文件、具体前后内容（新文件给出草稿）、适用范围、依据及验证计划，取得针对该改动的明确同意后再修改或部署。可先只读分析；草稿不得接入运行环境。已有明确授权仅覆盖用户确认的范围，不能扩展为持续自动优化授权。
+- 获准修改并验证后仍按项目要求自动提交、推送和更新 PR；提交或 PR 不替代修改前审批。完成时逐项告知实际改动和未验证部分。
