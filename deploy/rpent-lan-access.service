@@ -1,0 +1,15 @@
+[Unit]
+Description=RPent dashboards restricted to the operator Mac
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/work/harnessvla
+ExecStart=/usr/bin/python3 -m rpent.dashboard.lan_access --bind 10.162.250.228 --allow 10.162.217.98 --ports 8083 8092 8093
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target
