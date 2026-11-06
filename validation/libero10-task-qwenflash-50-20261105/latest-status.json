@@ -1,10 +1,9 @@
 {
-  "checked_at": "2026-11-05T12:40:40.541646+00:00",
+  "checked_at": "2026-11-06T01:49:58.070331+00:00",
   "phase": "queued",
-  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume34",
+  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume32",
   "astra_phase": "running",
-  "astra_resume34_completed": 0,
+  "astra_resume32_completed": 0,
   "completed": 0,
-  "model_trials_started": 0,
-  "rule_evidence": "../libero-batch-budget-rule-20261105/summary.json"
+  "model_trials_started": 0
 }

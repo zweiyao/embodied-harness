@@ -1,10 +1,10 @@
 {
-  "status": "resumed_remaining34_with_budget_timeouts_as_failures",
+  "status": "routing_connection_recovered_resumed32",
   "planned_evaluations": 50,
-  "valid_evaluations": 16,
-  "successes": 14,
-  "infrastructure_attempts": 1,
-  "remaining_valid_evaluations": 34,
+  "valid_evaluations": 18,
+  "successes": 15,
+  "infrastructure_attempts": 2,
+  "remaining_valid_evaluations": 32,
   "per_task": {
     "0": {
       "successes": 5,
@@ -19,8 +19,8 @@
       "trials": 5
     },
     "3": {
-      "successes": 0,
-      "trials": 1
+      "successes": 1,
+      "trials": 3
     }
   },
   "failure": {
@@ -71,13 +71,13 @@
     "deployed": true
   },
   "limits": [
-    "Only 16/50 valid trials complete; no full-task-set success rate",
+    "Only 18/50 valid trials complete; no full-task-set success rate",
     "Current language-memory workbench is not an exact paper reproduction",
     "No unit tests or pre-commit rerun for result JSON records"
   ],
   "repair_evidence": "repair.json",
-  "checked_at": "2026-11-05T12:40:40.541646+00:00",
-  "task_failures": 2,
+  "checked_at": "2026-11-06T01:49:58.070331+00:00",
+  "task_failures": 3,
   "current_blocker": {
     "run_id": "f8e244f4c3df87354c4b",
     "task": 3,
@@ -92,5 +92,6 @@
     "deployed": true,
     "resolved": true
   },
-  "batch_rule_evidence": "../libero-batch-budget-rule-20261105/summary.json"
+  "batch_rule_evidence": "../libero-batch-budget-rule-20261105/summary.json",
+  "latest_recovery_evidence": "../libero-routing-recovery-20261106/summary.json"
 }

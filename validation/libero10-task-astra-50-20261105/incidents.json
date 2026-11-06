@@ -1,0 +1,33 @@
+[
+  {
+    "task": 2,
+    "seed": 0,
+    "run_id": "e02796819bddb1e083c8",
+    "path": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0012_libero_10_task_t2_s0",
+    "official_success": null,
+    "status": "network_failure",
+    "error": "[env] wait / client connect failed: env_server exited with code 1 before becoming ready; check its log. last healthz error: healthz: HTTP request failed: <urlopen error [Errno 111] Connection refused>",
+    "elapsed_s": 2.0,
+    "turns": null,
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "output_tokens": null
+  },
+  {
+    "task": 3,
+    "seed": 3,
+    "run_id": "c42e4e0eea33df81e102",
+    "path": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0021_libero_10_task_t3_s3",
+    "official_success": false,
+    "status": "error",
+    "error": "workspace routing discovery failed",
+    "elapsed_s": 168.4,
+    "turns": 0,
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "classification": "unexpected",
+    "evaluation_success": null,
+    "actions": 0
+  }
+]
