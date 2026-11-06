@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-11-06T15:33:26.917748+00:00",
+  "state": "waiting for current 3000s task1 seed2 to finish",
+  "prior_completed": 7,
+  "prior_successes": 2,
+  "requested_next_timeout_s": 1500,
+  "max_turns": 30,
+  "policy": "Preserve active episode under original budget, then continue uncompleted cells with separate 1500s results; restore proxy on batch exit",
+  "checks": "3 script syntax checks and 2 timeout/incident classification checks passed remotely",
+  "unverified": "Transition not completed yet; no 1500s outcome yet; full unit suite not rerun for external orchestration",
+  "remote_directory": "/home/zwy/work/embodied_harness/experiments/libero10-task-qwenflash-1500s-continuation-20261106"
+}
