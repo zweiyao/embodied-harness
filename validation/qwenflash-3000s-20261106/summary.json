@@ -1,0 +1,53 @@
+{
+  "connectivity.json": {
+    "ok": true,
+    "status": "ok",
+    "detail": "",
+    "checked_at": "2026-11-06T09:56:15.160732+00:00",
+    "latency_s": 1.49
+  },
+  "status.json": {
+    "phase": "running",
+    "task": 0,
+    "seed": 0,
+    "completed": 0,
+    "run_id": "2a627b9a2b6b8980306a",
+    "elapsed_s": 10.3
+  },
+  "original-config.json": {
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 3000,
+    "model_profile": "qwen3.8-flash",
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ],
+    "reasoning_effort": "none"
+  },
+  "planned": 50,
+  "timeout_s": 3000,
+  "max_turns": 30,
+  "prior_600s_results_excluded": true,
+  "proxy_restoration": "Installed ExecStopPost; not yet executed for this batch",
+  "checks": "3 outcome-classification checks and restoration syntax passed remotely; startup config/source/memory checks passed",
+  "full_tests": "Not rerun: external batch orchestration only",
+  "remote_directory": "/home/zwy/work/embodied_harness/experiments/libero10-task-qwenflash-3000s-50-20261106"
+}
