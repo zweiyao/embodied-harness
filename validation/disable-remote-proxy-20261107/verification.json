@@ -1,0 +1,49 @@
+{
+  "time": "2026-11-07T12:59:53.867180+00:00",
+  "dashboards": {
+    "embodied-manual-workbench.service": {
+      "pid": "1218481",
+      "proxy_variables_present": false,
+      "session_state": "ready",
+      "operator_active": false,
+      "pending_task": null,
+      "environment_status": "pending"
+    },
+    "rpent-univtac-workbench.service": {
+      "pid": "1218486",
+      "proxy_variables_present": false,
+      "session_state": "ready",
+      "operator_active": false,
+      "pending_task": null,
+      "environment_status": "pending"
+    },
+    "harnessvla-flexiv-dashboard.service": {
+      "pid": "1218484",
+      "proxy_variables_present": false,
+      "session_state": "ready",
+      "operator_active": false,
+      "pending_task": null,
+      "environment_status": "pending"
+    }
+  },
+  "proxy_ports": {
+    "7900": "closed",
+    "17997": "closed"
+  },
+  "protected_service_pids_unchanged": true,
+  "rdk_health": {
+    "service": "flexiv-rdk",
+    "connected": true,
+    "armed": false
+  },
+  "desktop_proxy_mode": "'none'",
+  "qwen_direct_probe": {
+    "success": true,
+    "seconds": 0.6593671459704638,
+    "model": "qwen3.8-flash",
+    "input_tokens": 30,
+    "output_tokens": 1,
+    "automatic_retries": 0,
+    "proxy_variables_present": false
+  }
+}

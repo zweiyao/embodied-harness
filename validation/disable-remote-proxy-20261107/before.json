@@ -1,0 +1,84 @@
+{
+  "time": "2026-11-07T12:58:29.927336+00:00",
+  "dashboard_states": {
+    "8092": {
+      "session_state": "ready",
+      "run_id": null,
+      "operator": {
+        "active": false,
+        "pending": null,
+        "exploration": false
+      },
+      "interaction": {
+        "input_mode": "command_only",
+        "planner_activity": "ended",
+        "interrupt_requested": false,
+        "messages": [],
+        "last_error": null
+      }
+    },
+    "8093": {
+      "session_state": "ready",
+      "run_id": null,
+      "operator": {
+        "active": false,
+        "pending": null,
+        "exploration": false
+      },
+      "interaction": {
+        "input_mode": "command_only",
+        "planner_activity": "ended",
+        "interrupt_requested": false,
+        "messages": [],
+        "last_error": null
+      }
+    },
+    "8083": {
+      "session_state": "ready",
+      "run_id": "f38650f25c7fe0825c49",
+      "operator": {
+        "active": false,
+        "pending": null,
+        "exploration": false
+      },
+      "interaction": {
+        "input_mode": "command_only",
+        "planner_activity": "ended",
+        "interrupt_requested": false,
+        "messages": [],
+        "last_error": null
+      }
+    }
+  },
+  "rdk_health": {
+    "service": "flexiv-rdk",
+    "connected": true,
+    "armed": false
+  },
+  "protected_service_pids": {
+    "flexiv-rdk.service": "4024100",
+    "flexiv-rgbd.service": "4024101",
+    "flexiv-tactile.service": "3970043",
+    "harnessvla-flexiv-env.service": "4038105"
+  },
+  "changes": [
+    {
+      "path": "/home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf",
+      "before_sha256": "2a16c567dc56c9e0f98b7c81534420c13ab45356efa6932f952d80bede569d99",
+      "after_sha256": "feb8826adde80fb3b7a9615eec2d01659ba17bbe4ff71d209bc184a37376cc61",
+      "backup": "/home/zwy/work/embodied_harness/backups/disable-remote-proxy-20261107/0-10-remote-proxy.conf"
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-univtac/start-workbench.sh",
+      "before_sha256": "6e589d55b883f363976cedab449f8d7cc7e6c013f64f5791d74c406d53acfdf1",
+      "after_sha256": "593989451b731480a4a659642a9387162858ccc6b44d8252acaa40f16c2e8f00",
+      "backup": "/home/zwy/work/embodied_harness/backups/disable-remote-proxy-20261107/1-start-workbench.sh"
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh",
+      "before_sha256": "1f1d751c87b89e5dd9ccc618eab11cc60d5634920c2fca325557d2b05b12f83c",
+      "after_sha256": "b5eb742ebc25ab27188e529b01b39e2f35489e81ad51949049ca6f76d05b4ed2",
+      "backup": "/home/zwy/work/embodied_harness/backups/disable-remote-proxy-20261107/2-flexiv-dashboard.sh"
+    }
+  ]
+}
