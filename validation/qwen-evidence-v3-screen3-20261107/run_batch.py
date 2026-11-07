@@ -49,8 +49,9 @@ def unchanged():
     ), "Protected files changed"
 
 
-def classify(outcome):
-    timeout = PLAN["config"]["planner_timeout_s"]
+def classify(outcome, timeout=None):
+    if timeout is None:
+        timeout = PLAN["config"]["planner_timeout_s"]
     if (
         outcome.get("status") == "timeout"
         and outcome.get("error") == f"planner timed out after {timeout:g}s"
@@ -64,6 +65,42 @@ def classify(outcome):
     ):
         return "unexpected", None
     return "task_result", outcome["environment_success"]
+
+
+def configure_trial(port, trial, pending):
+    config = {
+        **PLAN["config"],
+        "planner_timeout_s": PLAN.get("timeout_by_task", {}).get(
+            str(trial["task"]), PLAN["config"]["planner_timeout_s"]
+        ),
+    }
+    if pending:
+        assert (
+            pending[0]["config"]["planner_timeout_s"] == config["planner_timeout_s"]
+        ), "Pending episode budget mismatch"
+        assert api(port, "/api/session/config") == config, (
+            "Do not change an active episode config"
+        )
+    else:
+        assert api(port, "/api/session/state")["session_state"] == "ready"
+        api(
+            port,
+            "/api/session/config",
+            {
+                k: v
+                for k, v in config.items()
+                if k
+                in [
+                    "model_profile",
+                    "tools",
+                    "max_turns",
+                    "max_tokens",
+                    "planner_timeout_s",
+                ]
+            },
+        )
+        assert api(port, "/api/session/config") == config
+    return config
 
 
 def aggregate():
@@ -91,6 +128,11 @@ def aggregate():
             {
                 **summarize(rows),
                 "planned": PLAN["total"],
+                "mixed_budget": len({r["planner_timeout_s"] for r in rows}) > 1,
+                "budget_cohorts": {
+                    str(b): summarize([r for r in rows if r["planner_timeout_s"] == b])
+                    for b in sorted({r["planner_timeout_s"] for r in rows})
+                },
                 "success_rate_percent": 100
                 * sum(r["evaluation_success"] for r in rows)
                 / len(rows)
@@ -160,7 +202,6 @@ def run_lane(name):
     lane = ROOT / name
     settings = PLAN["lanes"][name]
     port, trials = settings["port"], settings["trials"]
-    config = PLAN["config"]
     rows = (
         json.loads((lane / "results.json").read_text())
         if (lane / "results.json").exists()
@@ -173,7 +214,6 @@ def run_lane(name):
     try:
         for trial in trials[len(rows) :]:
             unchanged()
-            assert api(port, "/api/session/config") == config
             state = api(port, "/api/session/state")
             assert state["server_id"] == initial["server_id"]
             existing = api(port, "/api/runs")["runs"]
@@ -185,9 +225,20 @@ def run_lane(name):
             excluded = {r["path"] for r in rows + incidents}
             pending = [r for r in existing if r["path"] not in excluded]
             assert len(pending) <= 1, "Unexplained extra run"
+            config = configure_trial(port, trial, pending)
             started = time.monotonic()
             if pending:
                 run = pending[0]
+                from datetime import datetime
+
+                with (Path(run["path"]) / "events.jsonl").open() as file:
+                    first_event = json.loads(file.readline())
+                elapsed = max(
+                    0,
+                    time.time()
+                    - datetime.fromisoformat(first_event["time"]).timestamp(),
+                )
+                started -= elapsed
                 task = run["config"]["task"]
                 assert (task["suite"], task["task"], task["seed"]) == (
                     PLAN["suite"],
@@ -227,6 +278,7 @@ def run_lane(name):
                         "completed": len(rows),
                         "run_id": run["id"] if run else None,
                         "elapsed_s": round(time.monotonic() - started, 1),
+                        "planner_timeout_s": config["planner_timeout_s"],
                     },
                 )
                 aggregate()
@@ -246,7 +298,8 @@ def run_lane(name):
                     "Episode did not finalize; leave running for inspection"
                 )
             outcome = run["outcome"]
-            category, success = classify(outcome)
+            assert run["config"]["planner_timeout_s"] == config["planner_timeout_s"]
+            category, success = classify(outcome, config["planner_timeout_s"])
             row = {
                 "lane": name,
                 **trial,
@@ -261,7 +314,7 @@ def run_lane(name):
                 "stats": outcome.get("stats", {}),
                 "actions": outcome.get("actions"),
                 "material_version": PLAN["material_version"],
-                "planner_timeout_s": 300,
+                "planner_timeout_s": config["planner_timeout_s"],
             }
             if category != "unexpected":
                 try:

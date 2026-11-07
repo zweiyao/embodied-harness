@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "completed": 1,
+  "planned": 1,
+  "successes": 0,
+  "success_rate_percent": 0.0,
+  "unexpected_incidents": 0,
+  "source_hashes_unchanged": true,
+  "conditional_first_action_metrics_recomputed": true,
+  "cleanup_passed": true,
+  "details": [
+    {
+      "task": 0,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-repair1-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 309.7,
+      "all_tool_calls": 15,
+      "action_calls": 5,
+      "before_action_calls": 10,
+      "new_experience_bodies_read": [],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 1,
+        "sensor_container_geometry": 2
+      },
+      "batch_point_count": 2,
+      "container_statuses": {
+        "inconsistent_rim": 1,
+        "measured": 1
+      },
+      "returned_model_requests": 11,
+      "returned_request_wait_mean_s": 25.697120449759744,
+      "returned_request_wait_median_s": 11.246577024459839,
+      "model_wait_sum_returned_s": 282.6683249473572,
+      "unfinished_request_at_end": true,
+      "tool_error_responses": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "grasp_attempt_calls": 2
+    }
+  ],
+  "limitations": "Approved repair/candidate cells, direct-network only. Timing is request/response elapsed, not pure network. No causal baseline or task-gain proof."
+}
