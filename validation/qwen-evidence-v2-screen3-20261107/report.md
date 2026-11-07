@@ -2,6 +2,8 @@
 
 The approved screen completed three episodes with **0% success (0/3)**. All three reached the 300-second planner limit; no infrastructure incident or tool execution error was recorded. Valid failures were retained without rerunning them. No 50-episode expansion was started.
 
+**Subsequent correction:** [The detailed replay](../qwen-evidence-v2-diagnosis-20261107/report.md) found 20 nested per-patch errors in four task-0 calls: radius=0 is advertised but cannot meet the implementation’s minimum sample count. The earlier error count covered only top-level responses. Preserve the raw three-attempt outcome; task 0 is defect-affected and excluded from clean effectiveness evaluation pending a repaired rerun. Tasks 4/8 did not trigger this defect (0/2 success). No infrastructure incident was observed.
+
 Qwen3.8 Flash, thinking disabled, 30 model requests, 16384 output-token setting, direct remote networking; `libero_10_task`, seed 0. Lane A ran task 0 then 8, while lane B ran task 4. Independent workbenches/environment processes shared the existing VLA/SAM services. The candidate used the two approved on-demand experiences and 17 native plus two existing generated tools; original prompt/controller source files were preserved.
 
 | Task | Success | End reason | All tool calls | Action calls | Calls before first action | Batch / container calls |

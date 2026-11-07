@@ -1,0 +1,479 @@
+{
+  "published_version": "cca2f3c424d195fe3e55896ec0fe4c54b08b9f6929fdf794cfc98595458155c3",
+  "episodes": [
+    {
+      "task": 0,
+      "run_id": "4aeed560761dad4f7217",
+      "reads": [
+        {
+          "file": "guide.md",
+          "chars": 5182,
+          "event_line": 14
+        },
+        {
+          "file": "MEMORY.md",
+          "chars": 32627,
+          "event_line": 25
+        },
+        {
+          "file": "task-family_libero10_task_t0.md",
+          "chars": 5212,
+          "event_line": 38
+        },
+        {
+          "file": "basket-two-cans-wedge-not-stack.md",
+          "chars": 2517,
+          "event_line": 39
+        },
+        {
+          "file": "relation-selected-identical-object.md",
+          "chars": 1814,
+          "event_line": 106
+        }
+      ],
+      "actions": [],
+      "model_requests_carrying_index": 21,
+      "patch_calls": 14,
+      "patch_points": 74,
+      "failed_points": 20,
+      "calls_with_failed_points": 4,
+      "radius_zero_calls": 4,
+      "numerical_medians_verified": 54,
+      "duplicate_samples": 1,
+      "tool_elapsed_sum_s": 7.633083399385214,
+      "model_response_elapsed_sum_s": 284.9054253101349,
+      "model_responses": 22,
+      "batch_return_chars": 39213,
+      "timing_pairs": [
+        {
+          "elapsed_s": 2.123,
+          "input_tokens": 5593
+        },
+        {
+          "elapsed_s": 2.167,
+          "input_tokens": 7194
+        },
+        {
+          "elapsed_s": 5.165,
+          "input_tokens": 18939
+        },
+        {
+          "elapsed_s": 7.747,
+          "input_tokens": 21588
+        },
+        {
+          "elapsed_s": 9.302,
+          "input_tokens": 22553
+        },
+        {
+          "elapsed_s": 9.736,
+          "input_tokens": 25191
+        },
+        {
+          "elapsed_s": 9.215,
+          "input_tokens": 26486
+        },
+        {
+          "elapsed_s": 14.673,
+          "input_tokens": 30518
+        },
+        {
+          "elapsed_s": 9.631,
+          "input_tokens": 32128
+        },
+        {
+          "elapsed_s": 13.348,
+          "input_tokens": 33369
+        },
+        {
+          "elapsed_s": 12.174,
+          "input_tokens": 36171
+        },
+        {
+          "elapsed_s": 10.185,
+          "input_tokens": 38793
+        },
+        {
+          "elapsed_s": 11.553,
+          "input_tokens": 42786
+        },
+        {
+          "elapsed_s": 12.344,
+          "input_tokens": 43883
+        },
+        {
+          "elapsed_s": 4.813,
+          "input_tokens": 46952
+        },
+        {
+          "elapsed_s": 21.52,
+          "input_tokens": 48351
+        },
+        {
+          "elapsed_s": 31.382,
+          "input_tokens": 49144
+        },
+        {
+          "elapsed_s": 8.873,
+          "input_tokens": 49739
+        },
+        {
+          "elapsed_s": 26.794,
+          "input_tokens": 50438
+        },
+        {
+          "elapsed_s": 48.924,
+          "input_tokens": 53224
+        },
+        {
+          "elapsed_s": 4.304,
+          "input_tokens": 55402
+        },
+        {
+          "elapsed_s": 8.931,
+          "input_tokens": 58496
+        }
+      ],
+      "radius_counts": {
+        "2": 2,
+        "1": 8,
+        "0": 4
+      },
+      "index_entry_count": 213,
+      "new_index_entries_visible": true,
+      "patch_replay_matches": true,
+      "model_wait_mean_s": 12.95024660500613,
+      "model_wait_fraction_of_budget": 0.9496847510337829
+    },
+    {
+      "task": 8,
+      "run_id": "a4ad5d50d4b873066dd3",
+      "reads": [
+        {
+          "file": "guide.md",
+          "chars": 5182,
+          "event_line": 14
+        },
+        {
+          "file": "MEMORY.md",
+          "chars": 32627,
+          "event_line": 25
+        },
+        {
+          "file": "10_task_t8_s0.md",
+          "chars": 6273,
+          "event_line": 35
+        },
+        {
+          "file": "moka-pot-grasp-the-handle-not-the-body.md",
+          "chars": 2817,
+          "event_line": 45
+        },
+        {
+          "file": "task-family_libero10_task_t8.md",
+          "chars": 5387,
+          "event_line": 46
+        }
+      ],
+      "actions": [],
+      "model_requests_carrying_index": 25,
+      "patch_calls": 22,
+      "patch_points": 176,
+      "failed_points": 0,
+      "calls_with_failed_points": 0,
+      "radius_zero_calls": 0,
+      "numerical_medians_verified": 176,
+      "duplicate_samples": 12,
+      "tool_elapsed_sum_s": 8.016042492818087,
+      "model_response_elapsed_sum_s": 291.39790964126587,
+      "model_responses": 27,
+      "batch_return_chars": 101053,
+      "timing_pairs": [
+        {
+          "elapsed_s": 2.899,
+          "input_tokens": 5593
+        },
+        {
+          "elapsed_s": 2.539,
+          "input_tokens": 7252
+        },
+        {
+          "elapsed_s": 3.039,
+          "input_tokens": 18943
+        },
+        {
+          "elapsed_s": 5.61,
+          "input_tokens": 21192
+        },
+        {
+          "elapsed_s": 4.859,
+          "input_tokens": 24036
+        },
+        {
+          "elapsed_s": 5.332,
+          "input_tokens": 28017
+        },
+        {
+          "elapsed_s": 19.162,
+          "input_tokens": 32009
+        },
+        {
+          "elapsed_s": 8.216,
+          "input_tokens": 36015
+        },
+        {
+          "elapsed_s": 12.877,
+          "input_tokens": 37198
+        },
+        {
+          "elapsed_s": 12.21,
+          "input_tokens": 41169
+        },
+        {
+          "elapsed_s": 9.133,
+          "input_tokens": 45188
+        },
+        {
+          "elapsed_s": 9.484,
+          "input_tokens": 49156
+        },
+        {
+          "elapsed_s": 6.17,
+          "input_tokens": 53101
+        },
+        {
+          "elapsed_s": 37.768,
+          "input_tokens": 57073
+        },
+        {
+          "elapsed_s": 6.181,
+          "input_tokens": 61057
+        },
+        {
+          "elapsed_s": 4.762,
+          "input_tokens": 65030
+        },
+        {
+          "elapsed_s": 23.879,
+          "input_tokens": 69021
+        },
+        {
+          "elapsed_s": 5.244,
+          "input_tokens": 73006
+        },
+        {
+          "elapsed_s": 6.361,
+          "input_tokens": 77029
+        },
+        {
+          "elapsed_s": 5.274,
+          "input_tokens": 81032
+        },
+        {
+          "elapsed_s": 21.959,
+          "input_tokens": 85000
+        },
+        {
+          "elapsed_s": 17.699,
+          "input_tokens": 88996
+        },
+        {
+          "elapsed_s": 16.601,
+          "input_tokens": 93006
+        },
+        {
+          "elapsed_s": 9.768,
+          "input_tokens": 96946
+        },
+        {
+          "elapsed_s": 10.442,
+          "input_tokens": 100915
+        },
+        {
+          "elapsed_s": 16.225,
+          "input_tokens": 104907
+        },
+        {
+          "elapsed_s": 7.703,
+          "input_tokens": 108879
+        }
+      ],
+      "radius_counts": {
+        "2": 22
+      },
+      "index_entry_count": 213,
+      "new_index_entries_visible": true,
+      "patch_replay_matches": true,
+      "model_wait_mean_s": 10.792515171898735,
+      "model_wait_fraction_of_budget": 0.9713263654708862
+    },
+    {
+      "task": 4,
+      "run_id": "9cbe14f94f25bc734075",
+      "reads": [
+        {
+          "file": "guide.md",
+          "chars": 5182,
+          "event_line": 14
+        },
+        {
+          "file": "MEMORY.md",
+          "chars": 32627,
+          "event_line": 26
+        },
+        {
+          "file": "task-family_libero10_task_t4.md",
+          "chars": 5207,
+          "event_line": 39
+        },
+        {
+          "file": "libero10-left-right-sign-verify-empirically.md",
+          "chars": 2046,
+          "event_line": 40
+        },
+        {
+          "file": "held-offset-rotation-reach.md",
+          "chars": 1854,
+          "event_line": 52
+        },
+        {
+          "file": "learned-grasp-grasp-tall-mug-by-handle.md",
+          "chars": 2173,
+          "event_line": 53
+        }
+      ],
+      "actions": [
+        {
+          "event_line": 108,
+          "residual_m": 0.0098,
+          "steps_used": 16,
+          "max_steps": 60,
+          "gripper": -1
+        },
+        {
+          "event_line": 135,
+          "residual_m": 0.0317,
+          "steps_used": 50,
+          "max_steps": 50,
+          "gripper": -1
+        },
+        {
+          "event_line": 144,
+          "residual_m": 0.0087,
+          "steps_used": 17,
+          "max_steps": 30,
+          "gripper": -1
+        },
+        {
+          "event_line": 162,
+          "residual_m": 0.052,
+          "steps_used": 40,
+          "max_steps": 40,
+          "gripper": -1
+        }
+      ],
+      "model_requests_carrying_index": 12,
+      "patch_calls": 4,
+      "patch_points": 17,
+      "failed_points": 0,
+      "calls_with_failed_points": 0,
+      "radius_zero_calls": 0,
+      "numerical_medians_verified": 17,
+      "duplicate_samples": 0,
+      "tool_elapsed_sum_s": 8.470958712045103,
+      "model_response_elapsed_sum_s": 292.5746567249298,
+      "model_responses": 14,
+      "batch_return_chars": 11226,
+      "timing_pairs": [
+        {
+          "elapsed_s": 2.292,
+          "input_tokens": 5593
+        },
+        {
+          "elapsed_s": 8.478,
+          "input_tokens": 9786
+        },
+        {
+          "elapsed_s": 8.524,
+          "input_tokens": 18841
+        },
+        {
+          "elapsed_s": 19.256,
+          "input_tokens": 21200
+        },
+        {
+          "elapsed_s": 17.216,
+          "input_tokens": 22698
+        },
+        {
+          "elapsed_s": 11.766,
+          "input_tokens": 23560
+        },
+        {
+          "elapsed_s": 7.943,
+          "input_tokens": 26216
+        },
+        {
+          "elapsed_s": 4.605,
+          "input_tokens": 28407
+        },
+        {
+          "elapsed_s": 12.726,
+          "input_tokens": 33028
+        },
+        {
+          "elapsed_s": 26.052,
+          "input_tokens": 36236
+        },
+        {
+          "elapsed_s": 25.124,
+          "input_tokens": 37983
+        },
+        {
+          "elapsed_s": 10.893,
+          "input_tokens": 41229
+        },
+        {
+          "elapsed_s": 40.39,
+          "input_tokens": 44469
+        },
+        {
+          "elapsed_s": 97.308,
+          "input_tokens": 47141
+        }
+      ],
+      "radius_counts": {
+        "2": 3,
+        "1": 1
+      },
+      "index_entry_count": 213,
+      "new_index_entries_visible": true,
+      "patch_replay_matches": true,
+      "model_wait_mean_s": 20.898189766066416,
+      "model_wait_fraction_of_budget": 0.975248855749766
+    }
+  ],
+  "new_environment_actions": 0,
+  "radius_zero_counterexample": {
+    "declared_minimum": 0,
+    "valid_input_count": 1,
+    "actual_error": "insufficient valid surface samples",
+    "same_frame_radius_one_succeeds": true
+  },
+  "limits": "Numerical replay validates sampled arrays, not semantic point selection or physical calibration. Timing is request/response elapsed, not pure network. No new model or simulator experiment.",
+  "result_validity": {
+    "raw_recorded_successes": 0,
+    "raw_recorded_attempts": 3,
+    "tool_defect_affected_tasks": [
+      0
+    ],
+    "unaffected_tasks": [
+      8,
+      4
+    ],
+    "clean_unaffected_successes": 0,
+    "clean_unaffected_attempts": 2,
+    "affected_attempt_preserved": true,
+    "replacement_pending_approval": true
+  }
+}
