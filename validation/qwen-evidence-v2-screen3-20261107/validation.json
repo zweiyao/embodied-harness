@@ -1,0 +1,17 @@
+{
+  "validated_at": "2026-11-07T13:16:36.431159+00:00",
+  "related_remote_tests": {
+    "passed": 26,
+    "skipped": 0,
+    "docker_enabled": true
+  },
+  "published_versions_docker_checks": "both valid geometry and missing-frame paths passed",
+  "metric_cases": 2,
+  "classification_cases": 5,
+  "material_freeze_render": "passed",
+  "two_isolated_workbenches": "ready, identical approved configuration, direct API checks passed",
+  "protected_files": 776,
+  "original_materials_and_core_changed": false,
+  "full_unit_suite": "Not rerun: no harness source changes; focused material/manual/high-resolution/container/sandbox/library suite used.",
+  "benchmark_efficacy": "Pending three-run screen; no causal gain claimed."
+}

@@ -1,0 +1,13 @@
+# Approved Qwen evidence v2 screen
+
+User approved the exact two experience drafts and existing batch/container tools, reduced the experiment from 50 to three episodes, and explicitly requested two parallel environments. Run LIBERO-10 Task 0/4/8, seed 0; Qwen3.8 Flash, thinking disabled, 300 seconds, 30 model requests, 16384 output-token setting. No new baseline; no automatic further optimization.
+
+Published material version: `qwen-evidence-v2-56708d55045b`, cloned from `qwen-minimal-v1-a4a9130c693e`. Source texts are in `memory/libero/`; deployment copies them into the candidate package and registers the index additions. Existing 215 language-material files remain byte-identical except the candidate MEMORY.md, plus the two new entries. Original v1 and qwen-minimal-v1 packages are protected. This changes raw experience files and selected tools only, not the existing system/user/guide source files or controllers.
+
+19 selected tools: the original 17 plus hash-pinned sensor_patch_batch and sensor_container_geometry, as recorded in plan.json. No new tool implementation. Two isolated environment/workbench processes: lane A tasks 0 then 8; lane B task 4. Separate runs roots, ports and LIBERO configuration directories; shared existing VLA/SAM inference services. Both explicitly unset all proxy variables. Original 8092 workbench remains untouched.
+
+Preflight: 26 relevant remote tests passed, including opt-in Docker tests; both exact published helper versions executed in Docker and rejected missing frames; five outcome-classification cases and two event-metric cases passed. Language freeze/render, all 19 selected tool IDs, two distinct workbench IDs, direct API connectivity, and 776 protected file hashes passed. Initial preflight script used a string where Library expects Path; corrected before any experiment dispatch.
+
+Full budget timeout is a valid failure. Infrastructure incidents are retained outside valid results and require diagnosis before the same cell is retried. A cancelled/invalid run is never silently replaced by a success. Record official success, actual helper usage, new-experience reads, first-action counts and model usage. Conditional first-action means exclude no-action episodes and report their denominator. This three-run parallel screen cannot establish causal success-rate or token gains against historical runs.
+
+Scripts use the existing workbench API. To reproduce preparation, stage the approved memory source files under the fresh experiment root's `approved-memory/libero/`, alongside index-additions.md and scripts; setup.py refuses to overwrite an existing candidate or experiment plan. Runtime configuration, observations and videos stay outside Git.
