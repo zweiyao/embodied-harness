@@ -1,0 +1,17 @@
+{
+  "phase": "running",
+  "remote_preflight": "passed",
+  "serialized_thinking_tests": {
+    "existing": 4,
+    "exact_max_medium": 1,
+    "passed": true
+  },
+  "live_enable_thinking": true,
+  "live_provider_thinking_parts_observed": true,
+  "live_proxy_free_processes": 9,
+  "ruff": "passed using repository pyproject configuration; imported runner formatting only",
+  "full_unit_suite": "not rerun: production code unchanged; prior same-core suite 2009 passed / 15 skipped",
+  "full_precommit": "not rerun: prior same-core baseline has known historical validation-script findings; this external-runner scope checked separately",
+  "new_environment_results": "pending",
+  "unchanged_protected_files": 798
+}

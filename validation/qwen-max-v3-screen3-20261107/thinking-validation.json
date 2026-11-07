@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "existing_serialized_body_test_cases": 4,
+  "additional_exact_max_medium_case": true,
+  "serialized_enable_thinking": true,
+  "frozen_profile_and_startup_effort": "medium",
+  "environment_actions": 0,
+  "live_provider_reasoning_observation": "pending actual trial",
+  "diagnostic_note": "Initial standalone invocation omitted pytest logging initialization and failed before mock request; initialized temporary logging and exact medium case passed."
+}
