@@ -46,16 +46,18 @@ def metrics(path):
         if e['kind'] == 'tool_response' and isinstance(p.get('result'), dict):
             result = p['result']
             errors += bool(result.get('errors') or str(result.get('error','')).startswith('bad arguments'))
-            motion = result.get('log', {}).get('result', {})
+            motion = (result.get('log') or {}).get('result') or {}
             if motion.get('final_dist_m') is not None:
                 residuals.append(motion['final_dist_m'])
     return {'first_action_request':first,'tool_calls':counts,'argument_errors':errors,'movement_residuals_m':residuals}
 
 def main():
-    assert not (ROOT / 'results.json').exists(), 'Fresh screening only; preserve earlier attempts'
-    results = []
+    results = json.loads((ROOT / 'results.json').read_text()) if (ROOT / 'results.json').exists() else []
+    assert [(r['condition'], r['task'], r['seed']) for r in results] == [(t['condition'], t['task'], t['seed']) for t in PLAN['trials'][:len(results)]], 'Completed cells must be an exact plan prefix'
     assert api('/api/session/state')['session_state'] == 'ready'
     for index, trial in enumerate(PLAN['trials']):
+        if index < len(results):
+            continue
         unchanged()
         assert api('/api/session/state')['session_state'] == 'ready'
         save('status.json', {'phase':'switching','index':index,'completed':len(results),**trial})

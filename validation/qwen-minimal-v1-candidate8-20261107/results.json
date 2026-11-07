@@ -1,0 +1,49 @@
+[
+  {
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-candidate8-20261107/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "official_success": true,
+    "status": "completed",
+    "error": null,
+    "elapsed_s": 370.4,
+    "turns": 30,
+    "input_tokens": 1051457,
+    "cached_input_tokens": 549120,
+    "output_tokens": 2768,
+    "classification": "task_result",
+    "evaluation_success": true,
+    "actions": 17,
+    "condition": "candidate",
+    "material_version": "qwen-minimal-v1-a4a9130c693e",
+    "diagnostics": {
+      "first_action_request": 13,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 4,
+        "segment": 2,
+        "back_project": 5,
+        "pi0_pick": 2,
+        "set_gripper": 2,
+        "move_to": 12,
+        "release": 1
+      },
+      "argument_errors": 0,
+      "movement_residuals_m": [
+        0.0118,
+        0.0115,
+        0.0096,
+        0.0108,
+        0.0111,
+        0.0086,
+        0.0106,
+        0.0105,
+        0.011,
+        0.0098,
+        0.0086,
+        0.0169
+      ]
+    }
+  }
+]
