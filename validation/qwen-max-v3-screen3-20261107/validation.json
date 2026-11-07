@@ -1,5 +1,5 @@
 {
-  "phase": "running",
+  "phase": "completed",
   "remote_preflight": "passed",
   "serialized_thinking_tests": {
     "existing": 4,
@@ -12,6 +12,12 @@
   "ruff": "passed using repository pyproject configuration; imported runner formatting only",
   "full_unit_suite": "not rerun: production code unchanged; prior same-core suite 2009 passed / 15 skipped",
   "full_precommit": "not rerun: prior same-core baseline has known historical validation-script findings; this external-runner scope checked separately",
-  "new_environment_results": "pending",
-  "unchanged_protected_files": 798
+  "new_environment_results": "three full-budget timeouts; task8 excluded from matched-scene comparison",
+  "unchanged_protected_files": 798,
+  "final_thinking_requests_checked": 27,
+  "final_nonempty_thinking_responses": 24,
+  "source_hashes_unchanged": true,
+  "cleanup_passed": true,
+  "comparison_caveat": "task8 initial stove layout differs; cause unresolved; no extra trial",
+  "video_decode_and_local_http": "three videos passed"
 }

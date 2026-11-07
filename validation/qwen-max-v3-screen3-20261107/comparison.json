@@ -1,0 +1,21 @@
+{
+  "raw_attempts": 3,
+  "official_successes": 0,
+  "official_outcomes": "all configured-budget timeouts",
+  "eligible_observed_initial_scene_pairs": [
+    0,
+    4
+  ],
+  "excluded_from_paired_comparison": {
+    "8": "Initial stove image/placement differs despite identical configured task and seed; cause unresolved."
+  },
+  "paired_max_success_rate_percent": 0.0,
+  "paired_flash_success_rate_percent": 0.0,
+  "paired_n_per_condition": 2,
+  "limitations": [
+    "Model and thinking switch changed together",
+    "One seed per task, small development screen",
+    "Task 8 excluded from paired statistics; no replacement experiment performed",
+    "Completed-response timings and token counts exclude unfinished requests"
+  ]
+}

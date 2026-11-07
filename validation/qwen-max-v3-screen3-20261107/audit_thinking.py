@@ -40,6 +40,17 @@ for row in rows:
             "enable_thinking_true_on_every_request": True,
             "provider_model": "qwen3.8-max",
             "nonempty_thinking_parts": nonempty,
+            "reported_reasoning_tokens_completed": sum(
+                r.get("usage", {}).get("details", {}).get("reasoning_tokens", 0)
+                for r in responses
+            ),
+            "reported_output_tokens_completed": sum(
+                r.get("usage", {}).get("output_tokens", 0) for r in responses
+            ),
+            "max_single_response_reasoning_tokens": max(
+                r.get("usage", {}).get("details", {}).get("reasoning_tokens", 0)
+                for r in responses
+            ),
         }
     )
 result = {

@@ -1,0 +1,44 @@
+{
+  "completed_initial_scenes": 3,
+  "details": [
+    {
+      "task_directory": "0001_libero_10_task_t0_s0",
+      "same_initial_agentview_high_png": true,
+      "max_sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+      "flash_sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+    },
+    {
+      "task_directory": "0002_libero_10_task_t8_s0",
+      "same_initial_agentview_high_png": false,
+      "max_sha256": "fcfd19c25d3ddac27e8cb207c5c38ec44e58db71c8b4994e692ddc0d4c5d56d3",
+      "flash_sha256": "d12086af902b08de230b40405426463d65fd361f1f423ea2f912342b97ee5946"
+    },
+    {
+      "task_directory": "0001_libero_10_task_t4_s0",
+      "same_initial_agentview_high_png": true,
+      "max_sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+      "flash_sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+    }
+  ],
+  "passed_for_exact_image_pairs": [
+    0,
+    4
+  ],
+  "excluded_from_exact_initial_scene_comparison": [
+    8
+  ],
+  "task8_pixel_check": {
+    "mean_absolute_channel_difference": 1.2268975575764973,
+    "changed_pixel_fraction": 0.045632362365722656,
+    "changed_pixel_bbox_xyxy": [
+      98,
+      470,
+      383,
+      742
+    ]
+  },
+  "task8_same_recorded_eef_and_gripper_initial_state": true,
+  "visual_observation": "Difference is localized to the stove; task language and robot initial state agree. This is not PNG encoding alone.",
+  "classification": "Task8 official outcome remains archived, but excluded from exact-initial-scene paired comparison. The environment-level cause has not been confirmed or modified.",
+  "no_additional_experiments": true
+}

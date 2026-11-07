@@ -1,0 +1,209 @@
+[
+  {
+    "lane": "a",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 610.3,
+    "stats": {
+      "total_input_tokens": 210439,
+      "total_output_tokens": 14203,
+      "total_cached_input_tokens": 157952,
+      "turns_used": 11,
+      "tool_calls": 16
+    },
+    "actions": 6,
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "metrics": {
+      "tool_calls": {
+        "read_text_file": 4,
+        "view_env_state": 1,
+        "list_dir": 1,
+        "pi0_pick": 1,
+        "sensor_container_geometry": 2,
+        "move_to": 4,
+        "back_project": 2,
+        "release": 1
+      },
+      "all_calls": 16,
+      "action_calls": 6,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 6,
+      "before_action_observations": 1,
+      "before_action_perception": 0,
+      "before_action_file_reads": 4,
+      "prefix_or_no_action_calls": {
+        "read_text_file": 4,
+        "view_env_state": 1,
+        "list_dir": 1
+      },
+      "first_action_seconds_since_first_event": 61.638287,
+      "first_action_model_request": 4,
+      "tool_error_responses": 0,
+      "patch_point_count": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {
+        "inconsistent_rim": 2
+      },
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 10,
+      "completed_model_wait_sum_s": 507.208461,
+      "completed_model_wait_mean_s": 50.7208461,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "object-relative-transfer.md",
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 2
+      }
+    }
+  },
+  {
+    "lane": "a",
+    "task": 8,
+    "seed": 0,
+    "run_id": "a4ad5d50d4b873066dd3",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 608.6,
+    "stats": {
+      "total_input_tokens": 131424,
+      "total_output_tokens": 19873,
+      "total_cached_input_tokens": 86016,
+      "turns_used": 7,
+      "tool_calls": 12
+    },
+    "actions": 3,
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "metrics": {
+      "tool_calls": {
+        "read_text_file": 3,
+        "view_env_state": 1,
+        "back_project": 5,
+        "pi0_pick": 2,
+        "move_pose": 1
+      },
+      "all_calls": 12,
+      "action_calls": 3,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 7,
+      "before_action_observations": 1,
+      "before_action_perception": 3,
+      "before_action_file_reads": 3,
+      "prefix_or_no_action_calls": {
+        "read_text_file": 3,
+        "view_env_state": 1,
+        "back_project": 3
+      },
+      "first_action_seconds_since_first_event": 317.327015,
+      "first_action_model_request": 3,
+      "tool_error_responses": 0,
+      "patch_point_count": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "grasp_attempt_calls": 2,
+      "completed_model_responses": 6,
+      "completed_model_wait_sum_s": 492.558542,
+      "completed_model_wait_mean_s": 82.09309033333334,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 0
+      }
+    }
+  },
+  {
+    "lane": "b",
+    "task": 4,
+    "seed": 0,
+    "run_id": "9cbe14f94f25bc734075",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 610.5,
+    "stats": {
+      "total_input_tokens": 186308,
+      "total_output_tokens": 19922,
+      "total_cached_input_tokens": 135552,
+      "turns_used": 9,
+      "tool_calls": 12
+    },
+    "actions": 3,
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "metrics": {
+      "tool_calls": {
+        "read_text_file": 3,
+        "view_env_state": 1,
+        "pi0_pick": 1,
+        "list_dir": 1,
+        "sensor_container_geometry": 1,
+        "back_project": 3,
+        "move_to": 2
+      },
+      "all_calls": 12,
+      "action_calls": 3,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 4,
+      "before_action_observations": 1,
+      "before_action_perception": 0,
+      "before_action_file_reads": 3,
+      "prefix_or_no_action_calls": {
+        "read_text_file": 3,
+        "view_env_state": 1
+      },
+      "first_action_seconds_since_first_event": 235.937551,
+      "first_action_model_request": 3,
+      "tool_error_responses": 0,
+      "patch_point_count": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {
+        "measured": 1
+      },
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 8,
+      "completed_model_wait_sum_s": 568.5876,
+      "completed_model_wait_mean_s": 71.07345,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 1
+      }
+    }
+  }
+]
