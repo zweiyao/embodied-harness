@@ -1,0 +1,61 @@
+{
+  "checked_at": "2026-11-07T14:24:25.896663+00:00",
+  "passed": true,
+  "scripts": [
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-retry-20261107/a/start.sh",
+      "sha256": "e0c5fb362d0b8caff609ac156189a64572337bf584fc3426060e7fad86c53880",
+      "six_variables_cleared_after_activation_before_python": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-retry-20261107/b/start.sh",
+      "sha256": "5b352afb9168d9f0ff66ab5d60139b4bd9b8e0256b3c4040ada707de09167403",
+      "six_variables_cleared_after_activation_before_python": true
+    }
+  ],
+  "processes": [
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-20261107-a.service",
+      "pid": 1270039,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-20261107-a.service",
+      "pid": 1287112,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-20261107-a.service",
+      "pid": 1287178,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-20261107-a.service",
+      "pid": 1287179,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-20261107-b.service",
+      "pid": 1270044,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "rpent-qwen-evidence-v3-screen3-retry-batch-20261107.service",
+      "pid": 1273406,
+      "nonempty_proxy_variables": []
+    },
+    {
+      "unit": "embodied-manual-workbench.service",
+      "pid": 1218481,
+      "nonempty_proxy_variables": []
+    }
+  ],
+  "manager_proxy_variables": [],
+  "former_proxy_ports_listening": {
+    "7900": false,
+    "17997": false
+  },
+  "controller_uses_explicit_empty_proxy_handler": true,
+  "scope": "Current batch, both workbenches and cgroup child processes, original LIBERO workbench and user service manager. No process restarted or active task changed.",
+  "performance_limit": "0.659 s was a short text connectivity probe. Task timings include image/history transmission and provider processing; direct connectivity does not establish low multimodal latency."
+}
