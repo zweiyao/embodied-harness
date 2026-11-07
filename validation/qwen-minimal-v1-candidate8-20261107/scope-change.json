@@ -1,0 +1,10 @@
+{
+  "candidate_trials": 8,
+  "baseline_trials": 0,
+  "cancelled_baseline": {
+    "run_id": "4aeed560761dad4f7217",
+    "excluded": true
+  },
+  "validation": "8 unique candidate cells; 3 scripts compile; protected hashes unchanged",
+  "prior_runtime_checks": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-screening-20261107/validation.json"
+}

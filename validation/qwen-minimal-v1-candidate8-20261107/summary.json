@@ -1,0 +1,13 @@
+{
+  "phase": "running",
+  "index": 0,
+  "completed": 0,
+  "cell": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-candidate8-20261107/cells/00_candidate_t0_s0",
+  "task": 0,
+  "seed": 0,
+  "condition": "candidate",
+  "recorded_at": "2026-11-07T03:20:57.033160+00:00",
+  "remote_directory": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-candidate8-20261107",
+  "baseline_cancelled_excluded": "4aeed560761dad4f7217",
+  "prior_validation": "../qwen-minimal-v1-screening-20261107/validation.json"
+}
