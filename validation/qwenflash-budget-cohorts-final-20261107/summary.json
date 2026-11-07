@@ -1,0 +1,21 @@
+{
+  "completed": 50,
+  "successes": 3,
+  "cohorts": [
+    {
+      "timeout_s": 3000,
+      "completed": 8,
+      "successes": 2
+    },
+    {
+      "timeout_s": 1500,
+      "completed": 42,
+      "successes": 1,
+      "budget_exhausted": 39,
+      "timeout_failures": 2
+    }
+  ],
+  "interpretation": "Mixed-budget descriptive total only, not a uniform-budget benchmark. Earlier 600s attempts excluded.",
+  "validation": "50 unique task/seed cells; original proxy restoration recorded and verified by restoration script; dashboard ready without error",
+  "recorded_at": "2026-11-07T01:46:46.487589+00:00"
+}
