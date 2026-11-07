@@ -1,0 +1,22 @@
+{
+  "focused_remote_tests": {
+    "passed": 19,
+    "docker_enabled": true
+  },
+  "full_remote_unit_tests": {
+    "passed": 2008,
+    "skipped": 15,
+    "elapsed_s": 73.06
+  },
+  "zero_radius_regression": "failed against original schema; passed after repair",
+  "historical_valid_points_identical": 247,
+  "historical_zero_radius_points_rejected": 20,
+  "nested_metric_replay": "passed task0 20 failed points / 4 calls, others 0",
+  "published_docker_checks": "passed; radius0 rejected, valid data and missing step checked",
+  "scoped_precommit": "passed",
+  "full_precommit": "failed: 2218 reported errors, 1944 auto-fixed only in disposable checkout, 274 remain; identical in clean d366799 baseline; unrelated changes discarded",
+  "original_runtime_core_changes": false,
+  "original_library_preserved": true,
+  "repair": "running; not yet a task benefit result",
+  "v3_screen": "not started; waiting for repair completion"
+}
