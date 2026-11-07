@@ -1,0 +1,95 @@
+{
+  "passed": true,
+  "material_tests": {
+    "three_original_texts_identical": true,
+    "empty_index_only": true,
+    "rendered_without_placeholders": true
+  },
+  "statistics_tests": {
+    "synthetic_cases_passed": 5,
+    "qwen_and_astra_historical_replay_passed": true
+  },
+  "classification_cases_passed": 3,
+  "lanes": [
+    {
+      "lane": "qwen",
+      "config": {
+        "planner": "api",
+        "model": "openai-chat:qwen3.8-flash",
+        "max_turns": 30,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1500,
+        "model_profile": "qwen3.8-flash",
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "reasoning_effort": "none"
+      },
+      "connection": {
+        "ok": true,
+        "status": "ok",
+        "detail": "",
+        "checked_at": "2026-11-07T07:17:36.527747+00:00",
+        "latency_s": 2.4
+      },
+      "network_verified": true,
+      "server_id": "a4d74ecac57f46c297d4715529860a71"
+    },
+    {
+      "lane": "astra",
+      "config": {
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "max_turns": 30,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1500,
+        "model_profile": "gpt-6-astra",
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "reasoning_effort": "low"
+      },
+      "connection": {
+        "ok": true,
+        "status": "ok",
+        "detail": "",
+        "checked_at": "2026-11-07T07:17:51.500440+00:00",
+        "latency_s": 17.185
+      },
+      "network_verified": true,
+      "server_id": "9d820bf2f2dd455ba697265f6031efb3"
+    }
+  ]
+}

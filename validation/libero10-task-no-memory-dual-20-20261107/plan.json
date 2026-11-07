@@ -1,0 +1,136 @@
+{
+  "approved": true,
+  "approval": "User: 开始实验, after reviewing empty-library dual-lane proposal",
+  "suite": "libero_10_task",
+  "tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "seed": 0,
+  "total": 20,
+  "materials": "/home/zwy/work/embodied_harness/language-materials/v1-empty-memory",
+  "material_version": "v1-empty-memory-a11c16cc5536",
+  "baseline_material_version": "language-c592f23a3a324c08",
+  "system_user_guide_byte_identical": true,
+  "budget": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 1500
+  },
+  "tools": [
+    "native:move_pose",
+    "native:move_to",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:rotate_pitch",
+    "native:rotate_wrist",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file"
+  ],
+  "memory_profile": "local",
+  "planners_differ": "Astra Codex SDK; Qwen API. Tool-request counts are common metric, model-request counts are not interchangeable.",
+  "unexpected": "Preserve and exclude; stop affected lane, diagnose/fix before retry same task/seed. Full budget timeout counts as failure.",
+  "lanes": {
+    "qwen": {
+      "unit": "rpent-no-memory-qwen-20261107.service",
+      "port": 44993,
+      "config": {
+        "max_turns": 30,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1500,
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "model_profile": "qwen3.8-flash",
+        "planner": "api",
+        "model": "openai-chat:qwen3.8-flash",
+        "reasoning_effort": "none"
+      },
+      "network": {
+        "HTTP_PROXY": "http://127.0.0.1:7900",
+        "HTTPS_PROXY": "http://127.0.0.1:7900",
+        "ALL_PROXY": "http://127.0.0.1:7900",
+        "http_proxy": "http://127.0.0.1:7900",
+        "https_proxy": "http://127.0.0.1:7900",
+        "all_proxy": "http://127.0.0.1:7900",
+        "NO_PROXY": "localhost,127.0.0.1,::1,10.162.250.228,llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com",
+        "no_proxy": "localhost,127.0.0.1,::1,10.162.250.228,llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com"
+      }
+    },
+    "astra": {
+      "unit": "rpent-no-memory-astra-20261107.service",
+      "port": 34381,
+      "config": {
+        "max_turns": 30,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1500,
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "model_profile": "gpt-6-astra",
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "reasoning_effort": "low"
+      },
+      "network": {
+        "HTTP_PROXY": "http://127.0.0.1:7900",
+        "HTTPS_PROXY": "http://127.0.0.1:7900",
+        "ALL_PROXY": "http://127.0.0.1:7900",
+        "http_proxy": "http://127.0.0.1:7900",
+        "https_proxy": "http://127.0.0.1:7900",
+        "all_proxy": "http://127.0.0.1:7900",
+        "NO_PROXY": "localhost,127.0.0.1,::1,10.162.250.228",
+        "no_proxy": "localhost,127.0.0.1,::1,10.162.250.228"
+      }
+    }
+  }
+}
