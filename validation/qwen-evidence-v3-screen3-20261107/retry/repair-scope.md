@@ -1,0 +1,3 @@
+# Memory export incident correction
+
+The model requested approved experiences but MemoryManager rejected an extra libero/ layer inside its already LIBERO-specific corpus root. Export the same three bodies directly under memory/, with only corresponding index links changed. Git sources remain memory/libero/. No authorization policy or experience text changes. Verify actual CommonTools reads and write denial after freezing, then repeat only the three invalid cells on two environments, all at the user’s latest 600-second budget. Preserve the earlier attempts as incidents; they are not failures in the valid result denominator.

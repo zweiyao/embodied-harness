@@ -1,0 +1,97 @@
+{
+  "status": "routing_connection_recovered_resumed32",
+  "planned_evaluations": 50,
+  "valid_evaluations": 18,
+  "successes": 15,
+  "infrastructure_attempts": 2,
+  "remaining_valid_evaluations": 32,
+  "per_task": {
+    "0": {
+      "successes": 5,
+      "trials": 5
+    },
+    "1": {
+      "successes": 5,
+      "trials": 5
+    },
+    "2": {
+      "successes": 4,
+      "trials": 5
+    },
+    "3": {
+      "successes": 1,
+      "trials": 3
+    }
+  },
+  "failure": {
+    "task": 2,
+    "seed": 0,
+    "run_id": "e02796819bddb1e083c8",
+    "status_label": "network_failure",
+    "root_cause": "Task 2 initial-state array is empty; environment exits before ready",
+    "actions": 0,
+    "model_usage": null,
+    "additional_data_defect": "Task 2 BDDL goal expression is missing opening parenthesis"
+  },
+  "checks": {
+    "all_task_initial_state_counts": [
+      50,
+      50,
+      0,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "first_five_run_configs_init_indices_memory_outcomes": "verified",
+    "runner_syntax": "remote py_compile passed",
+    "task2_real_initialization_seeds_0_to_4": "5 passed, no policy actions or model calls"
+  },
+  "proposal": {
+    "upstream": "https://huggingface.co/datasets/zhouxueyang/LIBERO-Pro/tree/c86fc3b8293185a6f373677018ff3e37f8391602",
+    "scope": "Only task 2 installed pruned_init and BDDL files; backup before replacement; no harness/model/tool/memory/budget changes",
+    "init_before": {
+      "count": 0,
+      "bytes": 364,
+      "sha256": "031ef7f9af0e3d30cdae0c2bc57c4032bedbbda045ea4f2707f6ab1601320e48"
+    },
+    "init_after": {
+      "count": 50,
+      "state_shape": [
+        47
+      ],
+      "bytes": 2310,
+      "sha256": "ed7831ef48eac50a6adc3e3b16e09e41cf5bda3648b819f31014da8a545bc5d7"
+    },
+    "bddl_before_sha256": "41e17c41f4c807f34f1997c4f157a7f659efb3f16d96e579b1915785bfd9f340",
+    "bddl_after_sha256": "cfa0b51a4ee20f3ee5fdcaa63bfa456b4b27e99a3572cffdd50fb5928b7cdf5e",
+    "deployed": true
+  },
+  "limits": [
+    "Only 18/50 valid trials complete; no full-task-set success rate",
+    "Current language-memory workbench is not an exact paper reproduction",
+    "No unit tests or pre-commit rerun for result JSON records"
+  ],
+  "repair_evidence": "repair.json",
+  "checked_at": "2026-11-06T01:49:58.070331+00:00",
+  "task_failures": 3,
+  "current_blocker": {
+    "run_id": "f8e244f4c3df87354c4b",
+    "task": 3,
+    "seed": 0,
+    "outcome": "timeout",
+    "error": "Codex SDK timed out after 600s",
+    "official_success": false,
+    "elapsed_s": 609.4,
+    "cause": "Batch runner stops on every nonempty error, including expected planner budget timeout",
+    "proposed_fix": "Continue only explicit full-planner 600s budget timeouts with official_success=false; preserve stop on model-request, network, setup and unknown errors",
+    "approval": "approved",
+    "deployed": true,
+    "resolved": true
+  },
+  "batch_rule_evidence": "../libero-batch-budget-rule-20261105/summary.json",
+  "latest_recovery_evidence": "../libero-routing-recovery-20261106/summary.json"
+}

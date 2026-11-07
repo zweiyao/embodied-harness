@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "videos": [
+    {
+      "task": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/episode.mp4",
+      "sha256": "c2fc02e88c7021020094f6e37fe18c9ff2603907116cb3892a0fe8d2b8834546",
+      "frames_decoded": 212,
+      "fps": 20.0,
+      "duration_s": 10.6,
+      "codec": "h264"
+    },
+    {
+      "task": 8,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0/episode.mp4",
+      "sha256": "b648583b65179bb891ba0bd48179d27f8e39e6ccc81e3901d43003033072872d",
+      "frames_decoded": 276,
+      "fps": 20.0,
+      "duration_s": 13.8,
+      "codec": "h264"
+    },
+    {
+      "task": 4,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0/episode.mp4",
+      "sha256": "839f38721274ee4cb46c7254d538f1ec0b89a503c4a8e23fc5012a1a88fe086e",
+      "frames_decoded": 158,
+      "fps": 20.0,
+      "duration_s": 7.9,
+      "codec": "h264"
+    }
+  ],
+  "scope": "Recorded action clips only; model waiting time is not included."
+}

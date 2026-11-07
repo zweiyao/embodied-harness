@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "completed": 3,
+  "planned": 3,
+  "successes": 0,
+  "success_rate_percent": 0.0,
+  "unexpected_incidents": 0,
+  "source_hashes_unchanged": true,
+  "conditional_first_action_metrics_recomputed": true,
+  "cleanup_passed": true,
+  "details": [
+    {
+      "task": 0,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 310.4,
+      "all_tool_calls": 27,
+      "action_calls": 0,
+      "before_action_calls": null,
+      "new_experience_bodies_read": [],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 14,
+        "sensor_container_geometry": 2
+      },
+      "batch_point_count": 74,
+      "container_statuses": {
+        "inconsistent_rim": 2
+      },
+      "returned_model_requests": 22,
+      "returned_request_wait_mean_s": 12.95024660500613,
+      "returned_request_wait_median_s": 9.683490514755249,
+      "model_wait_sum_returned_s": 284.9054253101349,
+      "unfinished_request_at_end": true,
+      "tool_error_responses": 0
+    },
+    {
+      "task": 8,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 308.7,
+      "all_tool_calls": 30,
+      "action_calls": 0,
+      "before_action_calls": null,
+      "new_experience_bodies_read": [],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 22,
+        "sensor_container_geometry": 0
+      },
+      "batch_point_count": 176,
+      "container_statuses": {},
+      "returned_model_requests": 27,
+      "returned_request_wait_mean_s": 10.792515171898735,
+      "returned_request_wait_median_s": 8.216406106948853,
+      "model_wait_sum_returned_s": 291.39790964126587,
+      "unfinished_request_at_end": false,
+      "tool_error_responses": 0
+    },
+    {
+      "task": 4,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 311.7,
+      "all_tool_calls": 22,
+      "action_calls": 4,
+      "before_action_calls": 15,
+      "new_experience_bodies_read": [],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 4,
+        "sensor_container_geometry": 0
+      },
+      "batch_point_count": 17,
+      "container_statuses": {},
+      "returned_model_requests": 14,
+      "returned_request_wait_mean_s": 20.898189766066416,
+      "returned_request_wait_median_s": 12.246354460716248,
+      "model_wait_sum_returned_s": 292.5746567249298,
+      "unfinished_request_at_end": false,
+      "tool_error_responses": 0
+    }
+  ],
+  "limitations": "Three selected cells, parallel direct-network candidate only. Timing is request/response elapsed, not pure network. No causal baseline or task-gain proof."
+}

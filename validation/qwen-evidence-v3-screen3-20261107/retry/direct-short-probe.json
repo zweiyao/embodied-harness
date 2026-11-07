@@ -1,0 +1,28 @@
+{
+  "route": "direct",
+  "stream": true,
+  "exit_code": 0,
+  "status": 200,
+  "dns_s": 0.070251,
+  "connect_s": 0.157539,
+  "tls_s": 0.256238,
+  "first_byte_s": 0.576926,
+  "total_s": 0.603925,
+  "first_content_s": 0.5796273588202894,
+  "first_reasoning_s": null,
+  "usage": {
+    "prompt_tokens": 30,
+    "total_tokens": 31,
+    "completion_tokens": 1,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 30
+    }
+  },
+  "finish_reason": "stop",
+  "returned_model": "qwen3.8-flash",
+  "content_chars": 2,
+  "error_code": null,
+  "request_bytes": 198,
+  "purpose": "Single short text connectivity recheck; no tools, images or environment actions. Not comparable to multimodal episode latency."
+}

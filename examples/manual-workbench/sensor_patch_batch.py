@@ -31,6 +31,10 @@ def run(frames, params):
         return {"error": "high-resolution RGB/depth/world resolution mismatch"}
     eef = np.asarray(frame["proprio"]["robot0_eef_pos"], dtype=float)
     radius = params.get("radius", 2)
+    if radius < 1:
+        return {
+            "error": "radius must be at least 1; use back_project for a single pixel"
+        }
     out = []
     for point in params["points"]:
         row, col = int(round(point[0] * (h - 1))), int(round(point[1] * (w - 1)))

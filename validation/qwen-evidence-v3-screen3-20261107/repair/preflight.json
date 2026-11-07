@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "environment_actions": 0,
+  "material_validation": {
+    "file_count": 217,
+    "freeze_render_and_links": true,
+    "repair_uses_unchanged_v2": true
+  },
+  "classification_checks": 5,
+  "published_tool_checks": [
+    {
+      "name": "sensor_patch_batch",
+      "version": "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    },
+    {
+      "name": "sensor_container_geometry",
+      "version": "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "a",
+      "server_id": "c7f1c4f509e24c2b990050362cc1ed94",
+      "port": 51917,
+      "config_matches": true,
+      "proxy_absent": true,
+      "connectivity_ok": true
+    }
+  ]
+}

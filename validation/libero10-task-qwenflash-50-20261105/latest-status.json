@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-11-06T01:49:58.070331+00:00",
+  "phase": "queued",
+  "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume32",
+  "astra_phase": "running",
+  "astra_resume32_completed": 0,
+  "completed": 0,
+  "model_trials_started": 0
+}

@@ -1,0 +1,34 @@
+{
+  "existing_material_tests": "3 passed",
+  "actual_packages_frozen_and_rendered": true,
+  "system_prompt_identical": true,
+  "user_only_approved_suffix": true,
+  "three_scripts_compile": true,
+  "classification_checks": 3,
+  "protected_hashes_verified": 506,
+  "full_benchmark_efficacy": "not yet measured",
+  "full_unit_tests": {
+    "passed": 1856,
+    "skipped": 12,
+    "failed": 2,
+    "failure_tests": [
+      "robots/flexiv/test_perception.py::test_wrist_localization_requires_operator_confirmation_in_provisional_control[False]",
+      "rpent/dashboard/test_pilot_workbench.py::test_validation_requires_bound_freeze_and_exact_selected_tools"
+    ],
+    "scope": "Failures in untouched Flexiv/UniVTAC paths; no unrelated code changed"
+  },
+  "scoped_tests": {
+    "passed": 120,
+    "skipped": 4,
+    "failed": 0
+  },
+  "preflight_restore_verified": true,
+  "connectivity": {
+    "ok": true,
+    "status": "ok",
+    "detail": "",
+    "checked_at": "2026-11-07T03:02:45.743759+00:00",
+    "latency_s": 0.965
+  },
+  "protected_hashes_after_tests_unchanged": true
+}

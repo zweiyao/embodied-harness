@@ -1,0 +1,7 @@
+{"bytes": 4658222, "downstream_upload_s": 1.8388616670272313, "status": 200, "upstream_send_s": 2.6577470409683883, "upstream_headers_s": 3.81683908298146, "total_s": 7.246409124985803}
+{"bytes": 4658222, "downstream_upload_s": 1.8704356249654666, "status": 200, "upstream_send_s": 0.34547870903043076, "upstream_headers_s": 1.4647525000036694, "total_s": 5.338758208963554}
+{"bytes": 4658222, "downstream_upload_s": 1.6619448750279844, "status": 200, "upstream_send_s": 0.09137087501585484, "upstream_headers_s": 1.685285167011898, "total_s": 6.024163125024643}
+{"bytes": 4656763, "downstream_upload_s": 0.870434042008128, "status": 200, "upstream_send_s": 0.12548270798288286, "upstream_headers_s": 0.9362051659845747, "total_s": 7.057895999983884}
+{"bytes": 4658222, "downstream_upload_s": 4.192531290987972, "upstream_connection": "new_per_request", "status": 200, "upstream_send_s": 0.7480966250295751, "upstream_headers_s": 2.2746086670085788, "total_s": 8.280508083000313}
+{"bytes": 4658222, "downstream_upload_s": 4.013231666001957, "upstream_connection": "new_per_request", "status": 200, "upstream_send_s": 0.4424918339936994, "upstream_headers_s": 3.1082334999809973, "total_s": 9.167358540988062}
+{"bytes": 4658222, "downstream_upload_s": 2.5587639170116745, "upstream_connection": "new_per_request", "status": 200, "upstream_send_s": 0.44901916600065306, "upstream_headers_s": 1.45951395801967, "total_s": 4.916898958035745}

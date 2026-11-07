@@ -1,0 +1,34 @@
+{
+  "listen": "10.162.250.228",
+  "allowed_tcp_source": "10.162.217.98",
+  "ports": [
+    8083,
+    8092,
+    8093
+  ],
+  "checks": {
+    "unit_tests": {
+      "passed": 2006,
+      "skipped": 11,
+      "seconds": 74.54
+    },
+    "pre_commit": "passed",
+    "mac_direct_http": [
+      200,
+      200,
+      200
+    ],
+    "univtac_event_stream": 200,
+    "non_allowlisted_remote_host": "rejected on all three ports",
+    "backend_rpc": "5000 and 8084 remain loopback-only",
+    "service": "enabled and active",
+    "linger": true
+  },
+  "scope": "Only new dashboard gateway started; existing dashboards and robot services not restarted; no experiment started.",
+  "limitations": [
+    "Source IP filtering, not device identity or encrypted authentication",
+    "Mac IP changes require allowlist update",
+    "Existing services outside these three dashboards were not altered",
+    "Reboot persistence configured, not tested by rebooting"
+  ]
+}

@@ -21,21 +21,26 @@ const vm = require('node:vm');
 const source = fs.readFileSync(process.argv[1], 'utf8');
 const functions = source.slice(source.indexOf('function setResult('), source.indexOf('function renderTimeline('));
 const badge = {style:{}};
+const metrics = {textContent:''};
+const metricsSource = fs.readFileSync(require('node:path').join(require('node:path').dirname(process.argv[1]), 'run-metrics.js'), 'utf8');
 let calls=0, response;
 const context = vm.createContext({
-  $: () => badge,
+  $: selector => selector === '#experimentMetrics' ? metrics : badge,
+  LANGUAGE: 'zh-cn',
   copy: {solved:'success', notSolved:'failure', resultLoading:'loading', resultUnknown:'unknown'},
   requestJSON: async () => { calls++; return await response(); },
 });
+vm.runInContext(metricsSource.replaceAll('export function', 'function'), context);
 vm.runInContext(functions, context);
 const update = context.updateResult;
 const snapshot = {workbench:true, run_id:'passed', server_id:'server', state:'succeeded', terminated:false};
-const result = (id, success) => ({id, outcome:{ended_at:'now', environment_success:success}});
+const result = (id, success) => ({id, outcome:{ended_at:'now', environment_success:success, elapsed_s:12.5, stats:{turns_used:3,total_input_tokens:100,total_output_tokens:20,total_cached_input_tokens:80}}});
 (async () => {
   response = () => result('passed', true);
   await update(snapshot);
   assert.equal(badge.textContent, 'success');
   assert.equal(badge.className, 'badge b-ok');
+  assert.match(metrics.textContent, /耗时 12.5 秒 · 交互 3 轮 · 总 token 120/);
   await update(snapshot);
   assert.equal(calls, 1); // Polling does not repeatedly load the run directory.
   response = () => result('failed', false);
@@ -61,6 +66,7 @@ const result = (id, success) => ({id, outcome:{ended_at:'now', environment_succe
   resolveOld(result('old',true));
   await pending;
   assert.equal(badge.style.display,'none'); // An old response cannot label the next run.
+  assert.equal(metrics.textContent,''); // Old accounting cannot label the next run either.
   response = () => result('passed',false);
   await update({...snapshot,server_id:'restarted'});
   assert.equal(badge.textContent,'failure');

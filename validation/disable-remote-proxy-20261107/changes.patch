@@ -1,0 +1,24 @@
+--- /home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf.before
++++ /home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf
+@@ -2,6 +2 @@
+-Environment="HTTP_PROXY=http://127.0.0.1:7900"
+-Environment="HTTPS_PROXY=http://127.0.0.1:7900"
+-Environment="ALL_PROXY=http://127.0.0.1:7900"
+-Environment="http_proxy=http://127.0.0.1:7900"
+-Environment="https_proxy=http://127.0.0.1:7900"
+-Environment="all_proxy=http://127.0.0.1:7900"
++UnsetEnvironment=HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+--- /home/zwy/work/embodied_harness/native-univtac/start-workbench.sh.before
++++ /home/zwy/work/embodied_harness/native-univtac/start-workbench.sh
+@@ -17,3 +17 @@
+-export HTTP_PROXY=http://127.0.0.1:17997 HTTPS_PROXY=http://127.0.0.1:17997
+-export ALL_PROXY=http://127.0.0.1:17997
+-export http_proxy="$HTTP_PROXY" https_proxy="$HTTPS_PROXY" all_proxy="$ALL_PROXY"
++unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+--- /home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh.before
++++ /home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh
+@@ -10,3 +10 @@
+-unset ALL_PROXY all_proxy
+-export HTTP_PROXY=http://127.0.0.1:17997 HTTPS_PROXY=http://127.0.0.1:17997
+-export http_proxy="$HTTP_PROXY" https_proxy="$HTTPS_PROXY"
++unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy

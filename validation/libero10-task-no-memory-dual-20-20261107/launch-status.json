@@ -1,0 +1,23 @@
+{
+  "phase": "running",
+  "completed": 0,
+  "planned": 20,
+  "lanes": {
+    "qwen": {
+      "phase": "running",
+      "task": 0,
+      "seed": 0,
+      "completed": 0,
+      "run_id": "4aeed560761dad4f7217",
+      "elapsed_s": 130.4
+    },
+    "astra": {
+      "phase": "running",
+      "task": 0,
+      "seed": 0,
+      "completed": 0,
+      "run_id": "4aeed560761dad4f7217",
+      "elapsed_s": 130.3
+    }
+  }
+}

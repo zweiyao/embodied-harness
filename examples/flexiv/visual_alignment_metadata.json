@@ -1,0 +1,113 @@
+{
+  "name": "sensor_visual_alignment",
+  "description": "Near an opening, measure projected center offset and axis-angle mismatch; track up to three later SAME-camera observation frames to check whether a correction improved them. Select two visible center/axis landmarks per object once on the anchor, using ORIGINAL image pixels. Local patch tracking (24px search) reports unknown on weak/ambiguous evidence; re-anchor after large motion or occlusion. Returns compact pixel/degree measurements, not base-frame motion or insertion success. No localize_target dependency. If tracking is lost, inspect the current image and pass reselected_axes for that step, or start a new anchor. Do not reuse hidden centers.",
+  "parameters": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "anchor_step": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "compare_steps": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxItems": 3,
+        "uniqueItems": true
+      },
+      "camera": {
+        "type": "string",
+        "enum": [
+          "side",
+          "wrist"
+        ]
+      },
+      "feature_axis_px": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "minItems": 2,
+        "maxItems": 2,
+        "description": "On anchor image: [[visible insertion-tip center x,y],[point along its long axis x,y]]. At least 8 pixels apart."
+      },
+      "reference_axis_px": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "minItems": 2,
+        "maxItems": 2,
+        "description": "On SAME anchor image: [[visible opening center x,y],[point along its long axis x,y]]. At least 8 pixels apart. Select actual visible features, not an adjacent surface point."
+      },
+      "reselected_axes": {
+        "type": "array",
+        "maxItems": 3,
+        "description": "Optional current-frame re-selection after tracking loss/occlusion. Measurements are marked caller-selected, not automatically tracked. Use only steps in compare_steps.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "step",
+            "feature_axis_px",
+            "reference_axis_px"
+          ],
+          "properties": {
+            "step": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "feature_axis_px": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "On this entry's current step image: feature center and axis point, at least 8 pixels apart."
+            },
+            "reference_axis_px": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "On this entry's SAME current step image: visible opening center and axis point, at least 8 pixels apart. Do not infer a hidden center."
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "anchor_step",
+      "compare_steps",
+      "camera",
+      "feature_axis_px",
+      "reference_axis_px"
+    ]
+  }
+}

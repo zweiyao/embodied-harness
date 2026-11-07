@@ -1,0 +1,15 @@
+{
+  "phase": "running",
+  "index": 0,
+  "completed": 0,
+  "cell": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-screening-20261107/cells/00_baseline_t0_s0",
+  "task": 0,
+  "seed": 0,
+  "condition": "baseline",
+  "recorded_at": "2026-11-07T03:04:28.970923+00:00",
+  "source_edits": false,
+  "original_material_edits": false,
+  "candidate_change": "Only approved 79-word user.md suffix; all other material files identical",
+  "efficacy": "Pending paired experimental results",
+  "remote_directory": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-screening-20261107"
+}

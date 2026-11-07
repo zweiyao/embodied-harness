@@ -1,0 +1,21 @@
+# Qwen Flash failure diagnosis — 2026-11-07
+
+## Scope and outcome
+Read-only analysis of 50 final Flash cells (8 at3000s,42 at1500s), compared with50 Astra600s cells. Flash3 successes/47 failures:40 request-budget failures,7 timeouts. Previous Flash600s attempts and excluded incidents are separate. No new experiment, prompt, memory, tool, or harness change.
+
+## Iterations and evidence
+1. Event census: parse events.jsonl tool requests/responses, final results and state histories. Flash1938 calls:1385 non-action,553 action; Astra1492:717 non-action,775 action. Flash reads411 times (27 repeat paths), Astra236 (0 repeated paths). Most extra reads are different files: "over-retrieval" is more accurate than universal identical-call loops.
+2. Interface census:50 tool-return errors across28 Flash episodes versus1 across1 Astra episode.22 back_project errors,26 segment errors,2 reads.21 failures have no such error. Therefore argument issues contribute but are not sufficient explanation.
+3. Coordinate replay (remote NumPy):615/615 successful back_project responses reproduced,382 point lookups and233 region reductions. Point re-projection through recorded calibration has median0.1507px/max3.0578px error. This checks stored-data consistency, not object selection or independent physical calibration. Region center is explicitly a bounding-extrema midpoint, not object centroid;53 regions have >5cm center/median difference. No evidence warrants changing projection math.
+4. Feedback traces: task8seed2 uses15 move_pose calls and never closes gripper; successive final errors around2–4cm persist while nearly identical open-gripper adjustments continue. Task6seed1 repeatedly descends with closed gripper, final error5.36/5.68cm after70 steps each; original target heights are not reached. These support ineffective recovery and state/goal reasoning, not precise diagnosis of collision versus IK.
+5. Positive/negative controls: successful task5seed3 reaches official terminated=True after11 actions; errors can occur in successful runs.281 common source/memory/data hashes between Astra and finalFlash protocols match. API budget implementation is UsageLimits(request_limit=max_turns), so30 means model requests, not30 physical actions.
+6. Planning case: task4seed3 (e0994d4389f86809f327), task "put the yellow and white mug on the left plate and put the white mug on the right plate":19 file reads,8 back_project calls,0 physical actions; terminates on request budget at120.8s. Task4seed4 reads24 files (including own prompts/states/events) and only1 action before146.8s budget exhaustion.
+
+## Confirmed mechanisms and limits
+The strongest explanation is inefficient perception-action planning and feedback recovery under a30-request cap, with interface/grounding mistakes and model-service waiting as additional factors. "Bad XYZ arithmetic" is not supported. Selecting the right visible surface, translating a surface point into a feasible end-effector pose, and recovering when the commanded pose is not reached are separate from arithmetic and remain important failure modes. No exclusive percentage of failures attributable to each mechanism is defensible from overlapping observational evidence.
+
+## Reproduction
+Run analyze.py remotely using /home/zwy/work/harnessvla/.venv/bin/python; it reads existing artifacts only. Results in metrics.json. Representative event logs above constitute minimal saved traces: no live robot/simulator replay required. Tool schema rejects the observed misspelled resolution keys before action execution.
+
+## Proposed next validation (not implemented)
+First inspect complete selected failure traces and compare with matched Astra decisions. Then seek approval for isolated experiments: (A) constrain retrieval/grounding overhead and preserve action budget; (B) add evidence-driven handling of unreachable target/failed grasp feedback; (C) test structured target localization/pose reasoning separately. Keep budget/model/task seeds fixed within each comparison. Do not expand all limits together, hard-code saved coordinates, or change back_project math without independent evidence. Quantify success, calls, elapsed time, and tokens on held-out seeds before claiming improvement.

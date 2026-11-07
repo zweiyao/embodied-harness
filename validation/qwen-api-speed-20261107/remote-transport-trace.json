@@ -1,0 +1,144 @@
+[
+  {
+    "requested_http2": false,
+    "repeat": 0,
+    "status": 200,
+    "http_version": "HTTP/1.1",
+    "first_content_s": 12.456659846939147,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23173,
+      "completion_tokens": 106,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 106
+      }
+    },
+    "total_s": 13.732822986785322,
+    "trace": [
+      {
+        "name": "connection.connect_tcp.started",
+        "seconds": 0.01830632472410798
+      },
+      {
+        "name": "connection.connect_tcp.complete",
+        "seconds": 0.3512405138462782
+      },
+      {
+        "name": "connection.start_tls.started",
+        "seconds": 0.3512647710740566
+      },
+      {
+        "name": "connection.start_tls.complete",
+        "seconds": 0.4620337928645313
+      },
+      {
+        "name": "http11.send_request_headers.started",
+        "seconds": 0.46218720683827996
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "seconds": 0.4623642968945205
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "seconds": 0.4623667420819402
+      },
+      {
+        "name": "http11.send_request_body.complete",
+        "seconds": 9.993313326966017
+      },
+      {
+        "name": "http11.receive_response_headers.started",
+        "seconds": 9.993326182011515
+      },
+      {
+        "name": "http11.receive_response_headers.complete",
+        "seconds": 12.456200956832618
+      },
+      {
+        "name": "http11.receive_response_body.started",
+        "seconds": 12.45660621393472
+      },
+      {
+        "name": "http11.receive_response_body.complete",
+        "seconds": 13.732635346706957
+      },
+      {
+        "name": "http11.response_closed.started",
+        "seconds": 13.732677567750216
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "seconds": 13.732712705153972
+      }
+    ]
+  },
+  {
+    "requested_http2": false,
+    "repeat": 1,
+    "status": 200,
+    "http_version": "HTTP/1.1",
+    "first_content_s": 4.3088392140343785,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23145,
+      "completion_tokens": 78,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 78
+      }
+    },
+    "total_s": 5.546464873943478,
+    "trace": [
+      {
+        "name": "http11.send_request_headers.started",
+        "seconds": 0.01167376572266221
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "seconds": 0.011871724855154753
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "seconds": 0.01187507202848792
+      },
+      {
+        "name": "http11.send_request_body.complete",
+        "seconds": 2.7112847198732197
+      },
+      {
+        "name": "http11.receive_response_headers.started",
+        "seconds": 2.711291141808033
+      },
+      {
+        "name": "http11.receive_response_headers.complete",
+        "seconds": 4.3084677420556545
+      },
+      {
+        "name": "http11.receive_response_body.started",
+        "seconds": 4.308773778844625
+      },
+      {
+        "name": "http11.receive_response_body.complete",
+        "seconds": 5.546224141959101
+      },
+      {
+        "name": "http11.response_closed.started",
+        "seconds": 5.5462818229570985
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "seconds": 5.546332620084286
+      }
+    ]
+  }
+]

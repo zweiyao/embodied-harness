@@ -1,0 +1,195 @@
+{
+  "checked_at": "2026-11-06T01:49:58.070331+00:00",
+  "incident": {
+    "task": 3,
+    "seed": 3,
+    "run_id": "c42e4e0eea33df81e102",
+    "path": "/home/zwy/work/embodied_harness/research-runs/manual-workbench-20261021/tasks/0021_libero_10_task_t3_s3",
+    "official_success": false,
+    "status": "error",
+    "error": "workspace routing discovery failed",
+    "elapsed_s": 168.4,
+    "turns": 0,
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "classification": "unexpected",
+    "evaluation_success": null,
+    "actions": 0
+  },
+  "recovery": {
+    "prior_valid": 18,
+    "prior_successes": 15,
+    "prior_failures": 3,
+    "remaining": [
+      [
+        3,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        6,
+        1
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        7,
+        0
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        8,
+        0
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        1
+      ],
+      [
+        9,
+        2
+      ],
+      [
+        9,
+        3
+      ],
+      [
+        9,
+        4
+      ]
+    ],
+    "retry_incident": "c42e4e0eea33df81e102",
+    "connection_check": {
+      "ok": true,
+      "checked_at": "2026-11-06T01:47:56.157513+00:00",
+      "latency_s": 18.222
+    },
+    "config_and_monitored_hashes_unchanged": true
+  },
+  "root_cause_limit": "SDK reports workspace routing discovery failed; underlying provider-side root cause not established. Current connection probe passed and retry has received model output. No credentials, login state, provider route, or harness changes.",
+  "astra_state": {
+    "phase": "running",
+    "task": 3,
+    "seed": 3,
+    "completed": 0,
+    "run_id": "395db3321be640a677cb",
+    "elapsed_s": 80.6
+  },
+  "flash_state": {
+    "phase": "queued",
+    "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume32",
+    "astra_phase": "running",
+    "astra_resume32_completed": 0,
+    "completed": 0
+  },
+  "checks": {
+    "archived_outcome_cross_check": "19 original/continuation/resume34 result records matched archived official outcomes",
+    "prior_valid_cells": 18,
+    "remaining_cells": 32,
+    "remaining_first": [
+      3,
+      3
+    ],
+    "syntax": "remote py_compile passed",
+    "policy": "Approved timeout/incident classification unchanged"
+  },
+  "backup": "/home/zwy/work/embodied_harness/backups/libero-routing-recovery-20261106",
+  "limits": [
+    "Retry still running; no new valid result yet",
+    "Flash has not started",
+    "No full unit-test or pre-commit rerun for resume scheduling and evidence"
+  ]
+}

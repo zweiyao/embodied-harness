@@ -1,0 +1,79 @@
+{
+  "checked_at": "2026-11-05T08:43:31.694642+00:00",
+  "scope": "Read-only service, configuration and repository inspection; no experiment, robot command, service restart or harness change. Only this summary and project-board metadata updated.",
+  "git": {
+    "local_head": "2c2385ef23ff1e5c395876d0a0d407fc87e29e30",
+    "branch": "feat/experiment-metrics",
+    "pr": 4,
+    "pr_state": "OPEN",
+    "merged_at": null,
+    "remote_runtime_head": "ef70215",
+    "remote_runtime_branch": "main",
+    "remote_runtime_dirty": true
+  },
+  "access": {
+    "service": "enabled/active/running",
+    "linger": true,
+    "bind": "10.162.250.228",
+    "allow": "10.162.217.98",
+    "mac_http": {
+      "8092": 200,
+      "8093": 200,
+      "8083": 200
+    },
+    "non_allowlisted_remote_host": "ConnectionResetError on all three ports",
+    "backends": "8083/8092/8093/5000/8084 loopback-only"
+  },
+  "sessions": {
+    "libero": "ready",
+    "univtac": "ready",
+    "flexiv": "session_state=ready, historical state=succeeded"
+  },
+  "flexiv": {
+    "armed": false,
+    "mode": "Mode.IDLE",
+    "fault": false,
+    "selected_generated_tools": [
+      "sensor_alignment_contact",
+      "sensor_visual_alignment"
+    ],
+    "historical_run": "f38650f25c7fe0825c49",
+    "historical_outcome": "budget_exhausted",
+    "environment_success": null,
+    "historical_ended_at": "2026-11-03T09:05:14.084928+00:00",
+    "success_label_disagrees_with_outcome": true
+  },
+  "univtac": {
+    "model": "gpt-6-astra",
+    "max_turns": 60,
+    "planner_timeout_s": 3600,
+    "tools": [
+      "observe",
+      "read_image",
+      "tactile_stats",
+      "read_depth",
+      "depth_points",
+      "move_eef",
+      "finish"
+    ],
+    "read_text_file_selected": false,
+    "memory": "per-run empty-memory, read_only"
+  },
+  "selected_file_sha256": {
+    "robots/flexiv/toolkit.py": "6375ec2b2c6cbfe77ff781905d11d3e643fe3a2253c1f6cbdbd59e4334f49554",
+    "robots/flexiv/perception.py": "2c809168b4684e9ca0692f633d72c139c8e804c4a97aec96aea521d2444abe17",
+    "robots/univtac/robot_spec.py": "bfe0fda2fd8553824e38fcbfc801eb8d9790f0e5aa0cfbc74195584c2559cd1d",
+    "rpent/dashboard/lan_access.py": "4a730a1d01b6a334251a5613518249a4224d677307179ed6ba4f76814a823638",
+    "memory/flexiv/MEMORY.md": "504ca0e1f68d1e4e21e5691fa5e5c72c7cef5f3af06f1300ffacdef2758e30c9",
+    "memory/flexiv/global/insertion_grasp_revalidation.md": "223ffd6ab74386f823a4d2559169590aef84e0d6622ea785aeef36740b195ff7",
+    "memory/flexiv/global/insertion_local_alignment.md": "85fc551a1044651fbe91f6bfa80aed61d883b94a2cf94a4474cac1120eb23a04"
+  },
+  "limitations": [
+    "No experiment or task-effectiveness validation",
+    "Unit tests and pre-commit were not rerun for this metadata-only inspection; 2006 passed / 11 skipped remains historical evidence",
+    "No full runtime-tree equivalence claim",
+    "Three historical UniVTAC experiment services remain failed; no retry performed",
+    "Workspace AGENTS.md retains old local path",
+    "Project-board historical development-stage entries are retained"
+  ]
+}

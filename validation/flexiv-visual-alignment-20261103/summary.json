@@ -1,0 +1,25 @@
+{
+  "published_version": "dab7b9c5ce4f0e88f1abb7352b7429828b932604c3de6400e8f8d1ce49371cd6",
+  "validation": {
+    "full_unit_tests": {
+      "passed": 2004,
+      "skipped": 11,
+      "seconds": 72.98
+    },
+    "sandbox_checks": 7,
+    "pre_commit": "passed",
+    "catalog_selectable": true,
+    "automatically_selected": false
+  },
+  "feedback": {
+    "responses": 20,
+    "before_text_chars": 165783,
+    "after_text_chars": 145024,
+    "text_reduction_pct": 12.52
+  },
+  "limits": [
+    "Automatic tracking lost the occluded opening in this historical pair",
+    "One manual current-frame annotation validates geometry only",
+    "No robot episode, model adoption, token reduction or success-rate improvement validated"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "cause": "Empty log.result in a non-action observation caused metadata summarization to raise AttributeError",
+  "scope": "External summary reader and exact-prefix resume only; no harness/config/prompt changes",
+  "recovered_path": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-candidate8-20261107/runs/session/tasks/0001_libero_10_task_t0_s0",
+  "recovered_success": true,
+  "replayed_original_events": true,
+  "already_completed_cells_not_rerun": true,
+  "remaining": 7
+}

@@ -1,0 +1,176 @@
+[
+  {
+    "location": "mac",
+    "repeat": 0,
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.092712,
+    "connect_s": 0.130548,
+    "tls_s": 0.174519,
+    "first_byte_s": 0.609441,
+    "total_s": 0.6411,
+    "first_content_s": 0.638646790990606,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  },
+  {
+    "location": "mac",
+    "repeat": 0,
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.000163,
+    "connect_s": 0.000613,
+    "tls_s": 0.100595,
+    "first_byte_s": 0.518953,
+    "total_s": 0.540329,
+    "first_content_s": 0.5382657919544727,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  },
+  {
+    "location": "mac",
+    "repeat": 1,
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 5.3e-05,
+    "connect_s": 0.000202,
+    "tls_s": 0.083266,
+    "first_byte_s": 0.524463,
+    "total_s": 0.578173,
+    "first_content_s": 0.5333696249872446,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  },
+  {
+    "location": "mac",
+    "repeat": 1,
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.005043,
+    "connect_s": 0.04665,
+    "tls_s": 0.100321,
+    "first_byte_s": 0.528829,
+    "total_s": 0.556891,
+    "first_content_s": 0.547844625019934,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  },
+  {
+    "location": "mac",
+    "repeat": 2,
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.005314,
+    "connect_s": 0.040113,
+    "tls_s": 0.080738,
+    "first_byte_s": 0.508188,
+    "total_s": 0.539972,
+    "first_content_s": 0.5266209589899518,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  },
+  {
+    "location": "mac",
+    "repeat": 2,
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.000127,
+    "connect_s": 0.000566,
+    "tls_s": 0.097743,
+    "first_byte_s": 0.564699,
+    "total_s": 0.585157,
+    "first_content_s": 0.5829558749683201,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "finish_reason": "stop",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 2,
+    "error_code": null,
+    "request_bytes": 198
+  }
+]

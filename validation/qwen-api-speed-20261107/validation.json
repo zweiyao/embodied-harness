@@ -1,0 +1,30 @@
+{
+  "completed_at": "2026-11-07T12:50:39.717217+00:00",
+  "checks": {
+    "remote_ruff_preview": "passed; import ordering and formatting only",
+    "remote_script_compile": "6 passed without running API calls",
+    "json_and_jsonl": "passed",
+    "relative_links": "passed",
+    "proposal_shell_syntax": "bash -n passed",
+    "archived_input_token_parity": [
+      4670,
+      10745,
+      23067
+    ],
+    "paired_egress_calls": "6/6 HTTP200; identical request hash and input/cache counts",
+    "fresh_connection_followup": "3/3 HTTP200; 5.01–9.19 s",
+    "installed_sdk_provider_client": "passed with retries disabled; no tool execution",
+    "local_and_remote_temporary_listeners": "closed"
+  },
+  "not_validated": [
+    "Long-term relay availability",
+    "Concurrent Qwen throughput",
+    "Full planner/control loop through relay",
+    "Task success or token-efficiency improvement"
+  ],
+  "not_run": {
+    "full_unit_suite": "Only standalone network diagnostics/evidence changed; no harness implementation changed.",
+    "sphinx": "No Sphinx build inputs changed."
+  },
+  "deployment": "Proposal only; no model profile, workbench, prompt, memory, or harness changes."
+}

@@ -1,0 +1,46 @@
+{
+  "direct": {
+    "n": 3,
+    "successes": 3,
+    "total_median_s": 23.306048,
+    "first_content_median_s": 21.542418972123414,
+    "total_range_s": [
+      14.831922,
+      28.201522
+    ],
+    "input_tokens": [
+      23067
+    ],
+    "cached_tokens": [
+      23040
+    ]
+  },
+  "mac_relay": {
+    "n": 3,
+    "successes": 3,
+    "total_median_s": 6.042258,
+    "first_content_median_s": 3.459965121001005,
+    "total_range_s": [
+      5.365304,
+      7.262696
+    ],
+    "input_tokens": [
+      23067
+    ],
+    "cached_tokens": [
+      23040
+    ]
+  },
+  "median_reduction_fraction": 0.7407429178898113,
+  "scope": "Three alternating pairs, same archived 4.66 MB request; model responses vary; no action execution; warm cache; not a task benchmark or long-term SLA.",
+  "fresh_upstream_followup": {
+    "n": 3,
+    "successes": 3,
+    "median_s": 8.42633,
+    "range_s": [
+      5.014465,
+      9.193955
+    ],
+    "not_interleaved_with_direct": true
+  }
+}

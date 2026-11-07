@@ -1,0 +1,207 @@
+{
+  "checked_at": "2026-11-05T12:40:40.541646+00:00",
+  "authorization": "User approved continuation and clarified that unexpected incidents must be repaired then retried; full experiment timeouts count as failures",
+  "scope": "Experiment batch scripts only; harness, model, tools, memory and budgets unchanged",
+  "rules": {
+    "full_planner_timeout": "Known SDK/API timeout at the configured 600s limit counts as failure and continues",
+    "task_failure": "Preserved, not rerun",
+    "unexpected": "Saved to incidents.json, excluded from results.json; stop for diagnosis/repair, then rerun that task/seed",
+    "unknown_official_result": "Unexpected unless recognized full-planner budget timeout"
+  },
+  "regression": {
+    "classification_cases_per_runner": 11,
+    "runner_checks": [
+      {
+        "model": "astra",
+        "scenario": "budget_failure_continues_no_duplicate_trials",
+        "passed": true,
+        "submitted": 34
+      },
+      {
+        "model": "astra",
+        "scenario": "unexpected_excluded_and_stops",
+        "passed": true,
+        "submitted": 1
+      },
+      {
+        "model": "flash",
+        "scenario": "budget_failure_continues_no_duplicate_trials",
+        "passed": true,
+        "submitted": 50
+      },
+      {
+        "model": "flash",
+        "scenario": "unexpected_excluded_and_stops",
+        "passed": true,
+        "submitted": 1
+      }
+    ]
+  },
+  "script_sha256": {
+    "astra": "7f94f10d46b3ffe2efc385e27334edea6ad73c8db48dc7d38b6ddd6d87051b42",
+    "flash": "a8e140bca631c542019029447181b593364a6caba63575188b4f3d0da58e4ddd",
+    "queue": "5942d47d78e1be00aba82dc5058acd1bf1310868ddc937e463c6da1e5d3a6e06"
+  },
+  "backup": "/home/zwy/work/embodied_harness/backups/libero-batch-budget-rule-20261105",
+  "prior_valid_trials": 16,
+  "prior_successes": 14,
+  "prior_task_failures": 2,
+  "remaining_trials": [
+    {
+      "task": 3,
+      "seed": 1
+    },
+    {
+      "task": 3,
+      "seed": 2
+    },
+    {
+      "task": 3,
+      "seed": 3
+    },
+    {
+      "task": 3,
+      "seed": 4
+    },
+    {
+      "task": 4,
+      "seed": 0
+    },
+    {
+      "task": 4,
+      "seed": 1
+    },
+    {
+      "task": 4,
+      "seed": 2
+    },
+    {
+      "task": 4,
+      "seed": 3
+    },
+    {
+      "task": 4,
+      "seed": 4
+    },
+    {
+      "task": 5,
+      "seed": 0
+    },
+    {
+      "task": 5,
+      "seed": 1
+    },
+    {
+      "task": 5,
+      "seed": 2
+    },
+    {
+      "task": 5,
+      "seed": 3
+    },
+    {
+      "task": 5,
+      "seed": 4
+    },
+    {
+      "task": 6,
+      "seed": 0
+    },
+    {
+      "task": 6,
+      "seed": 1
+    },
+    {
+      "task": 6,
+      "seed": 2
+    },
+    {
+      "task": 6,
+      "seed": 3
+    },
+    {
+      "task": 6,
+      "seed": 4
+    },
+    {
+      "task": 7,
+      "seed": 0
+    },
+    {
+      "task": 7,
+      "seed": 1
+    },
+    {
+      "task": 7,
+      "seed": 2
+    },
+    {
+      "task": 7,
+      "seed": 3
+    },
+    {
+      "task": 7,
+      "seed": 4
+    },
+    {
+      "task": 8,
+      "seed": 0
+    },
+    {
+      "task": 8,
+      "seed": 1
+    },
+    {
+      "task": 8,
+      "seed": 2
+    },
+    {
+      "task": 8,
+      "seed": 3
+    },
+    {
+      "task": 8,
+      "seed": 4
+    },
+    {
+      "task": 9,
+      "seed": 0
+    },
+    {
+      "task": 9,
+      "seed": 1
+    },
+    {
+      "task": 9,
+      "seed": 2
+    },
+    {
+      "task": 9,
+      "seed": 3
+    },
+    {
+      "task": 9,
+      "seed": 4
+    }
+  ],
+  "astra_state": {
+    "phase": "running",
+    "task": 3,
+    "seed": 1,
+    "completed": 0,
+    "run_id": "c2efd5afc062d87f9272",
+    "elapsed_s": 100.7
+  },
+  "flash_state": {
+    "phase": "queued",
+    "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/resume34",
+    "astra_phase": "running",
+    "astra_resume34_completed": 0,
+    "completed": 0
+  },
+  "limitations": [
+    "Regression used fake dashboard responses, not new model experiments",
+    "Live resume started; full 50-trial Astra and Flash results remain incomplete",
+    "No full unit suite or pre-commit rerun for external orchestration scripts and evidence"
+  ]
+}

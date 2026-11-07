@@ -11,7 +11,7 @@ from functools import partial
 from jsonschema import Draft202012Validator
 
 from robots.flexiv.catalog import catalog, generated_availability
-from robots.flexiv.sensors import alignment_frames
+from robots.flexiv.sensors import alignment_frames, visual_alignment_frames
 from robots.flexiv.toolkit import FlexivToolkit, tool_methods
 from robots.libero.research.library import Sandbox, digest, validate_tools
 from robots.libero.research.native import _OMITTED, _arguments_model
@@ -58,7 +58,11 @@ def validate_selection(selected: list[dict], control_mode: str, meta: dict) -> N
             supported, reason = generated_availability(item)
             if not supported:
                 raise ValueError(reason)
-            if "localize_target" not in names:
+            if (
+                item.get("input_adapter", "flexiv.alignment.v1")
+                == "flexiv.alignment.v1"
+                and "localize_target" not in names
+            ):
                 raise ValueError("Missing tool dependencies: ['localize_target']")
         else:
             raise ValueError("Tool origin must be native or generated")
@@ -105,16 +109,27 @@ class ManualToolkit(FlexivToolkit):
                         description=item["description"],
                         args_schema=_arguments_model(item["name"], item["parameters"]),
                         _input_schema=item["parameters"],
-                        handler=partial(self._generated, definition),
+                        handler=partial(
+                            self._generated,
+                            definition,
+                            input_adapter=item.get(
+                                "input_adapter", "flexiv.alignment.v1"
+                            ),
+                        ),
                         readonly=True,
                     )
                 )
 
-    def _generated(self, definition, **params):
+    def _generated(self, definition, *, input_adapter="flexiv.alignment.v1", **params):
         params = {k: v for k, v in params.items() if v is not _OMITTED}
         Draft202012Validator(definition["parameters"]).validate(params)
         with self._observation_lock:
-            frames = alignment_frames(
+            adapter = (
+                visual_alignment_frames
+                if input_adapter == "flexiv.visual_alignment.v1"
+                else alignment_frames
+            )
+            frames = adapter(
                 [record.to_blob() for record in self.state.records()],
                 lambda name, step: self.state.load(name, step=step),
                 params,

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "changed_config_keys": [
+    "model",
+    "model_profile",
+    "reasoning_effort"
+  ],
+  "reference_root": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-retry-20261107",
+  "materials_and_tools_identical": true,
+  "protected_files": 798,
+  "original_core_changed": false,
+  "qwen_enable_thinking": true,
+  "effort_semantics": "medium maps to Qwen enable_thinking=true, not a provider-specific graded intensity"
+}

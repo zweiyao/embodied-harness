@@ -1,0 +1,80 @@
+{
+  "recorded_at": "2026-11-05T11:41:19.550306+00:00",
+  "status": "queued_not_started",
+  "suite": "libero_10_task",
+  "tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "planned_trials": 50,
+  "planned_config": {
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "model_profile": "qwen3.8-flash",
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ],
+    "reasoning_effort": "none"
+  },
+  "memory_version": "language-c592f23a3a324c08",
+  "start_condition": "Astra continuation phase completed with 40 results; dashboard ready; original configuration and source/memory/data hashes unchanged; Qwen connection check passes",
+  "service": "rpent-libero10-task-qwenflash-50-20261105",
+  "remote_output": "/home/zwy/work/embodied_harness/experiments/libero10-task-qwenflash-50-20261105",
+  "retries": 0,
+  "checks": {
+    "runner_and_queue_remote_py_compile": "passed",
+    "queue_service": "active/running",
+    "queue_status": {
+      "phase": "queued",
+      "waiting_for": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/continuation",
+      "astra_phase": "running",
+      "astra_continuation_completed": 1,
+      "completed": 0
+    },
+    "active_dashboard_model": "gpt-6-astra low; not switched"
+  },
+  "runner_sha256": {
+    "run_batch.py": "a0c2d9a5dab73f162675de8389d7705f8d2a4c45957b00984d1ffea6311ec5dc",
+    "queue_batch.py": "6faffc491fef80f6be13dc00b5626e6080f8fee93ca21a2d9db9bcbb316d09ea"
+  },
+  "limits": [
+    "Qwen model connection and task execution are not yet verified; queue only",
+    "Qwen API and Astra Codex SDK differ; reasoning_effort=none is a profile setting, not proof of actual provider reasoning behavior",
+    "No overall success comparison before both batches finish",
+    "No harness source, prompt, memory, tool or budget edits; no full unit tests or pre-commit rerun for queue metadata"
+  ]
+}

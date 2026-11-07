@@ -270,3 +270,55 @@ def test_generated_tool_uses_recorded_ids_frozen_source_and_journals_errors(
         ]
     finally:
         kit.close()
+
+
+def test_visual_tool_selection_dispatches_rgb_adapter_and_keeps_source_frozen(
+    factory, monkeypatch
+):
+    from examples.flexiv.visual_alignment_replay import candidate as visual_candidate
+
+    create, _, calls = factory
+    captured = []
+
+    class FakeSandbox:
+        def __init__(self, image):
+            self.image = "frozen-image"
+
+        def run(self, definition, params, frames):
+            captured.append((definition, frames))
+            return {"status": "adapter_checked"}
+
+    monkeypatch.setattr("robots.flexiv.manual.Sandbox", FakeSandbox)
+    definition = visual_candidate()
+    selected = selection("finish")
+    selected.append(
+        {
+            **definition,
+            "origin": "generated",
+            "version": digest([definition]),
+            "input_adapter": "flexiv.visual_alignment.v1",
+            "dependencies": [],
+        }
+    )
+    kit = create(selected)
+    selected[-1]["source"] = "changed after freeze"
+    try:
+        before = list(calls)
+        result = kit.execute_tool(
+            "sensor_visual_alignment",
+            {
+                "anchor_step": 0,
+                "compare_steps": [],
+                "camera": "side",
+                "feature_axis_px": [[2, 2], [2, 4]],
+                "reference_axis_px": [[4, 2], [4, 4]],
+            },
+        )
+        assert not result.is_error
+        assert calls == before  # No new observation or robot command.
+        assert captured[0][0]["source"] == definition["source"]
+        assert captured[0][1][0]["rgb"].shape == (6, 8, 3)
+        assert "localizations" not in captured[0][1][0]
+        assert kit.execute_tool("sensor_alignment_contact", {}).is_error
+    finally:
+        kit.close()

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "archived_calls": 40,
+  "valid_points_identical": 247,
+  "zero_radius_points_rejected": 20,
+  "nested_metric_checks": [
+    {
+      "task": 0,
+      "failed_points": 20,
+      "container_status_counts": {
+        "inconsistent_rim": 2
+      }
+    },
+    {
+      "task": 8,
+      "failed_points": 0,
+      "container_status_counts": {}
+    },
+    {
+      "task": 4,
+      "failed_points": 0,
+      "container_status_counts": {}
+    }
+  ],
+  "old_published_tool_unchanged": true,
+  "new_environment_actions": 0
+}

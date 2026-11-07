@@ -1,0 +1,101 @@
+[
+  {
+    "repeat": 0,
+    "transport": "mac_relay_fresh_upstream",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 1.4e-05,
+    "connect_s": 8.5e-05,
+    "tls_s": 0.0,
+    "first_byte_s": 6.58392,
+    "total_s": 8.42633,
+    "first_content_s": 6.59160847729072,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23165,
+      "completion_tokens": 98,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 98
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 4658222
+  },
+  {
+    "repeat": 1,
+    "transport": "mac_relay_fresh_upstream",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 1.5e-05,
+    "connect_s": 7.4e-05,
+    "tls_s": 0.0,
+    "first_byte_s": 7.147204,
+    "total_s": 9.193955,
+    "first_content_s": 7.15531767392531,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23243,
+      "completion_tokens": 176,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 176
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 4658222
+  },
+  {
+    "repeat": 2,
+    "transport": "mac_relay_fresh_upstream",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 1.6e-05,
+    "connect_s": 8.3e-05,
+    "tls_s": 0.0,
+    "first_byte_s": 4.061702,
+    "total_s": 5.014465,
+    "first_content_s": 4.070144569966942,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23145,
+      "completion_tokens": 78,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 78
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 4658222
+  }
+]

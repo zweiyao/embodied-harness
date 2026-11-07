@@ -1,0 +1,56 @@
+{
+  "scope": "Two temporary simulator processes only; no planner, no benchmark result",
+  "gpu_before_mib_utilization": "17062, 0",
+  "source_files": 115,
+  "both_ready_s": 1.505,
+  "metas": [
+    {
+      "suite": "libero_10_task",
+      "task": 0,
+      "seed": 0,
+      "max_episode_steps": 10000
+    },
+    {
+      "suite": "libero_10_task",
+      "task": 4,
+      "seed": 0,
+      "max_episode_steps": 10000
+    }
+  ],
+  "ports": [
+    43577,
+    40205
+  ],
+  "pids": [
+    915871,
+    915872
+  ],
+  "instructions": [
+    "put both the cream cheese and the tomato sauce in the basket",
+    "put the yellow and white mug on the left plate and put the white mug on the right plate"
+  ],
+  "parallel_rgbd_s": 0.355,
+  "render_types": [
+    "list",
+    "list"
+  ],
+  "gpu_two_envs_mib_utilization": "18704, 70",
+  "a_step_b_unchanged": true,
+  "b_reset_a_unchanged": true,
+  "parallel_eight_steps_s": 0.111,
+  "parallel_steps_completed": true,
+  "checks_passed": true,
+  "exit_codes": [
+    0,
+    0
+  ],
+  "all_children_stopped": true,
+  "ports_closed": [
+    true,
+    true
+  ],
+  "workbench_unchanged_ready": true,
+  "source_unchanged": true,
+  "gpu_after_mib_utilization": "17062, 0",
+  "total_s": 9.447
+}

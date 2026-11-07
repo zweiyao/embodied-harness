@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "phase": "initial live audit",
+  "completed_tasks": 0,
+  "runs": [
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "model_requests_checked": 5,
+      "returned_responses": 4,
+      "returned_thinking_parts": 4,
+      "enable_thinking_true_on_every_checked_request": true,
+      "provider_model": "qwen3.8-max"
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "model_requests_checked": 3,
+      "returned_responses": 2,
+      "returned_thinking_parts": 2,
+      "enable_thinking_true_on_every_checked_request": true,
+      "provider_model": "qwen3.8-max"
+    }
+  ],
+  "processes": [
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-a.service",
+      "pid": 1311210,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-a.service",
+      "pid": 1312316,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-a.service",
+      "pid": 1312537,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-a.service",
+      "pid": 1312538,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-b.service",
+      "pid": 1311215,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-b.service",
+      "pid": 1312348,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-b.service",
+      "pid": 1312573,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-20261107-b.service",
+      "pid": 1312574,
+      "proxy_variables_absent": true
+    },
+    {
+      "unit": "rpent-qwen-max-v3-screen3-batch-20261107.service",
+      "pid": 1312262,
+      "proxy_variables_absent": true
+    }
+  ],
+  "note": "These are actual request settings and provider response part types; no thought text retained in this summary."
+}

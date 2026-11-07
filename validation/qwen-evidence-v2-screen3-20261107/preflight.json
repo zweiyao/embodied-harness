@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "environment_actions": 0,
+  "material_validation": {
+    "changed": [
+      "memory/MEMORY.md"
+    ],
+    "added": [
+      "memory/libero/next-action-evidence.md",
+      "memory/libero/object-relative-transfer.md"
+    ],
+    "system_user_guide_unchanged": true,
+    "freeze_and_render": true
+  },
+  "classification_checks": 5,
+  "published_tool_checks": [
+    {
+      "name": "sensor_patch_batch",
+      "version": "cca2f3c424d195fe3e55896ec0fe4c54b08b9f6929fdf794cfc98595458155c3",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    },
+    {
+      "name": "sensor_container_geometry",
+      "version": "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "a",
+      "server_id": "d7a8524ea7794c38a90884d229471ec1",
+      "port": 37325,
+      "config_matches": true,
+      "proxy_absent": true,
+      "connectivity_ok": true
+    },
+    {
+      "lane": "b",
+      "server_id": "7a81ca9f00374df1bf1bacff377c388f",
+      "port": 44075,
+      "config_matches": true,
+      "proxy_absent": true,
+      "connectivity_ok": true
+    }
+  ]
+}

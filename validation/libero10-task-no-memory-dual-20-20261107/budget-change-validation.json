@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "timeout_classification_cases": 7,
+  "adoption_and_next_task_cases": [
+    {
+      "case": "active",
+      "passed": true,
+      "dispatches": 0,
+      "recorded_budget_s": 1500
+    },
+    {
+      "case": "completed-unrecorded",
+      "passed": true,
+      "dispatches": 0,
+      "recorded_budget_s": 1500
+    },
+    {
+      "case": "new-300",
+      "passed": true,
+      "dispatches": 1,
+      "recorded_budget_s": 300
+    }
+  ],
+  "runtime_harness_modified": false,
+  "active_episode_interrupted": false
+}

@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
+from jsonschema import Draft202012Validator
 
 from robots.libero import tools
 from robots.libero.research.manual_library import recorded_frames
@@ -103,6 +104,39 @@ def test_patch_uses_real_high_map_and_missing_metric_depth_is_explicit(tmp_path)
     assert result["patches"][0]["depth_p10_p90"] == [0.8, 0.8]
     high["depth"] = np.ones((4, 4))
     assert "mismatch" in PATCH([f], {"points": [[0.5, 0.5]]})["error"]
+
+
+def test_patch_rejects_zero_radius_in_schema_and_execution(tmp_path):
+    state = EnvState(tmp_path)
+    save_frame(state, 1, depth=True)
+    frame = recorded_frames(tmp_path)[0]
+    params = {"points": [[0.5, 0.5]], "radius": 0}
+    schema = json.loads((EXAMPLES / "candidate.json").read_text())["parameters"]
+    assert not Draft202012Validator(schema).is_valid(params)
+    result = PATCH([frame], params)
+    assert (
+        result["error"]
+        == "radius must be at least 1; use back_project for a single pixel"
+    )
+    assert "patches" not in result
+
+
+@pytest.mark.parametrize("radius", range(1, 6))
+def test_patch_keeps_valid_edge_samples_and_rejects_invalid_depth(tmp_path, radius):
+    state = EnvState(tmp_path)
+    save_frame(state, 1, depth=True)
+    frame = recorded_frames(tmp_path)[0]
+    params = {"points": [[0, 0]], "radius": radius}
+    schema = json.loads((EXAMPLES / "candidate.json").read_text())["parameters"]
+    assert Draft202012Validator(schema).is_valid(params)
+    patch = PATCH([frame], params)["patches"][0]
+    assert patch["valid_count"] == (radius + 1) ** 2
+    assert patch["world_median_xyz"] == [1.5, 1.5, 1.5]
+    frame["cameras"]["agentview"]["high"]["depth"][:] = np.nan
+    patch = PATCH([frame], params)["patches"][0]
+    assert patch["valid_count"] == 0
+    assert patch["error"] == "insufficient valid surface samples"
+    assert "world_median_xyz" not in patch
 
 
 def test_dump_saves_actual_rendered_high_depth_and_calibration(tmp_path):

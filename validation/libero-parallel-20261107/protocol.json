@@ -1,0 +1,22 @@
+{
+  "scope": "bounded feasibility checks, not benchmark episodes",
+  "commands": [
+    "source /home/zwy/work/harnessvla/local-setup/activate.sh; PYTHONPATH=/home/zwy/work/harnessvla python /home/zwy/work/embodied_harness/validation/libero-parallel-20261107/check_parallel.py",
+    "source /home/zwy/work/harnessvla/local-setup/activate.sh; PYTHONPATH=/home/zwy/work/harnessvla python /home/zwy/work/embodied_harness/validation/libero-parallel-20261107/check_shared_services.py"
+  ],
+  "scripts_sha256": {
+    "check_parallel.py": "850075846606b6d70d9639712f134f46c00a49f32757deeb88e15391e51c9279",
+    "check_shared_services.py": "f9567d31c3294f926135dfb1b594df5c4fd1700e80a8424de58def2d5f80e804"
+  },
+  "harness_modified": false,
+  "planners_invoked": false,
+  "formal_no_memory_experiment_started": false,
+  "proposed_parallelism": 2,
+  "limits": [
+    "VLA calls serialize under RPC write lock; SAM image cache and inference serialize under its lock.",
+    "Concurrent shared inference can affect latency and RNG ordering; no throughput claim or reproducibility equivalence established.",
+    "Synthetic VLA checks establish finite outputs, not semantic correctness or task success.",
+    "Two temporary environments only; full two-planner long-running workbenches remain untested."
+  ],
+  "checks_not_run": "Full unit/pre-commit suite not rerun: no tracked executable source was changed; only JSON evidence recorded. Initial shared-service check import error fixed in external script before inference."
+}
