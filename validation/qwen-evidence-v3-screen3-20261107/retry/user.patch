@@ -1,0 +1,15 @@
+--- qwen-evidence-v2/user.md
++++ qwen-evidence-v3/user.md
+@@ -1,9 +1,9 @@
+ Experiment: {{suite}}, task {{task}}, seed {{seed}}.
+ Output directory: {{output_dir}}.
+ Inspect the initial recorded scene to obtain the actual task instruction.
+-Read the language guide and the relevant experience, identify and localize the
+-target and destination in this scene, then perform the task. Select the available
+-interfaces from their declarations; no historical interface is prescribed.
++Read the guide and index, then choose the next available primitive. Read experience
++for its unresolved blocker. Resolve only the evidence that primitive needs;
++defer later placement geometry. Follow the declared interface contracts.
+ 
+ After reading the required guide and index:
+ - Read further experience only to resolve the current blocker. Once observations support a feasible action, act.

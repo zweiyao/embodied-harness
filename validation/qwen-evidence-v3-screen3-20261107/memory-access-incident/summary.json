@@ -1,0 +1,75 @@
+{
+  "completed": 2,
+  "successes": 0,
+  "with_action": 0,
+  "without_action": 2,
+  "first_action_not_confirmed": 0,
+  "before_action_observations": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_calls": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_perception": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_file_reads": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "planned": 3,
+  "mixed_budget": false,
+  "budget_cohorts": {
+    "300": {
+      "completed": 2,
+      "successes": 0,
+      "with_action": 0,
+      "without_action": 2,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "before_action_calls": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "before_action_perception": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "before_action_file_reads": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "min": null,
+        "max": null
+      }
+    }
+  },
+  "success_rate_percent": 0.0
+}

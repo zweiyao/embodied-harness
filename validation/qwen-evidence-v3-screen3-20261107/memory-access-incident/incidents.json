@@ -1,0 +1,107 @@
+[
+  {
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "unexpected_memory_packaging",
+    "evaluation_success": null,
+    "recorded_outcome": {
+      "ended_at": "2026-11-07T13:57:23.437928+00:00",
+      "environment_success": false,
+      "error": "planner timed out after 300s",
+      "stats": {
+        "total_input_tokens": 181927,
+        "total_output_tokens": 1159,
+        "total_cached_input_tokens": 155392,
+        "turns_used": 17,
+        "tool_calls": 16
+      },
+      "elapsed_s": 310.3,
+      "status": "timeout",
+      "actions": 0,
+      "video_recorded": false
+    },
+    "memory_access_errors": [
+      {
+        "name": "list_dir",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/language-materials/memory/libero"
+      },
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/language-materials/memory/libero/grasp-feature-evidence.md"
+      },
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/language-materials/memory/libero/next-action-evidence.md"
+      },
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/language-materials/memory/libero/object-relative-transfer.md"
+      },
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0/language-materials/memory/libero/next-action-evidence.md"
+      }
+    ]
+  },
+  {
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+    "classification": "unexpected_memory_packaging",
+    "evaluation_success": null,
+    "recorded_outcome": {
+      "ended_at": "2026-11-07T13:59:00.054299+00:00",
+      "environment_success": false,
+      "error": null,
+      "stats": {
+        "total_input_tokens": 70086,
+        "total_output_tokens": 706,
+        "total_cached_input_tokens": 46592,
+        "turns_used": 8,
+        "tool_calls": 9
+      },
+      "elapsed_s": 92.9,
+      "status": "aborted",
+      "actions": 0,
+      "video_recorded": false
+    },
+    "memory_access_errors": [
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0/language-materials/memory/libero/next-action-evidence.md"
+      },
+      {
+        "name": "list_dir",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0/language-materials/memory/libero"
+      }
+    ]
+  },
+  {
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "unexpected_memory_packaging",
+    "evaluation_success": null,
+    "recorded_outcome": {
+      "ended_at": "2026-11-07T13:57:23.603628+00:00",
+      "environment_success": false,
+      "error": "planner timed out after 300s",
+      "stats": {
+        "total_input_tokens": 547504,
+        "total_output_tokens": 1973,
+        "total_cached_input_tokens": 436480,
+        "turns_used": 24,
+        "tool_calls": 23
+      },
+      "elapsed_s": 310.5,
+      "status": "timeout",
+      "actions": 0,
+      "video_recorded": false
+    },
+    "memory_access_errors": [
+      {
+        "name": "list_dir",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0/language-materials/memory/libero"
+      },
+      {
+        "name": "read_text_file",
+        "error": "reading this memory path is denied: /home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0/language-materials/memory/libero/next-action-evidence.md"
+      }
+    ]
+  }
+]

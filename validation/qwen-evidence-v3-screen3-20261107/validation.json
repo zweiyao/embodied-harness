@@ -18,6 +18,14 @@
   "original_runtime_core_changes": false,
   "original_library_preserved": true,
   "repair": "completed: valid 300 s timeout, 5 actions, 10 calls before action, zero patch errors/incidents, cleanup passed",
-  "v3_screen": "running: tasks0/4 parallel then task8, package qwen-evidence-v3-34c11b2915b5",
-  "budget_change": "5 classification / 4 controller cases passed; active0/4 retained300, next8 set600; no workbench restart"
+  "v3_screen": "initial three attempts excluded: unexpected memory packaging access denial; original raw records retained; corrected package retry in progress at 600 s",
+  "budget_change": "5 classification / 4 controller cases passed; active0/4 retained300, next8 set600; no workbench restart",
+  "memory_export_correction": "same bodies under corpus root, links corrected, no permission code changes; 3 actual CommonTools reads and 3 write denials",
+  "full_remote_unit_tests_after_export_regression": {
+    "passed": 2009,
+    "skipped": 15,
+    "elapsed_s": 71.74
+  },
+  "focused_memory_tests": 18,
+  "corrected_scope_precommit": "passed"
 }

@@ -1,0 +1,20 @@
+{
+  "phase": "running",
+  "completed": 2,
+  "planned": 3,
+  "lanes": {
+    "a": {
+      "phase": "running",
+      "task": 8,
+      "seed": 0,
+      "completed": 1,
+      "run_id": "a4ad5d50d4b873066dd3",
+      "elapsed_s": 55.3,
+      "planner_timeout_s": 600
+    },
+    "b": {
+      "phase": "completed",
+      "completed": 1
+    }
+  }
+}
