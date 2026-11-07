@@ -1,0 +1,49 @@
+{
+  "scope": "Two VLA requests plus two SAM requests simultaneously; synthetic inputs; no action execution",
+  "vla": [
+    {
+      "lane": 0,
+      "shape": [
+        5,
+        7
+      ],
+      "seconds": 0.261
+    },
+    {
+      "lane": 1,
+      "shape": [
+        5,
+        7
+      ],
+      "seconds": 0.365
+    }
+  ],
+  "sam": [
+    {
+      "lane": 0,
+      "shape": [
+        256,
+        256
+      ],
+      "mask_sha256": "0c6689790729dfeaf28305cfb4144a88f2bc022bbf12a61d87a7332236d1fb7f",
+      "seconds": 0.241
+    },
+    {
+      "lane": 1,
+      "shape": [
+        128,
+        128
+      ],
+      "mask_sha256": "d393528eb01aedeb41f126b8a237b53773b7b67eec142988e45ba69baf7c5ac5",
+      "seconds": 0.153
+    }
+  ],
+  "concurrent_wall_s": 0.366,
+  "sam_sequential_replay_same_masks": [
+    true,
+    true
+  ],
+  "passed": true,
+  "workbench_unchanged_ready": true,
+  "gpu_after": "17054, 86"
+}
