@@ -1,0 +1,54 @@
+[
+  {
+    "request_index": 0,
+    "historical_elapsed_s": 3.34130597114563,
+    "historical_usage": {
+      "input_tokens": 4670,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 127,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0,
+      "details": {},
+      "cost": null
+    }
+  },
+  {
+    "request_index": 4,
+    "historical_elapsed_s": 16.371073007583618,
+    "historical_usage": {
+      "input_tokens": 10745,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 9728,
+      "output_tokens": 123,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0,
+      "details": {
+        "text_tokens": 123
+      },
+      "cost": null
+    }
+  },
+  {
+    "request_index": 18,
+    "historical_elapsed_s": 84.94007706642151,
+    "historical_usage": {
+      "input_tokens": 23067,
+      "cache_write_tokens": 0,
+      "cache_read_tokens": 21760,
+      "output_tokens": 78,
+      "input_audio_tokens": 0,
+      "cache_audio_read_tokens": 0,
+      "output_audio_tokens": 0,
+      "audio_seconds": 0,
+      "details": {
+        "text_tokens": 78
+      },
+      "cost": null
+    }
+  }
+]

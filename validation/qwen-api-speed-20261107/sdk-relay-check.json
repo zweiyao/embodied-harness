@@ -1,0 +1,29 @@
+{
+  "transport": "mac_relay",
+  "sdk": "installed build_api_model + provider client",
+  "max_retries": 0,
+  "request_index": 18,
+  "tools_executed": 0,
+  "success": true,
+  "first_content_s": 2.0587831530719995,
+  "total_s": 7.3156641270034015,
+  "usage": {
+    "completion_tokens": 293,
+    "prompt_tokens": 23067,
+    "total_tokens": 23360,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": null,
+      "rejected_prediction_tokens": null,
+      "text_tokens": 293
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 23040,
+      "image_tokens": 5196,
+      "text_tokens": 17871
+    }
+  }
+}

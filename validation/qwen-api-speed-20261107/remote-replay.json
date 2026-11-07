@@ -1,0 +1,186 @@
+[
+  {
+    "location": "remote",
+    "request_index": 0,
+    "payload_sha256": "dc8ddd9e1be1e3543f7a0ea5ee768ed1ede5901dadc8f792c91143998c28f455",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.036617,
+    "connect_s": 0.177953,
+    "tls_s": 0.487118,
+    "first_byte_s": 1.215926,
+    "total_s": 1.529079,
+    "first_content_s": 1.2189887911081314,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 4670,
+      "total_tokens": 4713,
+      "completion_tokens": 43,
+      "prompt_tokens_details": {
+        "cached_tokens": 4096,
+        "text_tokens": 4670
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 80,
+    "error_code": null,
+    "request_bytes": 17901
+  },
+  {
+    "location": "remote",
+    "request_index": 0,
+    "payload_sha256": "dc8ddd9e1be1e3543f7a0ea5ee768ed1ede5901dadc8f792c91143998c28f455",
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 1.7e-05,
+    "connect_s": 7.8e-05,
+    "tls_s": 0.820624,
+    "first_byte_s": 3.587282,
+    "total_s": 5.099125,
+    "first_content_s": 3.590394444297999,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 4670,
+      "total_tokens": 4797,
+      "completion_tokens": 127,
+      "prompt_tokens_details": {
+        "cached_tokens": 4096,
+        "text_tokens": 4670
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 80,
+    "error_code": null,
+    "request_bytes": 17901
+  },
+  {
+    "location": "remote",
+    "request_index": 4,
+    "payload_sha256": "c96db34d064220df1b01ac0760e2608a964ef115589b683d8433c8e7b6d96b97",
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 1.7e-05,
+    "connect_s": 7.8e-05,
+    "tls_s": 0.800555,
+    "first_byte_s": 44.248899,
+    "total_s": 47.761009,
+    "first_content_s": 44.25555023411289,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 10745,
+      "total_tokens": 11072,
+      "completion_tokens": 327,
+      "prompt_tokens_details": {
+        "cached_tokens": 10496,
+        "image_tokens": 2118,
+        "text_tokens": 8627
+      },
+      "completion_tokens_details": {
+        "text_tokens": 327
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 1834068
+  },
+  {
+    "location": "remote",
+    "request_index": 4,
+    "payload_sha256": "c96db34d064220df1b01ac0760e2608a964ef115589b683d8433c8e7b6d96b97",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.036563,
+    "connect_s": 0.25608,
+    "tls_s": 0.294139,
+    "first_byte_s": 5.797697,
+    "total_s": 7.073124,
+    "first_content_s": 5.803643584251404,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 10745,
+      "total_tokens": 10842,
+      "completion_tokens": 97,
+      "prompt_tokens_details": {
+        "cached_tokens": 10496,
+        "image_tokens": 2118,
+        "text_tokens": 8627
+      },
+      "completion_tokens_details": {
+        "text_tokens": 97
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 57,
+    "error_code": null,
+    "request_bytes": 1834068
+  },
+  {
+    "location": "remote",
+    "request_index": 18,
+    "payload_sha256": "e8bc1e1ca43f6257ab9ac73dd9f28867f08bbb6a2d7bb1803b2f4ce0ab828f33",
+    "route": "direct",
+    "stream": true,
+    "exit_code": 0,
+    "status": 200,
+    "dns_s": 0.008439,
+    "connect_s": 0.184528,
+    "tls_s": 0.231626,
+    "first_byte_s": 13.140617,
+    "total_s": 14.287504,
+    "first_content_s": 13.148594601079822,
+    "first_reasoning_s": null,
+    "usage": {
+      "prompt_tokens": 23067,
+      "total_tokens": 23149,
+      "completion_tokens": 82,
+      "prompt_tokens_details": {
+        "cached_tokens": 23040,
+        "image_tokens": 5196,
+        "text_tokens": 17871
+      },
+      "completion_tokens_details": {
+        "text_tokens": 82
+      }
+    },
+    "finish_reason": "tool_calls",
+    "returned_model": "qwen3.8-flash",
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 4658222
+  },
+  {
+    "location": "remote",
+    "request_index": 18,
+    "payload_sha256": "e8bc1e1ca43f6257ab9ac73dd9f28867f08bbb6a2d7bb1803b2f4ce0ab828f33",
+    "route": "proxy",
+    "stream": true,
+    "exit_code": 28,
+    "status": 0,
+    "dns_s": 1.8e-05,
+    "connect_s": 8.1e-05,
+    "tls_s": 1.546407,
+    "first_byte_s": 0.0,
+    "total_s": 90.001499,
+    "first_content_s": null,
+    "first_reasoning_s": null,
+    "usage": null,
+    "finish_reason": null,
+    "returned_model": null,
+    "content_chars": 0,
+    "error_code": null,
+    "request_bytes": 4658222
+  }
+]

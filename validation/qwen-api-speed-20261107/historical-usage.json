@@ -1,0 +1,68 @@
+{
+  "qwen_original": {
+    "requests": 1421,
+    "input_median": 35496,
+    "output_median": 104,
+    "cached_sum": 36169472,
+    "pearson_input_latency": 0.17912090102320116,
+    "pearson_output_latency": -0.05846760330942896,
+    "by_index": {
+      "early": {
+        "n": 247,
+        "latency_median": 4.3668107986450195,
+        "input_median": 17541,
+        "output_median": 138
+      },
+      "late": {
+        "n": 684,
+        "latency_median": 7.371107459068298,
+        "input_median": 47817.5,
+        "output_median": 100.0
+      }
+    }
+  },
+  "qwen_short": {
+    "requests": 189,
+    "input_median": 34218,
+    "output_median": 102,
+    "cached_sum": 4607744,
+    "pearson_input_latency": 0.22423211862938297,
+    "pearson_output_latency": 0.0068030034125785505,
+    "by_index": {
+      "early": {
+        "n": 37,
+        "latency_median": 8.548264980316162,
+        "input_median": 17684,
+        "output_median": 120
+      },
+      "late": {
+        "n": 82,
+        "latency_median": 21.819241404533386,
+        "input_median": 48062.0,
+        "output_median": 107.5
+      }
+    }
+  },
+  "qwen_empty": {
+    "requests": 138,
+    "input_median": 15244.5,
+    "output_median": 124.5,
+    "cached_sum": 2178304,
+    "pearson_input_latency": 0.3119879215805881,
+    "pearson_output_latency": 0.011534677512533214,
+    "by_index": {
+      "early": {
+        "n": 50,
+        "latency_median": 19.773347854614258,
+        "input_median": 9155.5,
+        "output_median": 129.5
+      },
+      "late": {
+        "n": 21,
+        "latency_median": 84.94007706642151,
+        "input_median": 47800,
+        "output_median": 122
+      }
+    }
+  }
+}
