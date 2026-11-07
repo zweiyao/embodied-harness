@@ -132,5 +132,12 @@
         "no_proxy": "localhost,127.0.0.1,::1,10.162.250.228"
       }
     }
+  },
+  "budget_overrides": {
+    "qwen": {
+      "from_task": 5,
+      "planner_timeout_s": 300,
+      "approval": "User requested subsequent Qwen tasks use 300s; active task4 keeps 1500s"
+    }
   }
 }

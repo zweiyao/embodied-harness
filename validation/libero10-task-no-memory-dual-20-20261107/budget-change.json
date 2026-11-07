@@ -1,0 +1,12 @@
+{
+  "approved_change": "Subsequent Qwen episodes 300 seconds",
+  "qwen_tasks_0_to_4_budget_s": 1500,
+  "qwen_tasks_5_to_9_budget_s": 300,
+  "astra_budget_s": 1500,
+  "old_controller": "rpent-no-memory-dual20-20261107.service",
+  "new_controller": "rpent-no-memory-dual20-qwen300-20261107.service",
+  "old_controller_cleanup_suppressed_for_handoff_only": true,
+  "workbench_services_restarted": false,
+  "harness_modified": false,
+  "time": 1794042543.9265702
+}
