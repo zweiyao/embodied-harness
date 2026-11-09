@@ -1,0 +1,27 @@
+# Iteration 03 preparation: C plus motion contract M
+
+This preparation is authorized; model episodes require a new coordinator READY after the isolated implementation and finite simulator probe pass. M is candidate-design option B, `translate_to`. This screen returns to the current best C background, rather than promoting the unsuccessful E or E+T stack.
+
+## Frozen experimental change
+
+Both cells retain C's `qwen-evidence-v3-c6c7f677d400` material and its original published `sensor_patch_batch` / `sensor_container_geometry` versions. The original 20 selected tools remain, with opt-in `translate_to` added as tool 21. When selected, only the approved two-sentence motion guidance changes. No new experience, alignment-pair version, workflow or multi-agent behavior is added.
+
+`translate_to(xyz)` delegates to the unchanged `move_to(xyz, gripper=0)` servo defaults. It removes model-supplied orientation/gripper arguments from position-only moves while preserving the existing motion limits. It does not prove holding, choose a safe path, prevent explicit `release`, or repair an incorrect target. Its interface benefit and task benefit are separate questions.
+
+Lane a runs task 4 seed 0 once; lane b runs task 0 seed 0 once. Qwen Flash thinking off, 600 seconds, 30 model requests, 16384 output tokens, direct routing and the private `libero_10_task-language-right-v1` cohort remain unchanged. The frozen iteration-01 C cells remain the reference and are never replaced by these results. This is a two-cell development screen, not a ten-task success-rate estimate.
+
+## Source and runner changes
+
+- Runtime imports must resolve to the new `motion-contract-test-checkout`, never the live `harnessvla` source. The existing remote virtual environment supplies dependencies; `PYTHONPATH` and `RPENT_REPO_ROOT` explicitly select the isolated source for the workbenches, environment children and runner preflight. The dependency activation script currently sets `RPENT_REPO_ROOT` to live `harnessvla`; each owned script overrides it after activation because environment-server paths also use `get_repo_root()`. The activation script and main services remain untouched.
+- `source-handoff.json` records the delivered checkout, full source hashes, validation and separate no-model simulator probe evidence. Setup refuses a missing or unvalidated handoff and freezes its hashes alongside original source, libraries, materials and benchmark files.
+- The delivered checkout is not globally identical to live plus M. The approved handoff explains inactive Codex SDK timeout compatibility, an uninstalled dependency declaration, AST-equivalent formatting and unrelated documentation. Its active-path check finds 14 critical Qwen API/session/tool/environment files byte-identical to live, and the pre-M AST of the three changed runtime files equivalent. This experiment explicitly selects the API planner and `openai-chat:qwen3.8-flash` in the unchanged installed environment; the full difference appendix remains part of the evidence.
+- `setup.py` adds only the native tool selection, points both lanes to C materials and the isolated source, and requires iteration 01/02 final audits and cleanup to pass. `run_batch.py` resolves relative memory-audit paths against the actual frozen `get_repo_root()` value used by `MemoryManager` (an existing `RPENT_REPO_ROOT` override or the imported package root). Setup freezes this value and preflight checks each process; it does not change existing memory permissions. The override is confined to these isolated processes, and setup/preflight require the resolved root to equal the delivered source checkout.
+- `metrics.py` adds `translate_to` to ACTIONS. The historical `first_action_confirmed_executed` field remains compatible, with an explicit evidence-description field: a nonzero recorded step and command log do not establish simulator displacement, a controller-action count, holding or task success. Historical iteration 01/02 files are unchanged.
+- `preflight.py` verifies isolated imports, the xyz-only native schema, conditional guidance, new-action metric recognition, actual frozen memory, unchanged generated tools, direct model connectivity and owned server identities. After launch, the live audit also records actual environment-child command paths and source-related environment values to confirm the isolated entry point. The single wrapper runs preflight once, then the batch, then its audit.
+- `audit_results.py` requires all 21 actual tool names across function/output declarations, rejects duplicates, verifies that the old patch tool lacks `alignment_pair`, checks the new xyz-only motion schema, recomputes metrics and compares initial images with iteration-01 C.
+
+## Verification and limits
+
+Before model episodes, candidate-design must complete a separately recorded, bounded real simulator probe with no model requests, then clean up its owned process. This tests unchanged servo behavior and gripper command-target preservation; it is not a successful task trial. The coordinating agent's final READY is the launch gate.
+
+The task audit will separately count actual `translate_to` adoption, explicit opening during transport, observed object motion with the gripper, orientation changes, release location, model/request cost and official success. Wrong identity, false holding, wrong geometry and intentional release remain possible causes of failure. Existing timeout/failure classification, incident preservation, process locks and scoped cleanup are retained.

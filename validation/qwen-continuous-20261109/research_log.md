@@ -15,3 +15,11 @@ The TSV metric is the success percentage on the same two development cells, not 
 Logged: 2026-11-09T04:18:35.561163+00:00.
 
 E+T 0/2, preserved E reference 0/2. All attempts valid, no incidents; paired images and 3108 protected files passed. The nine patch calls never enabled alignment_pair, so this screen does not test its execution efficacy. No promotion. The same selected two-cell metric stays below C (1/2). Task4 carried the first mug correctly but opened during the second carry; task0 substituted robot surfaces for basket points after inventing a coordinate convention, then opened during holding verification. Next: return to C and test only the position-only motion contract, with all old tools retained. A new semantic grounding workflow remains a separate draft. See [report](iteration-02/report.md).
+
+## Iteration 03 — optional position-only motion
+
+Logged: 2026-11-09T04:59:58.919237+00:00.
+
+C+M 0/2 versus retained C 1/2 on the same selected task4/0 seed0 cells. Both valid request-budget failures, zero incidents, paired initial images, 4176 protected files and owned cleanup passed. M was offered in actual API schemas but never called; no execution efficacy conclusion. Keep C. The task4 error was held-object offset omitted during placement; task0 used partial basket wall/rim points as an unestablished opening center. These are not corrected merely by retaining gripper target.
+
+Three non-improving candidates trigger a strategy pivot: iteration04 restricts manual translation choices to M, preserving all other C conditions, to measure adoption. It removes three old capabilities from this isolated selection and must be reported as a selection intervention. A separate functional-region/placement geometry workflow is being designed; no hidden-state access, task coordinates or unbudgeted policy model. See [report](iteration-03/report.md).

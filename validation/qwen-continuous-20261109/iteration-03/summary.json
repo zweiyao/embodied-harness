@@ -1,0 +1,112 @@
+{
+  "completed": 2,
+  "successes": 0,
+  "with_action": 2,
+  "without_action": 0,
+  "first_action_not_confirmed": 0,
+  "before_action_observations": {
+    "n": 2,
+    "mean": 1.5,
+    "median": 1.5,
+    "min": 1,
+    "max": 2
+  },
+  "before_action_calls": {
+    "n": 2,
+    "mean": 15.5,
+    "median": 15.5,
+    "min": 15,
+    "max": 16
+  },
+  "before_action_perception": {
+    "n": 2,
+    "mean": 5,
+    "median": 5.0,
+    "min": 4,
+    "max": 6
+  },
+  "before_action_file_reads": {
+    "n": 2,
+    "mean": 7.5,
+    "median": 7.5,
+    "min": 6,
+    "max": 9
+  },
+  "planned": 2,
+  "conditions": {
+    "C+M": {
+      "completed": 2,
+      "successes": 0,
+      "with_action": 2,
+      "without_action": 0,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 2,
+        "mean": 1.5,
+        "median": 1.5,
+        "min": 1,
+        "max": 2
+      },
+      "before_action_calls": {
+        "n": 2,
+        "mean": 15.5,
+        "median": 15.5,
+        "min": 15,
+        "max": 16
+      },
+      "before_action_perception": {
+        "n": 2,
+        "mean": 5,
+        "median": 5.0,
+        "min": 4,
+        "max": 6
+      },
+      "before_action_file_reads": {
+        "n": 2,
+        "mean": 7.5,
+        "median": 7.5,
+        "min": 6,
+        "max": 9
+      }
+    }
+  },
+  "mixed_budget": false,
+  "budget_cohorts": {
+    "600": {
+      "completed": 2,
+      "successes": 0,
+      "with_action": 2,
+      "without_action": 0,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 2,
+        "mean": 1.5,
+        "median": 1.5,
+        "min": 1,
+        "max": 2
+      },
+      "before_action_calls": {
+        "n": 2,
+        "mean": 15.5,
+        "median": 15.5,
+        "min": 15,
+        "max": 16
+      },
+      "before_action_perception": {
+        "n": 2,
+        "mean": 5,
+        "median": 5.0,
+        "min": 4,
+        "max": 6
+      },
+      "before_action_file_reads": {
+        "n": 2,
+        "mean": 7.5,
+        "median": 7.5,
+        "min": 6,
+        "max": 9
+      }
+    }
+  },
+  "success_rate_percent": 0.0
+}

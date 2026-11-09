@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "environment_actions": 0,
+  "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "isolated_source_imports_verified": true,
+  "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "path_environment": {
+    "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+  },
+  "motion_catalog_and_selected_guidance": true,
+  "motion_metrics_fixture": {
+    "passed": true,
+    "limitation": "The legacy execution indicator is a recorded-step/command proxy, not measured displacement or holding."
+  },
+  "eef_catalog_and_action_metrics": true,
+  "materials": [
+    {
+      "lane": "a",
+      "version": "qwen-evidence-v3-c6c7f677d400",
+      "files": 7,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    },
+    {
+      "lane": "b",
+      "version": "qwen-evidence-v3-c6c7f677d400",
+      "files": 7,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    }
+  ],
+  "classification_checks": 5,
+  "published_tool_checks": [
+    {
+      "name": "sensor_patch_batch",
+      "version": "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    },
+    {
+      "name": "sensor_container_geometry",
+      "version": "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "a",
+      "server_id": "de3f02495f334d35a93b2d9231db6dba",
+      "port": 57741,
+      "config_matches": true,
+      "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "repo_root_override": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "proxy_absent": true,
+      "connectivity_ok": true
+    },
+    {
+      "lane": "b",
+      "server_id": "04e9d88c1bf944a2b619c9cd5f7303c4",
+      "port": 48103,
+      "config_matches": true,
+      "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "repo_root_override": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "proxy_absent": true,
+      "connectivity_ok": true
+    }
+  ]
+}
