@@ -1,0 +1,189 @@
+{
+  "candidate": "B: opt-in translate_to(xyz)",
+  "implemented": true,
+  "deployed_to_live": false,
+  "selected_for_model_experiment": false,
+  "verification_environment": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "baseline_checkout": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/tool-test-checkout",
+  "focused_tests": {
+    "passed": 48,
+    "skipped": 0,
+    "seconds": 0.76
+  },
+  "full_unit_tests": {
+    "passed": 2056,
+    "skipped": 15,
+    "seconds": 73.42,
+    "scope": "All tests/unit_tests in remote isolated checkout, Python 3.11; not live runtime or CI matrix"
+  },
+  "scoped_precommit": "passed for six B code/doc/test files and offline validation helper",
+  "full_precommit": "Not rerun; prior unrelated baseline findings retained",
+  "offline_contract": {
+    "default_selection_and_old_prompts_unchanged": true,
+    "comparison_cases": 3,
+    "default_tool_ids": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state"
+    ],
+    "installed_gripper_math": {
+      "PandaGripper": {
+        "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/robosuite/models/grippers/panda_gripper.py",
+        "sha256": "df0449a9b003e9a019fad4ef59b435ae2b9accd2705026da041165dd99faab8d",
+        "cases": [
+          {
+            "initial_target": [
+              0.0,
+              0.0
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          },
+          {
+            "initial_target": [
+              -0.6,
+              0.4
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          },
+          {
+            "initial_target": [
+              0.6,
+              -0.4
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          }
+        ]
+      },
+      "Robotiq85Gripper": {
+        "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/robosuite/models/grippers/robotiq_85_gripper.py",
+        "sha256": "da6e593854606e874c9f96a34095e02ffbf787f09f17ac0426744a523580ec5f",
+        "cases": [
+          {
+            "initial_target": [
+              0.0,
+              0.0
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          },
+          {
+            "initial_target": [
+              -0.6,
+              0.4
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          },
+          {
+            "initial_target": [
+              0.6,
+              -0.4
+            ],
+            "zero_preserved": true,
+            "open_changed": true
+          }
+        ]
+      }
+    },
+    "simulator_instances": 0,
+    "simulator_actions": 0,
+    "model_requests": 0,
+    "limitations": "Command-target math only; no measured-gap, grasp, clearance or task-success claim."
+  },
+  "protected_files_unchanged": true,
+  "protected_file_count": 33,
+  "protected_hashes_after": {
+    "/home/zwy/work/harnessvla/robots/libero/eef_control.py": "e2d4826cada55634fc5d2e79b876295df2963b4c468382afed57359420ff33d2",
+    "/home/zwy/work/harnessvla/robots/libero/research/manual.py": "fe13111f2321950f7b8dd5c3cb51086e6647db105fe285287509e550924f4b04",
+    "/home/zwy/work/harnessvla/rpent/dashboard/workbench.py": "f311cd8f7358129c6bbc784e901f255791071309f7ac4440df5f810c99206806",
+    "/home/zwy/work/harnessvla/robots/libero/tools.py": "99f051d57f84c4627c781e94a1ee0905187cef342de64d54d04014a31f2a4a62",
+    "/home/zwy/work/harnessvla/rpent/planner/api_loop.py": "3430ca01b2da8af97f4d934dfd280308dc088d686e4ecf97f080fb0e7e4cd957",
+    "/home/zwy/work/harnessvla/tests/unit_tests/robots/libero/test_eef_control.py": "3e1533cc80c675e7f028ec18b33e1862d55e4fad273477d59434cca4e501db36",
+    "/home/zwy/work/harnessvla/tests/unit_tests/robots/libero/research/test_manual.py": "82f5600d1c925de4b8f6f645ac1a0bd5aaf46011c9ff755a4fa8ca54f63fb8bc",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3/553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.json": "8953f3f4dc6499644df8e4058e02443a0e917e36ec70f05c5698d46e7510f94c",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3/2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.meta.json": "f8f10fab836f7d748b3c33c37af39a38181ef42894ad7963cf80956a5b8bc55c",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3/553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.meta.json": "1e0f128b733323a604383f177d2af2e330b693f115b16a2c87fc685092938ff2",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3/2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.json": "885b97bfd980cab069cc384659d0fda111bf6eeda71fdb4f9be5b3e66312d11c",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.meta.json": "94bf8610cb061db3a7eba680e53df1acaadbe5b17192b9e61d2a16d7baacce43",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.json": "8953f3f4dc6499644df8e4058e02443a0e917e36ec70f05c5698d46e7510f94c",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.meta.json": "f8f10fab836f7d748b3c33c37af39a38181ef42894ad7963cf80956a5b8bc55c",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.json": "5b49561b7595b1502ef4da1fab3599d2b09942ffb1c55e5fb4c8f39a730eac22",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.meta.json": "1e0f128b733323a604383f177d2af2e330b693f115b16a2c87fc685092938ff2",
+    "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109/2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.json": "885b97bfd980cab069cc384659d0fda111bf6eeda71fdb4f9be5b3e66312d11c",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/plan.json": "5f57d6d10a22a0ea78a61c5c88efde708550cb00b4a5c9bccb92c8967ae32b17",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/invariants.json": "5449aeee72638cbb2807a4ea997de40e5b5af7cef753d9cc412bc3ea6dd62654",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/a/workbench.json": "8452c04fa406369116d55ca38c6a3a59276d249a1c06a43a141e7c90a40b04cd",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/b/workbench.json": "73f801423fd3255029fd98f7a2780a9315944322eff89d80dec1a1b9daf0e293",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/a/start.sh": "88a3f1992fc0b040007c81b5686f02a4547237d1ce3e0ee912539014b5762515",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/b/start.sh": "4480ae73f93c8223adb664fdf2f05ceb416c44481472f63402a12292a715813a",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/a/libero-config/config.yaml": "1abbd851870c5a4fc0e3733e1fae63a73d72538f919ba95420fd08e7cec54b1b",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/b/libero-config/config.yaml": "1abbd851870c5a4fc0e3733e1fae63a73d72538f919ba95420fd08e7cec54b1b",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/plan.json": "be888e08c3c8cff7704e48437a8ed38da9e30363430615e1be5d0e57a595d1cd",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/invariants.json": "fdcf6c8d91dcf1c843996050ca2e352ffc46dd9722996b829e246ce4cb0f70f0",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/a/workbench.json": "af2e56b13a18119d57c23e18dea05026392c6da5dd1e21e2384e92119901974c",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/b/workbench.json": "7eb3dfc05387de493e5a0e527848fb92ed59f23f23a563d64f4057a88efbd4ed",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/a/start.sh": "dd17e5a54f0a904984025efe0c7c98043fafdee9356dd31db246f0cc7874ac99",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/b/start.sh": "e769a96822dcd95fa572459678604a4fc9144e2e238b0d78552f7fbbb13899cf",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/a/libero-config/config.yaml": "456354fafb10246d03a6a20180e946d9e8e74d2281f9aeb3c12c300373bda55e",
+    "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/b/libero-config/config.yaml": "456354fafb10246d03a6a20180e946d9e8e74d2281f9aeb3c12c300373bda55e"
+  },
+  "verified_file_hashes": {
+    "robots/libero/eef_control.py": "6fb8ea2e40237a94c8a4822fbf57018201254bba216bbfb09805ce58484f79bd",
+    "robots/libero/research/manual.py": "044dba5f16ac1326957c770444b1d06e3c6cdb77685e6cab9a0dacfc3efa227e",
+    "rpent/dashboard/workbench.py": "e1cee348dd7eeb5f8b6ce26962d2e2bb8d667f6df189c0db436237d427a54adf",
+    "docs/manual-workbench/libero-eef-control.md": "78d3ad13574c3d1126327a92971674110ec705eea40cdc115651a6c10c383b19",
+    "tests/unit_tests/robots/libero/test_eef_control.py": "f6ed8af66f47ae152d06eb877897dde2602ce6785bbfe670142a4e595208bda7",
+    "tests/unit_tests/robots/libero/research/test_manual.py": "749283e53a42ce86a68e25283762206f72f6eb445acec3ea905df4b368919f4c",
+    "validation/qwen-continuous-20261109/motion-contract/verify_offline_contract.py": "941a63a92a3dc9bd2a0264a536f90377629242ce7435dd0630efc5f5eaded742"
+  },
+  "tool": {
+    "id": "native:translate_to",
+    "name": "translate_to",
+    "version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "schema_properties": [
+      "xyz"
+    ]
+  },
+  "source_declaration": "translate-to-declaration.json",
+  "simulator_instances": 1,
+  "model_requests": 0,
+  "limitations": [
+    "No task-success or token/time benefit established",
+    "format_action(0) checks installed class command math, not actual gap or grasp",
+    "steps_used preserves original move_to arrival-check iteration counting",
+    "Old tools, core planner, live runtime, tool libraries and iteration-01/02 configuration untouched",
+    "Real simulator check verifies interface equivalence only; not holding or task benefit"
+  ],
+  "simulator_probe": {
+    "passed": true,
+    "summary": "sim-probe-summary.json",
+    "cleanup": "sim-probe-cleanup.json",
+    "model_requests": 0,
+    "scored_episodes": 0,
+    "actual_translation_steps": 18,
+    "gripper_warmup_steps": 32,
+    "reset_internal_wait_steps": "not included in explicit primitive step counts",
+    "owned_processes_remaining": 0,
+    "forced_cleanup": false,
+    "proxy_variables_present": []
+  },
+  "source_handoff": "source-handoff.json",
+  "source_differences": "source-differences.md"
+}

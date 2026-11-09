@@ -60,6 +60,85 @@ def primitive(env, check=lambda: None):
     return result
 
 
+@pytest.mark.parametrize("xyz", [[0.16, 0.07, 0.08], [0.04, -0.03, 0.06]])
+def test_translate_to_matches_original_servo_without_reentering_grip_or_rotation(xyz):
+    results, paths = [], []
+    initial_rotation = Rotation.from_euler("xyz", [0.4, -0.2, 0.6])
+    for wrapped in (False, True):
+        env = Env()
+        env.position = np.array([0.04, -0.03, 0.06])
+        env.rotation = initial_rotation
+        p = primitive(env)
+        p.set_obs({"states": np.r_[env.position, np.zeros(5)]})
+        result = (
+            EefControl(p).translate_to(xyz) if wrapped else p.move_to(xyz, gripper=0.0)
+        )
+        results.append(result.data)
+        paths.append(env.actions)
+        assert all(np.array_equal(action[3:], np.zeros(4)) for action in env.actions)
+        np.testing.assert_allclose(
+            env.rotation.as_matrix(), initial_rotation.as_matrix()
+        )
+        assert len(p.frame_slice(0)) == len(env.actions)
+        # The original count includes its final arrival-check iteration.
+        assert result.data["steps_used"] == len(env.actions) + 1
+    np.testing.assert_array_equal(paths[0], paths[1])
+    assert results[1].pop("gripper_command") == 0.0
+    assert results[1].pop("name") == "translate_to"
+    assert results[0].pop("name") == "move_to"
+    assert results[0] == results[1]
+
+
+def test_translate_to_keeps_original_step_budget_when_motion_stalls():
+    env = Env()
+
+    def stalled(action):
+        position = env.position.copy()
+        obs, reward, terminated, truncated, info = Env.step(env, action)
+        env.position = position
+        obs["states"][:3] = position
+        return obs, reward, terminated, truncated, info
+
+    env.step = stalled
+    p = primitive(env)
+    p.set_obs({"states": np.zeros(8)})
+    result = EefControl(p).translate_to([0.1, 0, 0])
+    assert len(env.actions) == result.data["steps_used"] == result.data["max_steps"]
+    assert (
+        result.data["max_steps"]
+        == LiberoPrimitives.move_to.args_schema.model_fields["max_steps"].default
+    )
+    assert result.data["final_dist_m"] == 0.1
+
+
+@pytest.mark.parametrize("xyz", [[float("nan"), 0, 0], [0, float("inf"), 0], [0, 0]])
+def test_translate_to_invalid_target_does_not_advance_environment(xyz):
+    env = Env()
+    with pytest.raises(ValueError, match="finite world XYZ"):
+        EefControl(primitive(env)).translate_to(xyz)
+    assert not env.actions
+
+
+def test_translate_to_obeys_cancellation_and_episode_end():
+    env = Env()
+    p = primitive(env)
+    p.set_obs({"states": np.zeros(8)})
+
+    def cancelled():
+        raise RuntimeError("cancelled")
+
+    p._check_cancelled = cancelled
+    with pytest.raises(RuntimeError, match="cancelled"):
+        EefControl(p).translate_to([0.1, 0, 0])
+    assert not env.actions
+    p._check_cancelled = lambda: None
+    env.stop_after = 2
+    control = EefControl(p)
+    assert control.translate_to([0.2, 0, 0]).data["truncated"]
+    assert control.translate_to([0.2, 0, 0]).is_error
+    assert len(env.actions) == 2
+
+
 @pytest.mark.parametrize("axis", range(3))
 def test_world_frame_translation_and_rotation(axis):
     basis = Rotation.from_euler("z", 90, degrees=True).as_matrix()
@@ -176,6 +255,10 @@ def test_catalog_exposes_optional_control_without_changing_original_primitives()
     assert item["category"] == "control" and not item["required"]
     assert item["parameters"]["required"] == ["xyz", "quat_xyzw", "gripper"]
     assert "move_eef" not in {t.name for t in iter_tools(LiberoPrimitives)}
+    translation = next(t for t in native_catalog() if t["name"] == "translate_to")
+    assert translation["category"] == "control" and not translation["required"]
+    assert set(translation["parameters"]["properties"]) == {"xyz"}
+    assert "translate_to" not in {t.name for t in iter_tools(LiberoPrimitives)}
 
 
 def test_default_selection_and_prompt_do_not_enable_eef():
@@ -186,14 +269,26 @@ def test_default_selection_and_prompt_do_not_enable_eef():
     wb.robot = "libero"
     wb.catalog = lambda: [{**t, "selectable": True} for t in native_catalog()]
     assert "move_eef" not in {t["name"] for t in wb.selection()}
+    assert "translate_to" not in {t["name"] for t in wb.selection()}
+    assert "translate_to" not in availability_prompt(wb.selection())
     assert "next short move_eef" not in availability_prompt(wb.selection())
     selected = wb.selection(["native:move_eef", "native:finish"])
     assert "next short move_eef" in availability_prompt(selected)
+    assert "translate_to" not in availability_prompt(selected)
+    translation = wb.selection(["native:translate_to", "native:finish"])
+    assert "Use translate_to for position-only moves" in availability_prompt(
+        translation
+    )
+    both = wb.selection(["native:move_eef", "native:translate_to", "native:finish"])
+    assert "Use translate_to for position-only moves" in availability_prompt(both)
+    assert "next short move_eef" not in availability_prompt(both)
 
 
-@pytest.mark.parametrize("enabled", [False, True])
+@pytest.mark.parametrize(
+    "names", [["move_to"], ["translate_to"], ["move_eef"], ["move_eef", "translate_to"]]
+)
 def test_workbench_selection_enables_only_its_own_environment(
-    monkeypatch, tmp_path, enabled
+    monkeypatch, tmp_path, names
 ):
     from robots.libero import robot_spec
 
@@ -212,7 +307,7 @@ def test_workbench_selection_enables_only_its_own_environment(
         max_episode_steps=100,
         cuda_device=None,
         libero_type="pro",
-        frozen_tools=[{"name": "move_eef"}] if enabled else [{"name": "move_to"}],
+        frozen_tools=[{"name": name} for name in names],
     )
     robot_spec._spawn_env_server(args, tmp_path)
-    assert ("--enable-eef-control" in captured["cmd"]) is enabled
+    assert ("--enable-eef-control" in captured["cmd"]) is ("move_eef" in names)

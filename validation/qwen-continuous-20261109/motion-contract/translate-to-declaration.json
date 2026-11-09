@@ -1,0 +1,30 @@
+{
+  "id": "native:translate_to",
+  "name": "translate_to",
+  "origin": "native",
+  "category": "control",
+  "description": "Move toward world XYZ metres, preserving orientation and the gripper target.\n\nUses unchanged move_to servo defaults. Split XY travel over 0.30 m into\nintermediate targets. Change fingers with set_gripper or release.\nInspect returned images; preserved gripper target does not prove holding.",
+  "parameters": {
+    "properties": {
+      "xyz": {
+        "items": {
+          "type": "number"
+        },
+        "maxItems": 3,
+        "minItems": 3,
+        "type": "array"
+      }
+    },
+    "required": [
+      "xyz"
+    ],
+    "type": "object"
+  },
+  "version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "source": "    @tool\n    def translate_to(\n        self,\n        xyz: Annotated[list[float], Field(min_length=3, max_length=3)],\n    ) -> ToolResult:\n        \"\"\"Move toward world XYZ metres, preserving orientation and the gripper target.\n\n        Uses unchanged move_to servo defaults. Split XY travel over 0.30 m into\n        intermediate targets. Change fingers with set_gripper or release.\n        Inspect returned images; preserved gripper target does not prove holding.\n        \"\"\"\n        target = np.asarray(xyz, dtype=float)\n        if target.shape != (3,) or not np.isfinite(target).all():\n            raise ValueError(\"Supply three finite world XYZ coordinates\")\n        if self.primitives.env.terminated or self.primitives.env.truncated:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        result = self.primitives.move_to(target.tolist(), gripper=0.0)\n        result.data[\"name\"] = \"translate_to\"\n        if not result.is_error:\n            result.data[\"gripper_command\"] = 0.0\n        return result\n",
+  "required": false,
+  "dependencies": [],
+  "validation": "native",
+  "input_contract": "RPent \u539f\u751f\u63a5\u53e3\uff1b\u4fdd\u7559\u539f\u53c2\u6570\u3001\u56fe\u50cf\u4e0e\u7ed3\u679c\u53cd\u9988",
+  "example": null
+}

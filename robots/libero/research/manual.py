@@ -39,18 +39,22 @@ class ManualToolkit(LiberoToolkit):
         super().__init__(**kwargs)
         self.sensors = SensorInterface(self, [], None)
         self.add_tool(self.read_image)
-        if any(t["name"] == "move_eef" for t in selected):
+        optional_moves = {t["name"] for t in selected} & {"move_eef", "translate_to"}
+        if optional_moves:
             from robots.libero.eef_control import EefControl
 
-            controller = self.primitives.env.get_eef_controller_state()
-            if "error" in controller:
-                raise ValueError(controller["error"])
-            definition = EefControl(self.primitives).move_eef
-            self.add_tool(
-                definition.with_handler(
-                    partial(self._execute_primitive, "move_eef", definition)
+            if "move_eef" in optional_moves:
+                controller = self.primitives.env.get_eef_controller_state()
+                if "error" in controller:
+                    raise ValueError(controller["error"])
+            control = EefControl(self.primitives)
+            for name in sorted(optional_moves):
+                definition = getattr(control, name)
+                self.add_tool(
+                    definition.with_handler(
+                        partial(self._execute_primitive, name, definition)
+                    )
                 )
-            )
         originals = self._tools
         self._tools = {}
         generated = [t for t in selected if t["origin"] == "generated"]
@@ -218,7 +222,10 @@ class ManualToolkit(LiberoToolkit):
 def availability_prompt(selected):
     names = ", ".join(t["name"] for t in selected)
     eef_guidance = (
-        "Use the latest images and EEF pose to choose the next short move_eef target. "
+        "Use translate_to for position-only moves while retaining the gripper target. "
+        "Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\n\n"
+        if any(t["name"] == "translate_to" for t in selected)
+        else "Use the latest images and EEF pose to choose the next short move_eef target. "
         "Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\n\n"
         if any(t["name"] == "move_eef" for t in selected)
         else ""

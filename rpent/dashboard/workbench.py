@@ -419,7 +419,9 @@ class Workbench:
                 for i, t in catalog.items()
                 if t["origin"] == "native"
                 and t["selectable"]
-                and not (self.robot == "libero" and t["name"] == "move_eef")
+                and not (
+                    self.robot == "libero" and t["name"] in {"move_eef", "translate_to"}
+                )
             ]
         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
             raise ValueError("tools must be a list of catalog IDs")

@@ -39,3 +39,23 @@ move_eef(xyz, quat_xyzw, gripper, steps=5)
 经验仍按需读取；此功能不新增或修改经验。要测试由 VLM 直接完成抓取和移动的
 条件，应显式选择此控制工具及所需感知/记忆工具，并记录完整工具选择。
 更多动作反馈可能增加模型调用与等待；接口验证不能证明任务成功率或 token 收益。
+
+
+## 可选纯平移接口
+
+`translate_to(xyz)` 使用原 `move_to` 内部伺服，只接受世界坐标目标，不让模型
+重复填写四元数或夹爪值。它固定传入 `gripper=0`，保持当前夹爪控制目标；
+不是保证实测开度不变，也不证明抓住物体。夹爪变化仍用原 `set_gripper` 或
+`release`。原 `move_to`、`move_eef` 及其默认行为不变。
+
+此工具需单独选择，默认关闭；单独选择它不启用 EEF controller 参数接口。
+所有伺服参数和单次控制步预算沿用原 `move_to` 默认，原 XY 长距离分段约束
+仍适用。`steps_used` 沿用原统计，包含到位检查迭代，不能直接等同实际控制步数。
+动作后仍查看原生图像和反馈，不自动验证抓取、避障或任务完成。
+
+选择此工具时，短动作引导改为：
+
+> Use translate_to for position-only moves while retaining the gripper target.
+> Inspect returned images and pose; use an enabled gripper tool when the fingers must change.
+
+未选择时原提示不变。接口验证与任务成功率必须分别报告。

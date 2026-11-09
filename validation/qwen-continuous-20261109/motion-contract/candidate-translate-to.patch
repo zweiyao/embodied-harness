@@ -1,0 +1,117 @@
+--- a/robots/libero/eef_control.py
++++ b/robots/libero/eef_control.py
+@@ -94,6 +94,28 @@
+         self.primitives = primitives
+ 
+     @tool
++    def translate_to(
++        self,
++        xyz: Annotated[list[float], Field(min_length=3, max_length=3)],
++    ) -> ToolResult:
++        """Move toward world XYZ metres, preserving orientation and the gripper target.
++
++        Uses unchanged move_to servo defaults. Split XY travel over 0.30 m into
++        intermediate targets. Change fingers with set_gripper or release.
++        Inspect returned images; preserved gripper target does not prove holding.
++        """
++        target = np.asarray(xyz, dtype=float)
++        if target.shape != (3,) or not np.isfinite(target).all():
++            raise ValueError("Supply three finite world XYZ coordinates")
++        if self.primitives.env.terminated or self.primitives.env.truncated:
++            return ToolResult(data={"error": "Environment episode ended"})
++        result = self.primitives.move_to(target.tolist(), gripper=0.0)
++        result.data["name"] = "translate_to"
++        if not result.is_error:
++            result.data["gripper_command"] = 0.0
++        return result
++
++    @tool
+     def move_eef(
+         self,
+         xyz: Annotated[list[float], Field(min_length=3, max_length=3)],
+--- a/robots/libero/research/manual.py
++++ b/robots/libero/research/manual.py
+@@ -39,18 +39,22 @@
+         super().__init__(**kwargs)
+         self.sensors = SensorInterface(self, [], None)
+         self.add_tool(self.read_image)
+-        if any(t["name"] == "move_eef" for t in selected):
++        optional_moves = {t["name"] for t in selected} & {"move_eef", "translate_to"}
++        if optional_moves:
+             from robots.libero.eef_control import EefControl
+ 
+-            controller = self.primitives.env.get_eef_controller_state()
+-            if "error" in controller:
+-                raise ValueError(controller["error"])
+-            definition = EefControl(self.primitives).move_eef
+-            self.add_tool(
+-                definition.with_handler(
+-                    partial(self._execute_primitive, "move_eef", definition)
++            if "move_eef" in optional_moves:
++                controller = self.primitives.env.get_eef_controller_state()
++                if "error" in controller:
++                    raise ValueError(controller["error"])
++            control = EefControl(self.primitives)
++            for name in sorted(optional_moves):
++                definition = getattr(control, name)
++                self.add_tool(
++                    definition.with_handler(
++                        partial(self._execute_primitive, name, definition)
++                    )
+                 )
+-            )
+         originals = self._tools
+         self._tools = {}
+         generated = [t for t in selected if t["origin"] == "generated"]
+@@ -218,7 +222,10 @@
+ def availability_prompt(selected):
+     names = ", ".join(t["name"] for t in selected)
+     eef_guidance = (
+-        "Use the latest images and EEF pose to choose the next short move_eef target. "
++        "Use translate_to for position-only moves while retaining the gripper target. "
++        "Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\n\n"
++        if any(t["name"] == "translate_to" for t in selected)
++        else "Use the latest images and EEF pose to choose the next short move_eef target. "
+         "Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\n\n"
+         if any(t["name"] == "move_eef" for t in selected)
+         else ""
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -419,7 +419,10 @@
+                 for i, t in catalog.items()
+                 if t["origin"] == "native"
+                 and t["selectable"]
+-                and not (self.robot == "libero" and t["name"] == "move_eef")
++                and not (
++                    self.robot == "libero"
++                    and t["name"] in {"move_eef", "translate_to"}
++                )
+             ]
+         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
+             raise ValueError("tools must be a list of catalog IDs")
+--- a/docs/manual-workbench/libero-eef-control.md
++++ b/docs/manual-workbench/libero-eef-control.md
+@@ -39,3 +39,23 @@
+ 经验仍按需读取；此功能不新增或修改经验。要测试由 VLM 直接完成抓取和移动的
+ 条件，应显式选择此控制工具及所需感知/记忆工具，并记录完整工具选择。
+ 更多动作反馈可能增加模型调用与等待；接口验证不能证明任务成功率或 token 收益。
++
++
++## 可选纯平移接口
++
++`translate_to(xyz)` 使用原 `move_to` 内部伺服，只接受世界坐标目标，不让模型
++重复填写四元数或夹爪值。它固定传入 `gripper=0`，保持当前夹爪控制目标；
++不是保证实测开度不变，也不证明抓住物体。夹爪变化仍用原 `set_gripper` 或
++`release`。原 `move_to`、`move_eef` 及其默认行为不变。
++
++此工具需单独选择，默认关闭；单独选择它不启用 EEF controller 参数接口。
++所有伺服参数和单次控制步预算沿用原 `move_to` 默认，原 XY 长距离分段约束
++仍适用。`steps_used` 沿用原统计，包含到位检查迭代，不能直接等同实际控制步数。
++动作后仍查看原生图像和反馈，不自动验证抓取、避障或任务完成。
++
++选择此工具时，短动作引导改为：
++
++> Use translate_to for position-only moves while retaining the gripper target.
++> Inspect returned images and pose; use an enabled gripper tool when the fingers must change.
++
++未选择时原提示不变。接口验证与任务成功率必须分别报告。

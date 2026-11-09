@@ -94,6 +94,28 @@ class EefControl:
         self.primitives = primitives
 
     @tool
+    def translate_to(
+        self,
+        xyz: Annotated[list[float], Field(min_length=3, max_length=3)],
+    ) -> ToolResult:
+        """Move toward world XYZ metres, preserving orientation and the gripper target.
+
+        Uses unchanged move_to servo defaults. Split XY travel over 0.30 m into
+        intermediate targets. Change fingers with set_gripper or release.
+        Inspect returned images; preserved gripper target does not prove holding.
+        """
+        target = np.asarray(xyz, dtype=float)
+        if target.shape != (3,) or not np.isfinite(target).all():
+            raise ValueError("Supply three finite world XYZ coordinates")
+        if self.primitives.env.terminated or self.primitives.env.truncated:
+            return ToolResult(data={"error": "Environment episode ended"})
+        result = self.primitives.move_to(target.tolist(), gripper=0.0)
+        result.data["name"] = "translate_to"
+        if not result.is_error:
+            result.data["gripper_command"] = 0.0
+        return result
+
+    @tool
     def move_eef(
         self,
         xyz: Annotated[list[float], Field(min_length=3, max_length=3)],

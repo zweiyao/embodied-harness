@@ -5,6 +5,7 @@
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 from robots.libero import toolkit as libero
 from robots.libero.research.manual import ManualToolkit
@@ -13,17 +14,26 @@ from rpent.memory import MemoryManager
 from rpent.tools import ToolResult
 
 
+@pytest.mark.parametrize(
+    "motion, invalid_eef",
+    [("pi0_pick", False), ("translate_to", False), ("translate_to", True)],
+)
 def test_native_controls_unchanged_and_disabled_tool_rejected(
-    tmp_path, monkeypatch, fake_single_arm_primitives
+    tmp_path, monkeypatch, fake_single_arm_primitives, motion, invalid_eef
 ):
     from rpent.utils import templates
 
     monkeypatch.setattr(
         templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
     )
-    selected = [t for t in native_catalog() if t["name"] in {"pi0_pick", "finish"}]
+    names = {motion, "finish"} | ({"move_eef"} if invalid_eef else set())
+    selected = [t for t in native_catalog() if t["name"] in names]
     fake = fake_single_arm_primitives.for_robot(libero.libero_tools.LiberoPrimitives)
-    fake.env = SimpleNamespace(truncated=False)
+    fake.env = SimpleNamespace(terminated=False, truncated=False)
+    if invalid_eef:
+        fake.env.get_eef_controller_state = lambda: {
+            "error": "unsupported fixture controller"
+        }
     fake._sam3_client = None
     calls = []
 
@@ -32,6 +42,12 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
         return ToolResult(data={"chunks_used": 1})
 
     fake.pi0_pick = libero.libero_tools.LiberoPrimitives.pi0_pick.with_handler(pick)
+
+    def move(self, xyz, **kwargs):
+        calls.append({"xyz": xyz, **kwargs})
+        return ToolResult(data={"steps_used": 1})
+
+    fake.move_to = libero.libero_tools.LiberoPrimitives.move_to.with_handler(move)
     monkeypatch.setattr(libero.libero_tools, "LiberoPrimitives", fake)
 
     def dump(primitives, state, log):
@@ -51,19 +67,31 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
 
     monkeypatch.setattr(libero.libero_tools, "dump_state", dump)
     journal = RunJournal(tmp_path / "state")
-    t = ManualToolkit(
-        selected=selected,
-        journal=journal,
-        runtime_kwargs={},
-        dashboard_events=SimpleNamespace(enabled=False, emit=lambda x: None),
-        memory=MemoryManager(tmp_path / "memory"),
-        state_output_dir=tmp_path / "state",
-    )
-    assert {x.name for x in t.list_tools()} == {"pi0_pick", "finish"}
+    arguments = {
+        "selected": selected,
+        "journal": journal,
+        "runtime_kwargs": {},
+        "dashboard_events": SimpleNamespace(enabled=False, emit=lambda x: None),
+        "memory": MemoryManager(tmp_path / "memory"),
+        "state_output_dir": tmp_path / "state",
+    }
+    if invalid_eef:
+        with pytest.raises(ValueError, match="unsupported fixture controller"):
+            ManualToolkit(**arguments)
+        assert not calls
+        return
+    t = ManualToolkit(**arguments)
+    assert {x.name for x in t.list_tools()} == names
     assert t.execute_tool("move_to", {"target": [0, 0, 0]}).is_error
     assert t.execute_tool("segment", {"prompt": "can"}).is_error
-    result = t.execute_tool("pi0_pick", {"prompt": "pick", "max_chunks": 3})
-    assert calls[0]["max_chunks"] == 3
+    if motion == "pi0_pick":
+        result = t.execute_tool(motion, {"prompt": "pick", "max_chunks": 3})
+        assert calls[0]["max_chunks"] == 3
+    else:
+        result = t.execute_tool(motion, {"xyz": [0.1, 0.2, 0.3]})
+        assert calls == [{"xyz": [0.1, 0.2, 0.3], "gripper": 0.0}]
+        assert t.state.latest_record().command["action"] == "translate_to"
+        assert t.state.latest_record().result["gripper_command"] == 0.0
     assert len(result.images) == 2
     assert t.execute_tool("view_env_state", {}).is_error
     t.close()
