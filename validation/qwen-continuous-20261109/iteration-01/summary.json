@@ -1,0 +1,40 @@
+{
+  "completed": 0,
+  "successes": 0,
+  "with_action": 0,
+  "without_action": 0,
+  "first_action_not_confirmed": 0,
+  "before_action_observations": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_calls": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_perception": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "before_action_file_reads": {
+    "n": 0,
+    "mean": null,
+    "median": null,
+    "min": null,
+    "max": null
+  },
+  "planned": 4,
+  "conditions": {},
+  "mixed_budget": false,
+  "budget_cohorts": {},
+  "success_rate_percent": null
+}

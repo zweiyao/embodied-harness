@@ -1,0 +1,114 @@
+{
+  "step": 1,
+  "camera": "agentview",
+  "image_size": [
+    1024,
+    1024
+  ],
+  "resolution": "high",
+  "source_artifacts": {
+    "rgb": "agentview_high.png",
+    "world": "agentview_world_high.npz",
+    "depth": "agentview_depth_high.npz",
+    "calibration": "agentview_metadata_high.json"
+  },
+  "depth_status": "recorded",
+  "coordinates": "world XYZ metres; normalized [row, column] of calibrated high-resolution image, not policy image",
+  "patches": [
+    {
+      "point_rc_normalized": [
+        0.5669599217986315,
+        0.7135874877810362
+      ],
+      "pixel_rc": [
+        580,
+        730
+      ],
+      "valid_count": 9,
+      "patch_count": 9,
+      "world_p10_xyz": [
+        -0.0184722900390625,
+        0.13388671875,
+        0.5205078125
+      ],
+      "world_median_xyz": [
+        -0.0183563232421875,
+        0.134521484375,
+        0.521484375
+      ],
+      "world_p90_xyz": [
+        -0.0182403564453125,
+        0.1350341796875,
+        0.52197265625
+      ],
+      "eef_to_patch_xyz": [
+        0.038204931874761455,
+        -0.04505362994318965,
+        -0.05304216481434254
+      ],
+      "depth_p10_p90": [
+        0.761873972415924,
+        0.7629588007926941
+      ],
+      "rgb_median": [
+        104.0,
+        104.0,
+        101.0
+      ]
+    },
+    {
+      "point_rc_normalized": [
+        0.6647116324535679,
+        0.04887585532746823
+      ],
+      "pixel_rc": [
+        680,
+        50
+      ],
+      "valid_count": 9,
+      "patch_count": 9,
+      "world_p10_xyz": [
+        -0.0160675048828125,
+        -0.299853515625,
+        0.444580078125
+      ],
+      "world_median_xyz": [
+        -0.0150909423828125,
+        -0.299072265625,
+        0.444580078125
+      ],
+      "world_p90_xyz": [
+        -0.0141021728515625,
+        -0.298291015625,
+        0.444580078125
+      ],
+      "eef_to_patch_xyz": [
+        0.041470312734136455,
+        -0.4786473799431896,
+        -0.12994646168934254
+      ],
+      "depth_p10_p90": [
+        0.7993589520454407,
+        0.8010042548179627
+      ],
+      "rgb_median": [
+        164.0,
+        163.0,
+        160.0
+      ]
+    }
+  ],
+  "limitations": "Visible surface samples only. Depth spread may indicate edges or mixed surfaces. No semantic identity, object extent, grasp or placement success inferred. Historical frames may lack high-resolution metric depth; null depth statistics are not estimated from the low-resolution map.",
+  "alignment": {
+    "status": "computed_not_verified",
+    "valid_at_step": 1,
+    "object_index": 0,
+    "goal_index": 1,
+    "eef_target_xyz_keep_height": [
+      -0.053295874257573955,
+      -0.2540186356818104,
+      0.5745265398143425
+    ],
+    "conditions": "Confirmed holding, unchanged orientation and correct same-frame point identities. Recheck images after motion; no vertical clearance or collision guarantee."
+  }
+}

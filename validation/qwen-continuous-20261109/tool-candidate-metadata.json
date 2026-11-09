@@ -1,0 +1,9 @@
+{
+  "source_run": "9cbe14f94f25bc734075",
+  "reason": "Approved candidate T composes same-frame held-object to goal XY displacement into an EEF target, addressing relative-vector interpretation failures. Latest-step and valid-point checks do not verify semantic identity or holding.",
+  "input_contract": "Existing recorded high-resolution RGB/world/proprio only, normalized row/column points, explicit latest step for alignment_pair. No simulator object poses, goal labels, actuation or success inference.",
+  "previous_version": "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+  "validation": "unit tests passed; Docker replay pending",
+  "approval": "User approved first round and bounded continuous optimization; parent reviewed isolated new-library publication.",
+  "snapshot_stage": "Publication input retained for reproducibility; validation below describes the pre-publication state. Completed Docker replay evidence is in tool-publication.json and the published version metadata."
+}

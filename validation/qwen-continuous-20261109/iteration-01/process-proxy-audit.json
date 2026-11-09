@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "workbench_roots": [
+    2239328,
+    2239333
+  ],
+  "recursive_descendants_checked": 8,
+  "processes": [
+    {
+      "pid": 2239328,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239333,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239467,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239468,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239849,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239850,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239853,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239854,
+      "proxy_absent": true
+    }
+  ]
+}
