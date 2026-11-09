@@ -1,0 +1,51 @@
+{
+  "cells": [
+    {
+      "lane": "a",
+      "task": 4,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "counts": {
+        "dashboard_event": 90,
+        "model_request": 22,
+        "model_response": 21,
+        "tool_request": 22,
+        "tool_response": 22,
+        "generated_input": 3
+      },
+      "actual_patch_has_alignment_pair": true,
+      "actual_tool_names_match": true,
+      "actual_function_tools": 19,
+      "actual_output_tools": 1,
+      "private_bddl_used": true
+    },
+    {
+      "lane": "b",
+      "task": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "counts": {
+        "dashboard_event": 87,
+        "model_request": 15,
+        "model_response": 14,
+        "tool_request": 21,
+        "tool_response": 21,
+        "generated_input": 3
+      },
+      "actual_patch_has_alignment_pair": true,
+      "actual_tool_names_match": true,
+      "actual_function_tools": 19,
+      "actual_output_tools": 1,
+      "private_bddl_used": true
+    }
+  ],
+  "owned_processes_checked": [
+    2279358,
+    2279363,
+    2280140,
+    2280141,
+    2280272,
+    2280273,
+    2280274,
+    2280275
+  ],
+  "all_proxy_variables_absent": true
+}

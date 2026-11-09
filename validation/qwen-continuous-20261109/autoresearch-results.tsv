@@ -1,3 +1,4 @@
 iteration	metric_value	delta	delta_pct	status	description	evaluator_source	timestamp
 0	50.0	-	-	baseline	C: task4 and task0 seed0, 1/2 success; two-cell development only	mechanical	2026-11-09T04:02:43.367003+00:00
 1	0.0	-50.0	-100%	reverted	E: same two cells, 0/2; not promoted; preserved as T ablation background	mechanical	2026-11-09T04:02:43.367003+00:00
+2	0.0	-50.0	-100%	reverted	E+T: same two cells 0/2; alignment_pair never used in 9 patch calls; not promoted	mechanical	2026-11-09T04:18:35.561163+00:00

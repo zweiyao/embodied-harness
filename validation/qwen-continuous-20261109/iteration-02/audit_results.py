@@ -36,7 +36,8 @@ for row in rows:
     )
     assert all(x["model_name"] == "qwen3.8-flash" for x in responses)
     for request in requests:
-        tools = request["model_request_parameters"]["function_tools"]
+        parameters = request["model_request_parameters"]
+        tools = parameters["function_tools"] + parameters["output_tools"]
         assert len(tools) == len(plan["tool_names"])
         assert {t["name"] for t in tools} == set(plan["tool_names"])
         patch = next(t for t in tools if t["name"] == "sensor_patch_batch")

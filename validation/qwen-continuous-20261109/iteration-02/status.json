@@ -1,25 +1,15 @@
 {
-  "phase": "running",
-  "completed": 0,
+  "phase": "completed",
+  "completed": 2,
   "planned": 2,
   "lanes": {
     "a": {
-      "phase": "running",
-      "task": 4,
-      "seed": 0,
-      "completed": 0,
-      "run_id": "9cbe14f94f25bc734075",
-      "elapsed_s": 80.1,
-      "planner_timeout_s": 600
+      "phase": "completed",
+      "completed": 1
     },
     "b": {
-      "phase": "running",
-      "task": 0,
-      "seed": 0,
-      "completed": 0,
-      "run_id": "4aeed560761dad4f7217",
-      "elapsed_s": 80.1,
-      "planner_timeout_s": 600
+      "phase": "completed",
+      "completed": 1
     }
   }
 }
