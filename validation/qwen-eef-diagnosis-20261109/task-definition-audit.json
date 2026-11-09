@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate.bddl",
+    "sha256": "f3458f2b14426e23057b40ccb5cf46e5d8e50d7d2799e5923164c58b87374bfd",
+    "language": [
+      "(:language put the yellow and white mug on the left plate and put the white mug on the right plate)"
+    ],
+    "init_and_goal_excerpt": "  (:init\n    (On plate_1 living_room_table_plate_left_region)\n    (On plate_2 living_room_table_plate_right_region)\n    (On red_coffee_mug_1 living_room_table_red_coffee_mug_init_region)\n    (On white_yellow_mug_1 living_room_table_white_yellow_mug_init_region)\n    (On porcelain_mug_1 living_room_table_porcelain_mug_init_region)\n  )\n\n  (:goal\n  (And (On white_yellow_mug_1 plate_1) (On porcelain_mug_1 plate_2))\n)\n\n)\n",
+    "scope": "Post-hoc definition audit only; not provided to experimental model. Actual pruned_init object identity not decoded."
+  },
+  {
+    "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+    "sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+    "language": [
+      "(:language put the left moka pot on the stove)"
+    ],
+    "init_and_goal_excerpt": "  (:init\n    (On flat_stove_1 kitchen_table_flat_stove_init_region)\n    (On moka_pot_1 kitchen_table_moka_pot_right_init_region)\n    (On moka_pot_2 kitchen_table_moka_pot_left_init_region)\n    (Turnon flat_stove_1)\n  )\n\n  (:goal\n  (And (On moka_pot_1 flat_stove_1_cook_region) (Turnon flat_stove_1))\n)\n\n)\n",
+    "scope": "Post-hoc definition audit only; not provided to experimental model. Actual pruned_init object identity not decoded."
+  }
+]
