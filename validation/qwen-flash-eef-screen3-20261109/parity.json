@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "material_version_unchanged": "qwen-evidence-v3-c6c7f677d400",
+  "old_tools_preserved": true,
+  "added_tool": "move_eef",
+  "tool_count": 20,
+  "conditional_guidance": "Two approved EEF feedback sentences enabled by selection",
+  "qwen_enable_thinking": false,
+  "protected_files": 801,
+  "initial_scene_parity": "Pending; task 8 previously had a fixture mismatch despite the same seed"
+}

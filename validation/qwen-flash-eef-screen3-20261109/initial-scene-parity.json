@@ -1,0 +1,63 @@
+{
+  "rows": [
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "same_pixels": true,
+          "different_pixel_percent": 0.0,
+          "current_sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+          "reference_sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+        },
+        "wrist_high.png": {
+          "same_pixels": true,
+          "different_pixel_percent": 0.0,
+          "current_sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+          "reference_sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+        }
+      },
+      "matched_initial_images": true
+    },
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "same_pixels": true,
+          "different_pixel_percent": 0.0,
+          "current_sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+          "reference_sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+        },
+        "wrist_high.png": {
+          "same_pixels": true,
+          "different_pixel_percent": 0.0,
+          "current_sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+          "reference_sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+        }
+      },
+      "matched_initial_images": true
+    },
+    {
+      "task": 8,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "same_pixels": false,
+          "different_pixel_percent": 5.028247833251953,
+          "current_sha256": "b7372cbdbe8d14a30c62a3e1a4358f308d6979ef27534bb8b1399182aa4dc186",
+          "reference_sha256": "d12086af902b08de230b40405426463d65fd361f1f423ea2f912342b97ee5946"
+        },
+        "wrist_high.png": {
+          "same_pixels": false,
+          "different_pixel_percent": 13.763809204101562,
+          "current_sha256": "2d57d0bd38917cdbe092a7fe2c540d6c38ca0b67b5c5596640dea9bafd35ebe7",
+          "reference_sha256": "7a98721a54347e69f56d0a8f01bdfc08f6a8f8f1117eb90cbc74a4c9fc96f20e"
+        }
+      },
+      "matched_initial_images": false
+    }
+  ],
+  "complete": true,
+  "limitation": "Matching initial images is necessary for a paired scene comparison, not sufficient to establish a causal tool benefit."
+}

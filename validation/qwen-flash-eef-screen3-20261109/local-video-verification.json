@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:18765/flash-eef/",
+  "available_tasks": [
+    0,
+    8
+  ],
+  "pending_copy_tasks": [
+    4
+  ],
+  "sha256_matches": 2,
+  "http_ok": 3,
+  "raw_videos_outside_git": true
+}
