@@ -39,6 +39,18 @@ class ManualToolkit(LiberoToolkit):
         super().__init__(**kwargs)
         self.sensors = SensorInterface(self, [], None)
         self.add_tool(self.read_image)
+        if any(t["name"] == "move_eef" for t in selected):
+            from robots.libero.eef_control import EefControl
+
+            controller = self.primitives.env.get_eef_controller_state()
+            if "error" in controller:
+                raise ValueError(controller["error"])
+            definition = EefControl(self.primitives).move_eef
+            self.add_tool(
+                definition.with_handler(
+                    partial(self._execute_primitive, "move_eef", definition)
+                )
+            )
         originals = self._tools
         self._tools = {}
         generated = [t for t in selected if t["origin"] == "generated"]
@@ -205,9 +217,16 @@ class ManualToolkit(LiberoToolkit):
 
 def availability_prompt(selected):
     names = ", ".join(t["name"] for t in selected)
+    eef_guidance = (
+        "Use the latest images and EEF pose to choose the next short move_eef target. "
+        "Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\n\n"
+        if any(t["name"] == "move_eef" for t in selected)
+        else ""
+    )
     return (
         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
         "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
         "Generated perception tools compute evidence, not task success.\n\n"
+        + eef_guidance
     )

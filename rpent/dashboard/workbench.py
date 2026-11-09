@@ -127,12 +127,13 @@ def native_catalog(robot="libero", *, control_mode="native"):
         return _resolve_robot(robot).native_catalog()
 
     from robots.libero import tools
+    from robots.libero.eef_control import EefControl
     from robots.libero.research.sensors import ACTIONS
     from rpent.tools import iter_tools
     from rpent.tools.common import CommonTools
 
     result = []
-    for owner in (tools, tools.LiberoPrimitives, CommonTools):
+    for owner in (tools, tools.LiberoPrimitives, CommonTools, EefControl):
         for tool in iter_tools(owner):
             source = inspect.getsource(tool.handler)
             result.append(
@@ -141,7 +142,7 @@ def native_catalog(robot="libero", *, control_mode="native"):
                     "name": tool.name,
                     "origin": "native",
                     "category": "control"
-                    if tool.name in ACTIONS
+                    if tool.name in ACTIONS or owner is EefControl
                     else "auxiliary"
                     if owner is CommonTools
                     else "perception",
@@ -416,7 +417,9 @@ class Workbench:
             ids = [
                 i
                 for i, t in catalog.items()
-                if t["origin"] == "native" and t["selectable"]
+                if t["origin"] == "native"
+                and t["selectable"]
+                and not (self.robot == "libero" and t["name"] == "move_eef")
             ]
         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
             raise ValueError("tools must be a list of catalog IDs")

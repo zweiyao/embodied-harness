@@ -235,6 +235,11 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool) -> None:
     )
     parser.add_argument("--max-episode-steps", type=int, default=10000)
     parser.add_argument(
+        "--enable-eef-control",
+        action="store_true",
+        help="Enable controller feedback for the optional workbench move_eef tool.",
+    )
+    parser.add_argument(
         "--libero-type",
         default=None,
         choices=["standard", "pro", "plus"],
@@ -463,6 +468,14 @@ def _spawn_env_server(
             "--port",
             str(port),
             "--parent-watch",
+            *(
+                ["--enable-eef-control"]
+                if getattr(args, "enable_eef_control", False)
+                or any(
+                    t["name"] == "move_eef" for t in getattr(args, "frozen_tools", [])
+                )
+                else []
+            ),
             *_cuda_args(args),
         ],
         env_overrides={

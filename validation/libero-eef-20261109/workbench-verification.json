@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "original_configuration_preserved": true,
+  "new_tool_visible": true,
+  "new_tool_selected": false,
+  "hardware_service_pids_unchanged": true,
+  "main_workbench_ready": true,
+  "isolated_workbench_stopped": true,
+  "before_server_id": "a87fe5c782524d7284b5160661cb54bb",
+  "after_server_id": "387d6793de7c4f549aae33725dfc717f"
+}

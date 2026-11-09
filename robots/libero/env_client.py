@@ -96,6 +96,12 @@ class LiberoEnvClient(BaseEnvClient):
     def raw_obs(self) -> dict:
         return self._client.call("env.raw_obs", timeout_s=self._TIMEOUT_S["default"])
 
+    def get_eef_controller_state(self) -> dict:
+        """Read the enabled controller's coordinate frame, scaling and bounds."""
+        return self._client.call(
+            "env.get_eef_controller_state", timeout_s=self._TIMEOUT_S["default"]
+        )
+
     def render_camera(
         self,
         camera_name: str = "agentview",

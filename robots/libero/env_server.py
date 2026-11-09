@@ -106,6 +106,7 @@ def make_env(
     seed: int,
     suite_name: str = "libero_spatial",
     max_episode_steps: int = 10000,
+    enable_eef_control: bool = False,
 ) -> LiberoEnv:
     """Build a single-env LiberoEnv pinned to ``task_id`` / ``seed``."""
     from rlinf.envs.sim.libero.libero_env import LiberoEnv
@@ -127,7 +128,21 @@ def make_env(
         seed=seed,
         max_episode_steps=max_episode_steps,
     )
-    return LiberoEnv(
+    env_class = LiberoEnv
+    if enable_eef_control:
+        from functools import partial
+
+        from robots.libero.eef_control import with_controller_observation
+
+        class EefLiberoEnv(LiberoEnv):
+            def get_env_fns(self):
+                return [
+                    partial(with_controller_observation, fn)
+                    for fn in super().get_env_fns()
+                ]
+
+        env_class = EefLiberoEnv
+    return env_class(
         cfg=cfg, num_envs=1, seed_offset=0, total_num_processes=1, worker_info=None
     )
 
@@ -164,9 +179,11 @@ class LiberoEnvFacade(BaseEnvFacade):
                 "env.render_camera": self.render_camera,
                 "env.get_camera_meta": self.get_camera_meta,
                 "env.get_task_language": self.get_task_language,
+                "env.get_eef_controller_state": self.get_eef_controller_state,
             }
         )
         self._readonly_methods.add("env.get_task_language")
+        self._readonly_methods.add("env.get_eef_controller_state")
 
     # ---- shape helpers ----
 
@@ -241,6 +258,14 @@ class LiberoEnvFacade(BaseEnvFacade):
 
     def raw_obs(self) -> dict:
         return to_numpy_tree(self._env.current_raw_obs[self._env_idx])
+
+    def get_eef_controller_state(self) -> dict:
+        """Read robot controller parameters without exposing simulator object state."""
+        worker = self._env.env.workers[self._env_idx]
+        state = worker.get_env_attr("eef_controller_state")
+        if state is None:
+            raise ValueError("Start this LIBERO environment with --enable-eef-control")
+        return state
 
     def get_action_spec(self) -> dict:
         """Describe the active single-arm OSC layout and native input bounds."""
@@ -344,6 +369,7 @@ def main():
     p.add_argument("--task", type=int, default=9)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-episode-steps", type=int, default=10000)
+    p.add_argument("--enable-eef-control", action="store_true")
     p.add_argument(
         "--parent-watch",
         action="store_true",
@@ -391,6 +417,7 @@ def main():
         args.seed,
         suite_name=args.suite,
         max_episode_steps=args.max_episode_steps,
+        enable_eef_control=args.enable_eef_control,
     )
     facade = LiberoEnvFacade(
         raw_env,
