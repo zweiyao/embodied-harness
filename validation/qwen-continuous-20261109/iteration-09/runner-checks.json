@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "recorded_at": "2026-11-10T10:36:50.213755+00:00",
+  "classifier_ast_identical_to08": true,
+  "classification_cases": 14,
+  "workflow_cases": 18,
+  "finish_cases": 10,
+  "process_observer_cases": 4,
+  "view_audit_cases": 9,
+  "python_compile_passed": true,
+  "shell_syntax_passed": true,
+  "ruff_passed": true,
+  "initial_lint": "New short-form test statements/import order were expanded/formatted; no policy changes.",
+  "no_policy_requests_or_simulator_actions": true,
+  "catalog_preflight_repair": "preflight-01/diagnosis.json; exact source metadata mismatch explained, no task attempts, strict comparison retained"
+}

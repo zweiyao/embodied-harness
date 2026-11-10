@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T10:42:40.839787+00:00",
+  "rows": [
+    {
+      "lane": "a",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "first_request_at": "2026-11-10T10:41:50.955199+00:00",
+      "actual_mode": "calibrated-pair-v1",
+      "schema_count": 18,
+      "two_description_changes_only": true,
+      "allow_text_output": false,
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "second_model_request_actual_image_artifacts": [
+        "inputs/a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729.bin",
+        "inputs/34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8.bin"
+      ],
+      "observed_bundles": 1,
+      "image_bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+        }
+      ],
+      "model_requests_so_far": 4
+    },
+    {
+      "lane": "b",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "first_request_at": "2026-11-10T10:41:50.966738+00:00",
+      "actual_mode": "calibrated-pair-v1",
+      "schema_count": 18,
+      "two_description_changes_only": true,
+      "allow_text_output": false,
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "second_model_request_actual_image_artifacts": [
+        "inputs/3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61.bin",
+        "inputs/612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d.bin"
+      ],
+      "observed_bundles": 1,
+      "image_bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+        }
+      ],
+      "model_requests_so_far": 5
+    }
+  ],
+  "limit": "Confirms actual schemas/image attachments, not semantic interpretation or task success."
+}

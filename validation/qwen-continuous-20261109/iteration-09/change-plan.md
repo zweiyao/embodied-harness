@@ -30,3 +30,5 @@ checks, source freeze and main-workbench/old-data invariants. Preflight complete
 before the batch starts. Do not replace08 failures. New tasks use unique roots
 and owned systemd units, cleaned on completion or incident. Historical08/C and
 final held-out50+50 remain separate; a two-cell result is not final uplift.
+
+Before setup: also freeze closed08 artifact hashes (excluding transient hidden/cache files) so the next audit protects its completed records and observations explicitly. This adds only read-only preservation checks.

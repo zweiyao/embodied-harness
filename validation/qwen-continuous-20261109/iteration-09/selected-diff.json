@@ -1,0 +1,59 @@
+{
+  "reference": "iteration-08 R18+W2+F; historical parent only, no reruns",
+  "reference_plan_sha256": "2deecb0fdbca6aa5325655aa084e8e8a59651a06c0108486edde43b22f711592",
+  "before": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "native:translate_to",
+    "native:preview_placement",
+    "native:align_placement",
+    "native:rotate_axis"
+  ],
+  "removed": [],
+  "added": [],
+  "after": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "native:translate_to",
+    "native:preview_placement",
+    "native:align_placement",
+    "native:rotate_axis"
+  ],
+  "preserved": {
+    "model_profile": "qwen3.8-flash",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600
+  },
+  "server_owned_change": {
+    "planner_view_mode": {
+      "before": "native",
+      "after": "calibrated-pair-v1"
+    }
+  },
+  "material_change": null
+}

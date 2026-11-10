@@ -1,0 +1,805 @@
+[
+  {
+    "id": "native:finish",
+    "name": "finish",
+    "origin": "native",
+    "category": "auxiliary",
+    "description": "Call when the task is complete or unrecoverable. Halts the agent loop. Save any artifacts (recipe, audit) BEFORE calling finish.",
+    "parameters": {
+      "properties": {
+        "status": {
+          "description": "Outcome, e.g. 'success', 'failure', or 'stuck'.",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Short natural-language summary of the run.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "version": "0c2069c30df75e18a6fed9074be76703957b263936a0bb14d09babdcdc34acc8",
+    "source": "    @tool(readonly=True)\n    def finish(self, status: str, summary: str) -> ToolResult:\n        \"\"\"Call when the task is complete or unrecoverable. Halts the agent loop. Save any artifacts (recipe, audit) BEFORE calling finish.\n\n        Args:\n            status: Outcome, e.g. 'success', 'failure', or 'stuck'.\n            summary: Short natural-language summary of the run.\n        \"\"\"\n        return ToolResult(data={\"_finish\": True, \"status\": status, \"summary\": summary})\n",
+    "required": true,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:list_dir",
+    "name": "list_dir",
+    "origin": "native",
+    "category": "auxiliary",
+    "description": "List files in a directory (non-recursive). Default = {{output_dir}}. Use to inspect the working directory or discover existing resource files. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.",
+    "parameters": {
+      "properties": {
+        "path": {
+          "description": "Default: {{output_dir}}",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "version": "eaa895106eeb98920f1f91ba824f294a77756f207fb330fe4dc6c4ae3961d5fe",
+    "source": "    @tool(readonly=True)\n    def list_dir(self, path: str = \"\") -> ToolResult:\n        \"\"\"List files in a directory (non-recursive). Default = {{output_dir}}. Use to inspect the working directory or discover existing resource files. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.\n\n        Args:\n            path: Default: {{output_dir}}\n        \"\"\"\n        resolved, files = self._memory.list_directory(path or get_output_dir())\n        if files is None:\n            return ToolResult(data={\"error\": f\"directory not found: {resolved}\"})\n        return ToolResult(\n            data={\"path\": str(resolved), \"count\": len(files), \"files\": files}\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:read_text_file",
+    "name": "read_text_file",
+    "origin": "native",
+    "category": "auxiliary",
+    "description": "Read a UTF-8 text file. Use for past recipe JSONLs, audit JSONs, and memory files. Large files are truncated. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.",
+    "parameters": {
+      "properties": {
+        "path": {
+          "description": "Absolute or repo-relative path",
+          "type": "string"
+        },
+        "max_chars": {
+          "description": "Max chars (default 40000)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "version": "7f7cdf170fc3a6d30d6d75c21a32ec335716d903e4d587640e091102893ed142",
+    "source": "    @tool(readonly=True)\n    def read_text_file(self, path: str, max_chars: int = 40000) -> ToolResult:\n        \"\"\"Read a UTF-8 text file. Use for past recipe JSONLs, audit JSONs, and memory files. Large files are truncated. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.\n\n        Args:\n            path: Absolute or repo-relative path\n            max_chars: Max chars (default 40000)\n        \"\"\"\n        resolved = self._memory.authorize_read(path)\n        if not resolved.exists():\n            return ToolResult(data={\"error\": f\"file not found: {resolved}\"})\n        if resolved.is_dir():\n            return ToolResult(data={\"error\": f\"is a directory: {resolved}\"})\n        with self._file_lock:\n            text = resolved.read_text(encoding=\"utf-8\", errors=\"replace\")\n        content = text\n        if len(text) > max_chars:\n            content = text[:max_chars] + (\n                f\"\\n\\n[TRUNCATED — file is {len(text)} chars, showed first {max_chars}]\"\n            )\n        self._memory.record_read(resolved, content)\n        return ToolResult(\n            data={\"path\": str(resolved), \"size\": len(text), \"content\": content}\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:write_text_file",
+    "name": "write_text_file",
+    "origin": "native",
+    "category": "auxiliary",
+    "description": "Write a UTF-8 text file (creates parent dirs). Use this to save the working recipe JSONL and the final audit JSON at the end of a successful run. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.",
+    "parameters": {
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "type": "object"
+    },
+    "version": "6da947db411019a4af07e164c8fc0cbd48c18fe79f0537454ca2e3f4ffcf01f0",
+    "source": "    @tool(readonly=True)\n    def write_text_file(self, path: str, content: str) -> ToolResult:\n        \"\"\"Write a UTF-8 text file (creates parent dirs). Use this to save the working recipe JSONL and the final audit JSON at the end of a successful run. Published memory is read-only. During exploration, you may write only to your current memory inbox. Memory for other robots is unavailable.\"\"\"\n        resolved = self._memory.authorize_write(path)\n        resolved.parent.mkdir(parents=True, exist_ok=True)\n        with self._file_lock:\n            resolved.write_text(content, encoding=\"utf-8\")\n        return ToolResult(\n            data={\"path\": str(resolved), \"bytes_written\": len(content.encode(\"utf-8\"))}\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:pi0_doubled",
+    "name": "pi0_doubled",
+    "origin": "native",
+    "category": "control",
+    "description": "Pi0.5 closed-loop contact skill for non-pick interactions (e.g. stove/knob/button/short push). Returned success/task_success only mirrors official termination; for intermediate contact skills, success=false does not necessarily mean the contact interaction failed. Inspect image/state evidence. Do not use it as a general pick/place shortcut.",
+    "parameters": {
+      "properties": {
+        "prompt": {
+          "description": "Contact-skill prompt, e.g. 'turn on the stove'.",
+          "type": "string"
+        },
+        "max_chunks": {
+          "description": "Action-chunk budget (default 20)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "prompt"
+      ],
+      "type": "object"
+    },
+    "version": "a80bb8ef070c4be0ce782654657d9ef34e5cc04b178982fc2177841e61ec93cf",
+    "source": "    @tool\n    def pi0_doubled(self, prompt: str, *, max_chunks: int = 20) -> ToolResult:\n        \"\"\"Pi0.5 closed-loop contact skill for non-pick interactions (e.g. stove/knob/button/short push). Returned success/task_success only mirrors official termination; for intermediate contact skills, success=false does not necessarily mean the contact interaction failed. Inspect image/state evidence. Do not use it as a general pick/place shortcut.\n\n        Args:\n            prompt: Contact-skill prompt, e.g. 'turn on the stove'.\n            max_chunks: Action-chunk budget (default 20)\n        \"\"\"\n        instr = prompt\n        task_success = False\n        chunks_used = 0\n\n        for c in range(max_chunks):\n            self._vlm_chunk(instr)\n            chunks_used = c + 1\n            if self.env.terminated or self.env.truncated:\n                task_success = self.env.terminated\n                break\n\n        return ToolResult(\n            data={\n                \"name\": \"pi0_doubled\",\n                \"instruction\": instr,\n                \"success\": task_success,\n                \"task_success\": task_success,\n                \"contact_skill_executed\": chunks_used > 0,\n                \"chunks_used\": chunks_used,\n                \"max_chunks\": max_chunks,\n                \"terminated\": self.env.terminated,\n                \"truncated\": self.env.truncated,\n                \"diagnostics\": {\n                    \"mode\": \"contact_skill_success_by_termination\",\n                    \"success_meaning\": \"`success` mirrors official LIBERO task termination only; for intermediate contact skills, inspect image/state evidence.\",\n                },\n            }\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:pi0_pick",
+    "name": "pi0_pick",
+    "origin": "native",
+    "category": "control",
+    "description": "Pi0.5 closed-loop pick. Use it for the grasp; YOU then do every move_to and release. Use modest max_chunks and verify the grasp from EEF lift, gripper closure, and available images.",
+    "parameters": {
+      "properties": {
+        "prompt": {
+          "description": "Pi0 prompt (e.g. 'pick up the akita black bowl').",
+          "type": "string"
+        },
+        "max_chunks": {
+          "description": "Action-chunk budget (default 24)",
+          "type": "integer"
+        },
+        "lift_thresh": {
+          "description": "EEF post-descent ascent threshold for success, m (default 0.05)",
+          "type": "number"
+        },
+        "gripper_closed_thresh": {
+          "description": "Finger-separation closed threshold (default 0.06)",
+          "type": "number"
+        },
+        "gripper_open_thresh": {
+          "description": "Minimum finger separation accepted as a held object (default 0.0)",
+          "type": "number"
+        },
+        "descent_thresh": {
+          "description": "Required descent before lift detection, m (default 0.10)",
+          "type": "number"
+        }
+      },
+      "required": [
+        "prompt"
+      ],
+      "type": "object"
+    },
+    "version": "4a7777864a68ca2d4174c4fc741042cb356a7b06e6e410ccb46340f52804f7aa",
+    "source": "    @tool\n    def pi0_pick(\n        self,\n        prompt: str,\n        *,\n        max_chunks: int = 24,\n        lift_thresh: float = 0.05,\n        gripper_closed_thresh: float = 0.06,\n        gripper_open_thresh: float = 0.0,\n        descent_thresh: float = 0.1,\n    ) -> ToolResult:\n        \"\"\"Pi0.5 closed-loop pick. Use it for the grasp; YOU then do every move_to and release. Use modest max_chunks and verify the grasp from EEF lift, gripper closure, and available images.\n\n        Args:\n            prompt: Pi0 prompt (e.g. 'pick up the akita black bowl').\n            max_chunks: Action-chunk budget (default 24)\n            lift_thresh: EEF post-descent ascent threshold for success, m (default 0.05)\n            gripper_closed_thresh: Finger-separation closed threshold (default 0.06)\n            gripper_open_thresh: Minimum finger separation accepted as a held object (default 0.0)\n            descent_thresh: Required descent before lift detection, m (default 0.10)\n        \"\"\"\n        instr = prompt\n        start_z = self._last_obs_eef_z\n        peak_z = start_z\n        min_z = start_z\n        # Track ascent AFTER min_z has been observed — descent then re-ascent\n        # is the actual \"lift\" signal, distinct from raw |peak - min| which\n        # also fires at the BOTTOM of the descent.\n        post_min_peak_z = start_z\n        min_grip = self._last_obs_gripper\n        last_grip = min_grip\n        descent_done = False\n        success = False\n        chunks_used = 0\n\n        for c in range(max_chunks):\n            self._vlm_chunk(instr)\n            chunks_used = c + 1\n            z = self._last_obs_eef_z\n            grip = self._last_obs_gripper\n            peak_z = max(peak_z, z)\n            if z < min_z:\n                min_z = z\n                post_min_peak_z = z  # reset after a new deeper min\n            else:\n                post_min_peak_z = max(post_min_peak_z, z)\n            if (start_z - min_z) >= descent_thresh:\n                descent_done = True\n            min_grip = min(min_grip, grip)\n            last_grip = grip\n            ascended = (post_min_peak_z - min_z) >= lift_thresh\n            closed = gripper_open_thresh <= grip < gripper_closed_thresh\n            if descent_done and ascended and closed:\n                success = True\n                break\n            if self.env.terminated or self.env.truncated:\n                success = self.env.terminated\n                break\n\n        return ToolResult(\n            data={\n                \"name\": \"pick\",\n                \"instruction\": instr,\n                \"success\": success,\n                \"chunks_used\": chunks_used,\n                \"max_chunks\": max_chunks,\n                \"peak_lift_m\": post_min_peak_z - min_z,\n                \"min_gripper_opening\": min_grip,\n                \"final_gripper_opening\": last_grip,\n                \"terminated\": self.env.terminated,\n                \"truncated\": self.env.truncated,\n                \"diagnostics\": {\n                    \"start_eef_z\": round(start_z, 4),\n                    \"peak_eef_z\": round(peak_z, 4),\n                    \"min_eef_z\": round(min_z, 4),\n                    \"post_min_peak_z\": round(post_min_peak_z, 4),\n                    \"descent_m\": round(start_z - min_z, 4),\n                    \"post_min_ascent_m\": round(post_min_peak_z - min_z, 4),\n                    \"descent_done\": descent_done,\n                    \"lift_thresh\": lift_thresh,\n                    \"gripper_closed_thresh\": gripper_closed_thresh,\n                    \"gripper_open_thresh\": gripper_open_thresh,\n                    \"descent_thresh\": descent_thresh,\n                },\n            }\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:release",
+    "name": "release",
+    "origin": "native",
+    "category": "control",
+    "description": "Open the gripper for up to max_steps env steps while holding EEF in place. Triggers libero termination if the matching On/In predicate is met.",
+    "parameters": {
+      "properties": {
+        "max_steps": {
+          "description": "Step budget (default 20)",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "version": "51bd2e00661c1b656ed2eda674a4507b1d3c163079501bb7c294a2f54b0985be",
+    "source": "    @tool\n    def release(self, *, max_steps: int = 20) -> ToolResult:\n        \"\"\"Open the gripper for up to max_steps env steps while holding EEF in place. Triggers libero termination if the matching On/In predicate is met.\n\n        Args:\n            max_steps: Step budget (default 20)\n        \"\"\"\n        assert max_steps > 0, f\"max_steps must be > 0, got {max_steps}\"\n        start_grip = self._last_obs_gripper\n        peak_grip = start_grip\n        for step in range(max_steps):\n            action = np.zeros(7, dtype=np.float32)\n            action[6] = -1.0  # open\n            self._step_env(action)\n            peak_grip = max(peak_grip, self._last_obs_gripper)\n            if self.env.terminated or self.env.truncated:\n                break\n        return ToolResult(\n            data={\n                \"name\": \"release\",\n                \"steps_used\": step + 1,\n                \"start_gripper_opening\": round(start_grip, 4),\n                \"peak_gripper_opening\": round(peak_grip, 4),\n                \"final_gripper_opening\": round(self._last_obs_gripper, 4),\n                \"terminated\": self.env.terminated,\n                \"truncated\": self.env.truncated,\n            }\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:set_gripper",
+    "name": "set_gripper",
+    "origin": "native",
+    "category": "control",
+    "description": "Hold the current EEF pose and drive the gripper command for `steps` env steps. Use to firm up a grip mid-carry.",
+    "parameters": {
+      "properties": {
+        "gripper": {
+          "description": "Gripper command: -1 open, +1 close (default -1)",
+          "type": "number"
+        },
+        "steps": {
+          "description": "Number of env steps (default 5)",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "version": "0e791af00b983f576e6ff97ec1e850d9294f62113582288b54a3e70188b1b6c0",
+    "source": "    @tool\n    def set_gripper(self, *, gripper: float = -1.0, steps: int = 5) -> ToolResult:\n        \"\"\"Hold the current EEF pose and drive the gripper command for `steps` env steps. Use to firm up a grip mid-carry.\n\n        Args:\n            gripper: Gripper command: -1 open, +1 close (default -1)\n            steps: Number of env steps (default 5)\n        \"\"\"\n        g = float(gripper)\n        n = int(steps)\n        for _ in range(n):\n            action = np.zeros(7, dtype=np.float32)\n            action[6] = g\n            self._step_env(action)\n            if self.env.terminated or self.env.truncated:\n                break\n        return ToolResult(\n            data={\n                \"name\": \"set_gripper\",\n                \"gripper\": g,\n                \"steps\": n,\n                \"terminated\": self.env.terminated,\n                \"truncated\": self.env.truncated,\n            }\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:back_project",
+    "name": "back_project",
+    "origin": "native",
+    "category": "perception",
+    "description": "Back-project a pixel (row, col) to a world XYZ point using the selected camera's precomputed world map. Row 0 = top of image, col 0 = left. Returns world_xyz in meters.\n\nUSE THIS to find where an object is in the world — look at the embedded high-resolution image returned by view_env_state to pick a pixel on the target object, then call back_project. The default resolution is high (1024x1024). Pass resolution='low' only for pixels from the embedded/standard 256 image. The pixel coordinates must come from the same camera and resolution requested here. Use camera='agentview' for global tabletop layout and object locations; use camera='wrist' for close-range details near the gripper, occlusions, and container/cabinet interiors. Sample several pixels on the object and median their xy for robustness.\n\nREGION MODE: pass row_range=[r0,r1] and col_range=[c0,c1] instead of row/col to get the midpoint of world xy over that pixel window, with an optional world-z band (z_min, z_max). Use it for the center of a container cavity or flat region, where a single-pixel or mask-median estimate is biased toward an edge/rim.",
+    "parameters": {
+      "properties": {
+        "row": {
+          "description": "Pixel row (0=top) in the selected resolution image.",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "col": {
+          "description": "Pixel column (0=left) in the selected resolution image.",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "step": {
+          "default": -1,
+          "description": "Depth/world-map step; 0 = initial, -1 = latest.",
+          "type": "integer"
+        },
+        "camera": {
+          "description": "Camera to back-project from (default agentview).",
+          "enum": [
+            "agentview",
+            "wrist"
+          ],
+          "type": "string"
+        },
+        "resolution": {
+          "description": "Coordinate system for row/col (default high). Use low only when row/col came from the embedded/standard 256 image.",
+          "enum": [
+            "high",
+            "low"
+          ],
+          "type": "string"
+        },
+        "row_range": {
+          "description": "Region mode: [r0, r1] pixel row window. Requires col_range.",
+          "items": {
+            "type": "integer"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "col_range": {
+          "description": "Region mode: [c0, c1] pixel col window. Requires row_range.",
+          "items": {
+            "type": "integer"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "z_min": {
+          "description": "Region mode: keep only pixels with world z >= z_min.",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "z_max": {
+          "description": "Region mode: keep only pixels with world z <= z_max.",
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "version": "4caf48becfa3309f061360a4ec308b22f080accc5a4493298f95d40146a37e83",
+    "source": "@tool(readonly=True, exclude=(\"state\",))\ndef back_project(\n    row: int | None = None,\n    col: int | None = None,\n    step: Annotated[int, Field(json_schema_extra={\"default\": -1})] = -1,\n    camera: Literal[\"agentview\", \"wrist\"] = \"agentview\",\n    resolution: Literal[\"high\", \"low\"] = \"high\",\n    row_range: list[int] | None = None,\n    col_range: list[int] | None = None,\n    z_min: float | None = None,\n    z_max: float | None = None,\n    *,\n    state: EnvState,\n) -> ToolResult:\n    \"\"\"Back-project a pixel (row, col) to a world XYZ point using the selected camera's precomputed world map. Row 0 = top of image, col 0 = left. Returns world_xyz in meters.\n\n    USE THIS to find where an object is in the world — look at the embedded high-resolution image returned by view_env_state to pick a pixel on the target object, then call back_project. The default resolution is high (1024x1024). Pass resolution='low' only for pixels from the embedded/standard 256 image. The pixel coordinates must come from the same camera and resolution requested here. Use camera='agentview' for global tabletop layout and object locations; use camera='wrist' for close-range details near the gripper, occlusions, and container/cabinet interiors. Sample several pixels on the object and median their xy for robustness.\n\n    REGION MODE: pass row_range=[r0,r1] and col_range=[c0,c1] instead of row/col to get the midpoint of world xy over that pixel window, with an optional world-z band (z_min, z_max). Use it for the center of a container cavity or flat region, where a single-pixel or mask-median estimate is biased toward an edge/rim.\n\n    Args:\n        row: Pixel row (0=top) in the selected resolution image.\n        col: Pixel column (0=left) in the selected resolution image.\n        step: Depth/world-map step; 0 = initial, -1 = latest.\n        camera: Camera to back-project from (default agentview).\n        resolution: Coordinate system for row/col (default high). Use low only when row/col came from the embedded/standard 256 image.\n        row_range: Region mode: [r0, r1] pixel row window. Requires col_range.\n        col_range: Region mode: [c0, c1] pixel col window. Requires row_range.\n        z_min: Region mode: keep only pixels with world z >= z_min.\n        z_max: Region mode: keep only pixels with world z <= z_max.\n    \"\"\"\n    if camera not in (\"agentview\", \"wrist\"):\n        return ToolResult(\n            data={\"error\": f\"bad camera '{camera}' (use 'agentview' or 'wrist')\"}\n        )\n    if resolution not in (\"high\", \"low\"):\n        return ToolResult(\n            data={\"error\": f\"bad resolution '{resolution}' (use 'high' or 'low')\"}\n        )\n\n    region_mode = row_range is not None or col_range is not None\n    if not region_mode and (row is None or col is None):\n        return ToolResult(\n            data={\n                \"error\": (\n                    \"provide either (row, col) for a single pixel, or \"\n                    \"row_range=[r0,r1] and col_range=[c0,c1] for a region center\"\n                )\n            }\n        )\n\n    try:\n        record = state.get(step)\n    except Exception as e:\n        return ToolResult(data={\"error\": f\"state step not available: {e}\"})\n    nn = record.step_idx\n\n    hi_artifact = f\"{camera}_world_high.npz\"\n    low_artifact = f\"{camera}_world.npz\"\n    source_artifact = hi_artifact if resolution == \"high\" else low_artifact\n    if source_artifact not in record.artifacts:\n        return ToolResult(\n            data={\n                \"error\": (\n                    f\"{camera} {resolution}-resolution world map not recorded for step {nn}\"\n                )\n            }\n        )\n\n    try:\n        world_map = state.load(str(source_artifact), step=nn)\n    except Exception as e:\n        return ToolResult(\n            data={\n                \"error\": (\n                    f\"{camera} {resolution}-resolution artifact not found \"\n                    f\"for step {nn}: {e}\"\n                )\n            }\n        )\n\n    height, width = world_map.shape[:2]\n\n    if region_mode:\n        if row_range is None or col_range is None:\n            return ToolResult(\n                data={\n                    \"error\": (\n                        \"region mode needs BOTH row_range=[r0,r1] and col_range=[c0,c1]\"\n                    )\n                }\n            )\n        try:\n            r0, r1 = int(row_range[0]), int(row_range[1])\n            c0, c1 = int(col_range[0]), int(col_range[1])\n        except Exception:\n            return ToolResult(\n                data={\"error\": \"row_range/col_range must each be [min, max] integers\"}\n            )\n        r0, r1 = sorted((max(0, r0), min(height, r1)))\n        c0, c1 = sorted((max(0, c0), min(width, c1)))\n        if r1 <= r0 or c1 <= c0:\n            return ToolResult(\n                data={\n                    \"error\": (\n                        f\"empty region after clamping to image {height}x{width}: \"\n                        f\"rows [{r0},{r1}] cols [{c0},{c1}]\"\n                    )\n                }\n            )\n        window = (\n            world_map[r0:r1, c0:c1].reshape(-1, world_map.shape[2]).astype(np.float64)\n        )\n        finite = np.isfinite(window).all(axis=1) & (\n            np.abs(window[:, :3]).sum(axis=1) > 1e-6\n        )\n        pts = window[finite]\n        n_total = int(pts.shape[0])\n        if z_min is not None:\n            pts = pts[pts[:, 2] >= float(z_min)]\n        if z_max is not None:\n            pts = pts[pts[:, 2] <= float(z_max)]\n        if pts.shape[0] < 8:\n            return ToolResult(\n                data={\n                    \"error\": (\n                        f\"too few valid pixels in region after z-filter \"\n                        f\"({int(pts.shape[0])}); widen the window or the z band\"\n                    ),\n                    \"n_valid_before_zfilter\": n_total,\n                }\n            )\n        xs, ys, zs = pts[:, 0], pts[:, 1], pts[:, 2]\n        center = [\n            round(float((xs.min() + xs.max()) / 2.0), 4),\n            round(float((ys.min() + ys.max()) / 2.0), 4),\n            round(float(np.median(zs)), 4),\n        ]\n        return ToolResult(\n            data={\n                \"camera\": camera,\n                \"resolution\": resolution,\n                \"mode\": \"region\",\n                \"row_range\": [r0, r1],\n                \"col_range\": [c0, c1],\n                \"z_band\": [z_min, z_max],\n                \"center_xyz\": center,\n                \"median_xyz\": [\n                    round(float(np.median(xs)), 4),\n                    round(float(np.median(ys)), 4),\n                    round(float(np.median(zs)), 4),\n                ],\n                \"n_valid\": int(pts.shape[0]),\n                \"step\": nn,\n                \"image_size\": [height, width],\n                \"source_artifact\": source_artifact,\n            }\n        )\n\n    if row < 0 or row >= height or col < 0 or col >= width:\n        return ToolResult(\n            data={\n                \"error\": (\n                    f\"pixel ({row},{col}) out of bounds; {camera} image is {height}x{width}\"\n                )\n            }\n        )\n\n    depth_m = None\n    if source_artifact == low_artifact:\n        try:\n            depth_artifact = f\"{camera}_depth.npz\"\n            if depth_artifact not in record.artifacts:\n                raise FileNotFoundError(depth_artifact)\n            depth = state.load(depth_artifact, step=nn)\n            if depth.ndim == 3:\n                depth = depth[..., 0]\n        except Exception as e:\n            return ToolResult(\n                data={\"error\": f\"{camera} depth not found for step {nn}: {e}\"}\n            )\n        depth_m = float(depth[row, col])\n        if not np.isfinite(depth_m) or depth_m <= 0 or depth_m > 10:\n            return ToolResult(\n                data={\n                    \"error\": (\n                        f\"invalid {camera} depth {depth_m:.3f}m at pixel \"\n                        f\"({row},{col}); pick a different pixel\"\n                    )\n                }\n            )\n    world_xyz_raw = world_map[row, col]\n    if (\n        not np.isfinite(world_xyz_raw).all()\n        or float(np.abs(world_xyz_raw[:3]).sum()) <= 1e-6\n    ):\n        return ToolResult(\n            data={\"error\": f\"invalid {camera} world xyz at pixel ({row},{col})\"}\n        )\n    world_xyz = [round(float(v), 4) for v in world_xyz_raw[:3]]\n\n    out = {\n        \"camera\": camera,\n        \"resolution\": resolution,\n        \"pixel\": [row, col],\n        \"world_xyz\": world_xyz,\n        \"step\": nn,\n        \"image_size\": [height, width],\n        \"source_artifact\": source_artifact,\n    }\n    if depth_m is not None:\n        out[\"depth_m\"] = round(depth_m, 4)\n    return ToolResult(data=out)\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:read_image",
+    "name": "read_image",
+    "origin": "native",
+    "category": "perception",
+    "description": "Read the exact saved image by artifact name and step. image_views identifies its frame; policy and unclassified images are not calibrated sampling inputs.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "step": {
+          "type": "integer",
+          "default": -1
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "version": "d0b60c59b7d5631263535dac16c64f9f2bba5abcc3bae00577c2a61896943493",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "source": "\n# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Selectable tools on unchanged native LIBERO observations and controllers.\"\"\"\n\nimport threading\nimport time\nimport uuid\nfrom dataclasses import replace\nfrom functools import partial\n\nimport numpy as np\n\nfrom robots.libero.research.library import Sandbox\nfrom robots.libero.research.native import _OMITTED, _arguments_model\nfrom robots.libero.research.sensors import SensorInterface\nfrom robots.libero.toolkit import LiberoToolkit\nfrom rpent.tools import Tool, ToolResult, tool\n\nPLANNER_VIEW_MODE = \"calibrated-pair-v1\"\nPLANNER_VIEW_ARTIFACTS = (\"agentview_high.png\", \"wrist_high.png\")\n\n\ndef planner_view_description(name):\n    if name == \"read_image\":\n        return (\n            \"Read the exact saved image by artifact name and step. image_views \"\n            \"identifies its frame; policy and unclassified images are not \"\n            \"calibrated sampling inputs.\"\n        )\n    from robots.libero.tools import view_env_state\n\n    return view_env_state.description.replace(\n        \"Embeds policy, agentview, and wrist images when available.\",\n        \"Embeds calibrated agentview high and wrist high images. \"\n        \"image_views identifies each attached image in order. \"\n        \"Missing required images are reported as an error.\",\n    )\n\n\nclass RecordingSam3:\n    def __init__(self, client):\n        self.client = client\n        self.local = threading.local()\n\n    def segment(self, *args, **kwargs):\n        result = self.client.segment(*args, **kwargs)\n        self.local.result = result\n        return result\n\n\nclass ManualToolkit(LiberoToolkit):\n    planner_tools_only = True\n\n    def __init__(\n        self,\n        *,\n        selected,\n        journal,\n        sandbox_image=\"embodied-sensor:pilot\",\n        planner_view_mode=\"native\",\n        **kwargs,\n    ):\n        if planner_view_mode not in (\"native\", PLANNER_VIEW_MODE):\n            raise ValueError(\"Unsupported LIBERO planner_view_mode\")\n        self.planner_view_mode = planner_view_mode\n        placement_names = {t[\"name\"] for t in selected} & {\n            \"preview_placement\",\n            \"align_placement\",\n        }\n        if placement_names and placement_names != {\n            \"preview_placement\",\n            \"align_placement\",\n        }:\n            raise ValueError(\"Select preview_placement and align_placement together\")\n        self.journal = journal\n        self._ended = False\n        self.mask_lock = threading.RLock()\n        super().__init__(**kwargs)\n        self.sensors = SensorInterface(self, [], None)\n        self.add_tool(self.read_image)\n        optional_moves = {t[\"name\"] for t in selected} & {\"move_eef\", \"translate_to\"}\n        if optional_moves:\n            from robots.libero.eef_control import EefControl\n\n            if \"move_eef\" in optional_moves:\n                controller = self.primitives.env.get_eef_controller_state()\n                if \"error\" in controller:\n                    raise ValueError(controller[\"error\"])\n            control = EefControl(self.primitives)\n            for name in sorted(optional_moves):\n                definition = getattr(control, name)\n                self.add_tool(\n                    definition.with_handler(\n                        partial(self._execute_primitive, name, definition)\n                    )\n                )\n        if any(t[\"name\"] == \"rotate_axis\" for t in selected):\n            from robots.libero.research.orientation import OrientationControl\n\n            controller = self.primitives.env.get_eef_controller_state()\n            if \"error\" in controller:\n                raise ValueError(controller[\"error\"])\n            definition = OrientationControl(self.primitives).rotate_axis\n            self.add_tool(\n                definition.with_handler(\n                    partial(self._execute_primitive, \"rotate_axis\", definition)\n                )\n            )\n        if placement_names:\n            from robots.libero.research.placement import PlacementTools\n\n            placement = PlacementTools(self.sensors, self.primitives)\n            self.add_tool(placement.preview_placement)\n            definition = placement.align_placement\n            self.add_tool(\n                definition.with_handler(\n                    partial(self._execute_primitive, \"align_placement\", definition)\n                )\n            )\n        originals = self._tools\n        self._tools = {}\n        generated = [t for t in selected if t[\"origin\"] == \"generated\"]\n        self.sandbox = Sandbox(sandbox_image) if generated else None\n        self.selection = selected\n        self.mask_client = RecordingSam3(self.primitives._sam3_client)\n        self.primitives._sam3_client = self.mask_client\n        for item in selected:\n            name = item[\"name\"]\n            if item[\"origin\"] == \"native\":\n                original = originals[name]\n                if self.planner_view_mode != \"native\":\n                    if name == \"view_env_state\":\n                        original = original.with_handler(\n                            partial(self._planner_view, original)\n                        )\n                    if name in {\"view_env_state\", \"read_image\"}:\n                        original = replace(\n                            original, description=planner_view_description(name)\n                        )\n                if name == \"segment\":\n                    original = original.with_handler(\n                        partial(self.segment_recorded, original)\n                    )\n                self.add_tool(original)\n            else:\n                definition = {\n                    k: item[k] for k in (\"name\", \"description\", \"parameters\", \"source\")\n                }\n                self.add_tool(\n                    Tool(\n                        name=name,\n                        description=item[\"description\"],\n                        args_schema=_arguments_model(name, item[\"parameters\"]),\n                        _input_schema=item[\"parameters\"],\n                        handler=partial(self.generated, definition),\n                        readonly=True,\n                    )\n                )\n\n    def _image_payload(self, name, step, index):\n        from io import BytesIO\n\n        from PIL import Image\n\n        image = self.state.load_bytes(name, step=step)\n        with Image.open(BytesIO(image)) as opened:\n            width, height = opened.size\n        calibrated = name in {\n            \"agentview.png\",\n            \"agentview_high.png\",\n            \"wrist.png\",\n            \"wrist_high.png\",\n        }\n        policy = name == \"agentview_policy.png\"\n        camera = (\n            (\"agentview\" if name.startswith(\"agentview\") else \"wrist\")\n            if calibrated or policy\n            else None\n        )\n        return image, {\n            \"index\": index,\n            \"artifact\": name,\n            \"camera\": camera,\n            \"step\": step,\n            \"width\": width,\n            \"height\": height,\n            \"coordinate_frame\": \"calibrated\"\n            if calibrated\n            else \"policy\"\n            if policy\n            else \"unclassified\",\n        }\n\n    def _present_state(self, result):\n        if self.planner_view_mode == \"native\" or \"step\" not in result.data:\n            return result\n        data = {**result.data, \"planner_view_mode\": self.planner_view_mode}\n        images, views = [], []\n        try:\n            for index, name in enumerate(PLANNER_VIEW_ARTIFACTS):\n                image, view = self._image_payload(name, data[\"step\"], index)\n                images.append(image)\n                views.append(view)\n        except OSError as exc:\n            return ToolResult(\n                data={\n                    **data,\n                    \"error\": f\"Required planner image unavailable: {name}: {exc}\",\n                    \"image_views\": [],\n                }\n            )\n        return ToolResult(data={**data, \"image_views\": views}, images=images)\n\n    def _planner_view(self, original, **kwargs):\n        return self._present_state(original(**kwargs))\n\n    def get_env_state(self, **kwargs):\n        return self._present_state(super().get_env_state(**kwargs))\n\n    @property\n    def planner_stop_result(self):\n        if self._ended or self.solved() or self.primitives.env.truncated:\n            return {\n                \"_finish\": True,\n                \"environment_stopped\": True,\n                \"status\": \"stopped\",\n                \"summary\": \"Environment episode ended.\",\n            }\n        return None\n\n    def _execute_primitive(self, name, handler, **kwargs):\n        if self.planner_stop_result is not None:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        return super()._execute_primitive(name, handler, **kwargs)\n\n    @tool(readonly=True)\n    def read_image(self, name: str, step: int = -1) -> ToolResult:\n        \"\"\"Read a saved PNG/JPEG observation artifact at the selected step.\"\"\"\n        record = self.state.get(step)\n        if name not in record.artifacts or not name.endswith((\".png\", \".jpg\", \".jpeg\")):\n            return ToolResult(data={\"error\": \"Unknown image artifact\"})\n        if self.planner_view_mode != \"native\":\n            image, view = self._image_payload(name, record.step_idx, 0)\n            return ToolResult(\n                data={\"artifact\": name, \"step\": record.step_idx, \"image_views\": [view]},\n                images=[image],\n            )\n        return ToolResult(\n            data={\"artifact\": name, \"step\": record.step_idx},\n            images=[self.state.load_bytes(name, step=record.step_idx)],\n        )\n\n    def segment_recorded(self, original, **kwargs):\n        self.mask_client.local.result = None\n        result = original(**kwargs)\n        data = self.mask_client.local.result\n        if (\n            data is not None\n            and data.found\n            and isinstance(data.mask, np.ndarray)\n            and result.data.get(\"segment_artifact\")\n        ):\n            step = result.data[\"step\"]\n            camera = result.data[\"camera\"]\n            image_name = result.data[\"image_artifact\"]\n            shape = self.state.load(image_name, step=step).shape[:2]\n            if data.mask.shape != shape:\n                raise ValueError(\"Native segmentation mask/image shape mismatch\")\n            name = result.data[\"segment_artifact\"].replace(\".json\", \"_mask.npz\")\n            self.state.save(name, data.mask, step=step)\n            # Nearest-neighbour resampling is explicit; raw mask remains saved.\n            h, w = self.state.load(f\"{camera}.png\", step=step).shape[:2]\n            rows = np.minimum(\n                ((np.arange(h) + 0.5) * shape[0] / h).astype(int), shape[0] - 1\n            )\n            cols = np.minimum(\n                ((np.arange(w) + 0.5) * shape[1] / w).astype(int), shape[1] - 1\n            )\n            aligned = data.mask[rows[:, None], cols[None, :]]\n            alignment = {\n                \"camera\": camera,\n                \"mask_artifact\": name,\n                \"source_artifact\": image_name,\n                \"source_shape\": list(shape),\n                \"resampling\": \"nearest pixel centres\",\n            }\n            self.state.save(\n                \"mask_alignment_\" + result.data[\"segment_artifact\"],\n                alignment,\n                step=step,\n            )\n            with self.mask_lock:\n                self.sensors.masks.setdefault(step, {})[name] = {\n                    **alignment,\n                    \"mask\": aligned,\n                }\n        return result\n\n    def generated(self, definition, **params):\n        params = {k: v for k, v in params.items() if v is not _OMITTED}\n        with self.mask_lock:\n            frames = self.sensors.frames()\n        self.journal.append(\n            \"generated_input\",\n            {\n                \"name\": definition[\"name\"],\n                \"steps\": [f[\"step\"] for f in frames],\n                \"params\": params,\n                \"sandbox_image\": self.sandbox.image,\n            },\n        )\n        return ToolResult(data=self.sandbox.run(definition, params, frames))\n\n    def execute_tool(self, name, input_dict):\n        call_id = uuid.uuid4().hex\n        started = time.monotonic()\n        self.journal.append(\n            \"tool_request\", {\"call_id\": call_id, \"name\": name, \"arguments\": input_dict}\n        )\n        try:\n            result = super().execute_tool(name, input_dict)\n        except Exception as exc:\n            self.journal.append(\n                \"tool_error\", {\"call_id\": call_id, \"name\": name, \"error\": str(exc)}\n            )\n            raise\n        self.journal.append(\n            \"tool_response\",\n            {\n                \"call_id\": call_id,\n                \"name\": name,\n                \"result\": result.data,\n                \"images\": result.images,\n                \"elapsed_s\": time.monotonic() - started,\n            },\n        )\n        generated = next(\n            (\n                t\n                for t in self.selection\n                if t[\"name\"] == name and t[\"origin\"] == \"generated\"\n            ),\n            None,\n        )\n        if generated:\n            import json\n\n            from rpent.dashboard.workbench import write_json\n\n            with self.journal.lock:\n                path = self.journal.root / \"tool-invocations.json\"\n                invoked = json.loads(path.read_text()) if path.exists() else []\n                write_json(path, sorted(set(invoked + [generated[\"version\"]])))\n        if result.data.get(\"_finish\"):\n            self._ended = True\n        return result\n\n\ndef availability_prompt(selected, *, planner_view_mode=\"native\"):\n    names = \", \".join(t[\"name\"] for t in selected)\n    eef_guidance = (\n        \"Use translate_to for position-only moves while retaining the gripper target. \"\n        \"Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\\n\\n\"\n        if any(t[\"name\"] == \"translate_to\" for t in selected)\n        else \"Use the latest images and EEF pose to choose the next short move_eef target. \"\n        \"Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\\n\\n\"\n        if any(t[\"name\"] == \"move_eef\" for t in selected)\n        else \"\"\n    )\n    rotation_guidance = (\n        \"Use rotate_axis for relative world-axis rotation while retaining position \"\n        \"and the gripper target. Inspect returned images and pose errors before \"\n        \"the next move.\\n\\n\"\n        if any(t[\"name\"] == \"rotate_axis\" for t in selected)\n        else \"\"\n    )\n    placement_guidance = (\n        \"For placing a held object on a plate or into an open container, \"\n        \"preview_placement selects a visible target region and includes the held-feature offset. \"\n        \"Inspect its O/P/R overlay, then use align_placement with that preview_id; \"\n        \"reselect incorrect marks. Recheck the returned images before lowering or releasing.\\n\\n\"\n        if {\"preview_placement\", \"align_placement\"} <= {t[\"name\"] for t in selected}\n        else \"\"\n    )\n    presentation = (\n        \"Native observations and action feedback remain unchanged. \"\n        if planner_view_mode == \"native\"\n        else \"Stored observations and VLA inputs remain unchanged. \"\n        \"View and action images are ordered by image_views. \"\n        \"For sampling, use a calibrated view's camera, step and pixel size. \"\n    )\n    return (\n        \"EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): \"\n        f\"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. \"\n        \"Skip guide steps that require disabled tools. \"\n        + presentation\n        + \"Generated perception tools compute evidence, not task success.\\n\\n\"\n        + eef_guidance\n        + rotation_guidance\n        + placement_guidance\n    )\n",
+    "example": null,
+    "input_contract": "Ordered image_views; stored image bytes unchanged",
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:segment",
+    "name": "segment",
+    "origin": "native",
+    "category": "perception",
+    "description": "SAM3 visual segmentation over an existing run artifact. It never renders a new camera view. Provide exactly one text prompt or single positive point. A successful top-ranked mask is projected through the matching world map to produce world_xyz.",
+    "parameters": {
+      "properties": {
+        "prompt": {
+          "description": "Object/text prompt to segment.",
+          "type": "string"
+        },
+        "camera": {
+          "description": "Artifact camera to use (default agentview).",
+          "enum": [
+            "agentview",
+            "wrist"
+          ],
+          "type": "string"
+        },
+        "step": {
+          "default": -1,
+          "description": "Step to segment; -1 = latest.",
+          "type": "integer"
+        },
+        "point": {
+          "description": "Optional single positive point as [row, col]. Mutually exclusive with prompt.",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "min_score": {
+          "description": "Minimum accepted mask score (default 0.2).",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "version": "2be4f5767a0ff384fba025d94e4a24f12778b49db7e362a81653ebf48b890368",
+    "source": "    @tool(readonly=True, exclude=(\"state\",))\n    def segment(\n        self,\n        prompt: str = \"\",\n        camera: Literal[\"agentview\", \"wrist\"] = \"agentview\",\n        step: Annotated[int, Field(json_schema_extra={\"default\": -1})] = -1,\n        point: Annotated[list[int], Field(min_length=2, max_length=2)] | None = None,\n        min_score: float = 0.2,\n        *,\n        state: EnvState,\n    ) -> ToolResult:\n        \"\"\"SAM3 visual segmentation over an existing run artifact. It never renders a new camera view. Provide exactly one text prompt or single positive point. A successful top-ranked mask is projected through the matching world map to produce world_xyz.\n\n        Args:\n            prompt: Object/text prompt to segment.\n            camera: Artifact camera to use (default agentview).\n            step: Step to segment; -1 = latest.\n            point: Optional single positive point as [row, col]. Mutually exclusive with prompt.\n            min_score: Minimum accepted mask score (default 0.2).\n        \"\"\"\n        images: list[bytes] = []\n        try:\n            record = state.get(step)\n        except Exception as exc:\n            return ToolResult(data={\"error\": f\"state step not available: {exc}\"})\n        nn = record.step_idx\n\n        camera = camera or \"agentview\"\n        prompt = prompt.strip()\n        has_prompt = bool(prompt)\n        has_point = point is not None\n        if has_prompt == has_point:\n            return ToolResult(\n                data={\"error\": \"segment needs exactly one of prompt or point\"}\n            )\n        try:\n            image_name, world_name, artifact_pairs = _select_segment_artifacts(\n                state, record, camera\n            )\n        except ValueError as e:\n            return ToolResult(data={\"error\": str(e)})\n        if image_name is None or world_name is None:\n            return ToolResult(\n                data={\n                    \"error\": \"complete segment artifacts not found\",\n                    \"step\": nn,\n                    \"camera\": camera,\n                    \"checked_artifacts\": [\n                        name\n                        for (image, world) in artifact_pairs\n                        for name in (image, world)\n                        if name\n                    ],\n                }\n            )\n\n        try:\n            data = self._sam3_client.segment(\n                state.load_bytes(image_name, step=nn),\n                text_prompt=prompt if has_prompt else None,\n                point=point,\n                min_score=min_score,\n            )\n        except ValueError as e:\n            return ToolResult(\n                data={\n                    \"error\": str(e),\n                    \"step\": nn,\n                    \"camera\": camera,\n                    \"image_artifact\": image_name,\n                }\n            )\n        except Exception as e:\n            return ToolResult(\n                data={\n                    \"error\": f\"segmentation service call failed: {e}\",\n                    \"step\": nn,\n                    \"camera\": camera,\n                    \"image_artifact\": image_name,\n                    \"fallback\": \"Use manual visual localization and back_project.\",\n                }\n            )\n\n        # Reserve an index before writing; failed saves leave gaps, never reuse.\n        with self._segment_index_lock:\n            segment_index = self._segment_index\n            self._segment_index += 1\n        segment_name = f\"segment_{segment_index:02d}.json\"\n        overlay_name = f\"segment_overlay_{segment_index:02d}.png\"\n        saved_overlay = None\n        mask = data.mask\n        if data.found and isinstance(mask, np.ndarray):\n            try:\n                world_map = state.load(world_name, step=nn)\n            except Exception as exc:\n                world_result = {\n                    \"world_xyz\": None,\n                    \"world_error\": f\"world map artifact not available: {exc}\",\n                    \"expected_world_artifact\": world_name,\n                }\n            else:\n                world_result = _mask_to_world(mask, world_map)\n                world_result[\"world_artifact\"] = world_name\n            overlay = _make_segment_overlay(state.load(image_name, step=nn), mask)\n            if overlay is not None and state.save(\n                overlay_name,\n                overlay,\n                step=nn,\n            ):\n                saved_overlay = overlay_name\n        else:\n            world_result = {\n                \"world_xyz\": None,\n                \"world_error\": data.reason or \"segmentation did not find a mask\",\n            }\n\n        segment_blob = {\n            \"found\": data.found,\n            \"mode\": \"text\" if has_prompt else \"point\",\n            \"camera\": camera,\n            \"source_step\": nn,\n            \"segment_index\": segment_index,\n            \"image_artifact\": image_name,\n            \"min_score\": min_score,\n            \"score\": round(float(data.score), 3) if data.score is not None else None,\n            \"box\": data.box,\n            \"mask_shape\": list(data.mask_shape) if data.mask_shape else None,\n        }\n        if has_prompt:\n            segment_blob[\"prompt\"] = prompt\n        else:\n            segment_blob[\"point\"] = point\n        if not data.found:\n            segment_blob[\"error\"] = data.reason or \"SAM3 found no mask\"\n        segment_blob.update(world_result)\n        saved_segment = state.save(\n            segment_name,\n            segment_blob,\n            step=nn,\n        )\n\n        result = {\n            \"found\": data.found,\n            \"step\": nn,\n            \"camera\": camera,\n            \"image_artifact\": image_name,\n            \"score\": segment_blob[\"score\"],\n            \"box\": segment_blob[\"box\"],\n            \"world_xyz\": segment_blob[\"world_xyz\"],\n            \"world_error\": segment_blob.get(\"world_error\"),\n        }\n        if saved_segment is None:\n            result[\"error\"] = f\"failed to persist segment artifact {segment_name}\"\n            result[\"code\"] = \"segment_artifact_save_failed\"\n            result[\"attempted_segment_artifact\"] = segment_name\n            if \"error\" in segment_blob:\n                result[\"segmentation_error\"] = segment_blob[\"error\"]\n            result[\"fallback\"] = \"Use manual visual localization and back_project.\"\n        else:\n            result[\"segment_artifact\"] = saved_segment\n        if saved_segment is not None and \"error\" in segment_blob:\n            result[\"error\"] = segment_blob[\"error\"]\n            result[\"fallback\"] = \"Use manual visual localization and back_project.\"\n        if saved_overlay is not None:\n            result[\"overlay_artifact\"] = saved_overlay\n            images.append(state.load_bytes(saved_overlay, step=nn))\n        return ToolResult(data=result, images=images)\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:view_camera_meta",
+    "name": "view_camera_meta",
+    "origin": "native",
+    "category": "perception",
+    "description": "Read per-step camera calibration metadata from recorded artifacts.",
+    "parameters": {
+      "properties": {
+        "camera": {
+          "description": "Camera metadata to read (default agentview).",
+          "enum": [
+            "agentview",
+            "wrist"
+          ],
+          "type": "string"
+        },
+        "step": {
+          "default": -1,
+          "description": "Metadata step to use; -1 = latest.",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "version": "e030a4a7d7f8695d452cc9a805f4052202f7750125a4e1959ee309d59e4b75df",
+    "source": "@tool(readonly=True, exclude=(\"state\",))\ndef view_camera_meta(\n    camera: Literal[\"agentview\", \"wrist\"] = \"agentview\",\n    step: Annotated[int, Field(json_schema_extra={\"default\": -1})] = -1,\n    *,\n    state: EnvState,\n) -> ToolResult:\n    \"\"\"Read per-step camera calibration metadata from recorded artifacts.\n\n    Args:\n        camera: Camera metadata to read (default agentview).\n        step: Metadata step to use; -1 = latest.\n    \"\"\"\n    if camera not in (\"agentview\", \"wrist\"):\n        return ToolResult(\n            data={\"error\": f\"bad camera '{camera}' (use 'agentview' or 'wrist')\"}\n        )\n\n    try:\n        record = state.get(step)\n        metadata_name = f\"{camera}_metadata.json\"\n        if metadata_name not in record.artifacts:\n            raise FileNotFoundError(metadata_name)\n        meta = state.load(metadata_name, step=record.step_idx)\n    except Exception as e:\n        return ToolResult(data={\"error\": f\"{camera} camera metadata not found: {e}\"})\n\n    if camera == \"agentview\":\n        return ToolResult(data={\"camera\": \"agentview\", \"camera_meta\": meta})\n    return ToolResult(\n        data={\"camera\": \"wrist\", \"step\": record.step_idx, \"camera_meta\": meta}\n    )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:view_env_state",
+    "name": "view_env_state",
+    "origin": "native",
+    "category": "perception",
+    "description": "Read one recorded state and its observation artifacts. Step -1 selects the latest entry. Embeds calibrated agentview high and wrist high images. image_views identifies each attached image in order. Missing required images are reported as an error. Use the calibration-frame images for pixel back-projection; JSON state alone is not enough. Use agentview for global tabletop layout and object locations; use wrist for close-range details near the gripper, occlusions, and container/cabinet interiors.",
+    "parameters": {
+      "properties": {
+        "step": {
+          "default": -1,
+          "description": "Step number; 0 = initial, -1 = latest.",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "version": "da657ed1883616cb4733f5e9ba3ab1bc0b5e12645909c997294db247e6bbeaff",
+    "source": "@tool(readonly=True, exclude=(\"state\",))\ndef view_env_state(\n    step: Annotated[int, Field(json_schema_extra={\"default\": -1})] = -1,\n    *,\n    state: EnvState,\n) -> ToolResult:\n    \"\"\"Read one recorded state and its observation artifacts. Step -1 selects the latest entry. Embeds policy, agentview, and wrist images when available. Use the calibration-frame images for pixel back-projection; JSON state alone is not enough. Use agentview for global tabletop layout and object locations; use wrist for close-range details near the gripper, occlusions, and container/cabinet interiors.\n\n    Args:\n        step: Step number; 0 = initial, -1 = latest.\n    \"\"\"\n    images: list[bytes] = []\n    try:\n        record = state.get(step)\n    except Exception as exc:\n        return ToolResult(data={\"error\": f\"state step not available: {exc}\"})\n\n    nn = record.step_idx\n    extras = record.extras\n    out: dict = {\n        \"step\": nn,\n        \"terminated\": record.terminated,\n        \"truncated\": record.truncated,\n        \"state\": record.state,\n        \"artifacts\": sorted(record.artifacts),\n    }\n    out[\"task_language\"] = extras.get(\"task_language\")\n    out[\"log\"] = {\n        \"command\": record.command,\n        \"result\": record.result,\n        \"elapsed_s\": record.elapsed_s,\n    }\n    for names in (\n        (\"agentview_policy.png\",),\n        (\"agentview_high.png\", \"agentview.png\"),\n        (\"wrist_high.png\", \"wrist.png\"),\n    ):\n        name = next((name for name in names if name in record.artifacts), None)\n        if name:\n            try:\n                images.append(state.load_bytes(name, step=nn))\n            except FileNotFoundError:\n                pass\n    return ToolResult(data=out, images=images)\n\n# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Selectable tools on unchanged native LIBERO observations and controllers.\"\"\"\n\nimport threading\nimport time\nimport uuid\nfrom dataclasses import replace\nfrom functools import partial\n\nimport numpy as np\n\nfrom robots.libero.research.library import Sandbox\nfrom robots.libero.research.native import _OMITTED, _arguments_model\nfrom robots.libero.research.sensors import SensorInterface\nfrom robots.libero.toolkit import LiberoToolkit\nfrom rpent.tools import Tool, ToolResult, tool\n\nPLANNER_VIEW_MODE = \"calibrated-pair-v1\"\nPLANNER_VIEW_ARTIFACTS = (\"agentview_high.png\", \"wrist_high.png\")\n\n\ndef planner_view_description(name):\n    if name == \"read_image\":\n        return (\n            \"Read the exact saved image by artifact name and step. image_views \"\n            \"identifies its frame; policy and unclassified images are not \"\n            \"calibrated sampling inputs.\"\n        )\n    from robots.libero.tools import view_env_state\n\n    return view_env_state.description.replace(\n        \"Embeds policy, agentview, and wrist images when available.\",\n        \"Embeds calibrated agentview high and wrist high images. \"\n        \"image_views identifies each attached image in order. \"\n        \"Missing required images are reported as an error.\",\n    )\n\n\nclass RecordingSam3:\n    def __init__(self, client):\n        self.client = client\n        self.local = threading.local()\n\n    def segment(self, *args, **kwargs):\n        result = self.client.segment(*args, **kwargs)\n        self.local.result = result\n        return result\n\n\nclass ManualToolkit(LiberoToolkit):\n    planner_tools_only = True\n\n    def __init__(\n        self,\n        *,\n        selected,\n        journal,\n        sandbox_image=\"embodied-sensor:pilot\",\n        planner_view_mode=\"native\",\n        **kwargs,\n    ):\n        if planner_view_mode not in (\"native\", PLANNER_VIEW_MODE):\n            raise ValueError(\"Unsupported LIBERO planner_view_mode\")\n        self.planner_view_mode = planner_view_mode\n        placement_names = {t[\"name\"] for t in selected} & {\n            \"preview_placement\",\n            \"align_placement\",\n        }\n        if placement_names and placement_names != {\n            \"preview_placement\",\n            \"align_placement\",\n        }:\n            raise ValueError(\"Select preview_placement and align_placement together\")\n        self.journal = journal\n        self._ended = False\n        self.mask_lock = threading.RLock()\n        super().__init__(**kwargs)\n        self.sensors = SensorInterface(self, [], None)\n        self.add_tool(self.read_image)\n        optional_moves = {t[\"name\"] for t in selected} & {\"move_eef\", \"translate_to\"}\n        if optional_moves:\n            from robots.libero.eef_control import EefControl\n\n            if \"move_eef\" in optional_moves:\n                controller = self.primitives.env.get_eef_controller_state()\n                if \"error\" in controller:\n                    raise ValueError(controller[\"error\"])\n            control = EefControl(self.primitives)\n            for name in sorted(optional_moves):\n                definition = getattr(control, name)\n                self.add_tool(\n                    definition.with_handler(\n                        partial(self._execute_primitive, name, definition)\n                    )\n                )\n        if any(t[\"name\"] == \"rotate_axis\" for t in selected):\n            from robots.libero.research.orientation import OrientationControl\n\n            controller = self.primitives.env.get_eef_controller_state()\n            if \"error\" in controller:\n                raise ValueError(controller[\"error\"])\n            definition = OrientationControl(self.primitives).rotate_axis\n            self.add_tool(\n                definition.with_handler(\n                    partial(self._execute_primitive, \"rotate_axis\", definition)\n                )\n            )\n        if placement_names:\n            from robots.libero.research.placement import PlacementTools\n\n            placement = PlacementTools(self.sensors, self.primitives)\n            self.add_tool(placement.preview_placement)\n            definition = placement.align_placement\n            self.add_tool(\n                definition.with_handler(\n                    partial(self._execute_primitive, \"align_placement\", definition)\n                )\n            )\n        originals = self._tools\n        self._tools = {}\n        generated = [t for t in selected if t[\"origin\"] == \"generated\"]\n        self.sandbox = Sandbox(sandbox_image) if generated else None\n        self.selection = selected\n        self.mask_client = RecordingSam3(self.primitives._sam3_client)\n        self.primitives._sam3_client = self.mask_client\n        for item in selected:\n            name = item[\"name\"]\n            if item[\"origin\"] == \"native\":\n                original = originals[name]\n                if self.planner_view_mode != \"native\":\n                    if name == \"view_env_state\":\n                        original = original.with_handler(\n                            partial(self._planner_view, original)\n                        )\n                    if name in {\"view_env_state\", \"read_image\"}:\n                        original = replace(\n                            original, description=planner_view_description(name)\n                        )\n                if name == \"segment\":\n                    original = original.with_handler(\n                        partial(self.segment_recorded, original)\n                    )\n                self.add_tool(original)\n            else:\n                definition = {\n                    k: item[k] for k in (\"name\", \"description\", \"parameters\", \"source\")\n                }\n                self.add_tool(\n                    Tool(\n                        name=name,\n                        description=item[\"description\"],\n                        args_schema=_arguments_model(name, item[\"parameters\"]),\n                        _input_schema=item[\"parameters\"],\n                        handler=partial(self.generated, definition),\n                        readonly=True,\n                    )\n                )\n\n    def _image_payload(self, name, step, index):\n        from io import BytesIO\n\n        from PIL import Image\n\n        image = self.state.load_bytes(name, step=step)\n        with Image.open(BytesIO(image)) as opened:\n            width, height = opened.size\n        calibrated = name in {\n            \"agentview.png\",\n            \"agentview_high.png\",\n            \"wrist.png\",\n            \"wrist_high.png\",\n        }\n        policy = name == \"agentview_policy.png\"\n        camera = (\n            (\"agentview\" if name.startswith(\"agentview\") else \"wrist\")\n            if calibrated or policy\n            else None\n        )\n        return image, {\n            \"index\": index,\n            \"artifact\": name,\n            \"camera\": camera,\n            \"step\": step,\n            \"width\": width,\n            \"height\": height,\n            \"coordinate_frame\": \"calibrated\"\n            if calibrated\n            else \"policy\"\n            if policy\n            else \"unclassified\",\n        }\n\n    def _present_state(self, result):\n        if self.planner_view_mode == \"native\" or \"step\" not in result.data:\n            return result\n        data = {**result.data, \"planner_view_mode\": self.planner_view_mode}\n        images, views = [], []\n        try:\n            for index, name in enumerate(PLANNER_VIEW_ARTIFACTS):\n                image, view = self._image_payload(name, data[\"step\"], index)\n                images.append(image)\n                views.append(view)\n        except OSError as exc:\n            return ToolResult(\n                data={\n                    **data,\n                    \"error\": f\"Required planner image unavailable: {name}: {exc}\",\n                    \"image_views\": [],\n                }\n            )\n        return ToolResult(data={**data, \"image_views\": views}, images=images)\n\n    def _planner_view(self, original, **kwargs):\n        return self._present_state(original(**kwargs))\n\n    def get_env_state(self, **kwargs):\n        return self._present_state(super().get_env_state(**kwargs))\n\n    @property\n    def planner_stop_result(self):\n        if self._ended or self.solved() or self.primitives.env.truncated:\n            return {\n                \"_finish\": True,\n                \"environment_stopped\": True,\n                \"status\": \"stopped\",\n                \"summary\": \"Environment episode ended.\",\n            }\n        return None\n\n    def _execute_primitive(self, name, handler, **kwargs):\n        if self.planner_stop_result is not None:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        return super()._execute_primitive(name, handler, **kwargs)\n\n    @tool(readonly=True)\n    def read_image(self, name: str, step: int = -1) -> ToolResult:\n        \"\"\"Read a saved PNG/JPEG observation artifact at the selected step.\"\"\"\n        record = self.state.get(step)\n        if name not in record.artifacts or not name.endswith((\".png\", \".jpg\", \".jpeg\")):\n            return ToolResult(data={\"error\": \"Unknown image artifact\"})\n        if self.planner_view_mode != \"native\":\n            image, view = self._image_payload(name, record.step_idx, 0)\n            return ToolResult(\n                data={\"artifact\": name, \"step\": record.step_idx, \"image_views\": [view]},\n                images=[image],\n            )\n        return ToolResult(\n            data={\"artifact\": name, \"step\": record.step_idx},\n            images=[self.state.load_bytes(name, step=record.step_idx)],\n        )\n\n    def segment_recorded(self, original, **kwargs):\n        self.mask_client.local.result = None\n        result = original(**kwargs)\n        data = self.mask_client.local.result\n        if (\n            data is not None\n            and data.found\n            and isinstance(data.mask, np.ndarray)\n            and result.data.get(\"segment_artifact\")\n        ):\n            step = result.data[\"step\"]\n            camera = result.data[\"camera\"]\n            image_name = result.data[\"image_artifact\"]\n            shape = self.state.load(image_name, step=step).shape[:2]\n            if data.mask.shape != shape:\n                raise ValueError(\"Native segmentation mask/image shape mismatch\")\n            name = result.data[\"segment_artifact\"].replace(\".json\", \"_mask.npz\")\n            self.state.save(name, data.mask, step=step)\n            # Nearest-neighbour resampling is explicit; raw mask remains saved.\n            h, w = self.state.load(f\"{camera}.png\", step=step).shape[:2]\n            rows = np.minimum(\n                ((np.arange(h) + 0.5) * shape[0] / h).astype(int), shape[0] - 1\n            )\n            cols = np.minimum(\n                ((np.arange(w) + 0.5) * shape[1] / w).astype(int), shape[1] - 1\n            )\n            aligned = data.mask[rows[:, None], cols[None, :]]\n            alignment = {\n                \"camera\": camera,\n                \"mask_artifact\": name,\n                \"source_artifact\": image_name,\n                \"source_shape\": list(shape),\n                \"resampling\": \"nearest pixel centres\",\n            }\n            self.state.save(\n                \"mask_alignment_\" + result.data[\"segment_artifact\"],\n                alignment,\n                step=step,\n            )\n            with self.mask_lock:\n                self.sensors.masks.setdefault(step, {})[name] = {\n                    **alignment,\n                    \"mask\": aligned,\n                }\n        return result\n\n    def generated(self, definition, **params):\n        params = {k: v for k, v in params.items() if v is not _OMITTED}\n        with self.mask_lock:\n            frames = self.sensors.frames()\n        self.journal.append(\n            \"generated_input\",\n            {\n                \"name\": definition[\"name\"],\n                \"steps\": [f[\"step\"] for f in frames],\n                \"params\": params,\n                \"sandbox_image\": self.sandbox.image,\n            },\n        )\n        return ToolResult(data=self.sandbox.run(definition, params, frames))\n\n    def execute_tool(self, name, input_dict):\n        call_id = uuid.uuid4().hex\n        started = time.monotonic()\n        self.journal.append(\n            \"tool_request\", {\"call_id\": call_id, \"name\": name, \"arguments\": input_dict}\n        )\n        try:\n            result = super().execute_tool(name, input_dict)\n        except Exception as exc:\n            self.journal.append(\n                \"tool_error\", {\"call_id\": call_id, \"name\": name, \"error\": str(exc)}\n            )\n            raise\n        self.journal.append(\n            \"tool_response\",\n            {\n                \"call_id\": call_id,\n                \"name\": name,\n                \"result\": result.data,\n                \"images\": result.images,\n                \"elapsed_s\": time.monotonic() - started,\n            },\n        )\n        generated = next(\n            (\n                t\n                for t in self.selection\n                if t[\"name\"] == name and t[\"origin\"] == \"generated\"\n            ),\n            None,\n        )\n        if generated:\n            import json\n\n            from rpent.dashboard.workbench import write_json\n\n            with self.journal.lock:\n                path = self.journal.root / \"tool-invocations.json\"\n                invoked = json.loads(path.read_text()) if path.exists() else []\n                write_json(path, sorted(set(invoked + [generated[\"version\"]])))\n        if result.data.get(\"_finish\"):\n            self._ended = True\n        return result\n\n\ndef availability_prompt(selected, *, planner_view_mode=\"native\"):\n    names = \", \".join(t[\"name\"] for t in selected)\n    eef_guidance = (\n        \"Use translate_to for position-only moves while retaining the gripper target. \"\n        \"Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\\n\\n\"\n        if any(t[\"name\"] == \"translate_to\" for t in selected)\n        else \"Use the latest images and EEF pose to choose the next short move_eef target. \"\n        \"Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\\n\\n\"\n        if any(t[\"name\"] == \"move_eef\" for t in selected)\n        else \"\"\n    )\n    rotation_guidance = (\n        \"Use rotate_axis for relative world-axis rotation while retaining position \"\n        \"and the gripper target. Inspect returned images and pose errors before \"\n        \"the next move.\\n\\n\"\n        if any(t[\"name\"] == \"rotate_axis\" for t in selected)\n        else \"\"\n    )\n    placement_guidance = (\n        \"For placing a held object on a plate or into an open container, \"\n        \"preview_placement selects a visible target region and includes the held-feature offset. \"\n        \"Inspect its O/P/R overlay, then use align_placement with that preview_id; \"\n        \"reselect incorrect marks. Recheck the returned images before lowering or releasing.\\n\\n\"\n        if {\"preview_placement\", \"align_placement\"} <= {t[\"name\"] for t in selected}\n        else \"\"\n    )\n    presentation = (\n        \"Native observations and action feedback remain unchanged. \"\n        if planner_view_mode == \"native\"\n        else \"Stored observations and VLA inputs remain unchanged. \"\n        \"View and action images are ordered by image_views. \"\n        \"For sampling, use a calibrated view's camera, step and pixel size. \"\n    )\n    return (\n        \"EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): \"\n        f\"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. \"\n        \"Skip guide steps that require disabled tools. \"\n        + presentation\n        + \"Generated perception tools compute evidence, not task success.\\n\\n\"\n        + eef_guidance\n        + rotation_guidance\n        + placement_guidance\n    )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "Ordered image_views; stored image bytes unchanged",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "created_at": "2026-11-07T13:46:23.898411+00:00",
+    "dependencies": [],
+    "validation": "unverified",
+    "input_contract": "Recorded calibrated high-resolution RGB/world/depth; radius 1–5; surface evidence only.",
+    "source_run": "4aeed560761dad4f7217",
+    "reason": "Approved radius minimum contract repair; original library preserved",
+    "previous_version": "cca2f3c424d195fe3e55896ec0fe4c54b08b9f6929fdf794cfc98595458155c3",
+    "diff": "--- cca2f3c424d195fe3e55896ec0fe4c54b08b9f6929fdf794cfc98595458155c3\n+++ 553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf\n@@ -31,6 +31,10 @@\n         return {\"error\": \"high-resolution RGB/depth/world resolution mismatch\"}\n     eef = np.asarray(frame[\"proprio\"][\"robot0_eef_pos\"], dtype=float)\n     radius = params.get(\"radius\", 2)\n+    if radius < 1:\n+        return {\n+            \"error\": \"radius must be at least 1; use back_project for a single pixel\"\n+        }\n     out = []\n     for point in params[\"points\"]:\n         row, col = int(round(point[0] * (h - 1))), int(round(point[1] * (w - 1)))\n",
+    "name": "sensor_patch_batch",
+    "description": "Inspect up to eight patches from the actual recorded high-resolution RGB/world maps in one call. Points are normalized [row/(height-1), col/(width-1)] of calibrated agentview/wrist images, never mirrored policy images. Returns robust world coordinates, surface spread and EEF offsets. High-resolution metric depth statistics are reported only when recorded; historical null values mean not recorded. Missing high-resolution observations return an error, never a low-resolution substitute. Does not infer identity or success.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "camera": {
+          "type": "string",
+          "enum": [
+            "agentview",
+            "wrist"
+          ],
+          "default": "agentview"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": -1,
+          "default": -1
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 2,
+          "description": "Patch radius in pixels. For a single pixel, use back_project."
+        }
+      },
+      "required": [
+        "points"
+      ],
+      "additionalProperties": false
+    },
+    "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\nimport numpy as np\n\n\ndef run(frames, params):\n    \"\"\"Summarize real high-resolution patches without inferring task success.\"\"\"\n    step = params.get(\"step\", -1)\n    frame = (\n        frames[-1]\n        if step == -1\n        else next((f for f in frames if f[\"step\"] == step), None)\n    )\n    if frame is None:\n        return {\n            \"error\": \"step unavailable\",\n            \"available_steps\": [f[\"step\"] for f in frames],\n        }\n    camera = params.get(\"camera\", \"agentview\")\n    data = frame[\"cameras\"][camera].get(\"high\")\n    if data is None:\n        return {\n            \"error\": \"high-resolution RGB/world observation not recorded\",\n            \"step\": frame[\"step\"],\n            \"camera\": camera,\n            \"resolution\": \"high\",\n        }\n    world, rgb, depth = data[\"world\"], data[\"rgb\"], data.get(\"depth\")\n    h, w = world.shape[:2]\n    if rgb.shape[:2] != (h, w) or (depth is not None and depth.shape[:2] != (h, w)):\n        return {\"error\": \"high-resolution RGB/depth/world resolution mismatch\"}\n    eef = np.asarray(frame[\"proprio\"][\"robot0_eef_pos\"], dtype=float)\n    radius = params.get(\"radius\", 2)\n    if radius < 1:\n        return {\n            \"error\": \"radius must be at least 1; use back_project for a single pixel\"\n        }\n    out = []\n    for point in params[\"points\"]:\n        row, col = int(round(point[0] * (h - 1))), int(round(point[1] * (w - 1)))\n        r0, r1 = max(0, row - radius), min(h, row + radius + 1)\n        c0, c1 = max(0, col - radius), min(w, col + radius + 1)\n        xyz = world[r0:r1, c0:c1, :3].reshape(-1, 3)\n        z = None if depth is None else depth[r0:r1, c0:c1].reshape(-1)\n        good = np.isfinite(xyz).all(axis=1) & (np.abs(xyz).sum(axis=1) > 1e-6)\n        if z is not None:\n            good &= np.isfinite(z) & (z > 0)\n        item = {\n            \"point_rc_normalized\": point,\n            \"pixel_rc\": [row, col],\n            \"valid_count\": int(good.sum()),\n            \"patch_count\": int(good.size),\n        }\n        if good.sum() < 3:\n            item[\"error\"] = \"insufficient valid surface samples\"\n        else:\n            q = np.quantile(xyz[good], [0.1, 0.5, 0.9], axis=0)\n            item.update(\n                world_p10_xyz=q[0].tolist(),\n                world_median_xyz=q[1].tolist(),\n                world_p90_xyz=q[2].tolist(),\n                eef_to_patch_xyz=(q[1] - eef).tolist(),\n                depth_p10_p90=None\n                if z is None\n                else np.quantile(z[good], [0.1, 0.9]).tolist(),\n                rgb_median=np.median(\n                    rgb[r0:r1, c0:c1].reshape(-1, 3)[good], axis=0\n                ).tolist(),\n            )\n        out.append(item)\n    return {\n        \"step\": frame[\"step\"],\n        \"camera\": camera,\n        \"image_size\": [h, w],\n        \"resolution\": \"high\",\n        \"source_artifacts\": data.get(\"source_artifacts\", {}),\n        \"depth_status\": \"not_recorded\" if depth is None else \"recorded\",\n        \"coordinates\": \"world XYZ metres; normalized [row, column] of calibrated high-resolution image, not policy image\",\n        \"patches\": out,\n        \"limitations\": \"Visible surface samples only. Depth spread may indicate edges or mixed surfaces. No semantic identity, object extent, grasp or placement success inferred. Historical frames may lack high-resolution metric depth; null depth statistics are not estimated from the low-resolution map.\",\n    }\n",
+    "id": "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "origin": "generated",
+    "category": "perception",
+    "version": "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "invoked": false,
+    "required": false,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:translate_to",
+    "name": "translate_to",
+    "origin": "native",
+    "category": "control",
+    "description": "Move toward world XYZ metres, preserving orientation and the gripper target.\n\nUses unchanged move_to servo defaults. Split XY travel over 0.30 m into\nintermediate targets. Change fingers with set_gripper or release.\nInspect returned images; preserved gripper target does not prove holding.",
+    "parameters": {
+      "properties": {
+        "xyz": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        }
+      },
+      "required": [
+        "xyz"
+      ],
+      "type": "object"
+    },
+    "version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "source": "    @tool\n    def translate_to(\n        self,\n        xyz: Annotated[list[float], Field(min_length=3, max_length=3)],\n    ) -> ToolResult:\n        \"\"\"Move toward world XYZ metres, preserving orientation and the gripper target.\n\n        Uses unchanged move_to servo defaults. Split XY travel over 0.30 m into\n        intermediate targets. Change fingers with set_gripper or release.\n        Inspect returned images; preserved gripper target does not prove holding.\n        \"\"\"\n        target = np.asarray(xyz, dtype=float)\n        if target.shape != (3,) or not np.isfinite(target).all():\n            raise ValueError(\"Supply three finite world XYZ coordinates\")\n        if self.primitives.env.terminated or self.primitives.env.truncated:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        result = self.primitives.move_to(target.tolist(), gripper=0.0)\n        result.data[\"name\"] = \"translate_to\"\n        if not result.is_error:\n            result.data[\"gripper_command\"] = 0.0\n        return result\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:preview_placement",
+    "name": "preview_placement",
+    "origin": "native",
+    "category": "perception",
+    "description": "Preview held-feature alignment to a visibly suitable plate/opening subregion.\n\nUse integer [row,column] pixels in the latest calibrated high image. O is a\nvisible held-object feature; R outlines a fully visible convex usable\nsubregion in boundary order; P marks visible support/rim plane samples.\nInspect returned O/P/R marks before align_placement. This is conditional\ngeometry, not identity, whole-object clearance or grasp verification.",
+    "parameters": {
+      "properties": {
+        "step": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "camera": {
+          "enum": [
+            "agentview",
+            "wrist"
+          ],
+          "type": "string"
+        },
+        "held_feature": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "target_region": {
+          "items": {
+            "items": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "maxItems": 8,
+          "minItems": 4,
+          "type": "array"
+        },
+        "plane_samples": {
+          "items": {
+            "items": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "maxItems": 8,
+          "minItems": 4,
+          "type": "array"
+        }
+      },
+      "required": [
+        "step",
+        "camera",
+        "held_feature",
+        "target_region",
+        "plane_samples"
+      ],
+      "type": "object"
+    },
+    "version": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Review visible placement geometry before one opt-in XY alignment.\"\"\"\n\nfrom __future__ import annotations\n\nimport io\nimport threading\nimport uuid\nfrom typing import Annotated, Any, Literal\n\nimport numpy as np\nfrom pydantic import Field\n\nfrom robots.libero.eef_control import EefControl\nfrom rpent.tools import ToolResult, tool\n\nPixel = Annotated[\n    list[Annotated[int, Field(ge=0, strict=True)]], Field(min_length=2, max_length=2)\n]\n\n\ndef _points(value, count, shape):\n    points = np.asarray(value)\n    if (\n        points.ndim != 2\n        or points.shape[1] != 2\n        or not count[0] <= len(points) <= count[1]\n        or points.dtype.kind not in \"iu\"\n        or (points < 0).any()\n        or (points >= np.asarray(shape)).any()\n    ):\n        raise ValueError(\n            \"Use integer [row, column] pixels inside the actual high image\"\n        )\n    return points.astype(float)\n\n\ndef _sample(world, pixel):\n    row, col = np.rint(pixel).astype(int)\n    h, w = world.shape[:2]\n    anchor = world[row, col, :3]\n    patch = world[\n        max(0, row - 1) : min(h, row + 2), max(0, col - 1) : min(w, col + 2), :3\n    ].reshape(-1, 3)\n    if not np.isfinite(anchor).all() or np.linalg.norm(anchor) <= 1e-6:\n        raise ValueError(\"Selected pixel has invalid depth\")\n    valid = patch[\n        np.isfinite(patch).all(axis=1)\n        & (np.linalg.norm(patch - anchor, axis=1) <= 0.025)\n    ]\n    if len(valid) < 3:\n        raise ValueError(\"Selected pixel lacks locally consistent depth\")\n    low, median, high = np.quantile(valid, [0.1, 0.5, 0.9], axis=0)\n    spread = float(np.linalg.norm(high - low))\n    if spread > 0.02:\n        raise ValueError(\"Selected surface patch has mixed depth\")\n    return median, spread\n\n\ndef placement_geometry(\n    high: dict[str, Any],\n    eef: np.ndarray,\n    held_feature: list[int],\n    target_region: list[list[int]],\n    plane_samples: list[list[int]],\n) -> dict[str, Any]:\n    \"\"\"Compute only a caller-selected surface/region relation; no semantic verdict.\"\"\"\n    rgb, world = high[\"rgb\"], high[\"world\"]\n    h, w = rgb.shape[:2]\n    if world.shape != (h, w, 3):\n        raise ValueError(\"Recorded high RGB/world shapes differ\")\n    calibration = high[\"calibration\"]\n    if (calibration[\"height\"], calibration[\"width\"]) != (h, w):\n        raise ValueError(\"High calibration dimensions differ\")\n    k = np.asarray(calibration[\"intrinsic_K\"], dtype=float)\n    c2w = np.asarray(calibration[\"extrinsic_cam2world\"], dtype=float)\n    if (\n        k.shape != (3, 3)\n        or c2w.shape != (4, 4)\n        or not np.isfinite(k).all()\n        or not np.isfinite(c2w).all()\n        or abs(np.linalg.det(k)) <= 1e-12\n    ):\n        raise ValueError(\"Invalid high camera calibration\")\n    rotation = c2w[:3, :3]\n    if (\n        not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-6, rtol=0)\n        or not np.isclose(np.linalg.det(rotation), 1, atol=1e-6, rtol=0)\n        or not np.allclose(c2w[3], [0, 0, 0, 1], atol=1e-9, rtol=0)\n    ):\n        raise ValueError(\"Invalid camera-to-world rigid transform\")\n    obj_rc = _points([held_feature], (1, 1), (h, w))[0]\n    region_rc = _points(target_region, (4, 8), (h, w))\n    plane_rc = _points(plane_samples, (4, 8), (h, w))\n    obj, object_spread = _sample(world, obj_rc)\n    sampled = [_sample(world, p) for p in plane_rc]\n    anchors = np.array([p[0] for p in sampled])\n    origin = anchors.mean(axis=0)\n    _, singular, vh = np.linalg.svd(anchors - origin)\n    normal = vh[-1]\n    normal *= 1 if normal[2] >= 0 else -1\n    residual = float(np.abs((anchors - origin) @ normal).max())\n    if singular[1] <= 1e-6 or residual > 0.01 or normal[2] < np.cos(np.deg2rad(15)):\n        raise ValueError(\n            \"Plane is degenerate, inconsistent or not approximately horizontal\"\n        )\n    # Pixel-to-camera convention exactly matches tools._world_from_depth.\n    pixels = np.c_[region_rc[:, 1], region_rc[:, 0], np.ones(len(region_rc))]\n    rays = pixels @ np.linalg.inv(k).T @ c2w[:3, :3].T\n    camera_origin = c2w[:3, 3]\n    denominator = rays @ normal\n    if np.any(np.abs(denominator) <= 1e-9):\n        raise ValueError(\"Region ray is parallel to the selected plane\")\n    distances = ((origin - camera_origin) @ normal) / denominator\n    if np.any(distances <= 0):\n        raise ValueError(\"Region intersects the selected plane behind the camera\")\n    region = camera_origin + distances[:, None] * rays\n    xy = region[:, :2]\n    following = np.roll(xy, -1, axis=0)\n    edges = following - xy\n    turns = edges[:, 0] * np.roll(edges[:, 1], -1) - edges[:, 1] * np.roll(\n        edges[:, 0], -1\n    )\n    # Explicit ordered convex subset only; never repair/cross-sort/hull a bad polygon.\n    if not (np.all(turns > 1e-10) or np.all(turns < -1e-10)):\n        raise ValueError(\n            \"Select a non-crossing convex visible subregion in boundary order\"\n        )\n    offsets = xy[None, :, :] - xy[:, None, :]\n    sides = edges[:, 0, None] * offsets[:, :, 1] - edges[:, 1, None] * offsets[:, :, 0]\n    if not (np.all(sides >= -1e-10) or np.all(sides <= 1e-10)):\n        raise ValueError(\"Selected region crosses itself or is not convex\")\n    cross = xy[:, 0] * following[:, 1] - following[:, 0] * xy[:, 1]\n    twice_area = cross.sum()\n    if abs(twice_area) <= 1e-10:\n        raise ValueError(\"Selected region has no usable area\")\n    center_xy = ((xy + following) * cross[:, None]).sum(axis=0) / (3 * twice_area)\n    center_z = origin[2] - np.dot(normal[:2], center_xy - origin[:2]) / normal[2]\n    center = np.r_[center_xy, center_z]\n    target = np.array(eef, dtype=float)\n    if target.shape != (3,) or not np.isfinite(target).all():\n        raise ValueError(\"Current EEF position is unavailable\")\n    target[:2] += center_xy - obj[:2]\n    projected = k @ (rotation.T @ (center - camera_origin))\n    center_rc = (projected[:2] / projected[2])[::-1]\n    return {\n        \"held_feature_xyz\": obj.tolist(),\n        \"held_feature_patch_spread_m\": object_spread,\n        \"plane_sample_xyz\": anchors.tolist(),\n        \"plane_patch_spread_m\": [float(p[1]) for p in sampled],\n        \"plane_max_residual_m\": residual,\n        \"plane_normal_xyz\": normal.tolist(),\n        \"selected_region_xyz\": region.tolist(),\n        \"selected_region_center_xyz\": center.tolist(),\n        \"selected_region_center_pixel_rc\": center_rc.tolist(),\n        \"eef_target_xyz_keep_height\": target.tolist(),\n        \"xy_correction_m\": float(np.linalg.norm(center_xy - obj[:2])),\n        \"semantic_status\": \"caller_selected_not_verified\",\n        \"limits\": \"Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.\",\n    }\n\n\ndef _overlays(high, held_feature, target_region, plane_samples, center_rc=None):\n    \"\"\"Return original-sized numbered image and a labeled crop, never JSON image data.\"\"\"\n    from PIL import Image, ImageDraw\n\n    image = Image.fromarray(high[\"rgb\"]).copy()\n    draw = ImageDraw.Draw(image)\n    h, w = high[\"rgb\"].shape[:2]\n    region = _points(target_region, (4, 8), (h, w))\n    plane = _points(plane_samples, (4, 8), (h, w))\n    obj = _points([held_feature], (1, 1), (h, w))\n    draw.line(\n        [(float(c), float(r)) for r, c in [*region, region[0]]], fill=\"cyan\", width=3\n    )\n    for prefix, points, color in (\n        (\"O\", obj, \"yellow\"),\n        (\"P\", plane, \"magenta\"),\n        (\"R\", region, \"cyan\"),\n    ):\n        for index, (r, c) in enumerate(points):\n            draw.ellipse((c - 5, r - 5, c + 5, r + 5), outline=color, width=2)\n            draw.text(\n                (c + 6, r + 3),\n                f\"{prefix}{index}\",\n                fill=color,\n                stroke_width=1,\n                stroke_fill=\"black\",\n            )\n    if center_rc is not None:\n        r, c = center_rc\n        draw.line([(c - 8, r), (c + 8, r)], fill=\"lime\", width=3)\n        draw.line([(c, r - 8), (c, r + 8)], fill=\"lime\", width=3)\n        draw.text((c + 9, r + 3), \"C\", fill=\"lime\", stroke_width=1, stroke_fill=\"black\")\n    all_rc = np.vstack([obj, region, plane])\n    lo = np.maximum(np.floor(all_rc.min(axis=0) - 24).astype(int), 0)\n    hi = np.minimum(np.ceil(all_rc.max(axis=0) + 25).astype(int), [h, w])\n    bounds = [int(lo[1]), int(lo[0]), int(hi[1]), int(hi[0])]\n    crop = image.crop(tuple(bounds))\n    output = []\n    for picture in (image, crop):\n        encoded = io.BytesIO()\n        picture.save(encoded, format=\"PNG\")\n        output.append(encoded.getvalue())\n    return output, bounds\n\n\nclass PlacementTools:\n    \"\"\"Opt-in review then one gripper-preserving XY alignment; no autonomous release.\"\"\"\n\n    def __init__(self, sensors, primitives):\n        self.sensors, self.primitives = sensors, primitives\n        self.pending = None\n        self.preview_lock = threading.Lock()\n\n    @tool(readonly=True)\n    def preview_placement(\n        self,\n        step: Annotated[int, Field(ge=0)],\n        camera: Literal[\"agentview\", \"wrist\"],\n        held_feature: Pixel,\n        target_region: Annotated[list[Pixel], Field(min_length=4, max_length=8)],\n        plane_samples: Annotated[list[Pixel], Field(min_length=4, max_length=8)],\n    ) -> ToolResult:\n        \"\"\"Preview held-feature alignment to a visibly suitable plate/opening subregion.\n\n        Use integer [row,column] pixels in the latest calibrated high image. O is a\n        visible held-object feature; R outlines a fully visible convex usable\n        subregion in boundary order; P marks visible support/rim plane samples.\n        Inspect returned O/P/R marks before align_placement. This is conditional\n        geometry, not identity, whole-object clearance or grasp verification.\n        \"\"\"\n        # Toolkit excludes actions while readonly calls are active; serialize two\n        # simultaneous previews so only the last completed preview remains usable.\n        with self.preview_lock:\n            return self._preview(\n                step, camera, held_feature, target_region, plane_samples\n            )\n\n    def _preview(self, step, camera, held_feature, target_region, plane_samples):\n        self.pending = None\n        frames = self.sensors.frames()\n        if not frames or step != frames[-1][\"step\"]:\n            return ToolResult(\n                data={\n                    \"status\": \"refresh_required\",\n                    \"reason\": \"Use an explicit latest step\",\n                }\n            )\n        frame = frames[-1]\n        if camera not in {\"agentview\", \"wrist\"}:\n            return ToolResult(\n                data={\"status\": \"unavailable\", \"reason\": \"Unknown calibrated camera\"}\n            )\n        high = frame[\"cameras\"][camera].get(\"high\")\n        if high is None:\n            return ToolResult(\n                data={\n                    \"status\": \"unavailable\",\n                    \"reason\": \"High RGB/world/calibration required\",\n                }\n            )\n        try:\n            images, crop = _overlays(high, held_feature, target_region, plane_samples)\n        except (KeyError, ValueError, np.linalg.LinAlgError) as exc:\n            return ToolResult(data={\"status\": \"resample_required\", \"reason\": str(exc)})\n        result = {\n            \"step\": step,\n            \"camera\": camera,\n            \"image_size\": list(high[\"rgb\"].shape[:2]),\n            \"crop_bounds_xyxy\": crop,\n            \"crop_coordinate_rule\": \"Inputs remain integer [row,column] in the full image\",\n            \"labels\": {\n                \"O\": \"held feature\",\n                \"P\": \"support/rim plane samples\",\n                \"R\": \"visible target subregion\",\n            },\n        }\n        try:\n            geometry = placement_geometry(\n                high,\n                frame[\"proprio\"][\"robot0_eef_pos\"],\n                held_feature,\n                target_region,\n                plane_samples,\n            )\n        except (KeyError, ValueError, np.linalg.LinAlgError) as exc:\n            return ToolResult(\n                data={**result, \"status\": \"resample_required\", \"reason\": str(exc)},\n                images=images,\n            )\n        result.update(geometry)\n        result[\"labels\"][\"C\"] = \"computed target in the selected region\"\n        images, _ = _overlays(\n            high,\n            held_feature,\n            target_region,\n            plane_samples,\n            geometry[\"selected_region_center_pixel_rc\"],\n        )\n        if geometry[\"xy_correction_m\"] > 0.30:\n            return ToolResult(\n                data={\n                    **result,\n                    \"status\": \"requires_waypoint\",\n                    \"reason\": \"Choose an intermediate carry-height translation, then preview again\",\n                },\n                images=images,\n            )\n        preview_id = uuid.uuid4().hex\n        self.pending = {\n            \"id\": preview_id,\n            \"step\": step,\n            \"camera\": camera,\n            \"pose\": {\n                k: np.array(v, dtype=float).copy() for k, v in frame[\"proprio\"].items()\n            },\n            \"calibration\": {\n                k: np.asarray(high[\"calibration\"][k]).copy()\n                for k in (\"intrinsic_K\", \"extrinsic_cam2world\")\n            },\n            \"target\": list(geometry[\"eef_target_xyz_keep_height\"]),\n        }\n        return ToolResult(\n            data={**result, \"status\": \"review_required\", \"preview_id\": preview_id},\n            images=images,\n        )\n\n    @tool\n    def align_placement(self, preview_id: str) -> ToolResult:\n        \"\"\"Accept the displayed O/P/R roles and execute its frozen XY target once.\n\n        Reselect with preview_placement if any mark is on the wrong surface or\n        region. Holds current EEF height, orientation and gripper target through\n        translate_to; inspect new images before lowering or releasing.\n        \"\"\"\n        pending, self.pending = self.pending, None\n        if pending is None or pending[\"id\"] != preview_id:\n            return ToolResult(data={\"error\": \"No matching unused preview\"})\n        if self.primitives.env.terminated or self.primitives.env.truncated:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        frame = self.sensors.frames()[-1]\n        if frame[\"step\"] != pending[\"step\"]:\n            return ToolResult(\n                data={\"error\": \"Preview is stale; reselect in the latest image\"}\n            )\n        high = frame[\"cameras\"][pending[\"camera\"]].get(\"high\")\n        if high is None or any(\n            not np.array_equal(high[\"calibration\"][k], v)\n            for k, v in pending[\"calibration\"].items()\n        ):\n            return ToolResult(data={\"error\": \"Preview camera calibration changed\"})\n        raw = self.primitives.env.raw_obs()\n        if any(\n            not np.allclose(raw[k], v, rtol=0, atol=1e-7)\n            for k, v in pending[\"pose\"].items()\n        ):\n            return ToolResult(data={\"error\": \"Robot pose changed; preview again\"})\n        result = EefControl(self.primitives).translate_to(pending[\"target\"])\n        result.data.update(\n            name=\"align_placement\",\n            preview_id=preview_id,\n            semantic_status=\"model_accepted_not_verified\",\n        )\n        return result\n",
+    "required": false,
+    "dependencies": [
+      "align_placement"
+    ],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:align_placement",
+    "name": "align_placement",
+    "origin": "native",
+    "category": "control",
+    "description": "Accept the displayed O/P/R roles and execute its frozen XY target once.\n\nReselect with preview_placement if any mark is on the wrong surface or\nregion. Holds current EEF height, orientation and gripper target through\ntranslate_to; inspect new images before lowering or releasing.",
+    "parameters": {
+      "properties": {
+        "preview_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "preview_id"
+      ],
+      "type": "object"
+    },
+    "version": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Review visible placement geometry before one opt-in XY alignment.\"\"\"\n\nfrom __future__ import annotations\n\nimport io\nimport threading\nimport uuid\nfrom typing import Annotated, Any, Literal\n\nimport numpy as np\nfrom pydantic import Field\n\nfrom robots.libero.eef_control import EefControl\nfrom rpent.tools import ToolResult, tool\n\nPixel = Annotated[\n    list[Annotated[int, Field(ge=0, strict=True)]], Field(min_length=2, max_length=2)\n]\n\n\ndef _points(value, count, shape):\n    points = np.asarray(value)\n    if (\n        points.ndim != 2\n        or points.shape[1] != 2\n        or not count[0] <= len(points) <= count[1]\n        or points.dtype.kind not in \"iu\"\n        or (points < 0).any()\n        or (points >= np.asarray(shape)).any()\n    ):\n        raise ValueError(\n            \"Use integer [row, column] pixels inside the actual high image\"\n        )\n    return points.astype(float)\n\n\ndef _sample(world, pixel):\n    row, col = np.rint(pixel).astype(int)\n    h, w = world.shape[:2]\n    anchor = world[row, col, :3]\n    patch = world[\n        max(0, row - 1) : min(h, row + 2), max(0, col - 1) : min(w, col + 2), :3\n    ].reshape(-1, 3)\n    if not np.isfinite(anchor).all() or np.linalg.norm(anchor) <= 1e-6:\n        raise ValueError(\"Selected pixel has invalid depth\")\n    valid = patch[\n        np.isfinite(patch).all(axis=1)\n        & (np.linalg.norm(patch - anchor, axis=1) <= 0.025)\n    ]\n    if len(valid) < 3:\n        raise ValueError(\"Selected pixel lacks locally consistent depth\")\n    low, median, high = np.quantile(valid, [0.1, 0.5, 0.9], axis=0)\n    spread = float(np.linalg.norm(high - low))\n    if spread > 0.02:\n        raise ValueError(\"Selected surface patch has mixed depth\")\n    return median, spread\n\n\ndef placement_geometry(\n    high: dict[str, Any],\n    eef: np.ndarray,\n    held_feature: list[int],\n    target_region: list[list[int]],\n    plane_samples: list[list[int]],\n) -> dict[str, Any]:\n    \"\"\"Compute only a caller-selected surface/region relation; no semantic verdict.\"\"\"\n    rgb, world = high[\"rgb\"], high[\"world\"]\n    h, w = rgb.shape[:2]\n    if world.shape != (h, w, 3):\n        raise ValueError(\"Recorded high RGB/world shapes differ\")\n    calibration = high[\"calibration\"]\n    if (calibration[\"height\"], calibration[\"width\"]) != (h, w):\n        raise ValueError(\"High calibration dimensions differ\")\n    k = np.asarray(calibration[\"intrinsic_K\"], dtype=float)\n    c2w = np.asarray(calibration[\"extrinsic_cam2world\"], dtype=float)\n    if (\n        k.shape != (3, 3)\n        or c2w.shape != (4, 4)\n        or not np.isfinite(k).all()\n        or not np.isfinite(c2w).all()\n        or abs(np.linalg.det(k)) <= 1e-12\n    ):\n        raise ValueError(\"Invalid high camera calibration\")\n    rotation = c2w[:3, :3]\n    if (\n        not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-6, rtol=0)\n        or not np.isclose(np.linalg.det(rotation), 1, atol=1e-6, rtol=0)\n        or not np.allclose(c2w[3], [0, 0, 0, 1], atol=1e-9, rtol=0)\n    ):\n        raise ValueError(\"Invalid camera-to-world rigid transform\")\n    obj_rc = _points([held_feature], (1, 1), (h, w))[0]\n    region_rc = _points(target_region, (4, 8), (h, w))\n    plane_rc = _points(plane_samples, (4, 8), (h, w))\n    obj, object_spread = _sample(world, obj_rc)\n    sampled = [_sample(world, p) for p in plane_rc]\n    anchors = np.array([p[0] for p in sampled])\n    origin = anchors.mean(axis=0)\n    _, singular, vh = np.linalg.svd(anchors - origin)\n    normal = vh[-1]\n    normal *= 1 if normal[2] >= 0 else -1\n    residual = float(np.abs((anchors - origin) @ normal).max())\n    if singular[1] <= 1e-6 or residual > 0.01 or normal[2] < np.cos(np.deg2rad(15)):\n        raise ValueError(\n            \"Plane is degenerate, inconsistent or not approximately horizontal\"\n        )\n    # Pixel-to-camera convention exactly matches tools._world_from_depth.\n    pixels = np.c_[region_rc[:, 1], region_rc[:, 0], np.ones(len(region_rc))]\n    rays = pixels @ np.linalg.inv(k).T @ c2w[:3, :3].T\n    camera_origin = c2w[:3, 3]\n    denominator = rays @ normal\n    if np.any(np.abs(denominator) <= 1e-9):\n        raise ValueError(\"Region ray is parallel to the selected plane\")\n    distances = ((origin - camera_origin) @ normal) / denominator\n    if np.any(distances <= 0):\n        raise ValueError(\"Region intersects the selected plane behind the camera\")\n    region = camera_origin + distances[:, None] * rays\n    xy = region[:, :2]\n    following = np.roll(xy, -1, axis=0)\n    edges = following - xy\n    turns = edges[:, 0] * np.roll(edges[:, 1], -1) - edges[:, 1] * np.roll(\n        edges[:, 0], -1\n    )\n    # Explicit ordered convex subset only; never repair/cross-sort/hull a bad polygon.\n    if not (np.all(turns > 1e-10) or np.all(turns < -1e-10)):\n        raise ValueError(\n            \"Select a non-crossing convex visible subregion in boundary order\"\n        )\n    offsets = xy[None, :, :] - xy[:, None, :]\n    sides = edges[:, 0, None] * offsets[:, :, 1] - edges[:, 1, None] * offsets[:, :, 0]\n    if not (np.all(sides >= -1e-10) or np.all(sides <= 1e-10)):\n        raise ValueError(\"Selected region crosses itself or is not convex\")\n    cross = xy[:, 0] * following[:, 1] - following[:, 0] * xy[:, 1]\n    twice_area = cross.sum()\n    if abs(twice_area) <= 1e-10:\n        raise ValueError(\"Selected region has no usable area\")\n    center_xy = ((xy + following) * cross[:, None]).sum(axis=0) / (3 * twice_area)\n    center_z = origin[2] - np.dot(normal[:2], center_xy - origin[:2]) / normal[2]\n    center = np.r_[center_xy, center_z]\n    target = np.array(eef, dtype=float)\n    if target.shape != (3,) or not np.isfinite(target).all():\n        raise ValueError(\"Current EEF position is unavailable\")\n    target[:2] += center_xy - obj[:2]\n    projected = k @ (rotation.T @ (center - camera_origin))\n    center_rc = (projected[:2] / projected[2])[::-1]\n    return {\n        \"held_feature_xyz\": obj.tolist(),\n        \"held_feature_patch_spread_m\": object_spread,\n        \"plane_sample_xyz\": anchors.tolist(),\n        \"plane_patch_spread_m\": [float(p[1]) for p in sampled],\n        \"plane_max_residual_m\": residual,\n        \"plane_normal_xyz\": normal.tolist(),\n        \"selected_region_xyz\": region.tolist(),\n        \"selected_region_center_xyz\": center.tolist(),\n        \"selected_region_center_pixel_rc\": center_rc.tolist(),\n        \"eef_target_xyz_keep_height\": target.tolist(),\n        \"xy_correction_m\": float(np.linalg.norm(center_xy - obj[:2])),\n        \"semantic_status\": \"caller_selected_not_verified\",\n        \"limits\": \"Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.\",\n    }\n\n\ndef _overlays(high, held_feature, target_region, plane_samples, center_rc=None):\n    \"\"\"Return original-sized numbered image and a labeled crop, never JSON image data.\"\"\"\n    from PIL import Image, ImageDraw\n\n    image = Image.fromarray(high[\"rgb\"]).copy()\n    draw = ImageDraw.Draw(image)\n    h, w = high[\"rgb\"].shape[:2]\n    region = _points(target_region, (4, 8), (h, w))\n    plane = _points(plane_samples, (4, 8), (h, w))\n    obj = _points([held_feature], (1, 1), (h, w))\n    draw.line(\n        [(float(c), float(r)) for r, c in [*region, region[0]]], fill=\"cyan\", width=3\n    )\n    for prefix, points, color in (\n        (\"O\", obj, \"yellow\"),\n        (\"P\", plane, \"magenta\"),\n        (\"R\", region, \"cyan\"),\n    ):\n        for index, (r, c) in enumerate(points):\n            draw.ellipse((c - 5, r - 5, c + 5, r + 5), outline=color, width=2)\n            draw.text(\n                (c + 6, r + 3),\n                f\"{prefix}{index}\",\n                fill=color,\n                stroke_width=1,\n                stroke_fill=\"black\",\n            )\n    if center_rc is not None:\n        r, c = center_rc\n        draw.line([(c - 8, r), (c + 8, r)], fill=\"lime\", width=3)\n        draw.line([(c, r - 8), (c, r + 8)], fill=\"lime\", width=3)\n        draw.text((c + 9, r + 3), \"C\", fill=\"lime\", stroke_width=1, stroke_fill=\"black\")\n    all_rc = np.vstack([obj, region, plane])\n    lo = np.maximum(np.floor(all_rc.min(axis=0) - 24).astype(int), 0)\n    hi = np.minimum(np.ceil(all_rc.max(axis=0) + 25).astype(int), [h, w])\n    bounds = [int(lo[1]), int(lo[0]), int(hi[1]), int(hi[0])]\n    crop = image.crop(tuple(bounds))\n    output = []\n    for picture in (image, crop):\n        encoded = io.BytesIO()\n        picture.save(encoded, format=\"PNG\")\n        output.append(encoded.getvalue())\n    return output, bounds\n\n\nclass PlacementTools:\n    \"\"\"Opt-in review then one gripper-preserving XY alignment; no autonomous release.\"\"\"\n\n    def __init__(self, sensors, primitives):\n        self.sensors, self.primitives = sensors, primitives\n        self.pending = None\n        self.preview_lock = threading.Lock()\n\n    @tool(readonly=True)\n    def preview_placement(\n        self,\n        step: Annotated[int, Field(ge=0)],\n        camera: Literal[\"agentview\", \"wrist\"],\n        held_feature: Pixel,\n        target_region: Annotated[list[Pixel], Field(min_length=4, max_length=8)],\n        plane_samples: Annotated[list[Pixel], Field(min_length=4, max_length=8)],\n    ) -> ToolResult:\n        \"\"\"Preview held-feature alignment to a visibly suitable plate/opening subregion.\n\n        Use integer [row,column] pixels in the latest calibrated high image. O is a\n        visible held-object feature; R outlines a fully visible convex usable\n        subregion in boundary order; P marks visible support/rim plane samples.\n        Inspect returned O/P/R marks before align_placement. This is conditional\n        geometry, not identity, whole-object clearance or grasp verification.\n        \"\"\"\n        # Toolkit excludes actions while readonly calls are active; serialize two\n        # simultaneous previews so only the last completed preview remains usable.\n        with self.preview_lock:\n            return self._preview(\n                step, camera, held_feature, target_region, plane_samples\n            )\n\n    def _preview(self, step, camera, held_feature, target_region, plane_samples):\n        self.pending = None\n        frames = self.sensors.frames()\n        if not frames or step != frames[-1][\"step\"]:\n            return ToolResult(\n                data={\n                    \"status\": \"refresh_required\",\n                    \"reason\": \"Use an explicit latest step\",\n                }\n            )\n        frame = frames[-1]\n        if camera not in {\"agentview\", \"wrist\"}:\n            return ToolResult(\n                data={\"status\": \"unavailable\", \"reason\": \"Unknown calibrated camera\"}\n            )\n        high = frame[\"cameras\"][camera].get(\"high\")\n        if high is None:\n            return ToolResult(\n                data={\n                    \"status\": \"unavailable\",\n                    \"reason\": \"High RGB/world/calibration required\",\n                }\n            )\n        try:\n            images, crop = _overlays(high, held_feature, target_region, plane_samples)\n        except (KeyError, ValueError, np.linalg.LinAlgError) as exc:\n            return ToolResult(data={\"status\": \"resample_required\", \"reason\": str(exc)})\n        result = {\n            \"step\": step,\n            \"camera\": camera,\n            \"image_size\": list(high[\"rgb\"].shape[:2]),\n            \"crop_bounds_xyxy\": crop,\n            \"crop_coordinate_rule\": \"Inputs remain integer [row,column] in the full image\",\n            \"labels\": {\n                \"O\": \"held feature\",\n                \"P\": \"support/rim plane samples\",\n                \"R\": \"visible target subregion\",\n            },\n        }\n        try:\n            geometry = placement_geometry(\n                high,\n                frame[\"proprio\"][\"robot0_eef_pos\"],\n                held_feature,\n                target_region,\n                plane_samples,\n            )\n        except (KeyError, ValueError, np.linalg.LinAlgError) as exc:\n            return ToolResult(\n                data={**result, \"status\": \"resample_required\", \"reason\": str(exc)},\n                images=images,\n            )\n        result.update(geometry)\n        result[\"labels\"][\"C\"] = \"computed target in the selected region\"\n        images, _ = _overlays(\n            high,\n            held_feature,\n            target_region,\n            plane_samples,\n            geometry[\"selected_region_center_pixel_rc\"],\n        )\n        if geometry[\"xy_correction_m\"] > 0.30:\n            return ToolResult(\n                data={\n                    **result,\n                    \"status\": \"requires_waypoint\",\n                    \"reason\": \"Choose an intermediate carry-height translation, then preview again\",\n                },\n                images=images,\n            )\n        preview_id = uuid.uuid4().hex\n        self.pending = {\n            \"id\": preview_id,\n            \"step\": step,\n            \"camera\": camera,\n            \"pose\": {\n                k: np.array(v, dtype=float).copy() for k, v in frame[\"proprio\"].items()\n            },\n            \"calibration\": {\n                k: np.asarray(high[\"calibration\"][k]).copy()\n                for k in (\"intrinsic_K\", \"extrinsic_cam2world\")\n            },\n            \"target\": list(geometry[\"eef_target_xyz_keep_height\"]),\n        }\n        return ToolResult(\n            data={**result, \"status\": \"review_required\", \"preview_id\": preview_id},\n            images=images,\n        )\n\n    @tool\n    def align_placement(self, preview_id: str) -> ToolResult:\n        \"\"\"Accept the displayed O/P/R roles and execute its frozen XY target once.\n\n        Reselect with preview_placement if any mark is on the wrong surface or\n        region. Holds current EEF height, orientation and gripper target through\n        translate_to; inspect new images before lowering or releasing.\n        \"\"\"\n        pending, self.pending = self.pending, None\n        if pending is None or pending[\"id\"] != preview_id:\n            return ToolResult(data={\"error\": \"No matching unused preview\"})\n        if self.primitives.env.terminated or self.primitives.env.truncated:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        frame = self.sensors.frames()[-1]\n        if frame[\"step\"] != pending[\"step\"]:\n            return ToolResult(\n                data={\"error\": \"Preview is stale; reselect in the latest image\"}\n            )\n        high = frame[\"cameras\"][pending[\"camera\"]].get(\"high\")\n        if high is None or any(\n            not np.array_equal(high[\"calibration\"][k], v)\n            for k, v in pending[\"calibration\"].items()\n        ):\n            return ToolResult(data={\"error\": \"Preview camera calibration changed\"})\n        raw = self.primitives.env.raw_obs()\n        if any(\n            not np.allclose(raw[k], v, rtol=0, atol=1e-7)\n            for k, v in pending[\"pose\"].items()\n        ):\n            return ToolResult(data={\"error\": \"Robot pose changed; preview again\"})\n        result = EefControl(self.primitives).translate_to(pending[\"target\"])\n        result.data.update(\n            name=\"align_placement\",\n            preview_id=preview_id,\n            semantic_status=\"model_accepted_not_verified\",\n        )\n        return result\n",
+    "required": false,
+    "dependencies": [
+      "preview_placement"
+    ],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  },
+  {
+    "id": "native:rotate_axis",
+    "name": "rotate_axis",
+    "origin": "native",
+    "category": "control",
+    "description": "Rotate relative to world x or z, retaining starting XYZ and the gripper target.\n\nangle_rad is a signed right-hand rotation in [-pi, pi], not an Euler\nangle target. Uses up to 40 native control steps with pose feedback.\nInspect returned images and errors; contact clearance and grasp are not\nguaranteed. Change the fingers separately with set_gripper or release.",
+    "parameters": {
+      "properties": {
+        "axis": {
+          "enum": [
+            "x",
+            "z"
+          ],
+          "type": "string"
+        },
+        "angle_rad": {
+          "maximum": 3.141592653589793,
+          "minimum": -3.141592653589793,
+          "type": "number"
+        }
+      },
+      "required": [
+        "axis",
+        "angle_rad"
+      ],
+      "type": "object"
+    },
+    "version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+    "source": "# Copyright 2026 The RPent Authors.\n# Licensed under the Apache License, Version 2.0.\n\"\"\"Optional relative world-axis rotation through the existing EEF controller.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Annotated, Any, Literal\n\nimport numpy as np\nfrom pydantic import Field\n\nfrom robots.libero.eef_control import EefControl\nfrom robots.libero.tools import LiberoPrimitives\nfrom rpent.tools import ToolResult, tool\n\n\nclass OrientationControl:\n    \"\"\"Freeze one robot target and reuse native stepping and feedback.\"\"\"\n\n    def __init__(self, primitives: Any):\n        self.primitives = primitives\n\n    @tool\n    def rotate_axis(\n        self,\n        axis: Literal[\"x\", \"z\"],\n        angle_rad: Annotated[\n            float, Field(ge=-np.pi, le=np.pi, strict=True, allow_inf_nan=False)\n        ],\n    ) -> ToolResult:\n        \"\"\"Rotate relative to world x or z, retaining starting XYZ and the gripper target.\n\n        angle_rad is a signed right-hand rotation in [-pi, pi], not an Euler\n        angle target. Uses up to 40 native control steps with pose feedback.\n        Inspect returned images and errors; contact clearance and grasp are not\n        guaranteed. Change the fingers separately with set_gripper or release.\n        \"\"\"\n        from scipy.spatial.transform import Rotation\n\n        if (\n            axis not in {\"x\", \"z\"}\n            or isinstance(angle_rad, bool)\n            or not np.isfinite(angle_rad)\n            or not -np.pi <= angle_rad <= np.pi\n        ):\n            raise ValueError(\"Supply world axis x or z and a finite angle in [-pi, pi]\")\n        p = self.primitives\n        p._check_cancelled()\n        if p.env.terminated or p.env.truncated:\n            return ToolResult(data={\"error\": \"Environment episode ended\"})\n        raw = p.env.raw_obs()\n        xyz = np.asarray(raw[\"robot0_eef_pos\"], dtype=float).copy()\n        start = Rotation.from_quat(raw[\"robot0_eef_quat\"])\n        vector = np.array([1.0, 0.0, 0.0] if axis == \"x\" else [0.0, 0.0, 1.0])\n        target = Rotation.from_rotvec(vector * angle_rad) * start\n        position_tol = LiberoPrimitives.move_to.args_schema.model_fields[\"tol\"].default\n        angle_tol = LiberoPrimitives.rotate_wrist.args_schema.model_fields[\n            \"tol\"\n        ].default\n        control = EefControl(p)\n\n        def errors(observation):\n            return (\n                float(np.linalg.norm(xyz - observation[\"robot0_eef_pos\"])),\n                float(\n                    (\n                        target\n                        * Rotation.from_quat(observation[\"robot0_eef_quat\"]).inv()\n                    ).magnitude()\n                ),\n            )\n\n        executed = 0\n        for _ in range(4):\n            position_error, angle_error = errors(raw)\n            if position_error < position_tol and angle_error < angle_tol:\n                break\n            result = control.move_eef(\n                xyz.tolist(), target.as_quat().tolist(), gripper=0.0, steps=10\n            )\n            if result.is_error:\n                return result\n            executed += result.data[\"steps_used\"]\n            raw = p.env.raw_obs()\n            if p.env.terminated or p.env.truncated:\n                break\n        position_error, angle_error = errors(raw)\n        return ToolResult(\n            data={\n                \"name\": \"rotate_axis\",\n                \"axis\": axis,\n                \"angle_rad\": float(angle_rad),\n                \"target_xyz\": xyz.tolist(),\n                \"target_quat_xyzw\": target.as_quat().tolist(),\n                \"final_eef_pos\": np.asarray(raw[\"robot0_eef_pos\"]).tolist(),\n                \"final_eef_quat_xyzw\": np.asarray(raw[\"robot0_eef_quat\"]).tolist(),\n                \"position_error_m\": position_error,\n                \"orientation_error_rad\": angle_error,\n                \"position_tolerance_m\": position_tol,\n                \"orientation_tolerance_rad\": angle_tol,\n                \"target_reached\": position_error < position_tol\n                and angle_error < angle_tol,\n                \"steps_used\": executed,\n                \"max_steps\": 40,\n                \"gripper_command\": 0.0,\n                \"terminated\": bool(p.env.terminated),\n                \"truncated\": bool(p.env.truncated),\n            }\n        )\n",
+    "required": false,
+    "dependencies": [],
+    "validation": "native",
+    "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
+    "example": null,
+    "source_robot": "libero",
+    "supported_environments": [
+      "libero"
+    ],
+    "selectable": true,
+    "incompatibility_reason": null
+  }
+]
