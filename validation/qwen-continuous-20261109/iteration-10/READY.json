@@ -1,0 +1,17 @@
+{
+  "approved_at": "2026-11-10T11:29:48.422438+00:00",
+  "scope": "A two-cell screen under continuous user authorization; Flash remote direct, Mac untouched",
+  "source_commit": "419c5e4",
+  "inputs_sha256": {
+    "plan.json": "c60122fd3120edbcea546c60be49a9116d077716a41e8d4ce4dc97ef1743444a",
+    "invariants.json": "2e14b720f4cb930b886a00f21abeb22db11bfaefcb7872f7dca56b7b334d7ee0",
+    "source-handoff.json": "d63433bad20cbf490fb5cdabc1cfed1e4c202f1a48176530d6043094626f99ba",
+    "material-handoff.json": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57",
+    "runner-checks.json": "b5156b99fa6974cb921a2d4b1a30906a51ee1de5c7737dc9e5cd2992692f0677"
+  },
+  "full_unit": "2168 passed / 15 skipped",
+  "runner_cases": 65,
+  "classifier_unchanged": true,
+  "no_valid_failure_retries": true,
+  "generation": 1
+}

@@ -1,0 +1,233 @@
+{
+  "suite": "libero_10_task",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "native:translate_to",
+      "native:preview_placement",
+      "native:align_placement",
+      "native:rotate_axis"
+    ],
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none"
+  },
+  "tool_names": [
+    "finish",
+    "list_dir",
+    "read_text_file",
+    "write_text_file",
+    "pi0_doubled",
+    "pi0_pick",
+    "release",
+    "set_gripper",
+    "back_project",
+    "read_image",
+    "segment",
+    "view_camera_meta",
+    "view_env_state",
+    "sensor_patch_batch",
+    "translate_to",
+    "preview_placement",
+    "align_placement",
+    "rotate_axis"
+  ],
+  "tool_versions": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf"
+  ],
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "route": "remote direct; all proxy variables unset",
+  "incident_policy": "Preserve and exclude unexpected incidents; diagnose before retrying same cell. Full configured-budget timeout is failure.",
+  "approved": true,
+  "approval": "Continuous user authorization covers two-cell A screen after validated source handoff. Startup requires a separate READY gate.",
+  "total": 2,
+  "benchmark": {
+    "cohort": "libero_10_task-language-right-v1",
+    "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files",
+    "private_bddl": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/benchmark/bddl_files",
+    "changed_file": "libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+    "before_sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+    "after_sha256": "8d2d6cd8673e826ddef3183d67a79b75431a5b293e97649af9040b2dd9a47c7c",
+    "goal_and_init_unchanged": true,
+    "benchmark_root_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+    "init_states_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+  },
+  "comparison": "A on unchanged R18+W2+F+V, a=task0 and b=task4 seed0. Historical09 V parent retained; temporal and lane differences are confounds. Original C20 remains separate. No overall success-rate claim.",
+  "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+  "native_placement_versions": {
+    "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+  },
+  "native_orientation_version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+  "selection_difference": {
+    "reference": "iteration-09 R18+W2+F+V; historical parent only, no reruns",
+    "reference_plan_sha256": "db4470890494c7d45068fc21b9817fc826ad8f40ea8a1ebb080223d55f812526",
+    "before": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "native:translate_to",
+      "native:preview_placement",
+      "native:align_placement",
+      "native:rotate_axis"
+    ],
+    "removed": [],
+    "added": [],
+    "after": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "native:translate_to",
+      "native:preview_placement",
+      "native:align_placement",
+      "native:rotate_axis"
+    ],
+    "preserved": {
+      "model_profile": "qwen3.8-flash",
+      "max_turns": 30,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600
+    },
+    "server_owned_change": {
+      "initial_action_phase": {
+        "before": false,
+        "after": true
+      }
+    },
+    "material_change": null
+  },
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "process_working_directory": "/home/zwy/work/embodied_harness",
+  "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+  "source_handoff": {
+    "source_head": "7ab895c8287d6114b2ba1ebb8414a8af7b8839d0",
+    "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "placement_tool_versions": {
+      "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+      "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+    },
+    "orientation_tool_version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+    "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+    "parent_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/calibrated-view-test-checkout",
+    "uncommitted_verified_working_tree": true,
+    "validation_passed": true,
+    "validation": {
+      "passed": true,
+      "recorded_at": "2026-11-10T11:17:43.315346+00:00",
+      "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+      "parent_source_files_verified": 303,
+      "production_changes": [
+        "robots/libero/research/manual.py",
+        "robots/libero/robot_spec.py",
+        "rpent/cli/dashboard.py",
+        "rpent/dashboard/workbench.py",
+        "rpent/planner/api_loop.py"
+      ],
+      "full_unit": {
+        "passed": 2168,
+        "skipped": 15,
+        "seconds": 75.83
+      },
+      "focused": {
+        "passed": 145,
+        "seconds": 5.53
+      },
+      "scoped_precommit_passed": true,
+      "full_precommit_passed": false,
+      "full_precommit_limit": "18 existing historical validation-script diagnostics; scoped hooks passed before final full unit run",
+      "native_catalog_records_identical": 22,
+      "native_and_calibrated_default_prompts_identical": true,
+      "W2_material_files_unchanged": 7,
+      "external_model_requests": 0,
+      "simulator_actions": 0,
+      "task_benefit_verified": false,
+      "initial_validation_failures": [
+        "Initial lint import order corrected before tests",
+        "Two fixture failures: TestModel treated output finish as function tool; Workbench test lacked connection check. Corrected fixtures, unchanged assertions and production behavior.",
+        "First scoped hook sorted an import; rerun passed."
+      ]
+    },
+    "scope": "Default-off LIBERO/API initial language-action phase; unchanged F/V/R18/W2 and budgets; task benefit untested",
+    "material_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+    "planner_view_mode": "calibrated-pair-v1",
+    "initial_action_phase": true
+  },
+  "source_handoff_sha256": "d63433bad20cbf490fb5cdabc1cfed1e4c202f1a48176530d6043094626f99ba",
+  "material_handoff_sha256": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57",
+  "material_difference": [],
+  "server_owned_difference": {
+    "initial_action_phase": true
+  },
+  "cell_identity": "full task directory path, never run_id alone across isolated roots",
+  "lanes": {
+    "a": {
+      "port": 33371,
+      "unit": "rpent-qwen-continuous-20261109-i10-a.service",
+      "condition": "R18+W2+F+V+A",
+      "workflow_requested": true,
+      "eef_control_expected": true,
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-decision-w2-381e10402bd1",
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "trials": [
+        {
+          "task": 0,
+          "seed": 0
+        }
+      ]
+    },
+    "b": {
+      "port": 56413,
+      "unit": "rpent-qwen-continuous-20261109-i10-b.service",
+      "condition": "R18+W2+F+V+A",
+      "workflow_requested": true,
+      "eef_control_expected": true,
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-decision-w2-381e10402bd1",
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        }
+      ]
+    }
+  }
+}
