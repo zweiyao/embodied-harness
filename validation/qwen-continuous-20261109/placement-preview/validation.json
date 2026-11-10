@@ -1,0 +1,25 @@
+{
+  "full_unit": {
+    "passed": 2086,
+    "skipped": 15,
+    "duration_s": 71.93,
+    "command": "pytest tests/unit_tests -q",
+    "coverage": "remote Python3.11 installed environment, not full CI matrix"
+  },
+  "focused": {
+    "passed": 49,
+    "duration_s": 0.82,
+    "additional_after_full": "One ManualToolkit preview→align→recorded-image integration case; production unchanged"
+  },
+  "scoped_precommit": true,
+  "script_precommit": true,
+  "historical_replays": 4,
+  "simulator_probe": {
+    "passed": true,
+    "actual_control_steps": 3,
+    "model_requests": 0,
+    "owned_cleanup": true,
+    "protected_files": 563
+  },
+  "not_validated": "Qwen adoption, semantic selection accuracy, held transport, task success or cost benefit"
+}

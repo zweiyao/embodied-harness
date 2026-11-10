@@ -1,0 +1,28 @@
+{
+  "critical_API_session_tool_files_byte_identical_to_M": [
+    "rpent/planner/api_loop.py",
+    "rpent/cli/dashboard.py",
+    "robots/libero/tools.py",
+    "robots/libero/env_client.py",
+    "robots/libero/env_server.py",
+    "robots/libero/robot_spec.py",
+    "rpent/session/base.py",
+    "rpent/session/__init__.py",
+    "rpent/tools/base.py",
+    "rpent/tools/toolkit.py",
+    "rpent/tools/__init__.py",
+    "rpent/tools/human_in_the_loop.py",
+    "rpent/tools/direct_action.py",
+    "rpent/tools/common.py"
+  ],
+  "changed_existing_runtime_files": [
+    "robots/libero/research/manual.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "new_runtime_files": [
+    "robots/libero/research/placement.py"
+  ],
+  "default_selection_and_old_prompt_cases_unchanged": 4,
+  "old_native_declarations_unchanged": 19,
+  "source_file_count": 302
+}

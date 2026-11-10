@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-11-10T06:02:55.137642+00:00",
+  "authority": "Explicit user continuous optimization authorization; root reviewed these exact drafts and authorized isolated implementation and offline validation on 2026-11-10. No model episode or simulator probe until separately released by root after iteration04 cleanup.",
+  "parent_condition": "iteration04 C+M-restricted18, irrespective of its outcome",
+  "selection_change": "Replace sensor_container_geometry with preview_placement and align_placement; keep C memory, old sensor_patch_batch and M; total19 tools",
+  "draft_hashes": {
+    "candidate-placement-preview.md": "a94fe1a58b79d66c5ca7839acabd971491d97e9dbe03b3e8a15006775c73678b",
+    "candidate-placement-preview.py.draft": "1d1937559b0c80e38c4c7716591365a5b67a4ab759e554f76dac3c3c1f1247be",
+    "candidate-placement-registration.patch.draft": "c2306691264ee9ea083a1cd175fefcf60afa110c10f630b1240407d977f1a8a3",
+    "placement-geometry-review.md": "52e93cd01cb193871b516d0d27a96bfc5dfecd6531436ae00c2a555e0f6a843a"
+  }
+}

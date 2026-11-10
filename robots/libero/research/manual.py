@@ -33,6 +33,15 @@ class ManualToolkit(LiberoToolkit):
     def __init__(
         self, *, selected, journal, sandbox_image="embodied-sensor:pilot", **kwargs
     ):
+        placement_names = {t["name"] for t in selected} & {
+            "preview_placement",
+            "align_placement",
+        }
+        if placement_names and placement_names != {
+            "preview_placement",
+            "align_placement",
+        }:
+            raise ValueError("Select preview_placement and align_placement together")
         self.journal = journal
         self._ended = False
         self.mask_lock = threading.RLock()
@@ -55,6 +64,17 @@ class ManualToolkit(LiberoToolkit):
                         partial(self._execute_primitive, name, definition)
                     )
                 )
+        if placement_names:
+            from robots.libero.research.placement import PlacementTools
+
+            placement = PlacementTools(self.sensors, self.primitives)
+            self.add_tool(placement.preview_placement)
+            definition = placement.align_placement
+            self.add_tool(
+                definition.with_handler(
+                    partial(self._execute_primitive, "align_placement", definition)
+                )
+            )
         originals = self._tools
         self._tools = {}
         generated = [t for t in selected if t["origin"] == "generated"]
@@ -230,10 +250,19 @@ def availability_prompt(selected):
         if any(t["name"] == "move_eef" for t in selected)
         else ""
     )
+    placement_guidance = (
+        "For placing a held object on a plate or into an open container, "
+        "preview_placement selects a visible target region and includes the held-feature offset. "
+        "Inspect its O/P/R overlay, then use align_placement with that preview_id; "
+        "reselect incorrect marks. Recheck the returned images before lowering or releasing.\n\n"
+        if {"preview_placement", "align_placement"} <= {t["name"] for t in selected}
+        else ""
+    )
     return (
         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
         "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
         "Generated perception tools compute evidence, not task success.\n\n"
         + eef_guidance
+        + placement_guidance
     )

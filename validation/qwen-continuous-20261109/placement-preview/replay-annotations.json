@@ -1,0 +1,43 @@
+{
+  "status": "Independent visual annotations for archived diagnostic replay; not model memory, task policy or action commands",
+  "annotator": "audit04",
+  "evidence": "Inspected original 1024x1024 agentview_high images before evaluating candidate geometry; no hidden object pose/mesh/goal used",
+  "cases": [
+    {
+      "id": "task4-step3-visible-plate",
+      "run": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-03/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "step": 3,
+      "camera": "agentview",
+      "held_feature": [510, 175],
+      "plane_samples": [[690, 35], [690, 80], [735, 80], [750, 25]],
+      "target_region": [[700, 25], [696, 70], [726, 75], [740, 25]],
+      "visual_roles": "O on front surface of held yellow-white mug; P on visible white inner plate surface; R a visible subset of plate support, not whole plate",
+      "limit": "Surface point is not cup footprint center; no assertion of full cup fit or future holding"
+    },
+    {
+      "id": "task4-step3-wrong-robot-feature",
+      "inherits": "task4-step3-visible-plate",
+      "held_feature": [350, 170],
+      "visual_roles": "O deliberately on robot housing, not cup; same valid plate anchors/region",
+      "expected_semantic_verdict": "wrong feature visible in O overlay, regardless of numerical acceptance"
+    },
+    {
+      "id": "task0-step4-visible-interior",
+      "run": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-03/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "step": 4,
+      "camera": "agentview",
+      "held_feature": [689, 145],
+      "plane_samples": [[467, 851], [464, 980], [612, 900], [613, 980]],
+      "target_region": [[520, 900], [515, 995], [565, 995], [570, 920]],
+      "visual_roles": "O on visible cream-cheese face below gripper; P visually selected far/near rim cloth; R visible region through the basket opening, not complete opening boundary",
+      "limit": "Cloth rim may not support the proposed 1cm/15degree plane checks; report rejection honestly rather than adjust threshold. Basket cropped at right; no hidden boundary is supplied. Candidate ray-plane target is not wall depth."
+    },
+    {
+      "id": "task0-step4-wrong-table-plane",
+      "inherits": "task0-step4-visible-interior",
+      "plane_samples": [[850, 450], [850, 600], [950, 600], [950, 450]],
+      "visual_roles": "P deliberately on table rather than rim; O/R unchanged",
+      "expected_semantic_verdict": "wrong plane role must remain conditional and visibly wrong even if plane fit succeeds"
+    }
+  ]
+}

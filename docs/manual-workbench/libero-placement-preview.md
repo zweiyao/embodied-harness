@@ -1,0 +1,13 @@
+# LIBERO visible-region placement preview
+
+Select `preview_placement` and `align_placement` together to review a placement target before moving. Both are off by default. They use recorded calibrated RGB-D and robot feedback; existing controllers, native motion tools and published experience remain unchanged.
+
+`preview_placement` takes an explicit latest `step`, `camera` (`agentview` or `wrist`), one `held_feature`, four to eight ordered `target_region` vertices and four to eight `plane_samples`. All points are integer `[row, column]` pixels in that camera's full high-resolution image. The tool returns the image dimensions; coordinates in its crop still refer to the full image.
+
+Choose a visible feature on the held object, a convex region wholly inside a visibly usable part of the plate or container opening, and visible support/rim samples from the same approximately horizontal plane. The region may cover only part of the opening. The tool fits the sampled plane and intersects the region's camera rays with it, so the background depth seen through a cavity does not become its target. It computes a horizontal EEF correction that retains the selected feature's offset and current EEF height.
+
+Review the returned full image and crop: O marks the object feature, P the plane samples and R the selected region. C marks the computed target within that region. Incorrect roles require a new preview. `align_placement(preview_id)` accepts that displayed evidence and uses its frozen target once through `translate_to`, preserving the gripper command target. It cannot accept replacement XYZ values. A new action, changed pose/calibration, replaced preview or consumed ID invalidates the reference. Readonly inspection of the unchanged frame does not.
+
+The interface rejects locally inconsistent depth, a degenerate or steep fitted plane, invalid region geometry and a correction over the existing documented 0.30 m XY staging limit. For a longer move, choose an intermediate carry-height target and preview again. No automatic waypoints, lowering or release are performed.
+
+These checks establish conditional geometry. A table can fit a plane, and a region on a wall can be geometrically consistent. The model must verify the displayed roles and fresh action images. A visible object feature is not its footprint center; the selected region is not the full opening. Holding, clearance, collision avoidance, release height, stable placement and task success remain unverified by this calculation. The initial scope is upright held objects and stationary, approximately horizontal plate/open-container targets.

@@ -16,7 +16,12 @@ from rpent.tools import ToolResult
 
 @pytest.mark.parametrize(
     "motion, invalid_eef",
-    [("pi0_pick", False), ("translate_to", False), ("translate_to", True)],
+    [
+        ("pi0_pick", False),
+        ("translate_to", False),
+        ("translate_to", True),
+        ("align_placement", False),
+    ],
 )
 def test_native_controls_unchanged_and_disabled_tool_rejected(
     tmp_path, monkeypatch, fake_single_arm_primitives, motion, invalid_eef
@@ -27,6 +32,8 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
         templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
     )
     names = {motion, "finish"} | ({"move_eef"} if invalid_eef else set())
+    if motion == "align_placement":
+        names.add("preview_placement")
     selected = [t for t in native_catalog() if t["name"] in names]
     fake = fake_single_arm_primitives.for_robot(libero.libero_tools.LiberoPrimitives)
     fake.env = SimpleNamespace(terminated=False, truncated=False)
@@ -87,6 +94,22 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
     if motion == "pi0_pick":
         result = t.execute_tool(motion, {"prompt": "pick", "max_chunks": 3})
         assert calls[0]["max_chunks"] == 3
+    elif motion == "align_placement":
+        from tests.unit_tests.robots.libero.research.test_placement import observation
+
+        frame, params = observation()
+        t.sensors.frames = lambda: [frame]
+        fake.env.raw_obs = lambda: frame["proprio"]
+        preview = t.execute_tool("preview_placement", params)
+        assert len(preview.images) == 2
+        result = t.execute_tool(motion, {"preview_id": preview.data["preview_id"]})
+        assert calls == [
+            {"xyz": preview.data["eef_target_xyz_keep_height"], "gripper": 0.0}
+        ]
+        assert t.state.latest_record().command["action"] == "align_placement"
+        assert (
+            t.state.latest_record().result["preview_id"] == preview.data["preview_id"]
+        )
     else:
         result = t.execute_tool(motion, {"xyz": [0.1, 0.2, 0.3]})
         assert calls == [{"xyz": [0.1, 0.2, 0.3], "gripper": 0.0}]
@@ -221,3 +244,17 @@ def test_generated_omitted_optional_parameters_are_not_sent_to_sandbox():
         result = instance.generated({"name": "sensor_fixture"}, **kwargs)
         assert result.data == {"step": expected}
         assert logged[-1]["params"] == supplied
+
+
+@pytest.mark.parametrize("name", ["preview_placement", "align_placement"])
+def test_incomplete_placement_pair_fails_before_environment_initialization(
+    monkeypatch, name
+):
+    initialized = []
+    monkeypatch.setattr(
+        libero.LiberoToolkit, "__init__", lambda *a, **k: initialized.append(True)
+    )
+    selected = [t for t in native_catalog() if t["name"] in {name, "finish"}]
+    with pytest.raises(ValueError, match="together"):
+        ManualToolkit(selected=selected, journal=None)
+    assert not initialized

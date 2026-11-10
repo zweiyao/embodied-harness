@@ -128,21 +128,33 @@ def native_catalog(robot="libero", *, control_mode="native"):
 
     from robots.libero import tools
     from robots.libero.eef_control import EefControl
+    from robots.libero.research import placement as placement_module
+    from robots.libero.research.placement import PlacementTools
     from robots.libero.research.sensors import ACTIONS
     from rpent.tools import iter_tools
     from rpent.tools.common import CommonTools
 
     result = []
-    for owner in (tools, tools.LiberoPrimitives, CommonTools, EefControl):
+    for owner in (
+        tools,
+        tools.LiberoPrimitives,
+        CommonTools,
+        EefControl,
+        PlacementTools,
+    ):
         for tool in iter_tools(owner):
-            source = inspect.getsource(tool.handler)
+            source = inspect.getsource(
+                placement_module if owner is PlacementTools else tool.handler
+            )
             result.append(
                 {
                     "id": "native:" + tool.name,
                     "name": tool.name,
                     "origin": "native",
                     "category": "control"
-                    if tool.name in ACTIONS or owner is EefControl
+                    if tool.name in ACTIONS
+                    or owner is EefControl
+                    or tool.name == "align_placement"
                     else "auxiliary"
                     if owner is CommonTools
                     else "perception",
@@ -151,7 +163,13 @@ def native_catalog(robot="libero", *, control_mode="native"):
                     "version": hashlib.sha256(source.encode()).hexdigest(),
                     "source": source,
                     "required": tool.name == "finish",
-                    "dependencies": [],
+                    "dependencies": [
+                        "align_placement"
+                        if tool.name == "preview_placement"
+                        else "preview_placement"
+                    ]
+                    if owner is PlacementTools
+                    else [],
                     "validation": "native",
                     "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
                     "example": None,
@@ -420,7 +438,14 @@ class Workbench:
                 if t["origin"] == "native"
                 and t["selectable"]
                 and not (
-                    self.robot == "libero" and t["name"] in {"move_eef", "translate_to"}
+                    self.robot == "libero"
+                    and t["name"]
+                    in {
+                        "move_eef",
+                        "translate_to",
+                        "preview_placement",
+                        "align_placement",
+                    }
                 )
             ]
         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):

@@ -315,3 +315,24 @@ def test_manual_experiments_preserve_scene_config_without_pilot_cells(bench, tmp
         assert run.request["model_profile"] == "api"
         assert run.request["tools"] == ["native:finish"]
         assert "pilot_cell" not in run.request
+
+
+def test_placement_pair_is_opt_in_and_hashes_its_geometry(bench):
+    import hashlib
+    import inspect
+
+    from robots.libero.research import placement
+    from robots.libero.research.manual import availability_prompt
+
+    names = {"preview_placement", "align_placement"}
+    assert names.isdisjoint(t["name"] for t in bench.selection())
+    for name in names:
+        with pytest.raises(ValueError, match="requires"):
+            bench.selection(["native:finish", "native:" + name])
+    selected = bench.selection(
+        ["native:finish", *["native:" + name for name in sorted(names)]]
+    )
+    expected_hash = hashlib.sha256(inspect.getsource(placement).encode()).hexdigest()
+    assert all(t["version"] == expected_hash for t in selected if t["name"] in names)
+    assert "Inspect its O/P/R overlay" in availability_prompt(selected)
+    assert "O/P/R" not in availability_prompt(bench.selection())

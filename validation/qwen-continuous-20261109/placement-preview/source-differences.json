@@ -1,0 +1,12 @@
+{
+  "parent_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "inherited_difference_report": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract/source-differences.json",
+  "changed_from_parent": [
+    "robots/libero/research/manual.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "new_files": [
+    "robots/libero/research/placement.py"
+  ],
+  "not_a_whole_tree_live_plus_P_claim": true
+}
