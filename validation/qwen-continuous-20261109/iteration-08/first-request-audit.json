@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T09:04:52.748174+00:00",
+  "rows": [
+    {
+      "lane": "a",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "first_request_at": "2026-11-10T09:03:35.644401+00:00",
+      "allow_text_output": false,
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "schema_count": 18,
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "server_flag_frozen": true,
+      "model_requests_so_far": 3,
+      "toolkit_entries_so_far": 4
+    },
+    {
+      "lane": "b",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "first_request_at": "2026-11-10T09:03:35.703383+00:00",
+      "allow_text_output": false,
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "schema_count": 18,
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "server_flag_frozen": true,
+      "model_requests_so_far": 2,
+      "toolkit_entries_so_far": 3
+    }
+  ],
+  "scope": "First actual request and frozen metadata only; task efficacy pending"
+}

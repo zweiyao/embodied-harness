@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "successful_three_call_bootstrap_no_required_tag",
+    "split_calls_not_batched_startup",
+    "attempted_but_not_dispatched",
+    "failed_guide_return_not_success",
+    "wrong_path_same_contents_not_frozen_guide",
+    "noninitial_view_not_successful_bootstrap",
+    "extra_bootstrap_action_reported",
+    "valid_action_label_matches_runtime_dispatch",
+    "model_action_attempt_not_runtime_dispatch",
+    "different_action_is_mismatch",
+    "enabled_readonly_tool_not_enabled_NEXT_action",
+    "nonempty_precondition_recorded_without_truth_inference",
+    "missing_malformed_labels_observational_parent_not_required",
+    "finish_uses_actual_journal_dispatch",
+    "canceled_request_not_completed_tag_denominator",
+    "toolkit_entry_error_and_cancellation_not_handler_or_physical_execution",
+    "workflow_parser_exception_is_observational_not_incident",
+    "integrated_workflow_only_error_preserves_core_analysis"
+  ],
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "classification_modified": false
+}
