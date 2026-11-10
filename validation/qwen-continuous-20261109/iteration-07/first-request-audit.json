@@ -1,0 +1,94 @@
+{
+  "observed_at": "2026-11-10T08:07:35.784227+00:00",
+  "passed": true,
+  "cells": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "lane": "a",
+      "condition": "R18-reference",
+      "task": 4,
+      "first_event_at": "2026-11-10T07:56:48.938175+00:00",
+      "first_model_request_at": "2026-11-10T07:56:58.415345+00:00",
+      "model": "qwen3.8-flash",
+      "enable_thinking": false,
+      "actual_schema_count": 18,
+      "all_schemas_equal_parent_after_output_path_substitution": true,
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "frozen_material_hashes_match": true,
+      "actual_request_contains_exact_user_and_system_prompts": true,
+      "W2_instruction_present": false,
+      "actual_child_source_config_proxy_eef_guards": true,
+      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runtime-audit-task4-seed0-570b8458b5b94abca42b9159981f23f1.json",
+      "observed_roles": [
+        "environment_server",
+        "workbench"
+      ]
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "lane": "b",
+      "condition": "R18+W2",
+      "task": 4,
+      "first_event_at": "2026-11-10T07:56:48.951862+00:00",
+      "first_model_request_at": "2026-11-10T07:56:58.575294+00:00",
+      "model": "qwen3.8-flash",
+      "enable_thinking": false,
+      "actual_schema_count": 18,
+      "all_schemas_equal_parent_after_output_path_substitution": true,
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "frozen_material_hashes_match": true,
+      "actual_request_contains_exact_user_and_system_prompts": true,
+      "W2_instruction_present": true,
+      "actual_child_source_config_proxy_eef_guards": true,
+      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runtime-audit-task4-seed0-560578b3a38048a2930ae79f1bacc603.json",
+      "observed_roles": [
+        "environment_server",
+        "workbench"
+      ]
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runs/session/tasks/0002_libero_10_task_t0_s0",
+      "lane": "a",
+      "condition": "R18-reference",
+      "task": 0,
+      "first_event_at": "2026-11-10T08:07:04.984840+00:00",
+      "first_model_request_at": "2026-11-10T08:07:13.876905+00:00",
+      "model": "qwen3.8-flash",
+      "enable_thinking": false,
+      "actual_schema_count": 18,
+      "all_schemas_equal_parent_after_output_path_substitution": true,
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "frozen_material_hashes_match": true,
+      "actual_request_contains_exact_user_and_system_prompts": true,
+      "W2_instruction_present": false,
+      "actual_child_source_config_proxy_eef_guards": true,
+      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runtime-audit-task0-seed0-cb277272b9f145c8833e7f85f064e366.json",
+      "observed_roles": [
+        "environment_server",
+        "workbench"
+      ]
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0002_libero_10_task_t0_s0",
+      "lane": "b",
+      "condition": "R18+W2",
+      "task": 0,
+      "first_event_at": "2026-11-10T08:07:04.984768+00:00",
+      "first_model_request_at": "2026-11-10T08:07:13.862122+00:00",
+      "model": "qwen3.8-flash",
+      "enable_thinking": false,
+      "actual_schema_count": 18,
+      "all_schemas_equal_parent_after_output_path_substitution": true,
+      "material_version": "qwen-decision-w2-381e10402bd1",
+      "frozen_material_hashes_match": true,
+      "actual_request_contains_exact_user_and_system_prompts": true,
+      "W2_instruction_present": true,
+      "actual_child_source_config_proxy_eef_guards": true,
+      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runtime-audit-task0-seed0-48f98d67b3d9412b95cf9972f2e1d01b.json",
+      "observed_roles": [
+        "environment_server",
+        "workbench"
+      ]
+    }
+  ]
+}

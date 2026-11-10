@@ -55,3 +55,15 @@ C+M+P+R18 scored 0/2. Both ordinary600-second timeouts remain valid; no rerun or
 Actual18 schemas, paired initial images, complete contemporaneous environment snapshots and7092 protected hashes passed; owned cleanup and main preservation passed. Full recorded cost:17 requests/15 completed responses,165146 input tokens including116736 cached,1629 output,1222.2 summed outcome seconds. Two preflight connectivity requests and final canceled usage are separate/unmetered. R's software/robot-only gates remain interface evidence only.
 
 The next pivot is the explicitly recorded W2 user-message workflow, with no tool, memory, image, network or model change: required startup reads together, then a short next-action/missing-precondition marker matched against actual dispatch. The primitive-execution reminder addresses the repeated active-pick misuse without claiming holding detection. Compare parent R18 and W2 on four new cells; retain all previous failures. Candidate is not promoted merely for fewer calls or compliant labels. A consistent-view candidate remains a separate unimplemented draft.
+
+## Iteration 07 — soft decision labels do not ensure execution
+
+Logged: 2026-11-10T08:25:22.994570+00:00.
+
+R18-reference and R18+W2 each scored0/2 on task4/0 seed0. All four full600-second timeouts remain valid, no policy reruns. W2's startup grouping occurred only on task0; its next response was text-only, with no tool dispatch. The existing str output alternative accepted it and Dashboard waited for another user message;513.950s from that response to outcome includes small finalization overhead, not network waiting. Task4 delayed its first action to575.844s after14 earlier toolkit entries. No promotion; fewer calls in a no-action episode is not efficiency evidence.
+
+7868 protected files,18 actual API declarations, both material versions, four contemporaneous environment snapshots, paired images and owned cleanup passed. The first terminal audit mistakenly compared dynamic invoked flags as immutable tool contracts; retain its exit1/traceback, exclude only that field with72 per-cell tool metadata records, and preserve strict remaining checks. This report-only correction does not change policy outcomes.
+
+Four attempts cost37 requests/34 completed responses,402127 input tokens including310272 cached,3215 output,2444.2 summed outcome seconds. Two preflight calls remain separate. Fixed lane assignment and historical comparison limit causal conclusions.
+
+Next F reuses SDK finish-only output under a server-owned default-off API option. Exact four-file diff and validation were recorded before implementation. No new prompts, experience, automatic actions, bootstrap, view changes or extra budget; offline protocol/compatibility/cancellation tests precede two fresh affected-task screens. See [report](iteration-07/report.md) and [decision](finish-only/change-decision.md).

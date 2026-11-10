@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-11-10T08:23:29.044727+00:00",
+  "units": {
+    "rpent-qwen-continuous-20261109-i07-a.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "rpent-qwen-continuous-20261109-i07-b.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "0",
+      "ControlGroup": "",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "rpent-qwen-continuous-20261109-i07-batch.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "1",
+      "ControlGroup": "",
+      "ActiveState": "failed",
+      "SubState": "failed"
+    }
+  },
+  "cleanup_passed": true,
+  "observed_owned_processes_remaining": [],
+  "corrected_postrun_audit_passed": true,
+  "original_batch_reporting_exit_retained": 1,
+  "runtime_experiments_unchanged": true,
+  "passed": true
+}

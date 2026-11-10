@@ -1,0 +1,26 @@
+{
+  "approved_by": "root coordinating agent under user-approved continuous isolated LIBERO optimization",
+  "approved_at": "2026-11-10T07:56:14.287792+00:00",
+  "scope": "iteration07 only: normal preflight then four planned R18-reference versus R18+W2 task4/0 seed0 cells; two lanes independently run tasks4 then0",
+  "reviewed_commit": "88b4bab",
+  "material_commit": "ec03f44",
+  "hashes": {
+    "plan.json": "ff7dbb334dfcb962a2053f95b5e0ccf8f1f49cc3c57c0917427bd11d3b01542c",
+    "source-handoff.json": "c1baa28230e7a24cfa0579685a3e9765da64f61c4bfee7d5954e42ee75da0601",
+    "material-handoff.json": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57",
+    "runner-checks.json": "bf0d3f49a42a68e1121b4ea56025ba693d6ffd5b826444024806e7b3cc3fb150"
+  },
+  "required_checks": {
+    "workflow_scenarios": 18,
+    "classification_scenarios": 14,
+    "observer_scenarios": 4,
+    "independent_material_and_metric_review": "passed",
+    "protected_files_at_setup": 7868,
+    "frozen_source_files": 303,
+    "max_model_requests": 30,
+    "planner_timeout_s": 600,
+    "new_runtime_prompt_change": "user.md only,132 to96 words",
+    "network_image_tool_memory_changes": false
+  },
+  "limits": "Keep official success primary; workflow deviations never alter validity or trigger retries. All prior valid failures remain. Fixed lane/condition and timing confounds are declared."
+}

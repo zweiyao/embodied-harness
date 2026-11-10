@@ -68,6 +68,15 @@ summary = {
     "paired_initial_images": [],
     "tool_returns": [],
     "workflow_observations": [],
+    "invocation_metadata": [],
+    "audit_correction": {
+        "reason": "Catalog invoked is per-session usage metadata, not the tool contract",
+        "excluded_contract_fields": ["invoked"],
+        "original_failure_preserved": "initial-final-audit-error.txt",
+        "plan": "postrun-audit-correction.md",
+        "policy_retries": 0,
+        "outcomes_unchanged": True,
+    },
 }
 runtime = []
 spec = get_robot_spec()
@@ -108,7 +117,29 @@ for row in rows:
     prior_path = Path(prior_row["path"])
     prior_tools = json.loads((prior_path / "manifest.json").read_text())["tools"]
     assert len(declarations) == 18
-    assert declarations == prior_tools
+    assert [
+        {k: v for k, v in tool.items() if k != "invoked"} for tool in declarations
+    ] == [{k: v for k, v in tool.items() if k != "invoked"} for tool in prior_tools]
+    for tool, old_tool in zip(declarations, prior_tools, strict=True):
+        earlier = [
+            r
+            for r in rows
+            if r["lane"] == lane
+            and Path(r["path"]).name < p.name
+            and r["metrics"]["tool_calls"].get(tool["name"], 0)
+        ]
+        summary["invocation_metadata"].append(
+            {
+                "cell_id": str(p),
+                "tool": tool["name"],
+                "current_invoked": tool.get("invoked"),
+                "historical06_invoked": old_tool.get("invoked"),
+                "prior_same_lane_cells_with_toolkit_entry": [
+                    r["path"] for r in earlier
+                ],
+                "interpretation": "Usage metadata recorded separately; no other manifest field excluded.",
+            }
+        )
     assert [t["id"] for t in declarations] == plan["config"]["tools"]
     assert [t["name"] for t in declarations] == plan["tool_names"]
     for key in ("max_turns", "max_tokens", "planner_timeout_s"):

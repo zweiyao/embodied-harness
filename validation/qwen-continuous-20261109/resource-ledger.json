@@ -1,13 +1,13 @@
 {
-  "recorded_at": "2026-11-10T07:46:16.567289+00:00",
-  "scope": "Completed official-policy development attempts in iterations01–06 only; not a pooled success-rate estimate",
+  "recorded_at": "2026-11-10T08:25:22.994570+00:00",
+  "scope": "Completed official-policy development attempts in iterations01–07 only; not a pooled success-rate estimate",
   "formal_policy": {
-    "valid_attempts": 14,
-    "model_requests": 299,
-    "input_tokens_including_cached": 10597173,
-    "cached_input_tokens_subset": 7052288,
-    "output_tokens": 33717,
-    "summed_outcome_elapsed_s": 5899.9
+    "valid_attempts": 18,
+    "model_requests": 336,
+    "input_tokens_including_cached": 10999300,
+    "cached_input_tokens_subset": 7362560,
+    "output_tokens": 36932,
+    "summed_outcome_elapsed_s": 8344.1
   },
   "by_iteration": [
     {
@@ -113,9 +113,28 @@
         "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-06/a/runs/session/tasks/0001_libero_10_task_t4_s0",
         "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-06/b/runs/session/tasks/0001_libero_10_task_t0_s0"
       ]
+    },
+    {
+      "iteration": 7,
+      "source": "iteration-07/results.json",
+      "sha256": "d00ec8e848be95eedc0c79e9176a52dfdee857ee04d68b6befd1a0f72c7d8e5d",
+      "cost": {
+        "valid_attempts": 4,
+        "model_requests": 37,
+        "input_tokens_including_cached": 402127,
+        "cached_input_tokens_subset": 310272,
+        "output_tokens": 3215,
+        "summed_outcome_elapsed_s": 2444.2
+      },
+      "cell_paths": [
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/a/runs/session/tasks/0002_libero_10_task_t0_s0",
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0002_libero_10_task_t0_s0"
+      ]
     }
   ],
-  "separate_connectivity_requests_without_usage": 12,
+  "separate_connectivity_requests_without_usage": 14,
   "separate_completed_transport_diagnostic": {
     "requests": 4,
     "input_tokens_including_cached": 8588,
@@ -124,11 +143,11 @@
     "summed_request_elapsed_s": 85.23,
     "source": "api-transport-diagnostic-20261110/final-summary.json"
   },
-  "identity_rule": "Use full task directory, not run_id alone. Stable IDs repeat across isolated experiment roots. All14 task directories are distinct.",
+  "identity_rule": "Use full task directory, not run_id alone. Stable IDs repeat across isolated experiment roots. All18 task directories are distinct.",
   "limitations": [
     "Cached input is a subset, not additive. Usage includes only responses that report usage; canceled requests are not estimated.",
     "Unit tests, robot-only interface probes, local development and infrastructure preparation time are outside this policy-cost ledger.",
     "Conditions differ and only two tasks/one initial state were used. Do not pool these outcomes to claim model capability or success-rate improvement.",
-    "Iteration07 has not begun and is excluded."
+    "Only completed iterations01–07 are included; later candidates are excluded."
   ]
 }

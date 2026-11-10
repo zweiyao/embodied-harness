@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T08:22:09.417498+00:00",
+  "ruff_check": true,
+  "py_compile": true,
+  "same_four_task_directories_audited": true,
+  "policy_reruns": 0,
+  "original_audit_sha256": "1463b4cadc4c45172b4015dd15a84350079e117e926aebafe295f951e99e3788",
+  "corrected_audit_sha256": "624f2aef66d04f3b7f4fb575f1fd07bb85dc8f810184cc9dd1b02bce121c0900",
+  "excluded_contract_fields": [
+    "invoked"
+  ],
+  "other_contract_fields_unchanged": true,
+  "results_sha256": "d00ec8e848be95eedc0c79e9176a52dfdee857ee04d68b6befd1a0f72c7d8e5d",
+  "original_batch_exit_code": 1,
+  "original_error_log": "initial-final-audit-error.txt"
+}

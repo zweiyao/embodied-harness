@@ -1,0 +1,14 @@
+{
+  "unit": "rpent-qwen-continuous-20261109-i07-batch.service",
+  "observed_at": "2026-11-10T07:56:43.474666+00:00",
+  "systemd": {
+    "MainPID": "2998315",
+    "ExecMainStartTimestamp": "Tue 2026-11-10 15:56:43 CST",
+    "ExecMainStartTimestampMonotonic": "2521501349032",
+    "ActiveState": "active",
+    "SubState": "running",
+    "InvocationID": "1523a819d857462883f81dfa34d0e84b"
+  },
+  "READY_sha256": "2359b792a9a601825bdac71c58aeeeab876412cb83fe51821655118e74d2cc15",
+  "scope": "normal preflight then four planned cells, no valid-failure retries"
+}

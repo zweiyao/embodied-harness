@@ -1,5 +1,15 @@
 {
-  "phase": "prepared_waiting_READY",
+  "phase": "completed",
+  "completed": 4,
   "planned": 4,
-  "completed": 0
+  "lanes": {
+    "a": {
+      "phase": "completed",
+      "completed": 2
+    },
+    "b": {
+      "phase": "completed",
+      "completed": 2
+    }
+  }
 }
