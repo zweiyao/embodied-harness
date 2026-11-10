@@ -1,0 +1,10 @@
+[
+  "robots/libero/research/orientation.py",
+  "robots/libero/research/manual.py",
+  "robots/libero/robot_spec.py",
+  "rpent/dashboard/workbench.py",
+  "tests/unit_tests/robots/libero/research/test_orientation.py",
+  "tests/unit_tests/robots/libero/research/test_manual.py",
+  "tests/unit_tests/robots/libero/test_eef_control.py",
+  "docs/manual-workbench/libero-orientation-feedback.md"
+]

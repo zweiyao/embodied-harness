@@ -1,0 +1,131 @@
+--- attempt01/sim_probe.py
++++ attempt02/sim_probe.py
+@@ -17,6 +17,11 @@
+     config = root / "libero-config/config.yaml"
+     assert Path(os.environ["LIBERO_CONFIG_PATH"]).resolve() == config.parent
+     before_config = hashlib.sha256(config.read_bytes()).hexdigest()
++    previous_actions = json.loads((root / "preparation.json").read_text()).get(
++        "previous_attempt_control_steps", 0
++    )
++    remaining_actions = 160 - previous_actions
++    assert 0 < remaining_actions <= 160
+     assert not any(
+         os.environ.get(name)
+         for name in (
+@@ -110,9 +115,13 @@
+         "enable_eef_control": True,
+         "purpose": "Robot interface only; no object manipulation or task-success claim",
+         "cases": [],
++        "previous_attempt_control_steps": previous_actions,
++        "this_attempt_control_budget": remaining_actions,
++        "aggregate_control_budget": 160,
+     }
+     env = facade = toolkit = None
+     trace = []
++    actual_control_steps = 0
+     try:
+         init_output_dir(root)
+         env = make_env(
+@@ -150,13 +159,16 @@
+             observed = Rotation.from_quat(raw["robot0_eef_quat"])
+             assert frame["controller_ref_name"] == frame["site_name"]
+             assert frame["controller_ref_site_id"] == frame["site_id"]
+-            np.testing.assert_allclose(
+-                raw["robot0_eef_pos"], frame["site_position"], atol=1e-7, rtol=0
+-            )
+-            assert (observed * body.inv()).magnitude() <= 1e-7
+             return {
+                 "eef_xyz": np.asarray(raw["robot0_eef_pos"]).tolist(),
+                 "eef_quat_xyzw": observed.as_quat().tolist(),
++                "live_eef_quat_xyzw": body.as_quat().tolist(),
++                "cached_live_position_discrepancy_m": float(
++                    np.linalg.norm(np.asarray(raw["robot0_eef_pos"]) - frame["site_position"])
++                ),
++                "cached_live_orientation_discrepancy_rad": float(
++                    (observed * body.inv()).magnitude()
++                ),
+                 "body_to_site_rotation": (body.inv() * site).as_matrix().tolist(),
+                 **frame,
+             }
+@@ -168,15 +180,19 @@
+         inner_step = p._step_env
+ 
+         def traced_step(action):
+-            assert len(trace) < 160
++            nonlocal actual_control_steps
++            assert actual_control_steps < remaining_actions
+             inner_step(action)
++            actual_control_steps += 1
++            entry = {"action": np.asarray(action).tolist()}
++            trace.append(entry)
+             state = robot_state()
++            entry.update(state)
+             change = (
+                 Rotation.from_matrix(state["body_to_site_rotation"])
+                 * reference_offset.inv()
+             ).magnitude()
+-            state["offset_change_rad"] = float(change)
+-            trace.append({"action": np.asarray(action).tolist(), **state})
++            entry["offset_change_rad"] = float(change)
+             assert change <= 1e-7
+             assert action[6] == 0
+             np.testing.assert_array_equal(
+@@ -212,17 +228,26 @@
+             assert 0 < count <= 40
+             after = robot_state()
+             actual = (
+-                Rotation.from_quat(after["eef_quat_xyzw"])
+-                * Rotation.from_quat(before["eef_quat_xyzw"]).inv()
++                Rotation.from_quat(after["live_eef_quat_xyzw"])
++                * Rotation.from_quat(before["live_eef_quat_xyzw"]).inv()
+             ).as_rotvec()
++            live_position_error = float(
++                np.linalg.norm(np.asarray(after["site_position"]) - record.result["target_xyz"])
++            )
++            live_orientation_error = float(
++                (Rotation.from_quat(record.result["target_quat_xyzw"])
++                 * Rotation.from_quat(after["live_eef_quat_xyzw"]).inv()).magnitude()
++            )
+             index = 0 if axis == "x" else 2
+             case.update(
+                 after=after,
+                 actual_control_steps=count,
+                 actual_world_rotation_vector=actual.tolist(),
++                live_position_error_m=live_position_error,
++                live_orientation_error_rad=live_orientation_error,
+                 max_position_deviation_m=max(
+                     float(
+-                        np.linalg.norm(np.asarray(item["eef_xyz"]) - before["eef_xyz"])
++                        np.linalg.norm(np.asarray(item["site_position"]) - before["eef_xyz"])
+                     )
+                     for item in trace[start_index:]
+                 ),
+@@ -233,6 +258,8 @@
+             assert record.result["position_error_m"] < 0.012
+             assert record.result["orientation_error_rad"] < 0.02
+             assert record.result["target_reached"]
++            assert live_position_error < 0.012
++            assert live_orientation_error < 0.02
+             assert len(result.images) >= 2
+             np.testing.assert_array_equal(
+                 record.result["target_xyz"], before["eef_xyz"]
+@@ -251,6 +278,10 @@
+                 item["offset_change_rad"] for item in trace
+             ),
+             actual_gripper_target_preserved=True,
++            actual_gripper_target_value=first["gripper_target"],
++            gripper_scope="Only the initialized target was tested; no held object or alternate grip target",
++            max_cached_live_position_discrepancy_m=max(item["cached_live_position_discrepancy_m"] for item in trace),
++            max_cached_live_orientation_discrepancy_rad=max(item["cached_live_orientation_discrepancy_rad"] for item in trace),
+             controller_reference_matches_observed_site=True,
+         )
+     except BaseException as exc:
+@@ -265,6 +296,8 @@
+         elif env is not None:
+             env.env.close()
+         signal.alarm(0)
++        report["actual_control_steps"] = actual_control_steps
++        report["aggregate_control_steps"] = previous_actions + actual_control_steps
+         report["owned_children_start_ticks"] = owned
+         report["facade_closed"] = facade is not None and facade._closed
+         report["private_config_unchanged"] = (

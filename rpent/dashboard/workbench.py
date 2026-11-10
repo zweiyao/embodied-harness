@@ -128,7 +128,9 @@ def native_catalog(robot="libero", *, control_mode="native"):
 
     from robots.libero import tools
     from robots.libero.eef_control import EefControl
+    from robots.libero.research import orientation as orientation_module
     from robots.libero.research import placement as placement_module
+    from robots.libero.research.orientation import OrientationControl
     from robots.libero.research.placement import PlacementTools
     from robots.libero.research.sensors import ACTIONS
     from rpent.tools import iter_tools
@@ -141,10 +143,15 @@ def native_catalog(robot="libero", *, control_mode="native"):
         CommonTools,
         EefControl,
         PlacementTools,
+        OrientationControl,
     ):
         for tool in iter_tools(owner):
             source = inspect.getsource(
-                placement_module if owner is PlacementTools else tool.handler
+                placement_module
+                if owner is PlacementTools
+                else orientation_module
+                if owner is OrientationControl
+                else tool.handler
             )
             result.append(
                 {
@@ -153,7 +160,7 @@ def native_catalog(robot="libero", *, control_mode="native"):
                     "origin": "native",
                     "category": "control"
                     if tool.name in ACTIONS
-                    or owner is EefControl
+                    or owner in {EefControl, OrientationControl}
                     or tool.name == "align_placement"
                     else "auxiliary"
                     if owner is CommonTools
@@ -443,6 +450,7 @@ class Workbench:
                     in {
                         "move_eef",
                         "translate_to",
+                        "rotate_axis",
                         "preview_placement",
                         "align_placement",
                     }

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "old_native_declarations_unchanged": 21,
+  "default_selection_and_old_prompt_cases_unchanged": 6,
+  "orientation_tool_version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+  "placement_tool_versions": {
+    "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+  },
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "model_requests": 0,
+  "simulator_actions": 0
+}

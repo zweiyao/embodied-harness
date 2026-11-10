@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "passed": 2108,
+  "skipped": 15,
+  "elapsed_s": 73.54,
+  "command": "PYTHONPATH=<source> RPENT_REPO_ROOT=<source> /home/zwy/work/harnessvla/.venv/bin/python -m pytest tests/unit_tests -q",
+  "log_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback/full-unit.log",
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+  "remote_python_environment": "/home/zwy/work/harnessvla/.venv",
+  "full_CI_Python_matrix": false
+}

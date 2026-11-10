@@ -1,0 +1,109 @@
+--- a/robots/libero/research/manual.py
++++ b/robots/libero/research/manual.py
+@@ -64,6 +64,18 @@
+                         partial(self._execute_primitive, name, definition)
+                     )
+                 )
++        if any(t["name"] == "rotate_axis" for t in selected):
++            from robots.libero.research.orientation import OrientationControl
++
++            controller = self.primitives.env.get_eef_controller_state()
++            if "error" in controller:
++                raise ValueError(controller["error"])
++            definition = OrientationControl(self.primitives).rotate_axis
++            self.add_tool(
++                definition.with_handler(
++                    partial(self._execute_primitive, "rotate_axis", definition)
++                )
++            )
+         if placement_names:
+             from robots.libero.research.placement import PlacementTools
+ 
+@@ -250,6 +262,13 @@
+         if any(t["name"] == "move_eef" for t in selected)
+         else ""
+     )
++    rotation_guidance = (
++        "Use rotate_axis for relative world-axis rotation while retaining position "
++        "and the gripper target. Inspect returned images and pose errors before "
++        "the next move.\n\n"
++        if any(t["name"] == "rotate_axis" for t in selected)
++        else ""
++    )
+     placement_guidance = (
+         "For placing a held object on a plate or into an open container, "
+         "preview_placement selects a visible target region and includes the held-feature offset. "
+@@ -264,5 +283,6 @@
+         "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
+         "Generated perception tools compute evidence, not task success.\n\n"
+         + eef_guidance
++        + rotation_guidance
+         + placement_guidance
+     )
+--- a/robots/libero/robot_spec.py
++++ b/robots/libero/robot_spec.py
+@@ -237,7 +237,7 @@
+     parser.add_argument(
+         "--enable-eef-control",
+         action="store_true",
+-        help="Enable controller feedback for the optional workbench move_eef tool.",
++        help="Enable controller feedback for optional workbench move_eef and rotate_axis tools.",
+     )
+     parser.add_argument(
+         "--libero-type",
+@@ -472,7 +472,8 @@
+                 ["--enable-eef-control"]
+                 if getattr(args, "enable_eef_control", False)
+                 or any(
+-                    t["name"] == "move_eef" for t in getattr(args, "frozen_tools", [])
++                    t["name"] in {"move_eef", "rotate_axis"}
++                    for t in getattr(args, "frozen_tools", [])
+                 )
+                 else []
+             ),
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -128,7 +128,9 @@
+ 
+     from robots.libero import tools
+     from robots.libero.eef_control import EefControl
++    from robots.libero.research import orientation as orientation_module
+     from robots.libero.research import placement as placement_module
++    from robots.libero.research.orientation import OrientationControl
+     from robots.libero.research.placement import PlacementTools
+     from robots.libero.research.sensors import ACTIONS
+     from rpent.tools import iter_tools
+@@ -141,10 +143,15 @@
+         CommonTools,
+         EefControl,
+         PlacementTools,
++        OrientationControl,
+     ):
+         for tool in iter_tools(owner):
+             source = inspect.getsource(
+-                placement_module if owner is PlacementTools else tool.handler
++                placement_module
++                if owner is PlacementTools
++                else orientation_module
++                if owner is OrientationControl
++                else tool.handler
+             )
+             result.append(
+                 {
+@@ -153,7 +160,7 @@
+                     "origin": "native",
+                     "category": "control"
+                     if tool.name in ACTIONS
+-                    or owner is EefControl
++                    or owner in {EefControl, OrientationControl}
+                     or tool.name == "align_placement"
+                     else "auxiliary"
+                     if owner is CommonTools
+@@ -443,6 +450,7 @@
+                     in {
+                         "move_eef",
+                         "translate_to",
++                        "rotate_axis",
+                         "preview_placement",
+                         "align_placement",
+                     }

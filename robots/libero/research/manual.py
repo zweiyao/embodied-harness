@@ -64,6 +64,18 @@ class ManualToolkit(LiberoToolkit):
                         partial(self._execute_primitive, name, definition)
                     )
                 )
+        if any(t["name"] == "rotate_axis" for t in selected):
+            from robots.libero.research.orientation import OrientationControl
+
+            controller = self.primitives.env.get_eef_controller_state()
+            if "error" in controller:
+                raise ValueError(controller["error"])
+            definition = OrientationControl(self.primitives).rotate_axis
+            self.add_tool(
+                definition.with_handler(
+                    partial(self._execute_primitive, "rotate_axis", definition)
+                )
+            )
         if placement_names:
             from robots.libero.research.placement import PlacementTools
 
@@ -250,6 +262,13 @@ def availability_prompt(selected):
         if any(t["name"] == "move_eef" for t in selected)
         else ""
     )
+    rotation_guidance = (
+        "Use rotate_axis for relative world-axis rotation while retaining position "
+        "and the gripper target. Inspect returned images and pose errors before "
+        "the next move.\n\n"
+        if any(t["name"] == "rotate_axis" for t in selected)
+        else ""
+    )
     placement_guidance = (
         "For placing a held object on a plate or into an open container, "
         "preview_placement selects a visible target region and includes the held-feature offset. "
@@ -264,5 +283,6 @@ def availability_prompt(selected):
         "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
         "Generated perception tools compute evidence, not task success.\n\n"
         + eef_guidance
+        + rotation_guidance
         + placement_guidance
     )

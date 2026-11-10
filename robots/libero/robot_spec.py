@@ -237,7 +237,7 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool) -> None:
     parser.add_argument(
         "--enable-eef-control",
         action="store_true",
-        help="Enable controller feedback for the optional workbench move_eef tool.",
+        help="Enable controller feedback for optional workbench move_eef and rotate_axis tools.",
     )
     parser.add_argument(
         "--libero-type",
@@ -472,7 +472,8 @@ def _spawn_env_server(
                 ["--enable-eef-control"]
                 if getattr(args, "enable_eef_control", False)
                 or any(
-                    t["name"] == "move_eef" for t in getattr(args, "frozen_tools", [])
+                    t["name"] in {"move_eef", "rotate_axis"}
+                    for t in getattr(args, "frozen_tools", [])
                 )
                 else []
             ),

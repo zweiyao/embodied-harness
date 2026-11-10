@@ -21,6 +21,8 @@ from rpent.tools import ToolResult
         ("translate_to", False),
         ("translate_to", True),
         ("align_placement", False),
+        ("rotate_axis", False),
+        ("rotate_axis", True),
     ],
 )
 def test_native_controls_unchanged_and_disabled_tool_rejected(
@@ -31,7 +33,9 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
     monkeypatch.setattr(
         templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
     )
-    names = {motion, "finish"} | ({"move_eef"} if invalid_eef else set())
+    names = {motion, "finish"} | (
+        {"move_eef"} if invalid_eef and motion != "rotate_axis" else set()
+    )
     if motion == "align_placement":
         names.add("preview_placement")
     selected = [t for t in native_catalog() if t["name"] in names]
@@ -43,6 +47,21 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
         }
     fake._sam3_client = None
     calls = []
+    if motion == "rotate_axis":
+        from robots.libero.research.orientation import OrientationControl
+
+        if not invalid_eef:
+            fake.env.get_eef_controller_state = lambda: {}
+
+        def rotate(self, axis, angle_rad):
+            calls.append({"axis": axis, "angle_rad": angle_rad})
+            return ToolResult(data={"steps_used": 10, "gripper_command": 0.0})
+
+        monkeypatch.setattr(
+            OrientationControl,
+            "rotate_axis",
+            OrientationControl.rotate_axis.with_handler(rotate),
+        )
 
     def pick(self, **kwargs):
         calls.append(kwargs)
@@ -110,6 +129,12 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
         assert (
             t.state.latest_record().result["preview_id"] == preview.data["preview_id"]
         )
+    elif motion == "rotate_axis":
+        result = t.execute_tool(motion, {"axis": "z", "angle_rad": 0.08})
+        assert calls == [{"axis": "z", "angle_rad": 0.08}]
+        assert t.state.latest_record().command["action"] == "rotate_axis"
+        assert t.state.latest_record().result["gripper_command"] == 0.0
+        assert t.execute_tool("rotate_wrist", {"delta_yaw": 0.08}).is_error
     else:
         result = t.execute_tool(motion, {"xyz": [0.1, 0.2, 0.3]})
         assert calls == [{"xyz": [0.1, 0.2, 0.3], "gripper": 0.0}]

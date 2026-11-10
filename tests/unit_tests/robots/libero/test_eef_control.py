@@ -285,7 +285,15 @@ def test_default_selection_and_prompt_do_not_enable_eef():
 
 
 @pytest.mark.parametrize(
-    "names", [["move_to"], ["translate_to"], ["move_eef"], ["move_eef", "translate_to"]]
+    "names",
+    [
+        ["move_to"],
+        ["translate_to"],
+        ["move_eef"],
+        ["move_eef", "translate_to"],
+        ["rotate_axis"],
+        ["rotate_axis", "translate_to"],
+    ],
 )
 def test_workbench_selection_enables_only_its_own_environment(
     monkeypatch, tmp_path, names
@@ -310,4 +318,27 @@ def test_workbench_selection_enables_only_its_own_environment(
         frozen_tools=[{"name": name} for name in names],
     )
     robot_spec._spawn_env_server(args, tmp_path)
-    assert ("--enable-eef-control" in captured["cmd"]) is ("move_eef" in names)
+    assert ("--enable-eef-control" in captured["cmd"]) is bool(
+        {"move_eef", "rotate_axis"} & set(names)
+    )
+
+
+def test_rotation_selection_does_not_spawn_or_modify_a_borrowed_environment(
+    monkeypatch, tmp_path
+):
+    from robots.libero import robot_spec
+
+    client = object()
+    monkeypatch.setattr(robot_spec, "make_rpc_client", lambda endpoint: client)
+
+    def unexpected_spawn(**kwargs):
+        raise AssertionError("borrowed environment must not be spawned")
+
+    monkeypatch.setattr(robot_spec, "ProcessDaemon", unexpected_spawn)
+    daemon, actual = robot_spec._spawn_env_server(
+        SimpleNamespace(
+            env_endpoint="http://localhost:1234", frozen_tools=[{"name": "rotate_axis"}]
+        ),
+        tmp_path,
+    )
+    assert daemon is None and actual is client
