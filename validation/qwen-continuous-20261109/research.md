@@ -92,3 +92,5 @@ keep_policy: score_improvement；少量格子用于候选筛选，最终冻结�
 第八轮[报告](iteration-08/report.md)：同期审计、8943保护文件与自有服务清理通过；两次失败不重跑替换。累计20次有效开发尝试，不能合并不同候选的成功率。
 
 下一候选按[V精确决策](calibrated-view/change-decision.md)验证统一标定图像契约；不混入新的经验、控制参数或预算变化。
+
+V软件验证完成：2154 passed/15 skipped、三帧只读回放、默认目录/提示一致、四生产文件范围及W2材料核对通过；全仓历史hook失败单独记录，任务收益未测。后续筛选方案见[09](iteration-09/change-plan.md)。

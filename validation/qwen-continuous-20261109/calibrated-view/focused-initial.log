@@ -1,0 +1,21 @@
+.................................................F...................    [100%]
+=================================== FAILURES ===================================
+_______ test_planner_views_are_server_owned_and_native_catalog_unchanged _______
+
+bench = <rpent.dashboard.workbench.Workbench object at 0x7b0d3b3750d0>
+
+    def test_planner_views_are_server_owned_and_native_catalog_unchanged(bench):
+        from rpent.dashboard.workbench import native_catalog
+    
+        candidate = Workbench({**bench.config, "planner_view_mode": "calibrated-pair-v1"})
+>       assert bench.catalog() == native_catalog()
+E       assert [{'id': 'nati...l', ...}, ...] == [{'id': 'nati...l', ...}, ...]
+E         
+E         At index 0 diff: {'id': 'native:finish', 'name': 'finish', 'origin': 'native', 'category': 'auxiliary', 'description': 'Call when the task is complete or unrecoverable. Halts the agent loop. Save any artifacts (recipe, audit) BEFORE calling finish.', 'parameters': {'properties': {'status': {'description': "Outcome, e.g. 'success', 'failure', or 'stuck'.", 'type': 'string'}, 'summary': {'description': 'Short natural-language summary of the run.', 'type': 'string'}}, 'required': ['status', 'summary'], 'type': 'object'}, 'version': '0c2069c30df75e18a6fed9074be76703957b2639...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/unit_tests/rpent/dashboard/test_workbench.py:431: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit_tests/rpent/dashboard/test_workbench.py::test_planner_views_are_server_owned_and_native_catalog_unchanged
+1 failed, 68 passed in 1.25s

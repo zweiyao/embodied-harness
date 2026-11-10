@@ -1,0 +1,267 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+..F..................................................................... [ 13%]
+........................................................................ [ 16%]
+.......................s................................................ [ 19%]
+.....s................sss............................................... [ 23%]
+...............FFFFFFFFFFFF..F.......................................... [ 26%]
+...........................................ssss......................... [ 29%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+.....................................................................ss. [ 69%]
+.................................................s...................... [ 73%]
+....ss.................................................................. [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+........                                                                 [100%]
+=================================== FAILURES ===================================
+______ test_insertion_experience_is_indexed_and_loaded_only_by_file_tool _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x77fe60d6a590>
+
+    def test_insertion_experience_is_indexed_and_loaded_only_by_file_tool(monkeypatch):
+        repo = Path(__file__).resolve().parents[4]
+        monkeypatch.setenv("RPENT_REPO_ROOT", str(repo))
+        root = repo / "memory" / "flexiv"
+        memory = MemoryManager(root, memory_access="read_only")
+        assert memory.validate() == []
+        tools = CommonTools(memory=memory)
+>       index = tools.read_text_file(path=str(root / "MEMORY.md")).data["content"]
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'content'
+
+tests/unit_tests/robots/flexiv/test_memory.py:21: KeyError
+_________ test_alignment_composes_translation_without_changing_height __________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+
+    def test_alignment_composes_translation_without_changing_height(alignment_input):
+        frames, params = alignment_input
+        result = PATCH(frames, params)
+>       alignment = result.pop("alignment")
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:165: KeyError
+__________ test_alignment_requires_explicit_actual_latest_step[None] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...6666666666666, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'alignment_pair': [0, 1]})
+step = None
+
+    @pytest.mark.parametrize("step", [None, -1, 0])
+    def test_alignment_requires_explicit_actual_latest_step(alignment_input, step):
+        frames, params = alignment_input
+        if step is None:
+            del params["step"]
+        else:
+            params["step"] = step
+>       alignment = PATCH(frames, params)["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:193: KeyError
+___________ test_alignment_requires_explicit_actual_latest_step[-1] ____________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...6, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': -1, 'alignment_pair': [0, 1]})
+step = -1
+
+    @pytest.mark.parametrize("step", [None, -1, 0])
+    def test_alignment_requires_explicit_actual_latest_step(alignment_input, step):
+        frames, params = alignment_input
+        if step is None:
+            del params["step"]
+        else:
+            params["step"] = step
+>       alignment = PATCH(frames, params)["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:193: KeyError
+____________ test_alignment_requires_explicit_actual_latest_step[0] ____________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 0, 'alignment_pair': [0, 1]})
+step = 0
+
+    @pytest.mark.parametrize("step", [None, -1, 0])
+    def test_alignment_requires_explicit_actual_latest_step(alignment_input, step):
+        frames, params = alignment_input
+        if step is None:
+            del params["step"]
+        else:
+            params["step"] = step
+>       alignment = PATCH(frames, params)["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:193: KeyError
+__________ test_alignment_rejects_invalid_or_repeated_indices[pair0] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = [0, 0]
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+__________ test_alignment_rejects_invalid_or_repeated_indices[pair1] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = [0, 2]
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+__________ test_alignment_rejects_invalid_or_repeated_indices[pair2] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = [-1, 1]
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+__________ test_alignment_rejects_invalid_or_repeated_indices[pair3] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = [True, 1]
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+__________ test_alignment_rejects_invalid_or_repeated_indices[pair4] ___________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = [0]
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+____________ test_alignment_rejects_invalid_or_repeated_indices[01] ____________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+pair = '01'
+
+    @pytest.mark.parametrize("pair", [[0, 0], [0, 2], [-1, 1], [True, 1], [0], "01"])
+    def test_alignment_rejects_invalid_or_repeated_indices(alignment_input, pair):
+        frames, params = alignment_input
+>       alignment = PATCH(frames, {**params, "alignment_pair": pair})["alignment"]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:201: KeyError
+_______ test_alignment_does_not_propose_from_unavailable_evidence[depth] _______
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+invalid = 'depth'
+
+    @pytest.mark.parametrize("invalid", ["depth", "eef", "high", "step"])
+    def test_alignment_does_not_propose_from_unavailable_evidence(alignment_input, invalid):
+        frames, params = alignment_input
+        frame = frames[-1]
+        if invalid == "depth":
+            frame["cameras"]["agentview"]["high"]["depth"][3:6, 3:6] = np.nan
+        elif invalid == "eef":
+            frame["proprio"]["robot0_eef_pos"][0] = np.nan
+        elif invalid == "high":
+            del frame["cameras"]["agentview"]["high"]
+        else:
+            params["step"] = 40
+        result = PATCH(frames, params)
+        if invalid in {"depth", "eef"}:
+>           assert result["alignment"]["status"] == "unavailable"
+                   ^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:220: KeyError
+________ test_alignment_does_not_propose_from_unavailable_evidence[eef] ________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+invalid = 'eef'
+
+    @pytest.mark.parametrize("invalid", ["depth", "eef", "high", "step"])
+    def test_alignment_does_not_propose_from_unavailable_evidence(alignment_input, invalid):
+        frames, params = alignment_input
+        frame = frames[-1]
+        if invalid == "depth":
+            frame["cameras"]["agentview"]["high"]["depth"][3:6, 3:6] = np.nan
+        elif invalid == "eef":
+            frame["proprio"]["robot0_eef_pos"][0] = np.nan
+        elif invalid == "high":
+            del frame["cameras"]["agentview"]["high"]
+        else:
+            params["step"] = 40
+        result = PATCH(frames, params)
+        if invalid in {"depth", "eef"}:
+>           assert result["alignment"]["status"] == "unavailable"
+                   ^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'alignment'
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:220: KeyError
+_________ test_alignment_pair_schema_accepts_only_two_bounded_indices __________
+
+alignment_input = ([{'step': 0, 'proprio': {'robot0_eef_pos': [0, 0, 0], 'robot0_eef_quat': [0, 0, 0], 'robot0_gripper_qpos': [0, 0, 0]}...66, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+
+    def test_alignment_pair_schema_accepts_only_two_bounded_indices(alignment_input):
+        _, params = alignment_input
+        schema = json.loads((EXAMPLES / "candidate.json").read_text())["parameters"]
+        validator = Draft202012Validator(schema)
+>       assert validator.is_valid(params)
+E       AssertionError: assert False
+E        +  where False = is_valid({'points': [[0.26666666666666666, 0.26666666666666666], [0.7333333333333333, 0.7333333333333333]], 'radius': 1, 'step': 1, 'alignment_pair': [0, 1]})
+E        +    where is_valid = Draft202012Validator(schema={'additionalProperties': False, 'properties': {'camera': {'default': 'agentview', 'enum': ...p': {'default': -1, 'minimum': -1, 'type': 'integer'}}, 'required': ['points'], 'type': 'object'}, format_checker=None).is_valid
+
+tests/unit_tests/robots/libero/research/test_high_resolution.py:230: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit_tests/robots/flexiv/test_memory.py::test_insertion_experience_is_indexed_and_loaded_only_by_file_tool
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_composes_translation_without_changing_height
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_requires_explicit_actual_latest_step[None]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_requires_explicit_actual_latest_step[-1]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_requires_explicit_actual_latest_step[0]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[pair0]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[pair1]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[pair2]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[pair3]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[pair4]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_rejects_invalid_or_repeated_indices[01]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_does_not_propose_from_unavailable_evidence[depth]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_does_not_propose_from_unavailable_evidence[eef]
+FAILED tests/unit_tests/robots/libero/research/test_high_resolution.py::test_alignment_pair_schema_accepts_only_two_bounded_indices
+14 failed, 2140 passed, 15 skipped in 75.41s (0:01:15)

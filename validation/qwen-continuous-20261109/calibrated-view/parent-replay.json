@@ -1,0 +1,41 @@
+{
+  "source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+  "frames": [
+    {
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "step": 0,
+      "native_data_sha256": "da934c75a6dc97a1eb26cd10a6374adac617e787975701c738466e051cc5c0b8",
+      "native_image_sha256": [
+        "e663a65563101128878763ce1e6f9a562597dfef048e2172a25c8cb37fbbc188",
+        "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+        "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+      ]
+    },
+    {
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "step": 0,
+      "native_data_sha256": "ad0274683c720e5655ff532a405be9ea8fb2b8fdb17b49ebdb03e4e1cdfbb187",
+      "native_image_sha256": [
+        "29144ae88fd5be9f187d505247c7971109895429818882de694e1c32ea9d3b35",
+        "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+        "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+      ]
+    },
+    {
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "step": 1,
+      "native_data_sha256": "23db41e622b3c589ce26a453ac7755533a4ce20ad5802442ae5a318c88e4c892",
+      "native_image_sha256": [
+        "0be2d5a1f93c28f56ee12feef715bd2300894e8821f6f2d7d16c537adef03503",
+        "1bd70796ce0cc94527d36e2a4b46414ab132d7a5dda9a463e6a61dbef9c931f5",
+        "57f14e4db74a6d738006691333f85b2a462c21853fa64f5f4c817f9f3755bae2"
+      ]
+    }
+  ],
+  "native_catalog_sha256": "4325835ff25e7ff967a9ea420d184f794a133e5795435bd17331fee96659999c",
+  "native_availability_sha256": "47bb7583c9750e92610ab13f9ceb6d0df1075eb354ed73b0ad4f934850053486",
+  "passed": true,
+  "policy_requests": 0,
+  "simulator_actions": 0,
+  "limit": "Checks stored bytes/frame bindings, not semantic identity, holding or task success. Does not instantiate runtime."
+}

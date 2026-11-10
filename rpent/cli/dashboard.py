@@ -332,6 +332,10 @@ def _run_dashboard_task_inner(
     if getattr(state, "workbench", None) is not None:
         run_config.prompt_vars["manual_tools"] = claimed.request["frozen_tools"]
         run_config.prompt_vars["run_journal"] = state.journal
+        if robot_spec.name == "libero" and "planner_view_mode" in claimed.request:
+            run_config.prompt_vars["planner_view_mode"] = claimed.request[
+                "planner_view_mode"
+            ]
     from rpent.memory.loading import prepare_run_memory
 
     prepare_run_memory(task_args, robot_spec, run_config)
@@ -450,7 +454,12 @@ def _run_dashboard_task_inner(
                     # Legacy guides still need the selection override.
                     if args.robot_name != "univtac":
                         system_prompt = (
-                            availability_prompt(claimed.request["frozen_tools"])
+                            availability_prompt(
+                                claimed.request["frozen_tools"],
+                                planner_view_mode=claimed.request.get(
+                                    "planner_view_mode", "native"
+                                ),
+                            )
                             + system_prompt
                         )
                     write_json(

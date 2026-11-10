@@ -132,17 +132,21 @@ def test_finish_only_flag_is_server_owned_and_api_scoped(bench):
         enabled.prepare({**request, "tools": []})
 
 
-def test_finish_only_claimed_flag_reaches_manifest_and_run_config(
-    bench, tmp_path, monkeypatch
+@pytest.mark.parametrize(
+    "field,value",
+    [("api_require_finish", True), ("planner_view_mode", "calibrated-pair-v1")],
+)
+def test_claimed_options_reach_manifest_and_run_config(
+    bench, tmp_path, monkeypatch, field, value
 ):
     from types import SimpleNamespace
 
     from rpent.cli import dashboard
 
-    enabled = Workbench({**bench.config, "api_require_finish": True})
+    enabled = Workbench({**bench.config, field: value})
     enabled.checks = {"api": {"ok": True}}
     request = enabled.prepare({"model_profile": "api", "tools": ["native:finish"]})
-    enabled.config["api_require_finish"] = False
+    enabled.config[field] = "native" if field == "planner_view_mode" else False
     root = tmp_path / "session/tasks/0001_s1"
     root.mkdir(parents=True)
     state = SimpleNamespace(
@@ -154,11 +158,18 @@ def test_finish_only_claimed_flag_reaches_manifest_and_run_config(
     claimed = SimpleNamespace(output_dir=root, request=request)
     monkeypatch.setattr("rpent.dashboard.workbench.source_snapshot", lambda *args: {})
 
-    def stop_before_runtime(args):
+    run_config = SimpleNamespace(prompt_vars={})
+
+    def stop_before_runtime(args, spec, config):
+        assert config is run_config
+        if field == "planner_view_mode":
+            assert config.prompt_vars[field] == value
         raise RuntimeError("fixture stops after actual config serialization")
 
+    monkeypatch.setattr("rpent.memory.loading.prepare_run_memory", stop_before_runtime)
+
     spec = SimpleNamespace(
-        name="libero", is_real_robot=False, parse_config=stop_before_runtime
+        name="libero", is_real_robot=False, parse_config=lambda args: run_config
     )
     with pytest.raises(RuntimeError, match="actual config serialization"):
         dashboard._run_dashboard_task(
@@ -170,17 +181,11 @@ def test_finish_only_claimed_flag_reaches_manifest_and_run_config(
             unique_components=set(),
             session_root=tmp_path / "session",
         )
+    assert json.loads((root / "manifest.json").read_text())["task"][field] == value
     assert (
-        json.loads((root / "manifest.json").read_text())["task"]["api_require_finish"]
-        is True
+        json.loads((root / "dashboard_config.json").read_text())["task"][field] == value
     )
-    assert (
-        json.loads((root / "dashboard_config.json").read_text())["task"][
-            "api_require_finish"
-        ]
-        is True
-    )
-    assert enabled.runs()[0]["config"]["task"]["api_require_finish"] is True
+    assert enabled.runs()[0]["config"]["task"][field] == value
 
 
 def test_server_rejects_unknown_and_arbitrary_model(bench, tmp_path):
@@ -417,3 +422,40 @@ def test_placement_pair_is_opt_in_and_hashes_its_geometry(bench):
     assert all(t["version"] == expected_hash for t in selected if t["name"] in names)
     assert "Inspect its O/P/R overlay" in availability_prompt(selected)
     assert "O/P/R" not in availability_prompt(bench.selection())
+
+
+def test_planner_views_are_server_owned_and_native_catalog_unchanged(bench):
+    from rpent.dashboard.workbench import native_catalog
+
+    candidate = Workbench({**bench.config, "planner_view_mode": "calibrated-pair-v1"})
+    from rpent.dashboard.catalog import combined_catalog
+
+    assert bench.catalog() == combined_catalog(
+        native_catalog(), robot="libero", sources=[]
+    )
+    native = {t["name"]: t for t in bench.catalog()}
+    for item in candidate.catalog():
+        old = native[item["name"]]
+        if item["name"] in {"view_env_state", "read_image"}:
+            assert item["parameters"] == old["parameters"]
+            assert item["version"] != old["version"]
+            assert "image_views" in item["description"]
+        else:
+            assert item == old
+    for target in (bench, candidate):
+        with pytest.raises(ValueError, match="server-owned"):
+            target.prepare({"planner_view_mode": "native"})
+        with pytest.raises(ValueError):
+            target.normalize({"planner_view_mode": "native"})
+    for value in [None, True, [], "unsupported"]:
+        with pytest.raises(ValueError, match="Unsupported"):
+            Workbench({**bench.config, "planner_view_mode": value})
+    with pytest.raises(ValueError, match="only for LIBERO"):
+        Workbench(
+            {
+                **bench.config,
+                "robot": "flexiv",
+                "planner_view_mode": "calibrated-pair-v1",
+            },
+            robot="flexiv",
+        )

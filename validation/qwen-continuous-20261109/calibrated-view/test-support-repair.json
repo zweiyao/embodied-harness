@@ -1,0 +1,51 @@
+{
+  "reason": "Fresh clone omitted parent uncommitted example and untracked memory test inputs; restore exact parent bytes in owned isolated checkout only.",
+  "files": [
+    {
+      "path": "examples/manual-workbench/candidate.json",
+      "before_sha256": "7b4605abeaa375e1bf8ab1314fd4ebf70d13904cb807d8a18eb442d6d229de84",
+      "parent_sha256": "ed5253bf76ed89f1f0a28a42182bde9e66f7628d4432fe2db444c165f5e0e00a"
+    },
+    {
+      "path": "examples/manual-workbench/sensor_patch_batch.py",
+      "before_sha256": "405690163d87693c7a95231510a8401019324116edafb06aae7e109edb9761d1",
+      "parent_sha256": "54eb5937ae6c5c944216b6808baa8a155b91981d0f085cb57eb34e05a6afe57c"
+    },
+    {
+      "path": "memory/flexiv/MEMORY.md",
+      "before_sha256": null,
+      "parent_sha256": "504ca0e1f68d1e4e21e5691fa5e5c72c7cef5f3af06f1300ffacdef2758e30c9"
+    },
+    {
+      "path": "memory/libero/MEMORY.md",
+      "before_sha256": null,
+      "parent_sha256": "5379f4d258f5b0010eb69db403239217ad6a06fa8d3cfbede227caab48dc785a"
+    },
+    {
+      "path": "memory/libero/object-relative-transfer.md",
+      "before_sha256": null,
+      "parent_sha256": "f7721eb8d3f54c67a485ea15ee14dffd6647d579bfa1e9b1f4933e52fa8d17e1"
+    },
+    {
+      "path": "memory/libero/next-action-evidence.md",
+      "before_sha256": null,
+      "parent_sha256": "d4c20d57d04fe11978dad96a205cbf1762e4524c9210800608f35789b5da4601"
+    },
+    {
+      "path": "memory/libero/grasp-feature-evidence.md",
+      "before_sha256": null,
+      "parent_sha256": "68c876d1d4675ad3dd2708db983fffb30d251853887538d0f398ae57b66c89e4"
+    },
+    {
+      "path": "memory/flexiv/global/insertion_local_alignment.md",
+      "before_sha256": null,
+      "parent_sha256": "85fc551a1044651fbe91f6bfa80aed61d883b94a2cf94a4474cac1120eb23a04"
+    },
+    {
+      "path": "memory/flexiv/global/insertion_grasp_revalidation.md",
+      "before_sha256": null,
+      "parent_sha256": "223ffd6ab74386f823a4d2559169590aef84e0d6622ea785aeef36740b195ff7"
+    }
+  ],
+  "failed_tests_retained": 14
+}

@@ -1,0 +1,11 @@
+{
+  "full_hook_failed": true,
+  "unrelated_hook_mutations_restored_from_parent": [],
+  "remaining_production_differences": [
+    "robots/libero/research/manual.py",
+    "robots/libero/robot_spec.py",
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "unit_recheck_required": "Full hook ran while second unit suite was in progress. Preserve that run and rerun after restoring unrelated hook edits."
+}

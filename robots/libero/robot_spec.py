@@ -190,6 +190,8 @@ def get_toolkit(
             "selected": config.prompt_vars["manual_tools"],
             "journal": config.prompt_vars["run_journal"],
         }
+        if "planner_view_mode" in config.prompt_vars:
+            manual["planner_view_mode"] = config.prompt_vars["planner_view_mode"]
     return toolkit_type(
         **manual,
         runtime_kwargs=runtime_kwargs,

@@ -215,6 +215,14 @@ class Workbench:
 
         self.config = config
         self.robot = robot
+        self.planner_view_mode = config.get("planner_view_mode", "native")
+        if self.planner_view_mode != "native":
+            if robot != "libero":
+                raise ValueError("planner_view_mode is available only for LIBERO")
+            from robots.libero.research.manual import PLANNER_VIEW_MODE
+
+            if self.planner_view_mode != PLANNER_VIEW_MODE:
+                raise ValueError("Unsupported LIBERO planner_view_mode")
         self.api_require_finish = config.get("api_require_finish", False)
         if type(self.api_require_finish) is not bool:
             raise ValueError("api_require_finish must be a boolean")
@@ -440,6 +448,20 @@ class Workbench:
             if self.robot == "flexiv"
             else native_catalog(self.robot)
         )
+        if self.planner_view_mode != "native":
+            from robots.libero.research import manual
+
+            wrapper_source = inspect.getsource(manual)
+            for item in result:
+                if item["name"] in {"view_env_state", "read_image"}:
+                    item["source"] = (item.get("source") or "") + "\n" + wrapper_source
+                    item["version"] = hashlib.sha256(
+                        item["source"].encode()
+                    ).hexdigest()
+                    item["description"] = manual.planner_view_description(item["name"])
+                    item["input_contract"] = (
+                        "Ordered image_views; stored image bytes unchanged"
+                    )
         result += generated_catalog(self.library, runs_root=self.root)
         return combined_catalog(result, robot=self.robot, sources=self.catalog_sources)
 
@@ -501,6 +523,8 @@ class Workbench:
         return payload
 
     def prepare(self, request):
+        if "planner_view_mode" in request:
+            raise ValueError("planner_view_mode is a server-owned setting")
         if "api_require_finish" in request:
             raise ValueError("api_require_finish is a server-owned setting")
         if {"pilot_root", "pilot_freeze"} & request.keys():
@@ -521,6 +545,8 @@ class Workbench:
         }
         if self.api_require_finish:
             prepared["api_require_finish"] = True
+        if self.planner_view_mode != "native":
+            prepared["planner_view_mode"] = self.planner_view_mode
         self.validate_pilot_request(prepared)
         if (
             self.pilot
