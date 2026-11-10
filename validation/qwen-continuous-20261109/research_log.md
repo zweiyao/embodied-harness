@@ -67,3 +67,7 @@ R18-reference and R18+W2 each scored0/2 on task4/0 seed0. All four full600-secon
 Four attempts cost37 requests/34 completed responses,402127 input tokens including310272 cached,3215 output,2444.2 summed outcome seconds. Two preflight calls remain separate. Fixed lane assignment and historical comparison limit causal conclusions.
 
 Next F reuses SDK finish-only output under a server-owned default-off API option. Exact four-file diff and validation were recorded before implementation. No new prompts, experience, automatic actions, bootstrap, view changes or extra budget; offline protocol/compatibility/cancellation tests precede two fresh affected-task screens. See [report](iteration-07/report.md) and [decision](finish-only/change-decision.md).
+
+## Iteration 08 — explicit finish task screen
+
+R18+W2+F completed task0/4 seed0 with 0/2 official successes and two valid full600s timeouts. Startup grouped successfully in both; all10 completed responses carried tools, so no pure-text retry was observed. Task0 made no action and substituted ketchup for task tomato sauce; task4 dispatched one Pi0 pick after7 tools, then segmented a plate and read camera metadata without placement. Actual output constraints, both runtime audits,8943 protected files and cleanup passed. C remains the historical reference; F is not promoted for success. See iteration-08/report.md and cost-summary.json.

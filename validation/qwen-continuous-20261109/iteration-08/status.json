@@ -1,29 +1,15 @@
 {
-  "phase": "running",
-  "completed": 0,
+  "phase": "completed",
+  "completed": 2,
   "planned": 2,
   "lanes": {
     "a": {
-      "phase": "running",
-      "task": 0,
-      "seed": 0,
-      "completed": 0,
-      "run_id": "4aeed560761dad4f7217",
-      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
-      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runtime-audit-task0-seed0-c9cbcf601d764d7795425bbf041ba2c6.json",
-      "elapsed_s": 25.1,
-      "planner_timeout_s": 600
+      "phase": "completed",
+      "completed": 1
     },
     "b": {
-      "phase": "running",
-      "task": 4,
-      "seed": 0,
-      "completed": 0,
-      "run_id": "9cbe14f94f25bc734075",
-      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
-      "runtime_audit_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runtime-audit-task4-seed0-718b0b7ee71f46b4a58c8af806b9b167.json",
-      "elapsed_s": 25.1,
-      "planner_timeout_s": 600
+      "phase": "completed",
+      "completed": 1
     }
   }
 }

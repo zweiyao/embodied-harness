@@ -1,0 +1,727 @@
+{
+  "passed": true,
+  "conditions": {
+    "R18+W2+F": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        null,
+        7
+      ]
+    }
+  },
+  "paired_initial_images": [
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_W2_07": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_C01": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_W2_07": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_C01": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          "identical": true
+        }
+      }
+    },
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_W2_07": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_C01": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_W2_07": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_C01": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          "identical": true
+        }
+      }
+    }
+  ],
+  "tool_returns": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "translate_to",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "preview_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "align_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "translate_to",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "preview_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "align_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    }
+  ],
+  "workflow_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "condition": "R18+W2+F",
+      "task": 0,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 4,
+        "required_tag_responses": 4,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 4,
+        "descriptive_marker_status_counts": {
+          "missing": 4
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "condition": "R18+W2+F",
+      "task": 4,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 4,
+        "required_tag_responses": 4,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 4,
+        "descriptive_marker_status_counts": {
+          "missing": 4
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file",
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment",
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "7f3eb19417b941dd93fa103ae0136a13",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment",
+              "view_camera_meta"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    }
+  ],
+  "finish_only_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 6
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 5
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 6
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 5
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    }
+  ],
+  "invocation_metadata": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical07_W2_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical07_W2_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical07_W2_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    }
+  ],
+  "contract_comparison": {
+    "excluded_fields": [
+      "invoked"
+    ],
+    "reason": "Per-session catalog usage metadata; values are reported separately. Boundary retained from iteration07 postrun audit correction."
+  },
+  "initial_incident_entries_preserved": 0,
+  "corrected_model_argument_failures": 0,
+  "runtime_incidents": 0,
+  "runtime_guard_coverage": "complete",
+  "runtime_observers": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runtime-audit-task0-seed0-c9cbcf601d764d7795425bbf041ba2c6.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runtime-audit-task4-seed0-718b0b7ee71f46b4a58c8af806b9b167.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    }
+  ],
+  "task_results_valid": true,
+  "protected_files_verified": 8943,
+  "limitation": "Two fresh F tasks at seed0 versus historical07 W2, with time and environment-allocation confounds. Historical07 W2 and C01 remain separate references. Official success is primary; compliant labels, fewer calls, tool acceptance and geometric arrival do not establish holding or task benefit. This screen does not establish ten-task or held-out improvement."
+}

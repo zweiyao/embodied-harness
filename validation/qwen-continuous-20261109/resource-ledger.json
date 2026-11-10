@@ -1,13 +1,13 @@
 {
-  "recorded_at": "2026-11-10T08:25:22.994570+00:00",
-  "scope": "Completed official-policy development attempts in iterations01–07 only; not a pooled success-rate estimate",
+  "recorded_at": "2026-11-10T09:22:57.243858+00:00",
+  "scope": "Completed official-policy development attempts in iterations01\u201308 only; not a pooled success-rate estimate",
   "formal_policy": {
-    "valid_attempts": 18,
-    "model_requests": 336,
-    "input_tokens_including_cached": 10999300,
-    "cached_input_tokens_subset": 7362560,
-    "output_tokens": 36932,
-    "summed_outcome_elapsed_s": 8344.1
+    "valid_attempts": 20,
+    "model_requests": 348,
+    "input_tokens_including_cached": 11104044,
+    "cached_input_tokens_subset": 7426816,
+    "output_tokens": 37953,
+    "summed_outcome_elapsed_s": 9566.4
   },
   "by_iteration": [
     {
@@ -132,9 +132,26 @@
         "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0001_libero_10_task_t4_s0",
         "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0002_libero_10_task_t0_s0"
       ]
+    },
+    {
+      "iteration": 8,
+      "source": "iteration-08/results.json",
+      "sha256": "f416919e7b82715997bbfb259506ac78c27971fd13f25a05fb21ac86c82c318b",
+      "cost": {
+        "valid_attempts": 2,
+        "model_requests": 12,
+        "input_tokens_including_cached": 104744,
+        "cached_input_tokens_subset": 64256,
+        "output_tokens": 1021,
+        "summed_outcome_elapsed_s": 1222.3
+      },
+      "cell_paths": [
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+        "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0"
+      ]
     }
   ],
-  "separate_connectivity_requests_without_usage": 14,
+  "separate_connectivity_requests_without_usage": 16,
   "separate_completed_transport_diagnostic": {
     "requests": 4,
     "input_tokens_including_cached": 8588,
@@ -143,11 +160,11 @@
     "summed_request_elapsed_s": 85.23,
     "source": "api-transport-diagnostic-20261110/final-summary.json"
   },
-  "identity_rule": "Use full task directory, not run_id alone. Stable IDs repeat across isolated experiment roots. All18 task directories are distinct.",
+  "identity_rule": "Use full task directory, not run_id alone. Stable IDs repeat across isolated experiment roots. All20 task directories are distinct.",
   "limitations": [
     "Cached input is a subset, not additive. Usage includes only responses that report usage; canceled requests are not estimated.",
     "Unit tests, robot-only interface probes, local development and infrastructure preparation time are outside this policy-cost ledger.",
     "Conditions differ and only two tasks/one initial state were used. Do not pool these outcomes to claim model capability or success-rate improvement.",
-    "Only completed iterations01–07 are included; later candidates are excluded."
+    "Only completed iterations01\u201308 are included; later candidates are excluded."
   ]
 }

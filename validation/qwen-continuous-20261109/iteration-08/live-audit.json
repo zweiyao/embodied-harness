@@ -1,0 +1,117 @@
+{
+  "audit_type": "contemporaneous_owned_process_observer",
+  "cells": [
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runtime-audit-task0-seed0-c9cbcf601d764d7795425bbf041ba2c6.json",
+      "report": {
+        "lane": "a",
+        "audit_type": "contemporaneous_owned_process_observer",
+        "environment_eef_control_expected": true,
+        "snapshots": [
+          {
+            "observed_at": "2026-11-10T09:03:26.335432+00:00",
+            "pid": 3035044,
+            "start_ticks": "252550059",
+            "role": "workbench",
+            "entrypoint": "rpent.cli.main",
+            "command_sha256": "98c760f0f9c37e25093a99aa35966552629ddabcd6f2eee8c04f779da8e0cef2",
+            "eef_control_flag_present": false,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": []
+          },
+          {
+            "observed_at": "2026-11-10T09:03:26.536454+00:00",
+            "pid": 3035152,
+            "start_ticks": "252550428",
+            "role": "environment_server",
+            "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout/robots/libero/env_server.py",
+            "command_sha256": "6a6e804f271f691bcd4f775fa9d62e2a57c5c46e2d864e772da33e0ef6afec88",
+            "eef_control_flag_present": true,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": [],
+            "entrypoint_matches": true
+          }
+        ],
+        "observer_errors": [],
+        "observer_stopped": true,
+        "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+        "run_id": "4aeed560761dad4f7217",
+        "task": 0,
+        "seed": 0,
+        "condition": "R18+W2+F",
+        "episode_ended_at": "2026-11-10T09:13:37.364551+00:00",
+        "child_observed_before_episode_end": true,
+        "coverage_complete": true,
+        "guard_violations": []
+      }
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runtime-audit-task4-seed0-718b0b7ee71f46b4a58c8af806b9b167.json",
+      "report": {
+        "lane": "b",
+        "audit_type": "contemporaneous_owned_process_observer",
+        "environment_eef_control_expected": true,
+        "snapshots": [
+          {
+            "observed_at": "2026-11-10T09:03:26.335615+00:00",
+            "pid": 3035049,
+            "start_ticks": "252550061",
+            "role": "workbench",
+            "entrypoint": "rpent.cli.main",
+            "command_sha256": "f7c8491fcd767a9ab03af72b83d8c4fe483e06bf645f1b09a9e5e45cdc40897c",
+            "eef_control_flag_present": false,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": []
+          },
+          {
+            "observed_at": "2026-11-10T09:03:26.536575+00:00",
+            "pid": 3035151,
+            "start_ticks": "252550428",
+            "role": "environment_server",
+            "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout/robots/libero/env_server.py",
+            "command_sha256": "d47b47deb0ad2e3099249d10d7868c82febc78046fae7553f84dea9d2d4046fe",
+            "eef_control_flag_present": true,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": [],
+            "entrypoint_matches": true
+          }
+        ],
+        "observer_errors": [],
+        "observer_stopped": true,
+        "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+        "run_id": "9cbe14f94f25bc734075",
+        "task": 4,
+        "seed": 0,
+        "condition": "R18+W2+F",
+        "episode_ended_at": "2026-11-10T09:13:37.711163+00:00",
+        "child_observed_before_episode_end": true,
+        "coverage_complete": true,
+        "guard_violations": []
+      }
+    }
+  ]
+}

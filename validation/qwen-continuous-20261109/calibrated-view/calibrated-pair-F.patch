@@ -1,0 +1,249 @@
+--- a/robots/libero/research/manual.py
++++ b/robots/libero/research/manual.py
+@@ -5,6 +5,7 @@
+ import threading
+ import time
+ import uuid
++from dataclasses import replace
+ from functools import partial
+ 
+ import numpy as np
+@@ -16,6 +17,27 @@
+ from rpent.tools import Tool, ToolResult, tool
+ 
+ 
++PLANNER_VIEW_MODE = 'calibrated-pair-v1'
++PLANNER_VIEW_ARTIFACTS = ('agentview_high.png', 'wrist_high.png')
++
++
++def planner_view_description(name):
++    if name == "read_image":
++        return (
++            "Read the exact saved image by artifact name and step. image_views "
++            "identifies its frame; policy and unclassified images are not "
++            "calibrated sampling inputs."
++        )
++    from robots.libero.tools import view_env_state
++
++    return view_env_state.description.replace(
++        "Embeds policy, agentview, and wrist images when available.",
++        "Embeds calibrated agentview high and wrist high images. "
++        "image_views identifies each attached image in order. "
++        "Missing required images are reported as an error.",
++    )
++
++
+ class RecordingSam3:
+     def __init__(self, client):
+         self.client = client
+@@ -31,8 +53,12 @@
+     planner_tools_only = True
+ 
+     def __init__(
+-        self, *, selected, journal, sandbox_image="embodied-sensor:pilot", **kwargs
++        self, *, selected, journal, sandbox_image="embodied-sensor:pilot",
++        planner_view_mode="native", **kwargs
+     ):
++        if planner_view_mode not in ("native", PLANNER_VIEW_MODE):
++            raise ValueError("Unsupported LIBERO planner_view_mode")
++        self.planner_view_mode = planner_view_mode
+         placement_names = {t["name"] for t in selected} & {
+             "preview_placement",
+             "align_placement",
+@@ -98,6 +124,15 @@
+             name = item["name"]
+             if item["origin"] == "native":
+                 original = originals[name]
++                if self.planner_view_mode != "native":
++                    if name == "view_env_state":
++                        original = original.with_handler(
++                            partial(self._planner_view, original)
++                        )
++                    if name in {"view_env_state", "read_image"}:
++                        original = replace(
++                            original, description=planner_view_description(name)
++                        )
+                 if name == "segment":
+                     original = original.with_handler(
+                         partial(self.segment_recorded, original)
+@@ -118,6 +153,50 @@
+                     )
+                 )
+ 
++    def _image_payload(self, name, step, index):
++        from io import BytesIO
++
++        from PIL import Image
++
++        image = self.state.load_bytes(name, step=step)
++        with Image.open(BytesIO(image)) as opened:
++            width, height = opened.size
++        calibrated = name in {
++            "agentview.png", "agentview_high.png", "wrist.png", "wrist_high.png"
++        }
++        policy = name == "agentview_policy.png"
++        camera = (
++            "agentview" if name.startswith("agentview") else "wrist"
++        ) if calibrated or policy else None
++        return image, {
++            "index": index, "artifact": name, "camera": camera, "step": step,
++            "width": width, "height": height,
++            "coordinate_frame": "calibrated" if calibrated else "policy" if policy else "unclassified",
++        }
++
++    def _present_state(self, result):
++        if self.planner_view_mode == "native" or "step" not in result.data:
++            return result
++        data = {**result.data, "planner_view_mode": self.planner_view_mode}
++        images, views = [], []
++        try:
++            for index, name in enumerate(PLANNER_VIEW_ARTIFACTS):
++                image, view = self._image_payload(name, data["step"], index)
++                images.append(image)
++                views.append(view)
++        except OSError as exc:
++            return ToolResult(data={
++                **data, "error": f"Required planner image unavailable: {name}: {exc}",
++                "image_views": [],
++            })
++        return ToolResult(data={**data, "image_views": views}, images=images)
++
++    def _planner_view(self, original, **kwargs):
++        return self._present_state(original(**kwargs))
++
++    def get_env_state(self, **kwargs):
++        return self._present_state(super().get_env_state(**kwargs))
++
+     @property
+     def planner_stop_result(self):
+         if self._ended or self.solved() or self.primitives.env.truncated:
+@@ -140,6 +219,12 @@
+         record = self.state.get(step)
+         if name not in record.artifacts or not name.endswith((".png", ".jpg", ".jpeg")):
+             return ToolResult(data={"error": "Unknown image artifact"})
++        if self.planner_view_mode != "native":
++            image, view = self._image_payload(name, record.step_idx, 0)
++            return ToolResult(
++                data={"artifact": name, "step": record.step_idx, "image_views": [view]},
++                images=[image],
++            )
+         return ToolResult(
+             data={"artifact": name, "step": record.step_idx},
+             images=[self.state.load_bytes(name, step=record.step_idx)],
+@@ -251,7 +336,7 @@
+         return result
+ 
+ 
+-def availability_prompt(selected):
++def availability_prompt(selected, *, planner_view_mode="native"):
+     names = ", ".join(t["name"] for t in selected)
+     eef_guidance = (
+         "Use translate_to for position-only moves while retaining the gripper target. "
+@@ -277,11 +362,19 @@
+         if {"preview_placement", "align_placement"} <= {t["name"] for t in selected}
+         else ""
+     )
++    presentation = (
++        "Native observations and action feedback remain unchanged. "
++        if planner_view_mode == "native"
++        else "Stored observations and VLA inputs remain unchanged. "
++        "View and action images are ordered by image_views. "
++        "For sampling, use a calibrated view's camera, step and pixel size. "
++    )
+     return (
+         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
+         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
+-        "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
+-        "Generated perception tools compute evidence, not task success.\n\n"
++        "Skip guide steps that require disabled tools. "
++        + presentation
++        + "Generated perception tools compute evidence, not task success.\n\n"
+         + eef_guidance
+         + rotation_guidance
+         + placement_guidance
+--- a/robots/libero/robot_spec.py
++++ b/robots/libero/robot_spec.py
+@@ -190,6 +190,8 @@
+             "selected": config.prompt_vars["manual_tools"],
+             "journal": config.prompt_vars["run_journal"],
+         }
++        if "planner_view_mode" in config.prompt_vars:
++            manual["planner_view_mode"] = config.prompt_vars["planner_view_mode"]
+     return toolkit_type(
+         **manual,
+         runtime_kwargs=runtime_kwargs,
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -215,6 +215,14 @@
+ 
+         self.config = config
+         self.robot = robot
++        self.planner_view_mode = config.get("planner_view_mode", "native")
++        if self.planner_view_mode != "native":
++            if robot != "libero":
++                raise ValueError("planner_view_mode is available only for LIBERO")
++            from robots.libero.research.manual import PLANNER_VIEW_MODE
++
++            if self.planner_view_mode != PLANNER_VIEW_MODE:
++                raise ValueError("Unsupported LIBERO planner_view_mode")
+         self.api_require_finish = config.get("api_require_finish", False)
+         if type(self.api_require_finish) is not bool:
+             raise ValueError("api_require_finish must be a boolean")
+@@ -440,6 +448,16 @@
+             if self.robot == "flexiv"
+             else native_catalog(self.robot)
+         )
++        if self.planner_view_mode != "native":
++            from robots.libero.research import manual
++
++            wrapper_source = inspect.getsource(manual)
++            for item in result:
++                if item["name"] in {"view_env_state", "read_image"}:
++                    item["source"] = (item.get("source") or "") + "\n" + wrapper_source
++                    item["version"] = hashlib.sha256(item["source"].encode()).hexdigest()
++                    item["description"] = manual.planner_view_description(item["name"])
++                    item["input_contract"] = "Ordered image_views; stored image bytes unchanged"
+         result += generated_catalog(self.library, runs_root=self.root)
+         return combined_catalog(result, robot=self.robot, sources=self.catalog_sources)
+ 
+@@ -501,6 +519,8 @@
+         return payload
+ 
+     def prepare(self, request):
++        if "planner_view_mode" in request:
++            raise ValueError("planner_view_mode is a server-owned setting")
+         if "api_require_finish" in request:
+             raise ValueError("api_require_finish is a server-owned setting")
+         if {"pilot_root", "pilot_freeze"} & request.keys():
+@@ -521,6 +541,8 @@
+         }
+         if self.api_require_finish:
+             prepared["api_require_finish"] = True
++        if self.planner_view_mode != "native":
++            prepared["planner_view_mode"] = self.planner_view_mode
+         self.validate_pilot_request(prepared)
+         if (
+             self.pilot
+--- a/rpent/cli/dashboard.py
++++ b/rpent/cli/dashboard.py
+@@ -332,6 +332,8 @@
+     if getattr(state, "workbench", None) is not None:
+         run_config.prompt_vars["manual_tools"] = claimed.request["frozen_tools"]
+         run_config.prompt_vars["run_journal"] = state.journal
++        if robot_spec.name == "libero" and "planner_view_mode" in claimed.request:
++            run_config.prompt_vars["planner_view_mode"] = claimed.request["planner_view_mode"]
+     from rpent.memory.loading import prepare_run_memory
+ 
+     prepare_run_memory(task_args, robot_spec, run_config)
+@@ -450,7 +452,10 @@
+                     # Legacy guides still need the selection override.
+                     if args.robot_name != "univtac":
+                         system_prompt = (
+-                            availability_prompt(claimed.request["frozen_tools"])
++                            availability_prompt(
++                                claimed.request["frozen_tools"],
++                                planner_view_mode=claimed.request.get("planner_view_mode", "native"),
++                            )
+                             + system_prompt
+                         )
+                     write_json(
