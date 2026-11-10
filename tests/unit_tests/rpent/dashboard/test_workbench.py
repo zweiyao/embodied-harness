@@ -136,6 +136,7 @@ def test_finish_only_flag_is_server_owned_and_api_scoped(bench):
     "field,value",
     [
         ("api_require_finish", True),
+        ("api_recent_image_history", True),
         ("planner_view_mode", "calibrated-pair-v1"),
         ("initial_action_phase", True),
     ],
@@ -492,3 +493,28 @@ def test_initial_action_phase_is_owned_and_requires_api_language_tool(bench):
     for value in (1, "true", None):
         with pytest.raises(ValueError, match="boolean"):
             Workbench({**bench.config, "initial_action_phase": value})
+
+
+def test_recent_image_history_is_owned_and_requires_libero_api(bench):
+    bench.checks = {"api": {"ok": True}}
+    request = {"model_profile": "api", "tools": ["native:finish"]}
+    assert "api_recent_image_history" not in bench.prepare(request)
+    enabled = Workbench({**bench.config, "api_recent_image_history": True})
+    enabled.checks = {"api": {"ok": True}, "sdk": {"ok": True}}
+    assert enabled.prepare(request)["api_recent_image_history"] is True
+    assert enabled.catalog() == bench.catalog()
+    for target in (bench, enabled):
+        with pytest.raises(ValueError, match="server-owned"):
+            target.prepare({**request, "api_recent_image_history": False})
+        with pytest.raises(ValueError):
+            target.normalize({"api_recent_image_history": True})
+    with pytest.raises(ValueError, match="API planner"):
+        enabled.prepare({**request, "model_profile": "sdk"})
+    with pytest.raises(ValueError, match="only for LIBERO"):
+        Workbench(
+            {**bench.config, "robot": "flexiv", "api_recent_image_history": True},
+            robot="flexiv",
+        )
+    for value in (1, "true", None):
+        with pytest.raises(ValueError, match="boolean"):
+            Workbench({**bench.config, "api_recent_image_history": value})

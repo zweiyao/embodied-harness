@@ -228,6 +228,11 @@ class Workbench:
             raise ValueError("initial_action_phase must be a boolean")
         if self.initial_action_phase and robot != "libero":
             raise ValueError("initial_action_phase is available only for LIBERO")
+        self.api_recent_image_history = config.get("api_recent_image_history", False)
+        if type(self.api_recent_image_history) is not bool:
+            raise ValueError("api_recent_image_history must be a boolean")
+        if self.api_recent_image_history and robot != "libero":
+            raise ValueError("api_recent_image_history is available only for LIBERO")
         self.api_require_finish = config.get("api_require_finish", False)
         if type(self.api_require_finish) is not bool:
             raise ValueError("api_require_finish must be a boolean")
@@ -528,6 +533,8 @@ class Workbench:
         return payload
 
     def prepare(self, request):
+        if "api_recent_image_history" in request:
+            raise ValueError("api_recent_image_history is a server-owned setting")
         if "initial_action_phase" in request:
             raise ValueError("initial_action_phase is a server-owned setting")
         if "planner_view_mode" in request:
@@ -541,6 +548,11 @@ class Workbench:
         profile_id = request.get("model_profile", next(iter(self.profiles)))
         if not self.checks.get(profile_id, {}).get("ok"):
             raise ValueError("请先在开始页检查所选模型连接")
+        if (
+            self.api_recent_image_history
+            and self.profiles[profile_id]["planner"] != "api"
+        ):
+            raise ValueError("api_recent_image_history requires the API planner")
         if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
             raise ValueError("api_require_finish requires the API planner")
         selected = self.selection(request.get("tools"))
@@ -563,6 +575,8 @@ class Workbench:
             prepared["initial_action_phase"] = True
         if self.api_require_finish:
             prepared["api_require_finish"] = True
+        if self.api_recent_image_history:
+            prepared["api_recent_image_history"] = True
         if self.planner_view_mode != "native":
             prepared["planner_view_mode"] = self.planner_view_mode
         self.validate_pilot_request(prepared)

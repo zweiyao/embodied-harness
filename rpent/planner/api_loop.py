@@ -25,6 +25,7 @@ import math
 import threading
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from functools import partial
 from typing import Any
 from uuid import uuid4
@@ -62,7 +63,13 @@ from pydantic_ai.capabilities.abstract import (
     WrapRunHandler,
 )
 from pydantic_ai.exceptions import UsageLimitExceeded, UserError
-from pydantic_ai.messages import ModelMessage, UserContent
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ToolReturnPart,
+    UserContent,
+    UserPromptPart,
+)
 from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.run import AgentRun, AgentRunResult
 from pydantic_ai.toolsets import ToolsetTool
@@ -104,7 +111,10 @@ class ApiAgentLoop(Planner):
         timeout_s: float = 1200,
         interactive: bool = False,
         require_finish: bool = False,
+        recent_image_history: bool = False,
     ) -> None:
+        if type(recent_image_history) is not bool:
+            raise ValueError("recent_image_history must be a boolean")
         if type(require_finish) is not bool:
             raise ValueError("require_finish must be a boolean")
         if reasoning_effort not in REASONING_EFFORTS:
@@ -119,6 +129,7 @@ class ApiAgentLoop(Planner):
         self.timeout_s = timeout_s
         self.interactive = interactive
         self.require_finish = require_finish
+        self.recent_image_history = recent_image_history
 
     def solve(
         self,
@@ -185,6 +196,7 @@ class ApiAgentLoop(Planner):
                 Thinking(
                     False if self.reasoning_effort == "none" else self.reasoning_effort
                 ),
+                *([_RecentImageHistory()] if self.recent_image_history else []),
                 session,
             ],
         )
@@ -254,6 +266,53 @@ def _build_model_settings(
             "enable_thinking": reasoning_effort != "none",
         }
     return settings
+
+
+class _RecentImageHistory(AbstractCapability):
+    """Keep binary images in the newest two image-bearing request groups.
+
+    Text and tool records stay intact. Saved artifacts remain available through
+    read_image; this only changes the outgoing model context.
+    """
+
+    async def before_model_request(
+        self, ctx: RunContext, request_context: ModelRequestContext
+    ) -> ModelRequestContext:
+        groups = []
+        for index, message in enumerate(request_context.messages):
+            if isinstance(message, ModelRequest) and any(
+                isinstance(part, (UserPromptPart, ToolReturnPart))
+                and isinstance(part.content, (list, tuple))
+                and any(
+                    isinstance(item, BinaryContent) and item.is_image
+                    for item in part.content
+                )
+                for part in message.parts
+            ):
+                groups.append(index)
+        if len(groups) <= 2:
+            return request_context
+        messages = list(request_context.messages)
+        for index in groups[:-2]:
+            message = messages[index]
+            parts = []
+            for part in message.parts:
+                if isinstance(part, (UserPromptPart, ToolReturnPart)) and isinstance(
+                    part.content, (list, tuple)
+                ):
+                    part = replace(
+                        part,
+                        content=[
+                            "[Earlier image omitted; use read_image to inspect it again.]"
+                            if isinstance(item, BinaryContent) and item.is_image
+                            else item
+                            for item in part.content
+                        ],
+                    )
+                parts.append(part)
+            messages[index] = replace(message, parts=parts)
+        request_context.messages = messages
+        return request_context
 
 
 class _ConversationAgent(WrapperAgent):

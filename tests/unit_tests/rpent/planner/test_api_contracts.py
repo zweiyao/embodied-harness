@@ -113,6 +113,7 @@ def solve(tmp_path, model, toolkit=None, events=None, **kwargs):
             "reasoning_effort",
             "interactive",
             "require_finish",
+            "recent_image_history",
         )
         if key in kwargs
     }
@@ -1458,3 +1459,176 @@ def test_availability_dispatch_guard_and_locked_finish(tmp_path):
     )
     assert result.error is None
     assert [n for n, _ in toolkit.calls] == ["finish"]
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+@pytest.mark.parametrize("no_images", [False, True])
+def test_recent_images_preserve_actual_sdk_history_and_explicit_reread(
+    tmp_path, image_state, enabled, no_images
+):
+    histories = []
+    logged = []
+    events = Events()
+    toolkit = RobotToolkit(events, state=image_state)
+    serial = 0
+
+    def observe():
+        nonlocal serial
+        serial += 1
+        return ToolResult(
+            data={"observation": serial}, images=[f"image{serial}".encode()]
+        )
+
+    toolkit.register("observe", observe)
+    toolkit.journal = SimpleNamespace(
+        append=lambda kind, payload: (
+            logged.append(copy.deepcopy(payload.messages))
+            if kind == "model_request"
+            else None
+        )
+    )
+
+    async def stream(messages, info):
+        histories.append(copy.deepcopy(messages))
+        count = len(histories)
+        if count <= 3:
+            yield tool("observe")
+        elif count == 4:
+            yield tool("read_image", {"name": "camera.png", "step": 0})
+        else:
+            yield finish()
+
+    result, _, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        recent_image_history=enabled,
+        no_images=no_images,
+        require_finish=True,
+    )
+    assert result.error is None and result.finish_result["_finish"]
+    assert len(histories) == 5 and histories == logged
+
+    def images(messages):
+        return [
+            item.data
+            for message in messages
+            if isinstance(message, ModelRequest)
+            for part in message.parts
+            if isinstance(part, (UserPromptPart, ToolReturnPart))
+            and isinstance(part.content, (list, tuple))
+            for item in part.content
+            if isinstance(item, BinaryContent) and item.is_image
+        ]
+
+    if no_images:
+        assert all(not images(messages) for messages in histories)
+    else:
+        assert images(histories[2]) == [b"image1", b"image2"]
+        assert images(histories[3]) == (
+            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
+        )
+        reread = image_state.load_bytes("camera.png", step=0)
+        assert images(histories[4]) == (
+            [b"image3", reread]
+            if enabled
+            else [b"image1", b"image2", b"image3", reread]
+        )
+    # Text observations and all tool records survive removal of image bytes.
+    text = repr(histories[-1])
+    for number in range(1, 4):
+        assert f'"observation": {number}' in text
+    returns = [
+        part
+        for message in histories[-1]
+        if isinstance(message, ModelRequest)
+        for part in message.parts
+        if isinstance(part, ToolReturnPart)
+    ]
+    assert [part.tool_name for part in returns] == ["observe"] * 3 + ["read_image"]
+    assert bool("Earlier image omitted" in text) is (enabled and not no_images)
+
+
+def test_recent_images_copy_input_keep_audio_and_request_metadata():
+    from pydantic_ai.models import ModelRequestContext, ModelRequestParameters
+
+    from rpent.planner.api_loop import _RecentImageHistory
+
+    audio = BinaryContent(data=b"sound", media_type="audio/wav")
+    picture = BinaryContent(data=b"first", media_type="image/png")
+    records = [
+        ModelRequest(
+            parts=[
+                ToolReturnPart(
+                    tool_name="sense",
+                    tool_call_id="first-call",
+                    content=["keep text", picture, audio],
+                )
+            ],
+            metadata={"source": "original"},
+            run_id="run",
+        ),
+        ModelRequest(
+            parts=[
+                UserPromptPart(
+                    content=[
+                        "middle",
+                        BinaryContent(data=b"middle", media_type="image/png"),
+                    ]
+                )
+            ]
+        ),
+        ModelRequest(
+            parts=[
+                ToolReturnPart(
+                    tool_name="sense",
+                    tool_call_id="last-call",
+                    content=[BinaryContent(data=b"last", media_type="image/png")],
+                )
+            ]
+        ),
+    ]
+    original = copy.deepcopy(records)
+    context = ModelRequestContext(
+        model=TestModel(),
+        messages=records,
+        model_settings={},
+        model_request_parameters=ModelRequestParameters(),
+    )
+    result = asyncio.run(_RecentImageHistory().before_model_request(None, context))
+    assert records == original
+    first = result.messages[0]
+    assert first.metadata == records[0].metadata and first.run_id == "run"
+    assert first.timestamp == records[0].timestamp
+    assert first.parts[0].tool_call_id == "first-call"
+    assert first.parts[0].content[0] == "keep text"
+    assert first.parts[0].content[2] is audio
+    assert result.messages[1] is records[1] and result.messages[2] is records[2]
+    assert "Earlier image omitted" in first.parts[0].content[1]
+
+
+@pytest.mark.parametrize("value", [None, 1, "true"])
+def test_recent_images_reject_non_boolean(value):
+    with pytest.raises(ValueError, match="recent_image_history must be a boolean"):
+        ApiAgentLoop(
+            model=TestModel(), dashboard_events=Events(), recent_image_history=value
+        )
+
+
+def test_recent_image_history_factory_forwarding(tmp_path, monkeypatch):
+    from rpent.planner.base import build_planner
+
+    monkeypatch.setattr("rpent.planner.base.build_api_model", lambda *args: TestModel())
+    args = {
+        "output_dir": tmp_path,
+        "recipe_tag": "test",
+        "robot_name": "libero",
+        "dashboard_events": Events(),
+    }
+    assert not build_planner("api", **args).recent_image_history
+    assert build_planner(
+        "api", api_recent_image_history=True, **args
+    ).recent_image_history
+    with pytest.raises(ValueError, match="API planner"):
+        build_planner("codex", api_recent_image_history=True, **args)
