@@ -877,8 +877,9 @@ def test_dashboard_interrupt_drains_tool_before_followup(
 
 
 @pytest.mark.parametrize("require_finish", [False, True])
+@pytest.mark.parametrize("recent_image_history", [False, True])
 def test_task_replacement_cancels_and_drains_physical_work(
-    tmp_path, dashboard_interrupt_order, require_finish
+    tmp_path, dashboard_interrupt_order, require_finish, recent_image_history
 ):
     state = dashboard(tmp_path)
     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
@@ -912,6 +913,7 @@ def test_task_replacement_cancels_and_drains_physical_work(
         state,
         dashboard_interaction=state,
         timeout_s=3,
+        recent_image_history=recent_image_history,
         require_finish=require_finish,
     )
     assert result.error is None
@@ -922,8 +924,9 @@ def test_task_replacement_cancels_and_drains_physical_work(
 
 
 @pytest.mark.parametrize("require_finish", [False, True])
+@pytest.mark.parametrize("recent_image_history", [False, True])
 def test_timeout_drains_physical_work_and_records_partial_history(
-    tmp_path, require_finish
+    tmp_path, require_finish, recent_image_history
 ):
     events = Events()
     toolkit = RobotToolkit(events)
@@ -948,6 +951,7 @@ def test_timeout_drains_physical_work_and_records_partial_history(
         toolkit,
         events,
         timeout_s=0.15,
+        recent_image_history=recent_image_history,
         require_finish=require_finish,
     )
     assert "timed out" in result.error
@@ -1316,7 +1320,10 @@ def test_finish_only_text_response_uses_sdk_retry_without_dashboard_wait(
         assert result.finish_result is None and toolkit.calls == []
 
 
-def test_finish_only_repeated_text_preserves_thirty_request_budget(tmp_path):
+@pytest.mark.parametrize("recent_image_history", [False, True])
+def test_finish_only_repeated_text_preserves_thirty_request_budget(
+    tmp_path, recent_image_history
+):
     requests = 0
 
     async def stream(messages, info):
@@ -1327,6 +1334,7 @@ def test_finish_only_repeated_text_preserves_thirty_request_budget(tmp_path):
     result, toolkit, _ = solve(
         tmp_path,
         FunctionModel(stream_function=stream),
+        recent_image_history=recent_image_history,
         require_finish=True,
         max_turns=30,
         timeout_s=600,
@@ -1632,3 +1640,99 @@ def test_recent_image_history_factory_forwarding(tmp_path, monkeypatch):
     ).recent_image_history
     with pytest.raises(ValueError, match="API planner"):
         build_planner("codex", api_recent_image_history=True, **args)
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_recent_images_reach_serialized_provider_body(tmp_path, enabled):
+    import base64
+
+    import httpx2
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    bodies = []
+    events = Events()
+    toolkit = RobotToolkit(events)
+    sequence = iter([b"image1", b"image2", b"image3"])
+    toolkit.register(
+        "observe",
+        lambda: ToolResult(data={"keep": "evidence"}, images=[next(sequence)]),
+    )
+
+    def respond(request):
+        bodies.append(json.loads(request.content))
+        count = len(bodies)
+        name = "observe" if count <= 3 else "finish"
+        chunk = {
+            "id": f"offline-{count}",
+            "object": "chat.completion.chunk",
+            "created": 1,
+            "model": "qwen3.8-flash",
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "tool_calls",
+                    "delta": {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": f"call-{count}",
+                                "type": "function",
+                                "function": {
+                                    "name": name,
+                                    "arguments": json.dumps(
+                                        FINISH_ARGS if name == "finish" else {}
+                                    ),
+                                },
+                            }
+                        ],
+                    },
+                }
+            ],
+        }
+        return httpx2.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            content=f"data: {json.dumps(chunk)}\n\ndata: [DONE]\n\n".encode(),
+        )
+
+    client = httpx2.AsyncClient(transport=httpx2.MockTransport(respond))
+    model = OpenAIChatModel(
+        "qwen3.8-flash",
+        provider=OpenAIProvider(
+            base_url="https://example.invalid/v1",
+            api_key="offline-test",
+            http_client=client,
+        ),
+    )
+    try:
+        result, _, _ = solve(
+            tmp_path,
+            model,
+            toolkit,
+            events,
+            recent_image_history=enabled,
+            require_finish=True,
+        )
+        assert result.error is None and result.finish_result["_finish"]
+        assert len(bodies) == 4
+        images = [
+            part["image_url"]["url"]
+            for message in bodies[-1]["messages"]
+            if isinstance(message.get("content"), list)
+            for part in message["content"]
+            if part.get("type") == "image_url"
+        ]
+        decoded = [base64.b64decode(url.split(",", 1)[1]) for url in images]
+        assert decoded == (
+            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
+        )
+        assert all(
+            b["enable_thinking"] is False and b["tool_choice"] == "required"
+            for b in bodies
+        )
+        assert all(f"call-{i}" in json.dumps(bodies[-1]) for i in range(1, 4))
+        assert json.dumps(bodies[-1]).count("evidence") == 3
+    finally:
+        asyncio.run(client.aclose())
