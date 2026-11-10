@@ -8,7 +8,7 @@
 
 - 新增按需读取的 RPent 短经验 `identity-and-transfer-evidence` 并登记全库索引。独立 E 材料只替换候选索引并新增此文，原 system/user/guide 和旧经验正文哈希保持一致；不把经验加入系统提示。
 - `sensor_patch_batch` 新版本增加可选 `alignment_pair`：以同一最新帧的物体点、目标点和 EEF 位置合成保持高度的 XY 对齐目标。不提供该参数时保持原输出。程序不识别物体身份、不证明抓稳，也不生成下降或避障计划。
-- 任务 8 实际 50 个初态均显示语言与评分对象冲突。隔离 BDDL 副本仅将 `left` 改为 `right`，官方 goal 和初态保持原样，两组使用同一修正版 cohort；结果不能冒充未经修改的原始 benchmark。
+- 任务 8 的评分对象在 50 个初态中处于标定图右侧；隔离 BDDL 副本按用户批准仅将 `left` 改为 `right`，官方 goal 和初态保持原样，两组使用同一修正版 cohort。后续确认策略图与标定图水平镜像，原先笼统称其官方指令错误过于绝对，见 [视角更正](visual-coordinate-audit/task8-viewpoint-clarification.md)。修正版结果不能冒充未经修改的原始 benchmark。
 - 两个独立工作台开始 C/E 四格开发筛选：任务 4、0 各 seed 0，两组均 Qwen Flash、关闭思考、600 秒/30 请求。只比较经验差异，本轮没有选入新关系工具。原版不重跑。
 
 ## 验证与边界

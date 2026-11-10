@@ -1,0 +1,20 @@
+{
+  "source_and_non_patch_diff_check": "passed",
+  "embedded_unified_patch_syntax": "git apply --numstat passed for both files; no patch applied",
+  "intentional_whitespace": [
+    {
+      "file": "drafts/registration.patch.draft",
+      "lines": [
+        21,
+        67
+      ]
+    },
+    {
+      "file": "probe-timing.patch",
+      "lines": [
+        52
+      ]
+    }
+  ],
+  "reason": "Each listed line is the single-space context marker for a blank line in a stored unified diff. Original proposal/probe amendment bytes are preserved; this exception is not a production whitespace exemption."
+}

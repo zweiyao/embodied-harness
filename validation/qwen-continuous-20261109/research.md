@@ -52,11 +52,11 @@
 
 ## 任务 8 的明确选择
 
-只读审计发现当前语言 `put the left moka pot on the stove`，goal 为 `On moka_pot_1 flat_stove_1_cook_region`；实际50个初态及相机投影确认 pot1 位于画面右边。不能教模型忽略任务语言以追逐错误评分。
+只读审计发现当前语言 `put the left moka pot on the stove`，goal 为 `On moka_pot_1 flat_stove_1_cook_region`；实际50个初态及相机投影确认 pot1 位于标定图右边。2026-11-10 的图像链路审计进一步确认策略图与标定图水平镜像，因此标定图右边对应策略图左边。此前将其直接称为官方指令错误过于绝对；原作者意图采用哪个视角尚未确认。详见 [视角更正说明](visual-coordinate-audit/task8-viewpoint-clarification.md)。
 
 已按用户选择在独立候选副本中将该任务唯一语言字符串改为 `put the right moka pot on the stove`，goal、物理状态和控制不改。原安装包与原实验保留。实际运行 cohort 标为 `libero_10_task-language-right-v1`（草案暂称 `libero_10_task_instruction_audit_v1`），原始 suite 名作为来源；同预算参考也使用同一修正，结果不能冒充未经修改的原始 benchmark。私有 BDDL 路径已由实际环境日志核实。
 
-另一选项：保持原版，把任务8列为基准定义冲突，先优化其余九项；不能宣称原版十任务干净验收已完成。
+上述私有文本选择保持用户已批准的标定视角适配，不自动改回原语言，也不改 goal。VLA 仍接收策略方向图像和原样传入的工具语言，空间措辞的跨视角关系需要单独验证，不能静默自动交换 left/right。任何修正版成绩仍须与原始 benchmark 区分。
 
 ## 当前执行状态
 

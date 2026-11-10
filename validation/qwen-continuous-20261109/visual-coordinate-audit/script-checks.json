@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "remote_compile": true,
+  "remote_scoped_ruff_check": true,
+  "script_sha256": "312dc050a1b7c85507d00ee99329f197a4a828fb9c3f61b64db5361d4598feea",
+  "model_requests": 0,
+  "simulator_actions": 0
+}
