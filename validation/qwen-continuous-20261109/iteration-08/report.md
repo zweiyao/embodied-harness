@@ -62,3 +62,8 @@ ledger delta was checked against the exact results hash and all20 unique task
 paths. No policy test was rerun for reporting. Next investigate the explicit
 image/frame ambiguity already established by the historical visual audit;
 semantic query substitution and action selection remain separate hypotheses.
+
+Subsequent [visual review](visual-followup.md) inspected the three saved external
+frames: task0 queried the visible ketchup distractor; task4 showed grasp-consistent
+mug motion and a left-plate region match, without verified transport/placement.
+The initial report's image-review limitation is superseded only for these frames.
