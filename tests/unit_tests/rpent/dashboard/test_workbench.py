@@ -134,7 +134,11 @@ def test_finish_only_flag_is_server_owned_and_api_scoped(bench):
 
 @pytest.mark.parametrize(
     "field,value",
-    [("api_require_finish", True), ("planner_view_mode", "calibrated-pair-v1")],
+    [
+        ("api_require_finish", True),
+        ("planner_view_mode", "calibrated-pair-v1"),
+        ("initial_action_phase", True),
+    ],
 )
 def test_claimed_options_reach_manifest_and_run_config(
     bench, tmp_path, monkeypatch, field, value
@@ -145,7 +149,9 @@ def test_claimed_options_reach_manifest_and_run_config(
 
     enabled = Workbench({**bench.config, field: value})
     enabled.checks = {"api": {"ok": True}}
-    request = enabled.prepare({"model_profile": "api", "tools": ["native:finish"]})
+    request = enabled.prepare(
+        {"model_profile": "api", "tools": ["native:finish", "native:pi0_pick"]}
+    )
     enabled.config[field] = "native" if field == "planner_view_mode" else False
     root = tmp_path / "session/tasks/0001_s1"
     root.mkdir(parents=True)
@@ -162,7 +168,7 @@ def test_claimed_options_reach_manifest_and_run_config(
 
     def stop_before_runtime(args, spec, config):
         assert config is run_config
-        if field == "planner_view_mode":
+        if field in {"planner_view_mode", "initial_action_phase"}:
             assert config.prompt_vars[field] == value
         raise RuntimeError("fixture stops after actual config serialization")
 
@@ -459,3 +465,30 @@ def test_planner_views_are_server_owned_and_native_catalog_unchanged(bench):
             },
             robot="flexiv",
         )
+
+
+def test_initial_action_phase_is_owned_and_requires_api_language_tool(bench):
+    bench.checks = {"api": {"ok": True}}
+    request = {"model_profile": "api", "tools": ["native:finish", "native:pi0_pick"]}
+    assert "initial_action_phase" not in bench.prepare(request)
+    candidate = Workbench({**bench.config, "initial_action_phase": True})
+    candidate.checks = {"api": {"ok": True}, "sdk": {"ok": True}}
+    assert candidate.prepare(request)["initial_action_phase"] is True
+    assert candidate.selection() == bench.selection()
+    for target in (bench, candidate):
+        with pytest.raises(ValueError, match="server-owned"):
+            target.prepare({**request, "initial_action_phase": False})
+        with pytest.raises(ValueError):
+            target.normalize({"initial_action_phase": True})
+    with pytest.raises(ValueError, match="language primitive"):
+        candidate.prepare({**request, "tools": ["native:finish"]})
+    with pytest.raises(ValueError, match="API planner"):
+        candidate.prepare({**request, "model_profile": "sdk"})
+    with pytest.raises(ValueError, match="only for LIBERO"):
+        Workbench(
+            {**bench.config, "robot": "flexiv", "initial_action_phase": True},
+            robot="flexiv",
+        )
+    for value in (1, "true", None):
+        with pytest.raises(ValueError, match="boolean"):
+            Workbench({**bench.config, "initial_action_phase": value})

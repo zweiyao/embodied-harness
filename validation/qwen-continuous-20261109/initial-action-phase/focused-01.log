@@ -1,0 +1,139 @@
+........................................................................ [ 49%]
+...........F............................................................ [ 99%]
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_availability_dispatch_guard_and_locked_finish ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-zwy/pytest-359/test_availability_dispatch_gua0')
+
+    def test_availability_dispatch_guard_and_locked_finish(tmp_path):
+        from pydantic_ai import ModelRetry
+    
+        from rpent.planner.api_loop import _HarnessToolkit
+    
+        events = Events()
+        toolkit = RobotToolkit(events)
+        toolkit.planner_tools_only = True
+        toolkit.planner_tool_available = lambda name: name == "finish"
+        adapter = _HarnessToolkit(toolkit, dashboard_events=events, no_images=False)
+        with pytest.raises(ModelRetry, match="unavailable"):
+            asyncio.run(adapter.execute("observe", {}, SimpleNamespace()))
+        assert toolkit.calls == []
+        result, _, _ = solve(
+            tmp_path,
+            TestModel(call_tools=["finish"], custom_output_args=FINISH_ARGS),
+            toolkit,
+            events,
+            require_finish=True,
+        )
+>       assert result.error is None
+E       assert "UserError: TestModel was configured to call unknown tool 'finish'." is None
+E        +  where "UserError: TestModel was configured to call unknown tool 'finish'." = <rpent.planner.base.PlannerResult object at 0x789f96d58600>.error
+
+tests/unit_tests/rpent/planner/test_api_contracts.py:1454: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    rpent.api:api_loop.py:215 Harness planner failed
+Traceback (most recent call last):
+  File "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/rpent/planner/api_loop.py", line 202, in _solve
+    await asyncio.wait_for(
+  File "/home/zwy/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/rpent/planner/api_loop.py", line 757, in run
+    await self._run_conversation(agent, prompt)
+  File "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/rpent/planner/api_loop.py", line 787, in _run_conversation
+    await agent.run(
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/agent/abstract.py", line 671, in run
+    node = await agent_run.next(node)  # pyright: ignore[reportArgumentType]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/run.py", line 564, in next
+    return await self._run_node_with_hooks(node, self._stream_and_advance)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/run.py", line 485, in _run_node_with_hooks
+    return await self._wrap_and_advance(run_context, node, step_fn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/run.py", line 429, in _wrap_and_advance
+    result = await cap.wrap_node_run(run_context, node=node, handler=step_fn)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/combined.py", line 596, in wrap_node_run
+    return await chain(node)
+           ^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/combined.py", line 1047, in wrapped
+    return await cap.wrap_node_run(_ctx_for_cap(cap, ctx), node=node, handler=inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/rpent/planner/api_loop.py", line 567, in wrap_node_run
+    return await handler(node)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/run.py", line 577, in _stream_and_advance
+    await _agent_graph.drain_node_event_stream(node, self.ctx)
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/_agent_graph.py", line 566, in drain_node_event_stream
+    async for _event in model_stream:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/result.py", line 459, in _pull_shared
+    event = await anext(events_iterator)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/combined.py", line 643, in wrap_run_event_stream
+    async for event in stream:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/abstract.py", line 890, in wrap_run_event_stream
+    async for event in stream:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/abstract.py", line 890, in wrap_run_event_stream
+    async for event in stream:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/capabilities/abstract.py", line 890, in wrap_run_event_stream
+    async for event in stream:
+  [Previous line repeated 2 more times]
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/_run_context.py", line 101, in dispatch_event_stream
+    async for event in stream:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/result.py", line 490, in _events_iter
+    event = await anext(base_iter)
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/models/_continuation.py", line 325, in _iterator_with_cancel_guard
+    async for event in iterator:
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/models/_continuation.py", line 418, in _get_event_iterator
+    async with self.model.request_stream(
+  File "/home/zwy/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/models/test.py", line 155, in request_stream
+    model_response = self._request(messages, model_settings, model_request_parameters)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/models/test.py", line 254, in _request
+    tool_calls = self._get_tool_calls(model_request_parameters)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/pydantic_ai/models/test.py", line 218, in _get_tool_calls
+    raise UserError(f'TestModel was configured to call unknown tool {name!r}.')
+pydantic_ai.exceptions.UserError: TestModel was configured to call unknown tool 'finish'.
+______ test_initial_action_phase_is_owned_and_requires_api_language_tool _______
+
+bench = <rpent.dashboard.workbench.Workbench object at 0x789ed436d310>
+
+    def test_initial_action_phase_is_owned_and_requires_api_language_tool(bench):
+        request = {"model_profile": "api", "tools": ["native:finish", "native:pi0_pick"]}
+>       assert "initial_action_phase" not in bench.prepare(request)
+                                             ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit_tests/rpent/dashboard/test_workbench.py:472: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rpent.dashboard.workbench.Workbench object at 0x789ed436d310>
+request = {'model_profile': 'api', 'tools': ['native:finish', 'native:pi0_pick']}
+
+    def prepare(self, request):
+        if "initial_action_phase" in request:
+            raise ValueError("initial_action_phase is a server-owned setting")
+        if "planner_view_mode" in request:
+            raise ValueError("planner_view_mode is a server-owned setting")
+        if "api_require_finish" in request:
+            raise ValueError("api_require_finish is a server-owned setting")
+        if {"pilot_root", "pilot_freeze"} & request.keys():
+            raise ValueError("Pilot root and frozen bundle are server-owned settings")
+        if self.pilot is not None:
+            request = {**self.pilot_defaults, "pilot_cell": self.pilot_cell, **request}
+        profile_id = request.get("model_profile", next(iter(self.profiles)))
+        if not self.checks.get(profile_id, {}).get("ok"):
+>           raise ValueError("请先在开始页检查所选模型连接")
+E           ValueError: 请先在开始页检查所选模型连接
+
+rpent/dashboard/workbench.py:543: ValueError
+=========================== short test summary info ============================
+FAILED tests/unit_tests/rpent/planner/test_api_contracts.py::test_availability_dispatch_guard_and_locked_finish
+FAILED tests/unit_tests/rpent/dashboard/test_workbench.py::test_initial_action_phase_is_owned_and_requires_api_language_tool
+2 failed, 143 passed in 5.78s

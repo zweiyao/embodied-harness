@@ -1390,3 +1390,71 @@ def test_finish_only_rejects_missing_finish_before_model_request(tmp_path):
     with pytest.raises(ValueError, match="enabled finish tool"):
         solve(tmp_path, TestModel(), toolkit, events, require_finish=True)
     assert toolkit.calls == []
+
+
+@pytest.mark.parametrize("first_call", ["observe", "blocked"])
+def test_tool_availability_refreshes_each_sdk_request(tmp_path, first_call):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.planner_tools_only = True
+    toolkit.register("blocked", lambda: ToolResult(data={"value": 7}))
+    toolkit.planner_tool_available = lambda name: (
+        name != "blocked" or any(n == "observe" for n, _ in toolkit.calls)
+    )
+    seen = []
+
+    async def stream(messages, info):
+        names = {t.name for t in info.function_tools}
+        seen.append(names)
+        if len(seen) == 1:
+            assert "blocked" not in names
+            yield tool(first_call)
+        elif not toolkit.calls:
+            assert "blocked" not in names
+            yield tool("observe")
+        elif not any(n == "blocked" for n, _ in toolkit.calls):
+            assert "blocked" in names
+            yield tool("blocked")
+        else:
+            yield finish()
+
+    result, _, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        require_finish=True,
+    )
+    assert result.error is None
+    assert [n for n, _ in toolkit.calls] == ["observe", "blocked", "finish"]
+    assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+    assert len(seen) == (4 if first_call == "blocked" else 3)
+
+
+def test_availability_dispatch_guard_and_locked_finish(tmp_path):
+    from pydantic_ai import ModelRetry
+
+    from rpent.planner.api_loop import _HarnessToolkit
+
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit.planner_tools_only = True
+    toolkit.planner_tool_available = lambda name: name == "finish"
+    adapter = _HarnessToolkit(toolkit, dashboard_events=events, no_images=False)
+    with pytest.raises(ModelRetry, match="unavailable"):
+        asyncio.run(adapter.execute("observe", {}, SimpleNamespace()))
+    assert toolkit.calls == []
+
+    async def stream(messages, info):
+        assert info.function_tools == []
+        yield finish()
+
+    result, _, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        require_finish=True,
+    )
+    assert result.error is None
+    assert [n for n, _ in toolkit.calls] == ["finish"]

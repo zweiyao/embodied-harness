@@ -451,6 +451,14 @@ def test_manual_factory_receives_only_explicit_view_mode(tmp_path, monkeypatch):
     )
     default = get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)
     assert "planner_view_mode" not in default
+    assert "initial_action_phase" not in default
+    config.prompt_vars["initial_action_phase"] = True
+    assert (
+        get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)[
+            "initial_action_phase"
+        ]
+        is True
+    )
     config.prompt_vars["planner_view_mode"] = "calibrated-pair-v1"
     assert (
         get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)[
@@ -458,3 +466,107 @@ def test_manual_factory_receives_only_explicit_view_mode(tmp_path, monkeypatch):
         ]
         == "calibrated-pair-v1"
     )
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+@pytest.mark.parametrize("pickup_success", [False, True])
+def test_initial_action_phase_uses_recorded_execution(
+    tmp_path, monkeypatch, fake_single_arm_primitives, enabled, pickup_success
+):
+    from rpent.utils import templates
+
+    monkeypatch.setattr(
+        templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
+    )
+    names = {"pi0_pick", "translate_to", "view_env_state", "finish"}
+    selected = [t for t in native_catalog() if t["name"] in names]
+    fake = fake_single_arm_primitives.for_robot(libero.libero_tools.LiberoPrimitives)
+    fake.env = SimpleNamespace(terminated=False, truncated=False)
+    fake._sam3_client = None
+    chunks = [0]
+    calls = []
+
+    def pick(self, **kwargs):
+        calls.append("pick")
+        return ToolResult(data={"chunks_used": chunks[0], "success": pickup_success})
+
+    def move(self, xyz, **kwargs):
+        calls.append("move")
+        return ToolResult(data={"steps_used": 1})
+
+    fake.pi0_pick = libero.libero_tools.LiberoPrimitives.pi0_pick.with_handler(pick)
+    fake.move_to = libero.libero_tools.LiberoPrimitives.move_to.with_handler(move)
+    monkeypatch.setattr(libero.libero_tools, "LiberoPrimitives", fake)
+
+    def dump(primitives, state, log):
+        log = log or {}
+        with state.record_step(
+            state={},
+            terminated=False,
+            command=log.get("command"),
+            result=log.get("result"),
+            extras={"task_language": "fixture"},
+        ) as step:
+            for name in (
+                "agentview_policy.png",
+                "agentview_high.png",
+                "wrist_high.png",
+            ):
+                state.save(name, np.zeros((8, 8, 3), np.uint8), step=step)
+        return state.get(step)
+
+    monkeypatch.setattr(libero.libero_tools, "dump_state", dump)
+    t = ManualToolkit(
+        selected=selected,
+        journal=RunJournal(tmp_path / "state"),
+        initial_action_phase=enabled,
+        runtime_kwargs={},
+        dashboard_events=SimpleNamespace(enabled=False, emit=lambda x: None),
+        memory=MemoryManager(tmp_path / "memory"),
+        state_output_dir=tmp_path / "state",
+    )
+    try:
+        assert t.planner_tool_available("translate_to") is (not enabled)
+        assert t.planner_tool_available("finish")
+        assert not t.execute_tool("view_env_state", {}).is_error
+        assert t.planner_tool_available("translate_to") is (not enabled)
+        assert t.execute_tool("pi0_pick", {}).is_error
+        assert calls == []
+        if enabled:
+            assert t.execute_tool("translate_to", {"xyz": [0, 0, 0]}).is_error
+            assert calls == []
+        t.execute_tool("pi0_pick", {"prompt": "pick"})
+        assert t.planner_tool_available("translate_to") is (not enabled)
+        chunks[0] = 1
+        result = t.execute_tool("pi0_pick", {"prompt": "pick"})
+        assert not result.is_error
+        assert t.planner_tool_available("translate_to")
+        assert t.state.latest_record().result["success"] is pickup_success
+        t.execute_tool("translate_to", {"xyz": [0, 0, 0]})
+        assert calls == ["pick", "pick", "move"]
+        assert t.state.latest_record().command["action"] == "translate_to"
+    finally:
+        t.close()
+
+
+@pytest.mark.parametrize("flag", ["true", 1, None])
+def test_initial_action_phase_rejects_non_boolean(flag):
+    with pytest.raises(ValueError, match="boolean"):
+        ManualToolkit(selected=[], journal=None, initial_action_phase=flag)
+
+
+def test_initial_action_phase_requires_language_action():
+    with pytest.raises(ValueError, match="language primitive"):
+        ManualToolkit(selected=[], journal=None, initial_action_phase=True)
+
+
+def test_initial_action_prompt_is_opt_in():
+    from robots.libero.research.manual import availability_prompt
+
+    selected = [t for t in native_catalog() if t["name"] == "pi0_pick"]
+    default = availability_prompt(selected)
+    assert default == availability_prompt(selected, initial_action_phase=False)
+    candidate = availability_prompt(selected, initial_action_phase=True)
+    assert "Initially, inspect identity" not in default
+    assert "including failed pickup" in candidate
+    assert "finish if no suitable action is justified" in candidate

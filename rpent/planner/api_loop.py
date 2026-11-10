@@ -65,6 +65,7 @@ from pydantic_ai.exceptions import UsageLimitExceeded, UserError
 from pydantic_ai.messages import ModelMessage, UserContent
 from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.run import AgentRun, AgentRunResult
+from pydantic_ai.toolsets import ToolsetTool
 from pydantic_ai_harness.compaction import SlidingWindowCompaction
 
 from rpent.dashboard.events import DashboardEventSink, TranscriptEvent, UsageEvent
@@ -391,6 +392,14 @@ class _HarnessToolkit(FunctionToolset):
         if require_finish and not self.output_types:
             raise ValueError("require_finish needs an enabled finish tool")
 
+    async def get_tools(self, ctx: RunContext) -> dict[str, ToolsetTool]:
+        """Prepare only tools currently available in the toolkit's workflow."""
+        prepared = await super().get_tools(ctx)
+        available = getattr(self.toolkit, "planner_tool_available", None)
+        if available is None:
+            return prepared
+        return {name: spec for name, spec in prepared.items() if available(name)}
+
     async def read_image(
         self, ctx: RunContext, name: str, step: int = -1
     ) -> ToolReturn:
@@ -436,6 +445,11 @@ class _HarnessToolkit(FunctionToolset):
         self, name: str, arguments: dict[str, Any], ctx: RunContext
     ) -> ToolResult:
         """Validate and run one physical operation, retaining cancellation ownership."""
+        available = getattr(self.toolkit, "planner_tool_available", None)
+        if available is not None and not available(name):
+            raise ModelRetry(
+                f"Tool {name} is unavailable in the current workflow phase"
+            )
         normalized = _normalize_numeric_arguments(
             arguments, self.validators[name].schema
         )

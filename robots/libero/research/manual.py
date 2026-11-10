@@ -18,6 +18,20 @@ from rpent.tools import Tool, ToolResult, tool
 
 PLANNER_VIEW_MODE = "calibrated-pair-v1"
 PLANNER_VIEW_ARTIFACTS = ("agentview_high.png", "wrist_high.png")
+INITIAL_ACTION_TOOLS = frozenset(
+    {
+        "finish",
+        "list_dir",
+        "read_text_file",
+        "write_text_file",
+        "view_env_state",
+        "read_image",
+        "segment",
+        "pi0_pick",
+        "pi0_doubled",
+    }
+)
+INITIAL_ACTION_PRIMITIVES = frozenset({"pi0_pick", "pi0_doubled"})
 
 
 def planner_view_description(name):
@@ -58,11 +72,22 @@ class ManualToolkit(LiberoToolkit):
         journal,
         sandbox_image="embodied-sensor:pilot",
         planner_view_mode="native",
+        initial_action_phase=False,
         **kwargs,
     ):
         if planner_view_mode not in ("native", PLANNER_VIEW_MODE):
             raise ValueError("Unsupported LIBERO planner_view_mode")
         self.planner_view_mode = planner_view_mode
+        if type(initial_action_phase) is not bool:
+            raise ValueError("initial_action_phase must be a boolean")
+        if initial_action_phase and not (
+            {t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES
+        ):
+            raise ValueError(
+                "initial_action_phase requires a selected language primitive"
+            )
+        self.initial_action_phase = initial_action_phase
+        self._initial_action_done = False
         placement_names = {t["name"] for t in selected} & {
             "preview_placement",
             "align_placement",
@@ -311,19 +336,52 @@ class ManualToolkit(LiberoToolkit):
         )
         return ToolResult(data=self.sandbox.run(definition, params, frames))
 
+    def planner_tool_available(self, name: str) -> bool:
+        """Defer geometry and manual actions until initial primitive feedback."""
+        return (
+            not self.initial_action_phase
+            or self._initial_action_done
+            or name in INITIAL_ACTION_TOOLS
+        )
+
     def execute_tool(self, name, input_dict):
         call_id = uuid.uuid4().hex
         started = time.monotonic()
         self.journal.append(
             "tool_request", {"call_id": call_id, "name": name, "arguments": input_dict}
         )
+        before_step = self.state.latest_step if self.initial_action_phase else None
         try:
-            result = super().execute_tool(name, input_dict)
+            if self.planner_tool_available(name):
+                result = super().execute_tool(name, input_dict)
+            else:
+                result = ToolResult(
+                    data={
+                        "error": f"Tool {name} is unavailable until initial language-action feedback"
+                    }
+                )
         except Exception as exc:
             self.journal.append(
                 "tool_error", {"call_id": call_id, "name": name, "error": str(exc)}
             )
             raise
+        if (
+            self.initial_action_phase
+            and not self._initial_action_done
+            and name in INITIAL_ACTION_PRIMITIVES
+            and self.state.latest_step is not None
+            and self.state.latest_step != before_step
+            and self.state.latest_record().result.get("chunks_used", 0) > 0
+        ):
+            self._initial_action_done = True
+            self.journal.append(
+                "workflow_phase",
+                {
+                    "phase": "manual_available",
+                    "trigger": name,
+                    "after_step": self.state.latest_step,
+                },
+            )
         self.journal.append(
             "tool_response",
             {
@@ -356,7 +414,9 @@ class ManualToolkit(LiberoToolkit):
         return result
 
 
-def availability_prompt(selected, *, planner_view_mode="native"):
+def availability_prompt(
+    selected, *, planner_view_mode="native", initial_action_phase=False
+):
     names = ", ".join(t["name"] for t in selected)
     eef_guidance = (
         "Use translate_to for position-only moves while retaining the gripper target. "
@@ -389,12 +449,21 @@ def availability_prompt(selected, *, planner_view_mode="native"):
         "View and action images are ordered by image_views. "
         "For sampling, use a calibrated view's camera, step and pixel size. "
     )
+    phase_guidance = (
+        "Initially, inspect identity and choose an enabled language primitive; "
+        "finish if no suitable action is justified. Geometry and manual tools "
+        "become available after its first recorded action feedback, including "
+        "failed pickup. Sample geometry when the next manual action needs it.\n\n"
+        if initial_action_phase
+        else ""
+    )
     return (
         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
         "Skip guide steps that require disabled tools. "
         + presentation
         + "Generated perception tools compute evidence, not task success.\n\n"
+        + phase_guidance
         + eef_guidance
         + rotation_guidance
         + placement_guidance

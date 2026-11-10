@@ -223,6 +223,11 @@ class Workbench:
 
             if self.planner_view_mode != PLANNER_VIEW_MODE:
                 raise ValueError("Unsupported LIBERO planner_view_mode")
+        self.initial_action_phase = config.get("initial_action_phase", False)
+        if type(self.initial_action_phase) is not bool:
+            raise ValueError("initial_action_phase must be a boolean")
+        if self.initial_action_phase and robot != "libero":
+            raise ValueError("initial_action_phase is available only for LIBERO")
         self.api_require_finish = config.get("api_require_finish", False)
         if type(self.api_require_finish) is not bool:
             raise ValueError("api_require_finish must be a boolean")
@@ -523,6 +528,8 @@ class Workbench:
         return payload
 
     def prepare(self, request):
+        if "initial_action_phase" in request:
+            raise ValueError("initial_action_phase is a server-owned setting")
         if "planner_view_mode" in request:
             raise ValueError("planner_view_mode is a server-owned setting")
         if "api_require_finish" in request:
@@ -537,12 +544,23 @@ class Workbench:
         if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
             raise ValueError("api_require_finish requires the API planner")
         selected = self.selection(request.get("tools"))
+        if self.initial_action_phase:
+            if self.profiles[profile_id]["planner"] != "api":
+                raise ValueError("initial_action_phase requires the API planner")
+            from robots.libero.research.manual import INITIAL_ACTION_PRIMITIVES
+
+            if not ({t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES):
+                raise ValueError(
+                    "initial_action_phase requires a selected language primitive"
+                )
         prepared = {
             **request,
             "model_profile": profile_id,
             "tools": [t["id"] for t in selected],
             "frozen_tools": selected,
         }
+        if self.initial_action_phase:
+            prepared["initial_action_phase"] = True
         if self.api_require_finish:
             prepared["api_require_finish"] = True
         if self.planner_view_mode != "native":
