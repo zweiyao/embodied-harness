@@ -1,0 +1,21 @@
+{
+  "approved_by": "root coordinating agent under user-approved continuous isolated LIBERO optimization",
+  "approved_at": "2026-11-10T07:14:23.388047+00:00",
+  "scope": "iteration06 only, two Qwen Flash task4/0 seed0 cells; preflight then episodes; no rerun of prior valid failures",
+  "plan_sha256": "1744fc8a38ec6ff9be08ee888500675f67602c94116c3ca3bcdd62c16292088a",
+  "source_handoff_sha256": "c1baa28230e7a24cfa0579685a3e9765da64f61c4bfee7d5954e42ee75da0601",
+  "source_commit": "4354295",
+  "reviewed_head": "516ca7b",
+  "required_checks": {
+    "full_units": "2108 passed / 15 skipped",
+    "focused": 73,
+    "classifier_boundaries": 14,
+    "observer_cases": 4,
+    "independent_probe_review": "passed;41 aggregate steps;6320 protected hashes;303 source files",
+    "proxies": "all six unset after activation",
+    "time_budget_s": 600,
+    "max_model_requests": 30,
+    "network_or_image_changes": false
+  },
+  "notes": "R18 selection only. Mixed-view candidate remains draft and is excluded. Interface validation is not task efficacy."
+}

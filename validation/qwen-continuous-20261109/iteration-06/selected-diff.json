@@ -1,0 +1,59 @@
+{
+  "reference": "iteration-05 frozen P19, not promoted",
+  "reference_plan_sha256": "44896e47f56820dc0fe1def51212bb42c141181a4e48c3e8f6a2dd5d7a8941a1",
+  "before": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:rotate_pitch",
+    "native:rotate_wrist",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "native:translate_to",
+    "native:preview_placement",
+    "native:align_placement"
+  ],
+  "removed": [
+    "native:rotate_wrist",
+    "native:rotate_pitch"
+  ],
+  "added": [
+    "native:rotate_axis"
+  ],
+  "after": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "native:translate_to",
+    "native:preview_placement",
+    "native:align_placement",
+    "native:rotate_axis"
+  ],
+  "preserved": {
+    "model_profile": "qwen3.8-flash",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600
+  },
+  "source_handoff_status": "303 frozen source hashes verified; setup authorized; policy startup awaits root READY"
+}

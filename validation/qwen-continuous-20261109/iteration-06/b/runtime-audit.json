@@ -1,0 +1,48 @@
+{
+  "lane": "b",
+  "audit_type": "contemporaneous_owned_process_observer",
+  "environment_eef_control_expected": true,
+  "snapshots": [
+    {
+      "observed_at": "2026-11-10T07:14:56.406086+00:00",
+      "pid": 2978037,
+      "start_ticks": "251899083",
+      "role": "workbench",
+      "entrypoint": "rpent.cli.main",
+      "command_sha256": "94017012fa9afdcf3977fc86800ac20c7f3dfb924da60e47b786f0fb783bff3f",
+      "eef_control_flag_present": false,
+      "source_environment": {
+        "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+        "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+        "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-06/b/libero-config"
+      },
+      "source_roots_match": true,
+      "private_config_matches": true,
+      "proxy_variables_present": []
+    },
+    {
+      "observed_at": "2026-11-10T07:14:56.607201+00:00",
+      "pid": 2978139,
+      "start_ticks": "251899435",
+      "role": "environment_server",
+      "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout/robots/libero/env_server.py",
+      "command_sha256": "492ca73f83e80b19af98958e2967095c56a9586d7e8283fd041437e316d0162b",
+      "eef_control_flag_present": true,
+      "source_environment": {
+        "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+        "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+        "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-06/b/libero-config"
+      },
+      "source_roots_match": true,
+      "private_config_matches": true,
+      "proxy_variables_present": [],
+      "entrypoint_matches": true
+    }
+  ],
+  "observer_errors": [],
+  "observer_stopped": true,
+  "episode_ended_at": "2026-11-10T07:25:07.565132+00:00",
+  "child_observed_before_episode_end": true,
+  "coverage_complete": true,
+  "guard_violations": []
+}

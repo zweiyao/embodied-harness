@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "short_child",
+      "passed": true,
+      "coverage_complete": true,
+      "guard_violations_detected": 0,
+      "roles_captured": [
+        "environment_server",
+        "workbench"
+      ],
+      "dummy_secret_excluded": true
+    },
+    {
+      "case": "missing_eef_flag",
+      "passed": true,
+      "coverage_complete": true,
+      "guard_violations_detected": 1,
+      "roles_captured": [
+        "environment_server",
+        "workbench"
+      ],
+      "dummy_secret_excluded": true
+    },
+    {
+      "case": "missing_child",
+      "passed": true,
+      "coverage_complete": false,
+      "guard_violations_detected": 0,
+      "roles_captured": [
+        "workbench"
+      ],
+      "dummy_secret_excluded": true
+    },
+    {
+      "case": "cancel_observer",
+      "passed": true,
+      "coverage_complete": false,
+      "guard_violations_detected": 0,
+      "roles_captured": [
+        "workbench"
+      ],
+      "dummy_secret_excluded": true
+    }
+  ],
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "owned_fixture_units_cleaned": true
+}

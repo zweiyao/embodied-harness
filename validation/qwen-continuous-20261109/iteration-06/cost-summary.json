@@ -1,0 +1,26 @@
+{
+  "recorded_at": "2026-11-10T07:26:39.036998+00:00",
+  "model_requests": 17,
+  "completed_model_responses": 15,
+  "requests_without_completed_response": 2,
+  "input_tokens_including_cached": 165146,
+  "cached_input_tokens_subset": 116736,
+  "output_tokens": 1629,
+  "summed_outcome_elapsed_s": 1222.2,
+  "summed_completed_model_wait_s": 923.70085,
+  "pooled_completed_model_wait_mean_s": 61.580056666666664,
+  "preflight_connectivity_requests_excluded": 2,
+  "tool_calls": 21,
+  "high_level_action_calls": 4,
+  "new_tool_calls": {
+    "rotate_axis": 0,
+    "preview_placement": 1,
+    "align_placement": 0
+  },
+  "notes": [
+    "Reported token usage includes completed responses only; canceled requests have no usage report. Cached input is a subset of input, not additive.",
+    "Two normal600s planner budget failures retained. Outcome elapsed includes setup/finalization. No reruns.",
+    "Mean completed model wait uses15 completed responses;2 final canceledrequests excluded.",
+    "Action counts are high-level tool calls, not native controller steps. No R adoption, so no task-rotation efficacy conclusion."
+  ]
+}

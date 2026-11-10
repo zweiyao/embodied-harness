@@ -45,3 +45,13 @@ Actual 19-tool schemas, both initial-camera image pairs and 6017 protected hashe
 Completed model waits total 1145.56 seconds across two episodes. Passive IPv6 sockets show upload queues and retransmissions; request images contribute approximately 1.8–7.2 MB of base64 payload. This supports a transport contribution without uniquely explaining total latency. A separately budgeted, same-payload family comparison begins only after episode termination and cleanup. Keep these valid failures; any subsequent transport change must be common to the candidate and C reference. See [report](iteration-05/report.md).
 
 The separate four-call family diagnostic completed without a stable IPv4 advantage; its costs and raw-httpx scope are recorded separately. The user then explicitly directed us to stop network investigation and keep Qwen proxy-free, with GPT experiments separate. No transport/image change is adopted. Next: R, a default-off correctly scaled rotation interface with retained-position feedback, exact plan recorded before implementation.
+
+## Iteration 06 — retained-position rotation interface
+
+Logged: 2026-11-10T07:26:39.036998+00:00.
+
+C+M+P+R18 scored 0/2. Both ordinary600-second timeouts remain valid; no rerun or promotion. R had zero calls. P had one preview: selected anchors/region were bare table instead of left plate, and its computed0.4504m correction returned requires_waypoint with no executable ID. This makes an upstream semantic failure inspectable but does not establish placement benefit. Task4 repeated an active learned grasp after evidence consistent with holding; task0 failed to grasp and later translated open-handed, with nearby-object interaction. See [diagnosis](iteration-06/diagnosis.md).
+
+Actual18 schemas, paired initial images, complete contemporaneous environment snapshots and7092 protected hashes passed; owned cleanup and main preservation passed. Full recorded cost:17 requests/15 completed responses,165146 input tokens including116736 cached,1629 output,1222.2 summed outcome seconds. Two preflight connectivity requests and final canceled usage are separate/unmetered. R's software/robot-only gates remain interface evidence only.
+
+The next pivot is the explicitly recorded W2 user-message workflow, with no tool, memory, image, network or model change: required startup reads together, then a short next-action/missing-precondition marker matched against actual dispatch. The primitive-execution reminder addresses the repeated active-pick misuse without claiming holding detection. Compare parent R18 and W2 on four new cells; retain all previous failures. Candidate is not promoted merely for fewer calls or compliant labels. A consistent-view candidate remains a separate unimplemented draft.

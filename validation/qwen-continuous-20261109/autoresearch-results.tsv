@@ -5,3 +5,4 @@ iteration	metric_value	delta	delta_pct	status	description	evaluator_source	times
 3	0.0	-50.0	-100%	reverted	C+M: same two cells 0/2; translate_to never called; not promoted	mechanical	2026-11-09T04:59:58.919237+00:00
 4	0.0	-50.0	-100%	reverted	C+M18: same two cells 0/2; M six calls without established holding; model argument failure retained	mechanical	2026-11-10T06:12:09.541253+00:00
 5	0.0	-50.0	-100%	reverted	C+M+P: same two cells 0/2; full 600s timeouts retained; P never called; upload latency diagnosed separately	mechanical	2026-11-10T06:41:07.612952+00:00
+6	0.0	-50.0	-100%	reverted	C+M+P+R: same two cells 0/2; R never called; one P preview selected table and did not align; full timeouts retained	mechanical	2026-11-10T07:26:39.036998+00:00

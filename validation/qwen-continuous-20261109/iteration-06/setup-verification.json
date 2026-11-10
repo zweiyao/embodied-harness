@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-11-10T07:10:34.021620+00:00",
+  "passed": true,
+  "root_READY_absent": true,
+  "no_services_or_models_started": true,
+  "protected_files": 7092,
+  "lanes": {
+    "a": {
+      "shell_syntax_passed": true,
+      "six_proxies_cleared_after_activation": true,
+      "script_sha256": "250658798de9f0959ca14cf543ecc51be4dc4c44d77dd099598cc4401ffafb6d",
+      "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+      "env_child_eef_expected": true,
+      "workbench_eef_flag_present": false
+    },
+    "b": {
+      "shell_syntax_passed": true,
+      "six_proxies_cleared_after_activation": true,
+      "script_sha256": "ecb9f161906a370952ba2031631d7f2d88e7bf6e28597cabc50c3a30f35fc651",
+      "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+      "env_child_eef_expected": true,
+      "workbench_eef_flag_present": false
+    }
+  }
+}
