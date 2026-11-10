@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-11-10T13:08:43.875915+00:00",
+  "model": "qwen3.8-flash",
+  "latest_completed_request_mean_s": 43.37009096153846,
+  "latest_completed_wait_share_percent": {
+    "0": 95.73312140052356,
+    "4": 88.73103156689565
+  },
+  "short_total_s": [
+    1.0161114283837378,
+    0.6708670929074287,
+    1.496638748794794
+  ],
+  "large_write_timeout_s": [
+    90.33749404828995,
+    90.1414723941125,
+    90.24418946309015
+  ],
+  "large_bytes": [
+    3680058,
+    3680058,
+    3419266
+  ],
+  "completed_diagnostic_measurements": 6,
+  "additional_interrupted_diagnostic_attempts": 1,
+  "limitations": [
+    "Archived request-to-response spans include client preparation/SDK overhead, transport, queueing and inference.",
+    "Large replays timed out during upload, so successful-call total latency is unknown.",
+    "Replay uses independent HTTPX HTTP/1.1 transport, not exact experiment SDK transport; do not assign all historical wait to networking.",
+    "Initial script completed one large timeout measurement and was interrupted during its next diagnostic attempt; all measured failures are retained.",
+    "Unfinished historical requests are excluded from averages; run-end intervals include cancellation overhead."
+  ],
+  "changed_harness_or_proxy_settings": false,
+  "tool_dispatches": 0,
+  "new_robot_experiments": 0
+}
