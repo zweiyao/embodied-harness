@@ -1,0 +1,43 @@
+{
+  "observed_at": "2026-11-10T06:08:15.923833+00:00",
+  "audit_type": "retrospective_workbench_processes_after_episode_end",
+  "environment_children_directly_observed": false,
+  "environment_child_command_lines": null,
+  "environment_child_proxy_snapshot": null,
+  "eef_wrapper_absence": "inferred from frozen selection/setup/preflight; no contemporaneous child command snapshot",
+  "lanes": [
+    {
+      "lane": "a",
+      "pid": 2341601,
+      "server_id": "ff74a93a9a8b4ccdadc128b4fcccd43f",
+      "server_matches_preflight": true,
+      "session_state": "ready",
+      "episode_ended_at": "2026-11-09T05:07:59.850952+00:00",
+      "command": "python -m rpent.cli.main --robot libero --libero-type pro --dashboard --dashboard-host 127.0.0.1 --dashboard-port 37353 --dashboard-language zh-cn --planner api --model openai-chat:qwen3.8-flash --memory-profile local --memory-dir /home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable/memory --vla-endpoint http://127.0.0.1:49337 --sam3-endpoint http://127.0.0.1:37867 --max-turns 30 --max-tokens 16384 --planner-timeout-s 600 --output-dir /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/a/runs/session ",
+      "source_environment": {
+        "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+        "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      },
+      "source_roots_match": true,
+      "proxy_variables_present": []
+    },
+    {
+      "lane": "b",
+      "pid": 2341606,
+      "server_id": "26bd9544c5e94ce28d6373ea9ce8f16e",
+      "server_matches_preflight": true,
+      "session_state": "ready",
+      "episode_ended_at": "2026-11-09T05:13:22.812982+00:00",
+      "command": "python -m rpent.cli.main --robot libero --libero-type pro --dashboard --dashboard-host 127.0.0.1 --dashboard-port 34899 --dashboard-language zh-cn --planner api --model openai-chat:qwen3.8-flash --memory-profile local --memory-dir /home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable/memory --vla-endpoint http://127.0.0.1:49337 --sam3-endpoint http://127.0.0.1:37867 --max-turns 30 --max-tokens 16384 --planner-timeout-s 600 --output-dir /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/b/runs/session ",
+      "source_environment": {
+        "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+        "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      },
+      "source_roots_match": true,
+      "proxy_variables_present": []
+    }
+  ],
+  "workbench_source_roots_match": true,
+  "workbench_proxy_variables_absent": true,
+  "workbench_servers_match_preflight": true
+}

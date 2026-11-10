@@ -1,0 +1,25 @@
+{
+  "M_prechange_AST_matches_live": [
+    "robots/libero/eef_control.py",
+    "robots/libero/research/manual.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "critical_API_session_tool_files_byte_identical": [
+    "rpent/planner/api_loop.py",
+    "rpent/cli/dashboard.py",
+    "robots/libero/tools.py",
+    "robots/libero/env_client.py",
+    "robots/libero/env_server.py",
+    "robots/libero/robot_spec.py",
+    "rpent/session/base.py",
+    "rpent/session/__init__.py",
+    "rpent/tools/base.py",
+    "rpent/tools/toolkit.py",
+    "rpent/tools/__init__.py",
+    "rpent/tools/human_in_the_loop.py",
+    "rpent/tools/direct_action.py",
+    "rpent/tools/common.py"
+  ],
+  "legacy_codex_not_imported_by_api_planner": true,
+  "scope": "No model created or request sent"
+}

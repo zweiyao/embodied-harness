@@ -1,0 +1,79 @@
+[
+  {
+    "lane": "b",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "task_result",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "budget_exhausted",
+    "error": null,
+    "elapsed_s": 365.7,
+    "stats": {
+      "total_input_tokens": 1111390,
+      "total_output_tokens": 3409,
+      "total_cached_input_tokens": 692736,
+      "turns_used": 30,
+      "tool_calls": 33
+    },
+    "actions": 13,
+    "condition": "C+M-restricted18",
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "metrics": {
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 3,
+        "list_dir": 2,
+        "pi0_pick": 1,
+        "sensor_patch_batch": 6,
+        "read_image": 2,
+        "sensor_container_geometry": 1,
+        "view_camera_meta": 4,
+        "translate_to": 6,
+        "rotate_pitch": 2,
+        "rotate_wrist": 2,
+        "set_gripper": 2
+      },
+      "all_calls": 33,
+      "action_calls": 13,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 6,
+      "before_action_observations": 1,
+      "before_action_perception": 0,
+      "before_action_file_reads": 3,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 3,
+        "list_dir": 2
+      },
+      "first_action_seconds_since_first_event": 30.109693,
+      "first_action_model_request": 4,
+      "tool_error_responses": 0,
+      "patch_point_count": 40,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {
+        "measured": 1
+      },
+      "grasp_attempt_calls": 3,
+      "completed_model_responses": 30,
+      "completed_model_wait_sum_s": 328.758565,
+      "completed_model_wait_mean_s": 10.958618833333333,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 6,
+        "sensor_container_geometry": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,161 @@
+{
+  "passed": true,
+  "checks": [
+    "actual_episode_reclassified",
+    "no_evidence_remains_unexpected",
+    "transport_error_not_reclassified",
+    "valid_final_call_not_reclassified",
+    "schema_mismatch_not_reclassified",
+    "missing_retry_not_reclassified",
+    "dispatched_call_not_reclassified",
+    "full_budget_timeout_failure",
+    "early_timeout_unexpected",
+    "request_budget_failure"
+  ],
+  "actual_evidence": {
+    "tool": "sensor_patch_batch",
+    "actual_schema_matches_published": true,
+    "rejected_model_calls": [
+      {
+        "model_request": 5,
+        "tool_call_id": "call_e4e4630819984d63a22c7793",
+        "validation_errors": [
+          {
+            "path": [
+              "points",
+              0,
+              0
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              0,
+              1
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              1,
+              0
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              1,
+              1
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              2,
+              0
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              2,
+              1
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              3,
+              0
+            ],
+            "validator": "maximum"
+          },
+          {
+            "path": [
+              "points",
+              3,
+              1
+            ],
+            "validator": "maximum"
+          }
+        ]
+      },
+      {
+        "model_request": 6,
+        "tool_call_id": "call_0d02bcc776124895a259aa84",
+        "validation_errors": [
+          {
+            "path": [
+              "points",
+              0
+            ],
+            "validator": "maxItems"
+          },
+          {
+            "path": [
+              "points",
+              0,
+              0
+            ],
+            "validator": "type"
+          },
+          {
+            "path": [
+              "points",
+              1
+            ],
+            "validator": "maxItems"
+          },
+          {
+            "path": [
+              "points",
+              1,
+              0
+            ],
+            "validator": "type"
+          },
+          {
+            "path": [
+              "points",
+              2
+            ],
+            "validator": "maxItems"
+          },
+          {
+            "path": [
+              "points",
+              2,
+              0
+            ],
+            "validator": "type"
+          },
+          {
+            "path": [
+              "points",
+              3
+            ],
+            "validator": "maxItems"
+          },
+          {
+            "path": [
+              "points",
+              3,
+              0
+            ],
+            "validator": "type"
+          }
+        ]
+      }
+    ],
+    "retry_feedback_present": true,
+    "rejected_calls_dispatched": false,
+    "classification": "model_argument_error",
+    "evaluation_success": false
+  }
+}

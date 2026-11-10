@@ -3,3 +3,4 @@ iteration	metric_value	delta	delta_pct	status	description	evaluator_source	times
 1	0.0	-50.0	-100%	reverted	E: same two cells, 0/2; not promoted; preserved as T ablation background	mechanical	2026-11-09T04:02:43.367003+00:00
 2	0.0	-50.0	-100%	reverted	E+T: same two cells 0/2; alignment_pair never used in 9 patch calls; not promoted	mechanical	2026-11-09T04:18:35.561163+00:00
 3	0.0	-50.0	-100%	reverted	C+M: same two cells 0/2; translate_to never called; not promoted	mechanical	2026-11-09T04:59:58.919237+00:00
+4	0.0	-50.0	-100%	reverted	C+M18: same two cells 0/2; M six calls without established holding; model argument failure retained	mechanical	2026-11-10T06:12:09.541253+00:00

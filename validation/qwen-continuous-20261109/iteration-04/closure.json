@@ -1,0 +1,13 @@
+{
+  "owned_units": {
+    "a": {
+      "active": false,
+      "state": "inactive"
+    },
+    "b": {
+      "active": false,
+      "state": "inactive"
+    }
+  },
+  "no_new_experiments": true
+}

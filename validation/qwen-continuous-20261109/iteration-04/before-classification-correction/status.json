@@ -1,0 +1,16 @@
+{
+  "phase": "stopped",
+  "completed": 1,
+  "planned": 2,
+  "lanes": {
+    "a": {
+      "phase": "stopped",
+      "completed": 0,
+      "error": "Unexpected incident excluded; diagnose before retry"
+    },
+    "b": {
+      "phase": "completed",
+      "completed": 1
+    }
+  }
+}

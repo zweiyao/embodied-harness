@@ -1,0 +1,252 @@
+{
+  "suite": "libero_10_task",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:translate_to"
+    ],
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none"
+  },
+  "tool_names": [
+    "finish",
+    "list_dir",
+    "read_text_file",
+    "write_text_file",
+    "pi0_doubled",
+    "pi0_pick",
+    "release",
+    "rotate_pitch",
+    "rotate_wrist",
+    "set_gripper",
+    "back_project",
+    "read_image",
+    "segment",
+    "view_camera_meta",
+    "view_env_state",
+    "sensor_patch_batch",
+    "sensor_container_geometry",
+    "translate_to"
+  ],
+  "tool_versions": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+  ],
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "route": "remote direct; all proxy variables unset",
+  "incident_policy": "Preserve and exclude unexpected incidents; diagnose before retrying same cell. Full configured-budget timeout is failure.",
+  "approved": true,
+  "approval": "Root authorized the reviewed restricted18 C+M condition and launch after clean preflight. No runtime source or prompt text changes.",
+  "total": 2,
+  "benchmark": {
+    "cohort": "libero_10_task-language-right-v1",
+    "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files",
+    "private_bddl": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/benchmark/bddl_files",
+    "changed_file": "libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+    "before_sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+    "after_sha256": "8d2d6cd8673e826ddef3183d67a79b75431a5b293e97649af9040b2dd9a47c7c",
+    "goal_and_init_unchanged": true,
+    "benchmark_root_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+    "init_states_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+  },
+  "comparison": "Development restricted18 C+M versus preserved iteration-03 C+M, with iteration-01 C retained. Only remove move_to/move_pose/move_eef; resulting absence of EEF feedback wrapper is recorded. Same source, M guidance, C material, generated tools and budgets; no overall success-rate claim.",
+  "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "selection_difference": {
+    "status": "approved isolated iteration-04 condition",
+    "reference": "iteration-03 C+M",
+    "reference_plan_sha256": "e7844fd4632dbf5a4ba3ab2c68e41cded69a77504eb641b2d0d7b23ee4c45478",
+    "before": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:move_eef",
+      "native:translate_to"
+    ],
+    "removed": [
+      "native:move_to",
+      "native:move_pose",
+      "native:move_eef"
+    ],
+    "added": [],
+    "after": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:translate_to"
+    ],
+    "preserved": {
+      "model_profile": "qwen3.8-flash",
+      "planner": "api",
+      "model": "openai-chat:qwen3.8-flash",
+      "reasoning_effort": "none",
+      "max_turns": 30,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600
+    },
+    "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+    "C_material_version": "qwen-evidence-v3-c6c7f677d400",
+    "condition": "C+M-restricted18",
+    "authorization": "Root authorized the reviewed restricted18 condition within continuous optimization; launch after clean preflight without another permission gate."
+  },
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "process_working_directory": "/home/zwy/work/embodied_harness",
+  "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "source_handoff": {
+    "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+    "source_head": "7ab895c8287d6114b2ba1ebb8414a8af7b8839d0",
+    "uncommitted_verified_working_tree": true,
+    "validation_passed": true,
+    "simulator_probe_passed": true,
+    "probe_summary_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract/sim-probe-20261109/summary.json",
+    "probe_cleanup_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract/sim-probe-20261109/cleanup.json",
+    "proxy_variables_present": [],
+    "runtime_differences_from_live": [
+      {
+        "file": "pyproject.toml",
+        "live_sha256": "dca2781c3e8c5248c629699048903c505e3a61f8ebbf39b08829ab8178957a7b",
+        "source_sha256": "1ce749aa69bfcc55f9d042f570858df85efb65e98d171618ea647b075f3558d0"
+      },
+      {
+        "file": "robots/flexiv/DIRECT_RDK.md",
+        "live_sha256": "169be362a0c5161134fe58f4e23ca7f49957c240b8e0c2915d16c8e478edea41",
+        "source_sha256": "c05c652c523906d076d9706bba27d7a8a93a53e00225437961feee45dde196ef"
+      },
+      {
+        "file": "robots/flexiv/README.md",
+        "live_sha256": "bbfeb9c3103a4927101536c247de1c35b815ba436539fb4c4198a2d0dc9decbf",
+        "source_sha256": "6aa0286e31897c92724d12d01fd1cd802cd71572d13caca5743c386d4a951d10"
+      },
+      {
+        "file": "robots/libero/eef_control.py",
+        "live_sha256": "e2d4826cada55634fc5d2e79b876295df2963b4c468382afed57359420ff33d2",
+        "source_sha256": "6fb8ea2e40237a94c8a4822fbf57018201254bba216bbfb09805ce58484f79bd",
+        "ast_equivalent": false
+      },
+      {
+        "file": "robots/libero/research/codex_sdk.py",
+        "live_sha256": "c8213325649237fd0f9bca5961bc8b70bbe0234025b748be74988cae0b66282a",
+        "source_sha256": "31a06fca6c4725b9e666e43f547d25d1dbc38a9743717efd2d47de3693607a2a",
+        "ast_equivalent": false
+      },
+      {
+        "file": "robots/libero/research/manual.py",
+        "live_sha256": "fe13111f2321950f7b8dd5c3cb51086e6647db105fe285287509e550924f4b04",
+        "source_sha256": "044dba5f16ac1326957c770444b1d06e3c6cdb77685e6cab9a0dacfc3efa227e",
+        "ast_equivalent": false
+      },
+      {
+        "file": "robots/univtac/pilot/__init__.py",
+        "live_sha256": "ef650c33ca48408681a3fc409229415365867938ab0f03fe28c499f30968a32b",
+        "source_sha256": "e790c1837d1267d4f12137adebbb75b300e9f16eec96ca1693b33729e2d94505",
+        "ast_equivalent": true
+      },
+      {
+        "file": "rpent/dashboard/server.py",
+        "live_sha256": "f7a97be14755a62d5e5fc9b2e2f11a14bcbdd663b656d6d56d504a28282dd4b1",
+        "source_sha256": "acbfc3375b74e1ea516feed2196746ac066c5c66b482c11820f97ad82a808e99",
+        "ast_equivalent": true
+      },
+      {
+        "file": "rpent/dashboard/workbench.py",
+        "live_sha256": "f311cd8f7358129c6bbc784e901f255791071309f7ac4440df5f810c99206806",
+        "source_sha256": "e1cee348dd7eeb5f8b6ce26962d2e2bb8d667f6df189c0db436237d427a54adf",
+        "ast_equivalent": false
+      }
+    ],
+    "candidate": "C+M; M implementation named B during development",
+    "published_tools": "Source contains the T example/candidate files from prior validation; iteration-03 must select unchanged old qwen-evidence-v3 published versions and C materials. T is not implicitly enabled by source checkout.",
+    "difference_scope": "Current Qwen API execution path has only the approved M intervention. The full source tree is not byte-identical to live plus M.",
+    "differences_appendix": "source-differences.md",
+    "non_M_explanations": {
+      "robots/libero/research/codex_sdk.py": "Preexisting asyncio.wait_for compatibility change; only models.py kind=codex_sdk branch imports it, not Qwen API planner",
+      "pyproject.toml": "Preexisting anthropic >=1.9,<2 constraint; no dependency installation this turn; installed anthropic 1.13.0 and same shared venv",
+      "robots/univtac/pilot/__init__.py": "AST-equivalent formatting",
+      "rpent/dashboard/server.py": "AST-equivalent formatting",
+      "robots/flexiv/DIRECT_RDK.md": "Non-LIBERO documentation",
+      "robots/flexiv/README.md": "Non-LIBERO documentation",
+      "examples/manual-workbench/candidate.json and sensor_patch_batch.py": "Prior T example, not auto-loaded. 03 keeps old immutable published versions.",
+      "tests": "Verification files not runtime; complete path/hash/AST list in source-differences.json"
+    }
+  },
+  "source_handoff_sha256": "4b4b2d82ce69bdb8c44392e95ead9db4a4e30582bcb6df024b58f469b0ae0225",
+  "lanes": {
+    "a": {
+      "port": 37353,
+      "unit": "rpent-qwen-continuous-20261109-i04-a.service",
+      "condition": "C+M-restricted18",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        }
+      ]
+    },
+    "b": {
+      "port": 34899,
+      "unit": "rpent-qwen-continuous-20261109-i04-b.service",
+      "condition": "C+M-restricted18",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "trials": [
+        {
+          "task": 0,
+          "seed": 0
+        }
+      ]
+    }
+  }
+}

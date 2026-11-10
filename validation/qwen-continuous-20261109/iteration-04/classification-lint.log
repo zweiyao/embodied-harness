@@ -1,0 +1,13 @@
+/home/zwy/work/harnessvla/.venv/bin/ruff check --config /home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/pyproject.toml model_argument_failure.py verify_classification.py finalize_classification.py run_batch.py audit_results.py
+All checks passed!
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.
+
+/home/zwy/work/harnessvla/.venv/bin/ruff format --check --config /home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/pyproject.toml model_argument_failure.py verify_classification.py finalize_classification.py run_batch.py audit_results.py
+5 files already formatted
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.

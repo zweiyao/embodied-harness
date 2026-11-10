@@ -23,3 +23,13 @@ Logged: 2026-11-09T04:59:58.919237+00:00.
 C+M 0/2 versus retained C 1/2 on the same selected task4/0 seed0 cells. Both valid request-budget failures, zero incidents, paired initial images, 4176 protected files and owned cleanup passed. M was offered in actual API schemas but never called; no execution efficacy conclusion. Keep C. The task4 error was held-object offset omitted during placement; task0 used partial basket wall/rim points as an unestablished opening center. These are not corrected merely by retaining gripper target.
 
 Three non-improving candidates trigger a strategy pivot: iteration04 restricts manual translation choices to M, preserving all other C conditions, to measure adoption. It removes three old capabilities from this isolated selection and must be reported as a selection intervention. A separate functional-region/placement geometry workflow is being designed; no hidden-state access, task coordinates or unbudgeted policy model. See [report](iteration-03/report.md).
+
+## Iteration 04 — restrict manual motion choices
+
+Logged: 2026-11-10T06:12:09.541253+00:00.
+
+Restricted18 C+M 0/2; C remains incumbent. Task4's six-request SDK retry exhaustion is a valid model argument failure, verified against two actually invalid calls and intervening feedback. Original outcome and initial incident remain unchanged; derived classification was corrected without rerunning or expanding retries. Task0 used M six times, but a learned pickup followed by manual recovery never established holding; no transport or release efficacy was tested. All task failures remain in the denominator.
+
+Actual API tool selection, paired initial images, 4944 protected files and owned cleanup passed. Runtime observation is explicitly partial: the environment children exited before a snapshot was saved. Frozen setup/preflight/logs support, but do not replace, missing direct process evidence. The next runner will persist an owned child snapshot during execution.
+
+Next P is a substantive perception-to-action workflow, with parent restricted18 fixed before its results: visible-region plane projection, displayed semantic roles, held-feature offset and a single-use frozen target. No original defaults, learned VLA capability, budget, hidden-state access or automatic release changes. See [report](iteration-04/report.md).
