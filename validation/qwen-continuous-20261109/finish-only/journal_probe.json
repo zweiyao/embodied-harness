@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "events": [
+    {
+      "time": "2026-11-10T08:55:35.700656+00:00",
+      "kind": "tool_request",
+      "payload": {
+        "call_id": "8821cc08d26c404f9502e6829c57247e",
+        "name": "finish",
+        "arguments": {
+          "status": "stuck",
+          "summary": "fixture"
+        }
+      }
+    },
+    {
+      "time": "2026-11-10T08:55:35.706290+00:00",
+      "kind": "tool_response",
+      "payload": {
+        "call_id": "8821cc08d26c404f9502e6829c57247e",
+        "name": "finish",
+        "result": {
+          "error": "fixture refusal"
+        },
+        "images": [],
+        "elapsed_s": 0.0056342012248933315
+      }
+    },
+    {
+      "time": "2026-11-10T08:55:35.709189+00:00",
+      "kind": "tool_request",
+      "payload": {
+        "call_id": "41dd462337b544df808f4d5f9ca7f161",
+        "name": "finish",
+        "arguments": {
+          "status": "stuck",
+          "summary": "fixture"
+        }
+      }
+    },
+    {
+      "time": "2026-11-10T08:55:35.712259+00:00",
+      "kind": "tool_response",
+      "payload": {
+        "call_id": "41dd462337b544df808f4d5f9ca7f161",
+        "name": "finish",
+        "result": {
+          "_finish": true,
+          "status": "stuck",
+          "summary": "fixture"
+        },
+        "images": [],
+        "elapsed_s": 0.0030750450678169727
+      }
+    }
+  ],
+  "external_requests": 0,
+  "simulator_actions": 0,
+  "scope": "Real ManualToolkit execute/journal path; fixture finish decisions, not environment success or SDK integration."
+}

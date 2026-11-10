@@ -215,6 +215,13 @@ class Workbench:
 
         self.config = config
         self.robot = robot
+        self.api_require_finish = config.get("api_require_finish", False)
+        if type(self.api_require_finish) is not bool:
+            raise ValueError("api_require_finish must be a boolean")
+        if self.api_require_finish and robot != "libero":
+            raise ValueError(
+                "api_require_finish is available only for LIBERO workbenches"
+            )
         if config.get("robot", "libero") != robot:
             raise ValueError("Workbench configuration belongs to another robot")
         self.root = Path(config["runs_root"]).resolve()
@@ -494,6 +501,8 @@ class Workbench:
         return payload
 
     def prepare(self, request):
+        if "api_require_finish" in request:
+            raise ValueError("api_require_finish is a server-owned setting")
         if {"pilot_root", "pilot_freeze"} & request.keys():
             raise ValueError("Pilot root and frozen bundle are server-owned settings")
         if self.pilot is not None:
@@ -501,6 +510,8 @@ class Workbench:
         profile_id = request.get("model_profile", next(iter(self.profiles)))
         if not self.checks.get(profile_id, {}).get("ok"):
             raise ValueError("请先在开始页检查所选模型连接")
+        if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
+            raise ValueError("api_require_finish requires the API planner")
         selected = self.selection(request.get("tools"))
         prepared = {
             **request,
@@ -508,6 +519,8 @@ class Workbench:
             "tools": [t["id"] for t in selected],
             "frozen_tools": selected,
         }
+        if self.api_require_finish:
+            prepared["api_require_finish"] = True
         self.validate_pilot_request(prepared)
         if (
             self.pilot

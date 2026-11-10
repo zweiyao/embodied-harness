@@ -1,0 +1,42 @@
+"""Exercise actual ManualToolkit journaling with offline finish handlers only."""
+
+import json
+import tempfile
+from pathlib import Path
+from types import SimpleNamespace
+
+from robots.libero.research.manual import ManualToolkit
+from rpent.dashboard.workbench import RunJournal
+from rpent.tools import Toolkit, ToolResult, common
+
+
+class Fixture(ManualToolkit):
+    def __init__(self, root):
+        self.journal = RunJournal(root)
+        self.selection = []
+        self._ended = False
+        self.attempt = 0
+        Toolkit.__init__(self, memory=SimpleNamespace())
+
+    def _register_common_tools(self):
+        self.add_tool(common.CommonTools.finish.with_handler(self.fixture_finish))
+
+    def fixture_finish(self, status, summary):
+        self.attempt += 1
+        return ToolResult(data={"_finish": True, "status": status, "summary": summary}
+                          if self.attempt == 2 else {"error": "fixture refusal"})
+
+
+with tempfile.TemporaryDirectory() as root:
+    toolkit = Fixture(root)
+    for _ in range(2):
+        toolkit.execute_tool("finish", {"status": "stuck", "summary": "fixture"})
+    events = [json.loads(line) for line in (Path(root) / "events.jsonl").read_text().splitlines()]
+    returned = [e["payload"] for e in events if e["kind"] == "tool_response"]
+    assert returned[0]["result"] == {"error": "fixture refusal"}
+    assert returned[1]["result"]["_finish"] is True
+    assert toolkit._ended is True
+    report = {"passed": True, "events": events, "external_requests": 0,
+              "simulator_actions": 0, "scope": "Real ManualToolkit execute/journal path; fixture finish decisions, not environment success or SDK integration."}
+    Path(__file__).with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n")
+    print("ManualToolkit accepted/refused journal structure verified")

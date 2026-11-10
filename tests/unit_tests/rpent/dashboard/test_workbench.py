@@ -102,6 +102,87 @@ def test_selection_is_explicit_and_versions_frozen(bench):
     }
 
 
+@pytest.mark.parametrize("value", ["false", "true", 0, 1, None])
+def test_finish_only_flag_requires_boolean(bench, value):
+    with pytest.raises(ValueError, match="must be a boolean"):
+        Workbench({**bench.config, "api_require_finish": value})
+
+
+def test_finish_only_flag_is_server_owned_and_api_scoped(bench):
+    enabled = Workbench({**bench.config, "api_require_finish": True})
+    enabled.checks = {p: {"ok": True} for p in enabled.profiles}
+    bench.checks = enabled.checks
+    request = {"model_profile": "api", "tools": ["native:finish"]}
+    assert "api_require_finish" not in bench.prepare(request)
+    assert enabled.prepare(request)["api_require_finish"] is True
+    assert bench.selection() == enabled.selection()
+    for target in (bench, enabled):
+        with pytest.raises(ValueError, match="server-owned"):
+            target.prepare({**request, "api_require_finish": False})
+        with pytest.raises(ValueError):
+            target.normalize({"api_require_finish": True})
+    with pytest.raises(ValueError, match="API planner"):
+        enabled.prepare({**request, "model_profile": "sdk"})
+    with pytest.raises(ValueError, match="only for LIBERO"):
+        Workbench(
+            {**bench.config, "robot": "flexiv", "api_require_finish": True},
+            robot="flexiv",
+        )
+    with pytest.raises(ValueError, match="finish is required"):
+        enabled.prepare({**request, "tools": []})
+
+
+def test_finish_only_claimed_flag_reaches_manifest_and_run_config(
+    bench, tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from rpent.cli import dashboard
+
+    enabled = Workbench({**bench.config, "api_require_finish": True})
+    enabled.checks = {"api": {"ok": True}}
+    request = enabled.prepare({"model_profile": "api", "tools": ["native:finish"]})
+    enabled.config["api_require_finish"] = False
+    root = tmp_path / "session/tasks/0001_s1"
+    root.mkdir(parents=True)
+    state = SimpleNamespace(
+        workbench=enabled,
+        workbench_aborted=False,
+        run_id="fixture",
+        journal=RunJournal(root),
+    )
+    claimed = SimpleNamespace(output_dir=root, request=request)
+    monkeypatch.setattr("rpent.dashboard.workbench.source_snapshot", lambda *args: {})
+
+    def stop_before_runtime(args):
+        raise RuntimeError("fixture stops after actual config serialization")
+
+    spec = SimpleNamespace(
+        name="libero", is_real_robot=False, parse_config=stop_before_runtime
+    )
+    with pytest.raises(RuntimeError, match="actual config serialization"):
+        dashboard._run_dashboard_task(
+            args=SimpleNamespace(explore=False),
+            robot_spec=spec,
+            state=state,
+            claimed=claimed,
+            shared_runtime_kwargs={},
+            unique_components=set(),
+            session_root=tmp_path / "session",
+        )
+    assert (
+        json.loads((root / "manifest.json").read_text())["task"]["api_require_finish"]
+        is True
+    )
+    assert (
+        json.loads((root / "dashboard_config.json").read_text())["task"][
+            "api_require_finish"
+        ]
+        is True
+    )
+    assert enabled.runs()[0]["config"]["task"]["api_require_finish"] is True
+
+
 def test_server_rejects_unknown_and_arbitrary_model(bench, tmp_path):
     state = DashboardState(
         output_dir=tmp_path / "session", dashboard_spec=DASHBOARD_SPEC

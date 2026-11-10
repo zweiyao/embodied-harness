@@ -485,6 +485,9 @@ def _run_dashboard_task_inner(
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,
+                        api_require_finish=claimed.request.get(
+                            "api_require_finish", False
+                        ),
                     )
                     result = planner.solve(
                         system_prompt=system_prompt,

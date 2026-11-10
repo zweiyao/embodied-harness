@@ -34,6 +34,7 @@ from pydantic_ai import (
     UserPromptPart,
 )
 from pydantic_ai.exceptions import UsageLimitExceeded
+from pydantic_ai.messages import RetryPromptPart
 from pydantic_ai.models.function import DeltaThinkingPart, DeltaToolCall, FunctionModel
 from pydantic_ai.models.test import TestModel
 
@@ -111,6 +112,7 @@ def solve(tmp_path, model, toolkit=None, events=None, **kwargs):
             "no_images",
             "reasoning_effort",
             "interactive",
+            "require_finish",
         )
         if key in kwargs
     }
@@ -228,7 +230,8 @@ def test_model_response_timeout_excludes_tool_execution(tmp_path):
     assert [name for name, _ in toolkit.calls] == ["slow_tool", "finish"]
 
 
-def test_refused_finish_retries_without_claiming_success(tmp_path):
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_refused_finish_retries_without_claiming_success(tmp_path, require_finish):
     events = Events()
     toolkit = RobotToolkit(events)
     attempts = []
@@ -247,7 +250,11 @@ def test_refused_finish_retries_without_claiming_success(tmp_path):
         yield finish()
 
     result, _, _ = solve(
-        tmp_path, FunctionModel(stream_function=stream), toolkit, events
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        require_finish=require_finish,
     )
     assert result.error is None
     assert len(attempts) == 3
@@ -257,7 +264,8 @@ def test_refused_finish_retries_without_claiming_success(tmp_path):
     assert "finish refused" in json.dumps(result.messages)
 
 
-def test_persistent_finish_refusal_stops_at_request_budget(tmp_path):
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_persistent_finish_refusal_stops_at_request_budget(tmp_path, require_finish):
     events = Events()
     toolkit = RobotToolkit(events)
     toolkit.register(
@@ -270,7 +278,12 @@ def test_persistent_finish_refusal_stops_at_request_budget(tmp_path):
         yield finish()
 
     result, _, _ = solve(
-        tmp_path, FunctionModel(stream_function=stream), toolkit, events, max_turns=3
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        max_turns=3,
+        require_finish=require_finish,
     )
     assert result.finish_result is None
     assert result.error is None
@@ -626,11 +639,16 @@ def test_invalid_numeric_strings_still_require_model_retry(tmp_path, invalid):
     assert received == [470]
 
 
-def test_finish_skips_sibling_actions_using_native_end_strategy(tmp_path):
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_finish_skips_sibling_actions_using_native_end_strategy(
+    tmp_path, require_finish
+):
     async def stream(messages, info):
         yield finish() | tool("observe", index=1)
 
-    result, toolkit, _ = solve(tmp_path, FunctionModel(stream_function=stream))
+    result, toolkit, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), require_finish=require_finish
+    )
     assert result.error is None
     assert [name for name, _ in toolkit.calls] == ["finish"]
     assert [m["name"] for m in result.messages if m["role"] == "tool"] == ["finish"]
@@ -786,8 +804,9 @@ def dashboard_interrupt_order(request, monkeypatch):
     monkeypatch.setattr(_Session, "interrupt", interrupt_after_tool_stop)
 
 
+@pytest.mark.parametrize("require_finish", [False, True])
 def test_dashboard_interrupt_drains_tool_before_followup(
-    tmp_path, dashboard_interrupt_order
+    tmp_path, dashboard_interrupt_order, require_finish
 ):
     state = dashboard(tmp_path)
     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
@@ -843,6 +862,7 @@ def test_dashboard_interrupt_drains_tool_before_followup(
         state,
         dashboard_interaction=state,
         timeout_s=3,
+        require_finish=require_finish,
     )
     assert result.error is None
     assert result.finish_result["status"] == "success"
@@ -855,8 +875,9 @@ def test_dashboard_interrupt_drains_tool_before_followup(
     ]
 
 
+@pytest.mark.parametrize("require_finish", [False, True])
 def test_task_replacement_cancels_and_drains_physical_work(
-    tmp_path, dashboard_interrupt_order
+    tmp_path, dashboard_interrupt_order, require_finish
 ):
     state = dashboard(tmp_path)
     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
@@ -890,6 +911,7 @@ def test_task_replacement_cancels_and_drains_physical_work(
         state,
         dashboard_interaction=state,
         timeout_s=3,
+        require_finish=require_finish,
     )
     assert result.error is None
     assert stopped.is_set()
@@ -898,7 +920,10 @@ def test_task_replacement_cancels_and_drains_physical_work(
     assert result.finish_result is None
 
 
-def test_timeout_drains_physical_work_and_records_partial_history(tmp_path):
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_timeout_drains_physical_work_and_records_partial_history(
+    tmp_path, require_finish
+):
     events = Events()
     toolkit = RobotToolkit(events)
     stopped = threading.Event()
@@ -917,7 +942,12 @@ def test_timeout_drains_physical_work_and_records_partial_history(tmp_path):
         yield tool("move")
 
     result, _, _ = solve(
-        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=0.15
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        timeout_s=0.15,
+        require_finish=require_finish,
     )
     assert "timed out" in result.error
     assert stopped.is_set()
@@ -1107,11 +1137,9 @@ def test_offline_http_planner_executes_action_and_finish(tmp_path):
         ("gpt-4.1", "none", None),
     ],
 )
+@pytest.mark.parametrize("require_finish", [False, True])
 def test_qwen_thinking_setting_reaches_serialized_http_body(
-    tmp_path,
-    model_name,
-    effort,
-    expected,
+    tmp_path, model_name, effort, expected, require_finish
 ):
     import httpx2
     from pydantic_ai.models.openai import OpenAIChatModel
@@ -1163,10 +1191,17 @@ def test_qwen_thinking_setting_reaches_serialized_http_body(
         ),
     )
     try:
-        result, _, _ = solve(tmp_path, model, reasoning_effort=effort, max_tokens=8192)
+        result, _, _ = solve(
+            tmp_path,
+            model,
+            reasoning_effort=effort,
+            max_tokens=8192,
+            require_finish=require_finish,
+        )
         assert result.error is None
         assert len(bodies) == 1
         body = bodies[0]
+        assert body["tool_choice"] == ("required" if require_finish else "auto")
         assert body["max_completion_tokens"] == 8192
         if expected is None:
             assert "enable_thinking" not in body
@@ -1240,3 +1275,118 @@ def test_api_executes_readonly_calls_concurrently(tmp_path):
     assert sorted(completed) == ["left", "right"]
     assert result.finish_result == {"_finish": True, **FINISH_ARGS}
     assert result.stats["tool_calls"] == 3
+
+
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_finish_only_text_response_uses_sdk_retry_without_dashboard_wait(
+    tmp_path, require_finish
+):
+    state = dashboard(tmp_path)
+    histories = []
+
+    async def stream(messages, info):
+        histories.append(copy.deepcopy(messages))
+        if len(histories) == 1:
+            yield "NEXT=observe; NEED=none"
+        else:
+            yield finish()
+
+    result, toolkit, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        events=state,
+        dashboard_interaction=state,
+        require_finish=require_finish,
+        timeout_s=1,
+    )
+    if require_finish:
+        assert result.error is None
+        assert result.finish_result == {"_finish": True, **FINISH_ARGS}
+        assert result.stats["turns_used"] == 2
+        assert toolkit.calls == [("finish", FINISH_ARGS)]
+        assert any(
+            isinstance(part, RetryPromptPart)
+            for message in histories[1]
+            for part in message.parts
+        )
+    else:
+        assert "planner timed out after 1s" in result.error
+        assert result.stats["turns_used"] == 1
+        assert result.finish_result is None and toolkit.calls == []
+
+
+def test_finish_only_repeated_text_preserves_thirty_request_budget(tmp_path):
+    requests = 0
+
+    async def stream(messages, info):
+        nonlocal requests
+        requests += 1
+        yield "NEXT=observe; NEED=none"
+
+    result, toolkit, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        require_finish=True,
+        max_turns=30,
+        timeout_s=600,
+    )
+    assert result.error is None and result.finish_result is None
+    assert result.stats["turns_used"] == requests == 30
+    assert toolkit.calls == []
+
+
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_finish_only_keeps_mixed_text_and_real_tool_calls(tmp_path, require_finish):
+    requests = 0
+
+    async def stream(messages, info):
+        nonlocal requests
+        requests += 1
+        if requests == 1:
+            yield "NEXT=observe; NEED=none"
+            yield tool("observe")
+        else:
+            yield finish()
+
+    result, toolkit, _ = solve(
+        tmp_path, FunctionModel(stream_function=stream), require_finish=require_finish
+    )
+    assert result.error is None and result.finish_result["_finish"]
+    assert [name for name, _ in toolkit.calls] == ["observe", "finish"]
+    assert result.messages[1]["content"][0]["text"] == "NEXT=observe; NEED=none"
+
+
+@pytest.mark.parametrize("require_finish", [False, True])
+def test_finish_only_keeps_environment_terminal_stop(tmp_path, require_finish):
+    events = Events()
+    toolkit = RobotToolkit(events)
+
+    def terminal():
+        toolkit.planner_stop_result = {"_finish": True, "status": "stopped"}
+        return ToolResult(data={"terminated": True})
+
+    toolkit.register("observe", terminal)
+
+    async def stream(messages, info):
+        yield tool("observe")
+
+    result, _, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        toolkit,
+        events,
+        require_finish=require_finish,
+    )
+    assert result.error is None
+    assert result.finish_result == {"_finish": True, "status": "stopped"}
+    assert result.stats["turns_used"] == 1
+    assert [name for name, _ in toolkit.calls] == ["observe"]
+
+
+def test_finish_only_rejects_missing_finish_before_model_request(tmp_path):
+    events = Events()
+    toolkit = RobotToolkit(events)
+    toolkit._tools.pop("finish")
+    with pytest.raises(ValueError, match="enabled finish tool"):
+        solve(tmp_path, TestModel(), toolkit, events, require_finish=True)
+    assert toolkit.calls == []

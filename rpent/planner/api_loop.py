@@ -102,7 +102,10 @@ class ApiAgentLoop(Planner):
         no_images: bool = False,
         timeout_s: float = 1200,
         interactive: bool = False,
+        require_finish: bool = False,
     ) -> None:
+        if type(require_finish) is not bool:
+            raise ValueError("require_finish must be a boolean")
         if reasoning_effort not in REASONING_EFFORTS:
             raise ValueError(f"unsupported reasoning effort: {reasoning_effort}")
         if max_tokens < 1 or timeout_s <= 0:
@@ -114,6 +117,7 @@ class ApiAgentLoop(Planner):
         self.no_images = no_images
         self.timeout_s = timeout_s
         self.interactive = interactive
+        self.require_finish = require_finish
 
     def solve(
         self,
@@ -152,7 +156,10 @@ class ApiAgentLoop(Planner):
     ) -> PlannerResult:
         conversation_id = uuid4().hex
         adapter = _HarnessToolkit(
-            toolkit, dashboard_events=self.dashboard_events, no_images=self.no_images
+            toolkit,
+            dashboard_events=self.dashboard_events,
+            no_images=self.no_images,
+            require_finish=self.require_finish,
         )
         session = _Session(
             adapter, conversation_id, max_turns, interactive=self.interactive
@@ -327,6 +334,7 @@ class _HarnessToolkit(FunctionToolset):
         *,
         dashboard_events: DashboardEventSink,
         no_images: bool,
+        require_finish: bool = False,
     ) -> None:
         super().__init__(id="rpent")
         self.toolkit = toolkit
@@ -337,7 +345,7 @@ class _HarnessToolkit(FunctionToolset):
         self.messages: list[dict[str, Any]] = []
         self.stopping = threading.Event()
         self.validators: dict[str, Draft202012Validator] = {}
-        self.output_types: list[Any] = [str]
+        self.output_types: list[Any] = [] if require_finish else [str]
         if not getattr(toolkit, "planner_tools_only", False):
             self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
         for declaration in toolkit.list_tools():
@@ -379,6 +387,9 @@ class _HarnessToolkit(FunctionToolset):
                         takes_ctx=True,
                     )
                 )
+
+        if require_finish and not self.output_types:
+            raise ValueError("require_finish needs an enabled finish tool")
 
     async def read_image(
         self, ctx: RunContext, name: str, step: int = -1

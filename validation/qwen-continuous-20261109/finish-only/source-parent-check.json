@@ -1,0 +1,8 @@
+{
+  "source_parent": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+  "source_parent_verified_files": 303,
+  "new_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/finish-only-test-checkout",
+  "parent_unchanged": true,
+  "external_model_requests": 0,
+  "simulator_actions": 0
+}
