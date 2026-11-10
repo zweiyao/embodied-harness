@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-11-10T13:16:37.391909+00:00",
+  "task": {
+    "title": "四张原图＋短问题极简API测试",
+    "status": "1次直连诊断结束：120秒超时，无响应",
+    "change": "远程Qwen Flash，四张原始PNG共2.71MB，序列化请求3.62MB，一句中文问题，无工具/历史，思考关闭，输出128token上限。",
+    "evidence": "validation/qwen-four-images-20261110/result.json：curl --noproxy *，exit28，120.001秒，无HTTP响应/首字/usage；TLS于0.371秒完成。未记录上传细分时间；单次失败不能作为成功调用平均耗时。未改网络或harness，未启动实验。"
+  },
+  "board_sha256": "047804f445ef06713bca1723012d211cff2ed58c233d57591af33c0a55998e92"
+}

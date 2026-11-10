@@ -1,0 +1,35 @@
+{
+  "started_at": "2026-11-10T13:13:46.374826+00:00",
+  "model": "qwen3.8-flash",
+  "question": "这四张图片展示了什么场景？用一句话回答。",
+  "images": [
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/00.png",
+      "bytes": 780471,
+      "sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/wrist_high.png/00.png",
+      "bytes": 649926,
+      "sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/agentview_high.png/00.png",
+      "bytes": 703562,
+      "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/wrist_high.png/00.png",
+      "bytes": 580572,
+      "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+    }
+  ],
+  "image_bytes": 2714531,
+  "route": "remote curl --noproxy *",
+  "tools": 0,
+  "history_messages": 0,
+  "max_tokens": 128,
+  "thinking": false,
+  "timeout_s": 120,
+  "attempts": 1
+}
