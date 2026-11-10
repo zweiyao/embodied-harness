@@ -1,0 +1,227 @@
+--- a/rpent/planner/api_loop.py
++++ b/rpent/planner/api_loop.py
+@@ -65,6 +65,7 @@
+ from pydantic_ai.messages import ModelMessage, UserContent
+ from pydantic_ai.models import Model, ModelRequestContext
+ from pydantic_ai.run import AgentRun, AgentRunResult
++from pydantic_ai.toolsets import ToolsetTool
+ from pydantic_ai_harness.compaction import SlidingWindowCompaction
+ 
+ from rpent.dashboard.events import DashboardEventSink, TranscriptEvent, UsageEvent
+@@ -391,6 +392,14 @@
+         if require_finish and not self.output_types:
+             raise ValueError("require_finish needs an enabled finish tool")
+ 
++    async def get_tools(self, ctx: RunContext) -> dict[str, ToolsetTool]:
++        """Prepare only tools currently available in the toolkit's workflow."""
++        prepared = await super().get_tools(ctx)
++        available = getattr(self.toolkit, "planner_tool_available", None)
++        if available is None:
++            return prepared
++        return {name: spec for name, spec in prepared.items() if available(name)}
++
+     async def read_image(
+         self, ctx: RunContext, name: str, step: int = -1
+     ) -> ToolReturn:
+@@ -436,6 +445,9 @@
+         self, name: str, arguments: dict[str, Any], ctx: RunContext
+     ) -> ToolResult:
+         """Validate and run one physical operation, retaining cancellation ownership."""
++        available = getattr(self.toolkit, "planner_tool_available", None)
++        if available is not None and not available(name):
++            raise ModelRetry(f"Tool {name} is unavailable in the current workflow phase")
+         normalized = _normalize_numeric_arguments(
+             arguments, self.validators[name].schema
+         )
+--- a/robots/libero/research/manual.py
++++ b/robots/libero/research/manual.py
+@@ -18,6 +18,11 @@
+ 
+ PLANNER_VIEW_MODE = "calibrated-pair-v1"
+ PLANNER_VIEW_ARTIFACTS = ("agentview_high.png", "wrist_high.png")
++INITIAL_ACTION_TOOLS = frozenset({
++    "finish", "list_dir", "read_text_file", "write_text_file", "view_env_state",
++    "read_image", "segment", "pi0_pick", "pi0_doubled",
++})
++INITIAL_ACTION_PRIMITIVES = frozenset({"pi0_pick", "pi0_doubled"})
+ 
+ 
+ def planner_view_description(name):
+@@ -58,11 +63,20 @@
+         journal,
+         sandbox_image="embodied-sensor:pilot",
+         planner_view_mode="native",
++        initial_action_phase=False,
+         **kwargs,
+     ):
+         if planner_view_mode not in ("native", PLANNER_VIEW_MODE):
+             raise ValueError("Unsupported LIBERO planner_view_mode")
+         self.planner_view_mode = planner_view_mode
++        if type(initial_action_phase) is not bool:
++            raise ValueError("initial_action_phase must be a boolean")
++        if initial_action_phase and not (
++            {t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES
++        ):
++            raise ValueError("initial_action_phase requires a selected language primitive")
++        self.initial_action_phase = initial_action_phase
++        self._initial_action_done = False
+         placement_names = {t["name"] for t in selected} & {
+             "preview_placement",
+             "align_placement",
+@@ -311,19 +325,46 @@
+         )
+         return ToolResult(data=self.sandbox.run(definition, params, frames))
+ 
++    def planner_tool_available(self, name: str) -> bool:
++        """Defer geometry and manual actions until initial primitive feedback."""
++        return (
++            not self.initial_action_phase
++            or self._initial_action_done
++            or name in INITIAL_ACTION_TOOLS
++        )
++
+     def execute_tool(self, name, input_dict):
+         call_id = uuid.uuid4().hex
+         started = time.monotonic()
+         self.journal.append(
+             "tool_request", {"call_id": call_id, "name": name, "arguments": input_dict}
+         )
++        before_step = self.state.latest_step if self.initial_action_phase else None
+         try:
+-            result = super().execute_tool(name, input_dict)
++            if self.planner_tool_available(name):
++                result = super().execute_tool(name, input_dict)
++            else:
++                result = ToolResult(data={
++                    "error": f"Tool {name} is unavailable until initial language-action feedback"
++                })
+         except Exception as exc:
+             self.journal.append(
+                 "tool_error", {"call_id": call_id, "name": name, "error": str(exc)}
+             )
+             raise
++        if (
++            self.initial_action_phase
++            and not self._initial_action_done
++            and name in INITIAL_ACTION_PRIMITIVES
++            and self.state.latest_step is not None
++            and self.state.latest_step != before_step
++            and self.state.latest_record().result.get("chunks_used", 0) > 0
++        ):
++            self._initial_action_done = True
++            self.journal.append("workflow_phase", {
++                "phase": "manual_available", "trigger": name,
++                "after_step": self.state.latest_step,
++            })
+         self.journal.append(
+             "tool_response",
+             {
+@@ -356,7 +397,7 @@
+         return result
+ 
+ 
+-def availability_prompt(selected, *, planner_view_mode="native"):
++def availability_prompt(selected, *, planner_view_mode="native", initial_action_phase=False):
+     names = ", ".join(t["name"] for t in selected)
+     eef_guidance = (
+         "Use translate_to for position-only moves while retaining the gripper target. "
+@@ -389,12 +430,20 @@
+         "View and action images are ordered by image_views. "
+         "For sampling, use a calibrated view's camera, step and pixel size. "
+     )
++    phase_guidance = (
++        "Initially, inspect identity and choose an enabled language primitive; "
++        "finish if no suitable action is justified. Geometry and manual tools "
++        "become available after its first recorded action feedback, including "
++        "failed pickup. Sample geometry when the next manual action needs it.\n\n"
++        if initial_action_phase else ""
++    )
+     return (
+         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
+         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
+         "Skip guide steps that require disabled tools. "
+         + presentation
+         + "Generated perception tools compute evidence, not task success.\n\n"
++        + phase_guidance
+         + eef_guidance
+         + rotation_guidance
+         + placement_guidance
+--- a/robots/libero/robot_spec.py
++++ b/robots/libero/robot_spec.py
+@@ -190,6 +190,8 @@
+             "selected": config.prompt_vars["manual_tools"],
+             "journal": config.prompt_vars["run_journal"],
+         }
++        if "initial_action_phase" in config.prompt_vars:
++            manual["initial_action_phase"] = config.prompt_vars["initial_action_phase"]
+         if "planner_view_mode" in config.prompt_vars:
+             manual["planner_view_mode"] = config.prompt_vars["planner_view_mode"]
+     return toolkit_type(
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -223,6 +223,11 @@
+ 
+             if self.planner_view_mode != PLANNER_VIEW_MODE:
+                 raise ValueError("Unsupported LIBERO planner_view_mode")
++        self.initial_action_phase = config.get("initial_action_phase", False)
++        if type(self.initial_action_phase) is not bool:
++            raise ValueError("initial_action_phase must be a boolean")
++        if self.initial_action_phase and robot != "libero":
++            raise ValueError("initial_action_phase is available only for LIBERO")
+         self.api_require_finish = config.get("api_require_finish", False)
+         if type(self.api_require_finish) is not bool:
+             raise ValueError("api_require_finish must be a boolean")
+@@ -523,6 +528,8 @@
+         return payload
+ 
+     def prepare(self, request):
++        if "initial_action_phase" in request:
++            raise ValueError("initial_action_phase is a server-owned setting")
+         if "planner_view_mode" in request:
+             raise ValueError("planner_view_mode is a server-owned setting")
+         if "api_require_finish" in request:
+@@ -537,12 +544,21 @@
+         if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
+             raise ValueError("api_require_finish requires the API planner")
+         selected = self.selection(request.get("tools"))
++        if self.initial_action_phase:
++            if self.profiles[profile_id]["planner"] != "api":
++                raise ValueError("initial_action_phase requires the API planner")
++            from robots.libero.research.manual import INITIAL_ACTION_PRIMITIVES
++
++            if not ({t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES):
++                raise ValueError("initial_action_phase requires a selected language primitive")
+         prepared = {
+             **request,
+             "model_profile": profile_id,
+             "tools": [t["id"] for t in selected],
+             "frozen_tools": selected,
+         }
++        if self.initial_action_phase:
++            prepared["initial_action_phase"] = True
+         if self.api_require_finish:
+             prepared["api_require_finish"] = True
+         if self.planner_view_mode != "native":
+--- a/rpent/cli/dashboard.py
++++ b/rpent/cli/dashboard.py
+@@ -332,6 +332,10 @@
+     if getattr(state, "workbench", None) is not None:
+         run_config.prompt_vars["manual_tools"] = claimed.request["frozen_tools"]
+         run_config.prompt_vars["run_journal"] = state.journal
++        if robot_spec.name == "libero" and "initial_action_phase" in claimed.request:
++            run_config.prompt_vars["initial_action_phase"] = claimed.request[
++                "initial_action_phase"
++            ]
+         if robot_spec.name == "libero" and "planner_view_mode" in claimed.request:
+             run_config.prompt_vars["planner_view_mode"] = claimed.request[
+                 "planner_view_mode"
+@@ -456,6 +460,9 @@
+                         system_prompt = (
+                             availability_prompt(
+                                 claimed.request["frozen_tools"],
++                                initial_action_phase=claimed.request.get(
++                                    "initial_action_phase", False
++                                ),
+                                 planner_view_mode=claimed.request.get(
+                                     "planner_view_mode", "native"
+                                 ),

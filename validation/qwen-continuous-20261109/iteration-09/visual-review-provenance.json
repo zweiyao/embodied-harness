@@ -1,0 +1,48 @@
+{
+  "reviewed_at": "2026-11-10T11:05:41.125685+00:00",
+  "scope": "Analysis-only external-frame previews; originals and policy inputs unchanged",
+  "previews": [
+    {
+      "name": "t0-s01.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t0-s01.jpg",
+      "bytes": 41691,
+      "sha256": "fa4ec5d3aef50d540897103f9c81b6c0e00012a6c02fbe7601117dd3ed1549c7"
+    },
+    {
+      "name": "t0-s03.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t0-s03.jpg",
+      "bytes": 41070,
+      "sha256": "b9e8042eeffe04529736fc078e505040ea0e4cdf93625cc012c1eb136f98293e"
+    },
+    {
+      "name": "t0-s05.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t0-s05.jpg",
+      "bytes": 41639,
+      "sha256": "cd26c3aee41588c8f2ef468a128bea142da828dd06d25dc41b87a1ff1234fa82"
+    },
+    {
+      "name": "t0-s06.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t0-s06.jpg",
+      "bytes": 43289,
+      "sha256": "26b5dd24e2c241fdee733f2528dc2566ea657254168b9b502c01e7a7265aa7da"
+    },
+    {
+      "name": "t4-s02.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t4-s02.jpg",
+      "bytes": 35195,
+      "sha256": "5e8def7f9ea903744a8fb567d6d85bab7ea208fb38b3d752bf1887629e872dfe"
+    },
+    {
+      "name": "t4-s03.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t4-s03.jpg",
+      "bytes": 35337,
+      "sha256": "182acaaeaed286f2370aaa15bd35c336c4beab29f9f3839e89893d913e992f4b"
+    },
+    {
+      "name": "t4-s04.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-09-review/t4-s04.jpg",
+      "bytes": 35478,
+      "sha256": "4df05359d30ed1ed097837106639c16a23879c9e10a0cb4984c6b6aae0c86cdb"
+    }
+  ]
+}

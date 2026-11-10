@@ -71,3 +71,16 @@ Next F reuses SDK finish-only output under a server-owned default-off API option
 ## Iteration 08 — explicit finish task screen
 
 R18+W2+F completed task0/4 seed0 with 0/2 official successes and two valid full600s timeouts. Startup grouped successfully in both; all10 completed responses carried tools, so no pure-text retry was observed. Task0 made no action and substituted ketchup for task tomato sauce; task4 dispatched one Pi0 pick after7 tools, then segmented a plate and read camera metadata without placement. Actual output constraints, both runtime audits,8943 protected files and cleanup passed. C remains the historical reference; F is not promoted for success. See iteration-08/report.md and cost-summary.json.
+
+## Iteration 09 — calibrated view does not ensure efficient action choice
+
+R18+W2+F+V scored0/2, with two valid600-second failures retained. Task0/4 made
+10/13 pre-action calls, including six coordinate queries each before language
+Pi0. Task0's failed pickup was followed by stalled manual descents and visible
+milk-carton displacement, without lifting the requested cheese. Task4 adopted
+P and released the first mug near its plate but never attempted the second.
+10848 preservation checks, runtime coverage, actual calibrated bytes/bindings
+and cleanup passed. Initial zero-task preflight failure remains documented.
+38 requests and508599 input tokens were added to the exact-hash, unique-path
+ledger. No promotion; C remains the historical reference. An explicit initial
+action phase is the next hypothesis, separate from unsolved contact recovery.

@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-11-10T10:53:02.840212+00:00",
+  "units": {
+    "rpent-qwen-continuous-20261109-i09-a.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive"
+    },
+    "rpent-qwen-continuous-20261109-i09-b.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive"
+    },
+    "rpent-qwen-continuous-20261109-i09-batch.service": {
+      "MainPID": "0",
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive"
+    }
+  },
+  "passed": true
+}

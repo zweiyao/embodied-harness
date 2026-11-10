@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-11-10T10:53:02.818929+00:00",
+  "by_iteration_entry": {
+    "iteration": 9,
+    "source": "iteration-09/results.json",
+    "sha256": "1d2b3207d4016931484d16e08fab47d42f6c1c41539345d772e612a8bc110652",
+    "cost": {
+      "valid_attempts": 2,
+      "model_requests": 38,
+      "input_tokens_including_cached": 508599,
+      "cached_input_tokens_subset": 433664,
+      "output_tokens": 2204,
+      "summed_outcome_elapsed_s": 1222.5
+    },
+    "cell_paths": [
+      "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0"
+    ]
+  },
+  "separate_connectivity_requests_without_usage_delta": 2
+}

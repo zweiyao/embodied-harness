@@ -1,0 +1,7 @@
+{
+  "rpent/planner/api_loop.py": "7be3665a10e0bddda22e46066e301d8a9f11f1ae22b54b8935083dc9d4995bfb",
+  "robots/libero/research/manual.py": "a49ad706b5e860f81ab4c452547ea6a73eae1a5f75d9defc51c1a281326c80d4",
+  "robots/libero/robot_spec.py": "6c84287946afa053d670e616cae03eee25b72522fdf823ab79b45a0aab6405d8",
+  "rpent/dashboard/workbench.py": "d2c375b7bc17d3294fa0d7f27fa61ffd3a8aaaabf96cc9af32246566bf28cca0",
+  "rpent/cli/dashboard.py": "fb15d1378081ce0cc336f50f3f32a1aba143e641b933b47440318434c1d676d4"
+}

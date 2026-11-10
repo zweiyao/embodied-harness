@@ -8,3 +8,4 @@ iteration	metric_value	delta	delta_pct	status	description	evaluator_source	times
 6	0.0	-50.0	-100%	reverted	C+M+P+R: same two cells 0/2; R never called; one P preview selected table and did not align; full timeouts retained	mechanical	2026-11-10T07:26:39.036998+00:00
 7	0.0	-50.0	-100%	reverted	R18+W2: 0/2 and paired parent 0/2; pure-text final caused no-action wait in task0; all four timeouts retained	mechanical	2026-11-10T08:25:22.994570+00:00
 8	0.0	-50.0	-100%	reverted	R18+W2+F: 0/2 full timeouts; output gate active but no pure-text retry; zero placement actions	mechanical	2026-11-10T09:22:57.243858+00:00
+9	0.0	-50.0	-100%	reverted	R18+W2+F+V: 0/2 full timeouts; 10/13 pre-action calls; failed grasp recovery and unfinished second object	mechanical	2026-11-10T11:05:41.125685+00:00

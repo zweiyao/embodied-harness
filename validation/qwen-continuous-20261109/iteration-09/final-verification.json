@@ -1,0 +1,1491 @@
+{
+  "passed": true,
+  "conditions": {
+    "R18+W2+F+V": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        10,
+        13
+      ]
+    }
+  },
+  "paired_initial_images": [
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F+V": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_F_08": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_C01": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F+V": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_F_08": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_C01": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          "identical": true
+        }
+      }
+    },
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F+V": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_F_08": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_C01": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F+V": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_F_08": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_C01": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          "identical": true
+        }
+      }
+    }
+  ],
+  "tool_returns": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "translate_to",
+      "requests": 4,
+      "responses": 4,
+      "responses_without_error": 4,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "preview_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "align_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "translate_to",
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "preview_placement",
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "align_placement",
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    }
+  ],
+  "workflow_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "condition": "R18+W2+F+V",
+      "task": 0,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1
+          },
+          "three_attempted_together": false,
+          "three_dispatched_together": false,
+          "three_succeeded_together": false,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": false
+        },
+        "poststartup_completed_responses": 16,
+        "required_tag_responses": 16,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 16,
+        "descriptive_marker_status_counts": {
+          "missing": 16
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 11,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "7ffd98be6c1f49259a06008ee9e6d31b",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 12,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "12c5698000e14d37b05f7ac8b736e669",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 13,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 14,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "e9d8b80446334313aee8907662546057",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 15,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "1c1608624afe432c92dbd3682acf8b69",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 16,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "set_gripper"
+            ],
+            "action_dispatches": [
+              "set_gripper"
+            ],
+            "action_returns": [
+              {
+                "name": "set_gripper",
+                "call_id": "903f9c7f77a74123a14bf62dc1937d7d",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 17,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "89e8600478ca480cbcd4b45d5730c95b",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "condition": "R18+W2+F+V",
+      "task": 4,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1
+          },
+          "three_attempted_together": false,
+          "three_dispatched_together": false,
+          "three_succeeded_together": false,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": false
+        },
+        "poststartup_completed_responses": 18,
+        "required_tag_responses": 18,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 18,
+        "descriptive_marker_status_counts": {
+          "missing": 18
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "list_dir"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 11,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 12,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "back_project"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 13,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 14,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "0a6f1acd066247c9980655ee33c9e85c",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 15,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "cf23e73aa1a04688985971f10de68428",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 16,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 17,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "align_placement"
+            ],
+            "action_dispatches": [
+              "align_placement"
+            ],
+            "action_returns": [
+              {
+                "name": "align_placement",
+                "call_id": "1c1feea4c2c74eafb052143548c1cb0e",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 18,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "release"
+            ],
+            "action_dispatches": [
+              "release"
+            ],
+            "action_returns": [
+              {
+                "name": "release",
+                "call_id": "8abc672ba35d4d55991d205bef32475c",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 19,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "view_env_state"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    }
+  ],
+  "finish_only_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 18
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 17
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 20
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 19
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    }
+  ],
+  "invocation_metadata": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical08_F_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical08_F_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical08_F_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    }
+  ],
+  "contract_comparison": {
+    "excluded_fields": [
+      "invoked"
+    ],
+    "reason": "Per-session catalog usage metadata; values are reported separately. Boundary retained from iteration07 postrun audit correction."
+  },
+  "planner_view_audits": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "checked_bundles": 7,
+      "explicit_policy_reads": 0,
+      "error_returns": 0,
+      "bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "76eda567b2ed0923743578c41f6795d4f339bb168155039b05ab8eb7ce3a1e6d"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "dac1d1311a0b6cbf7ae10aca619dcb907c65edc647cf55fab4ef45e5b0448764"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "ef2ba7f50964bd3629f716481e0d5c218ae64b3ead5abd43ace65d48ca65e9ae"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "fe17a159e6b6a6aae536ccf93799f18f881ba0cefbfcd6446dce317e2ee85945"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "8bdbf0283017749b0198ae05d3efe923363de7f1d222393d3bec6133eb2a817e"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "dade35e119454e48779652c54a83c1e9551a56dbb4aa4b92cc16c07d8c70fa06"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "101a35a4e4d37efe44f02572b6dbdc21c6ce837c4005404575116a1379d390e5"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "043cd76060fd87336961446ce3bac2a626d3abdfe50d723bd0afa796423d6d69"
+        },
+        {
+          "tool": "set_gripper",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 5,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "62aa02c42bae6298727caf18dd11b0db48f371804be3f1a183e8cc46ea2974cc"
+        },
+        {
+          "tool": "set_gripper",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 5,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "7d398166b142cf4f6a9aae42c83aad37d8f3a2f52e46aec13ae37f046a25cccd"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 6,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "1cbeca2b14248ea475e8211ce23824dae65e59dc923fdfa7379ab330302e6bf5"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 6,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "9276fcae375dd93bde9ac386b8f94179ac0472a1aab7da6515eb9f3e5de47edb"
+        }
+      ],
+      "passed": true,
+      "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "checked_bundles": 6,
+      "explicit_policy_reads": 0,
+      "error_returns": 0,
+      "bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3a04dc5b03044391bd4babbcebc735fcbd2349f5dff84e04807912e1e9795084"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3c77c6ec42eae0d1f8bbe366867af5239c12a9a73b385c1c541d331806e1514a"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "ce1fe966627f38066017184ce50f7bdd96e7f59bb291b5c87b3b18039c30c7b1"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "7d8f4bc86e24c4552e34cd61a3c4d85933be22e2a8734f74a3ae04892fc2547a"
+        },
+        {
+          "tool": "align_placement",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "a825b759a7e74c6a30c51fb733ba4ba643c6c7715cef8674ea1b9d00c482e0f3"
+        },
+        {
+          "tool": "align_placement",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "ef86970792be63cb3b0e605ecaa4dbbd4a35b05fe1e61e8a66206ee840aa1ae9"
+        },
+        {
+          "tool": "release",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "2ec1cdd4f9e9abe34daf35658d4a2bd67736b05474e85069624ec630c3ab6a36"
+        },
+        {
+          "tool": "release",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "0b3f9858fa3ef914f31dc9db231f3b3a336668dcaf4c2fc286b9bece3e288d02"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "2ec1cdd4f9e9abe34daf35658d4a2bd67736b05474e85069624ec630c3ab6a36"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "0b3f9858fa3ef914f31dc9db231f3b3a336668dcaf4c2fc286b9bece3e288d02"
+        }
+      ],
+      "passed": true,
+      "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+    }
+  ],
+  "initial_incident_entries_preserved": 0,
+  "corrected_model_argument_failures": 0,
+  "runtime_incidents": 0,
+  "runtime_guard_coverage": "complete",
+  "runtime_observers": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/a/runtime-audit-task0-seed0-710abb4646ea4826be419540f646a7bc.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-09/b/runtime-audit-task4-seed0-03c41866f1154f0589a21f2dd68f1943.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    }
+  ],
+  "task_results_valid": true,
+  "protected_files_verified": 10848,
+  "limitation": "Two fresh V tasks at seed0 versus historical08 F, with time and environment-allocation confounds. Historical08 F and C01 remain separate references. Official success is primary; compliant labels, fewer calls, tool acceptance and geometric arrival do not establish holding or task benefit. This screen does not establish ten-task or held-out improvement."
+}
