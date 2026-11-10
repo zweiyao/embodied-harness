@@ -518,3 +518,57 @@ def test_recent_image_history_is_owned_and_requires_libero_api(bench):
     for value in (1, "true", None):
         with pytest.raises(ValueError, match="boolean"):
             Workbench({**bench.config, "api_recent_image_history": value})
+
+
+def test_history_roots_preserve_links_and_read_recorded_instruction(bench, tmp_path):
+    import hashlib
+
+    primary = tmp_path / "session/tasks/0001"
+    external = tmp_path.parent / f"{tmp_path.name}-history"
+    archived = external / "session/tasks/0001"
+    other_robot = external / "session/tasks/0002"
+    for root in (primary, archived, other_robot):
+        root.mkdir(parents=True)
+        (root / "dashboard_config.json").write_text(
+            json.dumps({"robot": "flexiv" if root == other_robot else "libero"})
+        )
+    (archived / "states.json").write_text(
+        json.dumps(
+            {
+                "steps": [
+                    {"extras": {}},
+                    {"extras": {"task_language": "use right plate"}},
+                ]
+            }
+        )
+    )
+    (archived / "episode.mp4").write_bytes(b"video fixture")
+    original_id = hashlib.sha256(b"session/tasks/0001").hexdigest()[:20]
+    configured = Workbench(
+        {**bench.config, "history_roots": [str(external), str(external), str(tmp_path)]}
+    )
+    runs = configured.runs()
+    assert len(runs) == 2
+    old = next(r for r in runs if r["id"] == original_id)
+    assert old["instruction"] is None
+    new = next(r for r in runs if r["id"] != original_id)
+    assert new["instruction"] == "use right plate"
+    assert configured.run(new["id"])["instruction"] == "use right plate"
+    assert (
+        configured.artifact(new["id"], "episode.mp4").read_bytes() == b"video fixture"
+    )
+    with pytest.raises(ValueError, match="Unknown artifact"):
+        configured.artifact(new["id"], "../../outside")
+    (archived / "escape.txt").symlink_to(primary / "dashboard_config.json")
+    with pytest.raises(ValueError, match="Unknown artifact"):
+        configured.artifact(new["id"], "escape.txt")
+    (archived / "states.json").write_text("{")
+    assert configured.run(new["id"])["instruction"] is None
+    assert len(bench.runs()) == 1
+    assert configured.root == bench.root
+
+
+@pytest.mark.parametrize("value", ["/tmp/runs", None, [1], [""]])
+def test_history_roots_reject_invalid_paths(bench, value):
+    with pytest.raises(ValueError, match="history_roots"):
+        Workbench({**bench.config, "history_roots": value})

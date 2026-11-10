@@ -243,6 +243,12 @@ class Workbench:
         if config.get("robot", "libero") != robot:
             raise ValueError("Workbench configuration belongs to another robot")
         self.root = Path(config["runs_root"]).resolve()
+        history_roots = config.get("history_roots", [])
+        if not isinstance(history_roots, list) or any(
+            not isinstance(root, str) or not root for root in history_roots
+        ):
+            raise ValueError("history_roots must be a list of directory paths")
+        self.history_roots = [Path(root).resolve() for root in history_roots]
         self.library = Path(config["library_root"]).resolve()
         self.catalog_sources = load_sources(os.environ.get("RPENT_TOOL_CATALOG"))
         self.profiles = {
@@ -656,19 +662,34 @@ class Workbench:
 
     def runs(self):
         result = []
-        for path in self.root.glob("*/tasks/*/dashboard_config.json"):
+        seen = set()
+        paths = (
+            (source, path)
+            for source in [self.root, *self.history_roots]
+            for path in source.glob("*/tasks/*/dashboard_config.json")
+        )
+        for source, path in paths:
+            root = path.parent.resolve()
+            if root in seen or not root.is_relative_to(source):
+                continue
+            seen.add(root)
             try:
                 config = json.loads(path.read_text())
-                root = path.parent
+                if config.get("robot", self.robot) != self.robot:
+                    continue
                 manifest = root / "manifest.json"
                 data = json.loads(manifest.read_text()) if manifest.exists() else {}
                 final = root / "outcome.json"
                 outcome = json.loads(final.read_text()) if final.exists() else {}
+                identity = (
+                    str(path.parent.relative_to(self.root))
+                    if source == self.root
+                    else f"history:{root}"
+                )
                 result.append(
                     {
-                        "id": hashlib.sha256(
-                            str(root.relative_to(self.root)).encode()
-                        ).hexdigest()[:20],
+                        "id": hashlib.sha256(identity.encode()).hexdigest()[:20],
+                        "instruction": self._run_instruction(root),
                         "path": str(root),
                         "config": config,
                         "manifest": data,
@@ -679,6 +700,18 @@ class Workbench:
             except (OSError, ValueError):
                 continue
         return sorted(result, key=lambda x: x["updated"], reverse=True)
+
+    @staticmethod
+    def _run_instruction(root):
+        try:
+            states = json.loads((root / "states.json").read_text())
+            for step in states.get("steps", []):
+                instruction = step.get("extras", {}).get("task_language")
+                if isinstance(instruction, str) and instruction.strip():
+                    return instruction
+        except (OSError, ValueError):
+            pass
+        return None
 
     def run(self, run_id):
         for item in self.runs():

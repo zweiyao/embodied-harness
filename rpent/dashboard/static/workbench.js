@@ -9,6 +9,7 @@ function eventView(record){const d=el('details');const p=record.payload||record;
 async function showRun(id){
   const run=await request(`/api/runs/${id}`),root=$('content');root.replaceChildren();
   const h=el('section');h.append(el('h2',`${run.config.model} · ${id}`));
+  h.append(el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'));
   const outcome=run.outcome;h.append(el('p',`官方成功：${outcome.environment_success==null?'未记录':outcome.environment_success?'是':'否'} · ${outcome.status||'旧记录 / 未记录结束状态'} · 放置稳定性：${outcome.stable_placement||'未独立验证'}`));
   h.append(el('p',formatRunTimes(run),'note'),el('p',formatRunMetrics(outcome),'statline'),el('p','交互轮次按记录的模型响应次数统计，不等于工具调用次数。缺失用量不计作零；异常结束时可能只包含已返回的用量。','note'));
   if(outcome.error)h.append(el('pre',outcome.error));
@@ -43,7 +44,7 @@ async function load(){
   }else{
     $('title').textContent='实验记录';$('intro').textContent='保留每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
     const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 只读查看';return;}
-    const {runs}=await request('/api/runs');$('content').replaceChildren();for(const run of runs){const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',JSON.stringify(run.config.task)),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));$('content').append(card);}$('status').textContent=`${runs.length} 次实验 · 按创建时间排序`;
+    const {runs}=await request('/api/runs');$('content').replaceChildren();for(const run of runs){const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',JSON.stringify(run.config.task)),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));$('content').append(card);}$('status').textContent=`${runs.length} 次实验 · 按创建时间排序`;
   }
 }
 load().catch(e=>{$('status').textContent=e.message;$('status').classList.add('error');});

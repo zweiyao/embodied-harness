@@ -1,0 +1,26 @@
+{
+  "base_commit": "158b4ccce44c32ee87af890dd35ebc6dc51052c6",
+  "source_sha256": {
+    "rpent/dashboard/workbench.py": "6a00bf86dd8d9d917dfb24c835cdb0e322df771b9c054917ae416456bf239c6e",
+    "rpent/dashboard/static/workbench.js": "080a45fea8da130c40c3cc4c636835a7af9d122726fb6e5ee9ddbfdde923f006",
+    "rpent/dashboard/workbench.html": "44297975666fc06c0752b46e34b7ddc10176fc437e3adff2d53e3d1c3c3fc3c8",
+    "tests/unit_tests/rpent/dashboard/test_workbench.py": "9eb272961277e680f003d0cc973ee21f63047d3383a896cb10c0286b7bd02e71",
+    "docs/manual-workbench/experiment-metrics.md": "1e69709db1357808046b2193acc132bd8878c4c2b7ec00796769398fe987f376"
+  },
+  "remote_validation_root": "/home/zwy/work/embodied_harness/validation/run-history-20261110",
+  "focused": {
+    "passed": 31
+  },
+  "unit": {
+    "passed": 2193,
+    "skipped": 15,
+    "seconds": 77.86
+  },
+  "deployed": {
+    "passed": 5
+  },
+  "scoped_pre_commit": "passed",
+  "full_pre_commit": "failed: historical validation scripts, 274 remaining diagnostics",
+  "mac_direct_lan_records": 195,
+  "no_new_experiments": true
+}
