@@ -1,0 +1,227 @@
+[
+  {
+    "kind": "jpeg",
+    "family_requested": "ipv4",
+    "repeat": 1,
+    "request_bytes": 428529,
+    "request_sha256": "f174086cb0d7a6352525afe82f36400d9f2dd4cf6aeac45e5aad6ec5b66bdef6",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 4.543759,
+    "first_content_s": 4.297052945010364,
+    "tls_completed_s": 0.901545,
+    "first_byte_s": 4.293287,
+    "upload_bytes": 428529,
+    "upload_speed_Bps": 94311,
+    "peer_ip": "101.201.58.201",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4161,
+      "completion_tokens": 22,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 22
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 36,
+    "timeout_s": 40,
+    "sources": [
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/01.png",
+        "sha256": "a0ca4d079f89448edf9c6dd942d833f10555cee05f9aec5888828562e5676920",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 721010,
+        "jpeg_bytes": 106933
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/wrist_high.png/01.png",
+        "sha256": "b1679dbb3912c601fc9cb843e981571170141373a4ef76e1637d4ef03ce1a7e1",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 499453,
+        "jpeg_bytes": 54612
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/agentview_high.png/01.png",
+        "sha256": "1f4334a9ad583028641abc71b5e3eec84504b0986a783fd1d5da84d19be07483",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 722321,
+        "jpeg_bytes": 94196
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/wrist_high.png/01.png",
+        "sha256": "0cf0b3773a87a07b3f7eadd3d9c69ba766507718418184ede786ddccd0bb55be",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 536176,
+        "jpeg_bytes": 65191
+      }
+    ],
+    "fresh_images": true
+  },
+  {
+    "kind": "jpeg",
+    "family_requested": "ipv4",
+    "repeat": 2,
+    "request_bytes": 413569,
+    "request_sha256": "4c369673b7e1db065bfd3e92101874bbeff36b2710f4dd0d4e6d1dec18a06fe0",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 3.947506,
+    "first_content_s": 3.752819323912263,
+    "tls_completed_s": 0.344366,
+    "first_byte_s": 3.748868,
+    "upload_bytes": 413569,
+    "upload_speed_Bps": 104767,
+    "peer_ip": "47.94.20.201",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4167,
+      "completion_tokens": 28,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 28
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 44,
+    "timeout_s": 40,
+    "sources": [
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/02.png",
+        "sha256": "c30d4a4d4435d08fde275f9ea92df94d02e1e71d8f309acf9b8614be0b44f6b3",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 714500,
+        "jpeg_bytes": 108783
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/wrist_high.png/02.png",
+        "sha256": "7ac4c5ba42d4151ce8c1eecebf8d10047822b3a852019fec13f0a200e95de9f6",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 532216,
+        "jpeg_bytes": 58587
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/agentview_high.png/02.png",
+        "sha256": "2b920d6834407fe064b6fe5606209d1dcf3ed178a31636540906ffb6e01f721a",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 725260,
+        "jpeg_bytes": 89587
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/wrist_high.png/02.png",
+        "sha256": "16609081c0f94acf6a08d6abe4663e62c4d3033829ae4c6a7b9de45b297bc053",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 471953,
+        "jpeg_bytes": 52757
+      }
+    ],
+    "fresh_images": true
+  },
+  {
+    "kind": "jpeg",
+    "family_requested": "ipv4",
+    "repeat": 3,
+    "request_bytes": 462581,
+    "request_sha256": "6b1789d533c748a5b04cfe7dc2f40b14b303888db05a3b02c786e80d83f34db9",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 4.106301,
+    "first_content_s": 3.297135620377958,
+    "tls_completed_s": 0.798583,
+    "first_byte_s": 3.293508,
+    "upload_bytes": 462581,
+    "upload_speed_Bps": 112651,
+    "peer_ip": "47.94.20.201",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4164,
+      "completion_tokens": 25,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 25
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 44,
+    "timeout_s": 40,
+    "sources": [
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/03.png",
+        "sha256": "3b6413ecf68eaa547f1521a230ee970504cabeaeace2ae5780d27863df49f113",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 710829,
+        "jpeg_bytes": 108146
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/a/runs/session/tasks/0001_libero_10_task_t0_s0/wrist_high.png/03.png",
+        "sha256": "9749fe4cbe983ef2a938a605f956f951b7fad2295a578a1fdb8064dbe2bb6e01",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 554521,
+        "jpeg_bytes": 62471
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/agentview_high.png/03.png",
+        "sha256": "6dba80f301503289a9bacd80ee99aa5b100b6985c5ed6b88356d2c10485f9eb1",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 696327,
+        "jpeg_bytes": 89439
+      },
+      {
+        "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-11/b/runs/session/tasks/0001_libero_10_task_t4_s0/wrist_high.png/03.png",
+        "sha256": "6e86e7e1217f170ab3f744a931d5b35f3ff9f507c1c009489491e3aba6a0a098",
+        "size": [
+          1024,
+          1024
+        ],
+        "png_bytes": 663532,
+        "jpeg_bytes": 86417
+      }
+    ],
+    "fresh_images": true
+  }
+]

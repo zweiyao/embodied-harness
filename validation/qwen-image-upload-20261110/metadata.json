@@ -1,0 +1,41 @@
+{
+  "at": "2026-11-10T13:20:23.171384+00:00",
+  "question": "这四张图片展示了什么场景？用一句话回答。",
+  "image_count": 4,
+  "dimensions": [
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ]
+  ],
+  "original_image_bytes": 2714531,
+  "jpeg_image_bytes": 346690,
+  "jpeg_quality": 85,
+  "resolution_unchanged": true,
+  "lossy_encoding": true,
+  "task_tools": 0,
+  "history_messages": 0,
+  "thinking": false,
+  "max_tokens": 128,
+  "source_images_sha256": [
+    "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+    "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+    "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+    "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+  ],
+  "max_api_requests": 4,
+  "no_proxy": true,
+  "no_harness_changes": true
+}

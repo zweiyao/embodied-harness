@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-11-10T13:24:53.251286+00:00",
+  "task": {
+    "title": "Qwen图像上传：JPEG＋IPv4候选诊断",
+    "status": "独立API诊断通过；未接入harness，任务收益未验证",
+    "change": "同分辨率1024²、JPEG质量85、Qwen单请求IPv4直连；原PNG/深度/标定及网络设置未改。",
+    "evidence": "validation/qwen-image-upload-20261110/summary.json：原PNG IPv4单次16.989秒；同图JPEG默认路由29.390/6.802/3.485秒（后两次有缓存）。三组不同新帧JPEG＋IPv4均无缓存，4.544/3.948/4.106秒，平均4.199秒，7次均HTTP200。请求由3.62MB降至约0.46MB；压缩有损、视觉/坐标精度及完整任务效果待验证。总循环暂停。"
+  },
+  "board_sha256": "97d902d55bc132b4f371863bca6b49f4d47726c384954aad92bdb882eddd137b"
+}
