@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T07:53:50.975716+00:00",
+  "phase": "prepared_waiting_READY",
+  "setup_only": true,
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "workbench_services_started": false,
+  "planned": 4,
+  "units": {
+    "a": {
+      "MainPID": "0",
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    },
+    "b": {
+      "MainPID": "0",
+      "LoadState": "not-found",
+      "ActiveState": "inactive"
+    }
+  },
+  "protected_files_verified": 7868,
+  "runtime_source_files": 303,
+  "original_server_and_config_unchanged": true,
+  "six_proxies_unset_after_activation": true,
+  "plan_sha256": "ff7dbb334dfcb962a2053f95b5e0ccf8f1f49cc3c57c0917427bd11d3b01542c",
+  "source_handoff_sha256": "c1baa28230e7a24cfa0579685a3e9765da64f61c4bfee7d5954e42ee75da0601",
+  "material_handoff_sha256": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57"
+}

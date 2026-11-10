@@ -1,0 +1,11 @@
+{
+  "cohort": "libero_10_task-language-right-v1",
+  "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files",
+  "private_bddl": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/benchmark/bddl_files",
+  "changed_file": "libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+  "before_sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+  "after_sha256": "8d2d6cd8673e826ddef3183d67a79b75431a5b293e97649af9040b2dd9a47c7c",
+  "goal_and_init_unchanged": true,
+  "benchmark_root_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+  "init_states_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+}

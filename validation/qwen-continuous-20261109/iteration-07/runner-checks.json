@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T07:53:21.975321+00:00",
+  "compileall": true,
+  "ruff_check": true,
+  "shell_syntax": true,
+  "workflow_scenarios": 18,
+  "classification_scenarios": 14,
+  "observer_scenarios": 4,
+  "classification_unchanged": true,
+  "runner_files_sha256": {
+    "preflight.py": "6dc0e021765f4ecfdb1c44f3924021fbaf972f6d3780f40cfcb388e36b8cf4c9",
+    "runtime_audit.py": "9f969ff8445d0b91b709fda5d7a8bee63d2beb588845fc6645cdee0820b08b88",
+    "audit_results.py": "1463b4cadc4c45172b4015dd15a84350079e117e926aebafe295f951e99e3788",
+    "verify_classification.py": "10fc5561065890c9185ee6eae1ca9bfd073d1659234b23cbb63545bcbe159530",
+    "cleanup.py": "618c546b6d95ddcb3f2c29d94117a63a39f9bf9f29d8bffe7f096566707852c4",
+    "setup.py": "495cdf145037e48e1c970041b551e65bd7a0fb3fc7e8eaa558106954fbb25f38",
+    "workflow_metrics.py": "91b9572c8c09c1b703311bdb4d8df67b074ffa964709a6a8d5b024b7ed326574",
+    "run_batch.py": "9aaee4dfa87ccb0d9e73c4685775b1078452bd258cc7b9d0a1a6d94778d9fa99",
+    "verify_runtime_audit.py": "bc0873a4e70f8b7766f1611f6a6fadec1c8131ac1f420ad5f5316b7c24112947",
+    "verify_workflow_metrics.py": "d84db82a8d53ebc05e1598051a97f00c21f129c2e54a33d3993d909b06f21ea3",
+    "start_batch.sh": "4cddda619754bd41dc0651253ef2e46765f28f344816474129e8e71d033cd474",
+    "model_argument_failure.py": "0e4aec14fc97dd164772ed575bdf893df469feabeac18fc35a66822e59aeaef6",
+    "metrics.py": "27721444921052b9610c4c75ca4e518fb716b111b9a06ff0c807a595f5403af6"
+  },
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "full_production_suite_rerun": false,
+  "reason": "Frozen R303 source unchanged; scoped evaluator/observer/material-only change."
+}
