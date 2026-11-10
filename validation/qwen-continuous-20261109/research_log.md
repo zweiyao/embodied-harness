@@ -84,3 +84,14 @@ and cleanup passed. Initial zero-task preflight failure remains documented.
 38 requests and508599 input tokens were added to the exact-hash, unique-path
 ledger. No promotion; C remains the historical reference. An explicit initial
 action phase is the next hypothesis, separate from unsolved contact recovery.
+
+## Iteration10 — early action is insufficient
+
+A scored0/2; both600s timeouts retained. First action moved to46.620/81.728s
+with5/7 preceding calls, but task0 chose distant unmeasured targets and persisted
+after stalled moves. Task4 first selected a tabletop point as the held feature,
+then corrected it and ultimately aligned without release. Actual9→18 exposure,
+phase/chunk evidence,12880 protections and cleanup passed. The remaining issue
+includes manual evidence selection, recovery decisions and increasing image
+history.23 requests were added to the exact-hash ledger. No promotion; next
+consider a separately tested image-history window, without proxy changes.

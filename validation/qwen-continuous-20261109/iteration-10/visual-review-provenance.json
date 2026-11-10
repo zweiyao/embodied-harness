@@ -1,0 +1,30 @@
+{
+  "reviewed_at": "2026-11-10T11:47:09.005482+00:00",
+  "scope": "Analysis-only external previews; policy and original images unchanged",
+  "previews": [
+    {
+      "name": "t0-s01.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-10-review/t0-s01.jpg",
+      "source": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/01.png",
+      "source_sha256": "7af3d8e52b01f597cc452d2a3dbd66eb29fcd1a8d432163d46431d49420501ab",
+      "sha256": "b91d25f63fab622ba8518b291ae35b56d86e5b97684a8b1667f1b48f964c7aa5",
+      "bytes": 56034
+    },
+    {
+      "name": "t0-s03.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-10-review/t0-s03.jpg",
+      "source": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0/agentview_high.png/03.png",
+      "source_sha256": "3d85f3e36329383f99e274c2a4595491a25d900d4725d225ba44798f72069888",
+      "sha256": "f24d70b6a747797b0bf90753cd80012debc559c83fc23654ab0a2ac127106753",
+      "bytes": 57867
+    },
+    {
+      "name": "t4-s02.jpg",
+      "path": "/home/zwy/work/embodied_harness/debug/qwen-continuous-20261109/iteration-10-review/t4-s02.jpg",
+      "source": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0/agentview_high.png/02.png",
+      "source_sha256": "5819eb2550048cdb2233b90a4418ec7f64f47f03ce9841c786eb9889f3422333",
+      "sha256": "ef593ff723b4454628793ca61af9880e83b4cb9a32a2a9cfe616e8a601edfca8",
+      "bytes": 50137
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "audit_type": "contemporaneous_owned_process_observer",
+  "cells": [
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runtime-audit-task0-seed0-778237e9145b4b169b683a7d00287b71.json",
+      "report": {
+        "lane": "a",
+        "audit_type": "contemporaneous_owned_process_observer",
+        "environment_eef_control_expected": true,
+        "snapshots": [
+          {
+            "observed_at": "2026-11-10T11:29:54.793611+00:00",
+            "pid": 3125668,
+            "start_ticks": "253428904",
+            "role": "workbench",
+            "entrypoint": "rpent.cli.main",
+            "command_sha256": "dcd8b26b29bd1ab799027226ca4b907d5d90c4c1c96397395706bd15d4477538",
+            "eef_control_flag_present": false,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": []
+          },
+          {
+            "observed_at": "2026-11-10T11:29:54.995054+00:00",
+            "pid": 3125773,
+            "start_ticks": "253429274",
+            "role": "environment_server",
+            "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/robots/libero/env_server.py",
+            "command_sha256": "5e0ef0a02eaae8ca25c5a5dfd73e49f79abef427a9b2c98b908dd2227215e4ae",
+            "eef_control_flag_present": true,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": [],
+            "entrypoint_matches": true
+          }
+        ],
+        "observer_errors": [],
+        "observer_stopped": true,
+        "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+        "run_id": "4aeed560761dad4f7217",
+        "task": 0,
+        "seed": 0,
+        "condition": "R18+W2+F+V+A",
+        "episode_ended_at": "2026-11-10T11:40:05.863465+00:00",
+        "child_observed_before_episode_end": true,
+        "coverage_complete": true,
+        "guard_violations": []
+      }
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runtime-audit-task4-seed0-50165afe1a5846c8b85f3c54ba28a03f.json",
+      "report": {
+        "lane": "b",
+        "audit_type": "contemporaneous_owned_process_observer",
+        "environment_eef_control_expected": true,
+        "snapshots": [
+          {
+            "observed_at": "2026-11-10T11:29:54.793846+00:00",
+            "pid": 3125673,
+            "start_ticks": "253428906",
+            "role": "workbench",
+            "entrypoint": "rpent.cli.main",
+            "command_sha256": "8a7b1bd44a873d3cac09e778a59727e7dffeca510051fa52497604286bcda97b",
+            "eef_control_flag_present": false,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": []
+          },
+          {
+            "observed_at": "2026-11-10T11:29:54.994872+00:00",
+            "pid": 3125774,
+            "start_ticks": "253429274",
+            "role": "environment_server",
+            "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout/robots/libero/env_server.py",
+            "command_sha256": "6ff9d174f758055f732c53b90f38d74a914e96cf3225c1f77fea76358dab9961",
+            "eef_control_flag_present": true,
+            "source_environment": {
+              "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+              "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/libero-config"
+            },
+            "source_roots_match": true,
+            "private_config_matches": true,
+            "proxy_variables_present": [],
+            "entrypoint_matches": true
+          }
+        ],
+        "observer_errors": [],
+        "observer_stopped": true,
+        "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+        "run_id": "9cbe14f94f25bc734075",
+        "task": 4,
+        "seed": 0,
+        "condition": "R18+W2+F+V+A",
+        "episode_ended_at": "2026-11-10T11:40:05.846163+00:00",
+        "child_observed_before_episode_end": true,
+        "coverage_complete": true,
+        "guard_violations": []
+      }
+    }
+  ]
+}
