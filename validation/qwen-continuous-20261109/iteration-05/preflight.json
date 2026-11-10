@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "environment_actions": 0,
+  "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "isolated_source_imports_verified": true,
+  "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "path_environment": {
+    "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout"
+  },
+  "motion_catalog_and_selected_guidance": true,
+  "placement_catalog_and_selected_guidance": {
+    "passed": true,
+    "versions": {
+      "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+      "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+    }
+  },
+  "motion_metrics_fixture": {
+    "passed": true,
+    "limitation": "The legacy execution indicator is a recorded-step/command proxy, not measured displacement or holding."
+  },
+  "placement_selection_checks": {
+    "passed": true,
+    "tools": 19,
+    "removed": [
+      "move_eef",
+      "move_pose",
+      "move_to"
+    ],
+    "eef_wrapper_expected": false,
+    "log": "selection-check.log"
+  },
+  "materials": [
+    {
+      "lane": "a",
+      "version": "qwen-evidence-v3-c6c7f677d400",
+      "files": 7,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    },
+    {
+      "lane": "b",
+      "version": "qwen-evidence-v3-c6c7f677d400",
+      "files": 7,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    }
+  ],
+  "classification_checks": 5,
+  "published_tool_checks": [
+    {
+      "name": "sensor_patch_batch",
+      "version": "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "docker_execution": true,
+      "missing_step_rejected": true
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "a",
+      "server_id": "4c6426c39edc4d9cbf9ce70d9364431e",
+      "port": 54469,
+      "config_matches": true,
+      "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+      "repo_root_override": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+      "proxy_absent": true,
+      "connectivity_ok": true
+    },
+    {
+      "lane": "b",
+      "server_id": "f431addcadcf437c8508c1afb3972f44",
+      "port": 51507,
+      "config_matches": true,
+      "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+      "repo_root_override": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+      "proxy_absent": true,
+      "connectivity_ok": true
+    }
+  ]
+}

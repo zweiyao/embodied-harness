@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-11-10T06:33:50.944965+00:00",
+  "diagnostic": "second passive snapshot; no API requests or changes",
+  "lanes": [
+    {
+      "lane": "a",
+      "sockets": [
+        {
+          "connection": "ESTAB      0      253260 [2001:da8:8001:864:451e:aeb7:2b90:7780]:57050 [2408:400a:3e:effb:c146:fb04:1e3d:5cc1]:443   users:((\"python\",pid=2952421,fd=13))",
+          "tcp_info": "cubic wscale:9,10 rto:1233 rtt:204.013/161.518 ato:40 mss:1340 pmtu:1500 rcvmss:1340 advmss:1440 cwnd:6 ssthresh:4 bytes_sent:1917226 bytes_retrans:203680 bytes_acked:1705507 bytes_received:3585 segs_out:1437 segs_in:854 data_segs_out:1433 data_segs_in:3 send 315274bps lastsnd:32 lastrcv:55974 lastack:32 pacing_rate 378320bps delivery_rate 156624bps delivered:1284 busy:56260ms rwnd_limited:162ms(0.3%) unacked:6 retrans:0/152 dsack_dups:8 reordering:13 reord_seen:29 rcv_space:14400 rcv_ssthresh:73576 notsent:245220 minrtt:35.705 snd_wnd:928768"
+        }
+      ],
+      "request_count": 7,
+      "response_count": 6,
+      "last_event_time": "2026-11-10T06:32:54.348117+00:00",
+      "last_event_kind": "model_request",
+      "action_tools": [
+        "pi0_pick"
+      ]
+    },
+    {
+      "lane": "b",
+      "sockets": [
+        {
+          "connection": "ESTAB      0      147304 [2001:da8:8001:864:451e:aeb7:2b90:7780]:36276 [2408:400a:3e:effd:6ac1:ae6e:cde9:4efe]:443   users:((\"python\",pid=2952426,fd=13))",
+          "tcp_info": "cubic wscale:9,10 rto:1748 backoff:1 rtt:177.904/114.313 ato:40 mss:1340 pmtu:1500 rcvmss:1340 advmss:1440 cwnd:4 ssthresh:4 bytes_sent:1594249 bytes_retrans:153967 bytes_acked:1434923 bytes_received:3585 segs_out:1199 segs_in:908 data_segs_out:1195 data_segs_in:3 send 241029bps lastsnd:33 lastrcv:50823 lastack:33 pacing_rate 289232bps delivery_rate 38992bps delivered:1089 busy:50968ms rwnd_limited:273ms(0.5%) unacked:4 retrans:0/117 dsack_dups:15 reord_seen:26 rcv_space:14400 rcv_ssthresh:73576 notsent:141944 minrtt:33.367 snd_wnd:315392"
+        }
+      ],
+      "request_count": 7,
+      "response_count": 6,
+      "last_event_time": "2026-11-10T06:32:59.504004+00:00",
+      "last_event_kind": "model_request",
+      "action_tools": []
+    }
+  ]
+}

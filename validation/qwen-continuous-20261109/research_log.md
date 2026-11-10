@@ -33,3 +33,15 @@ Restricted18 C+M 0/2; C remains incumbent. Task4's six-request SDK retry exhaust
 Actual API tool selection, paired initial images, 4944 protected files and owned cleanup passed. Runtime observation is explicitly partial: the environment children exited before a snapshot was saved. Frozen setup/preflight/logs support, but do not replace, missing direct process evidence. The next runner will persist an owned child snapshot during execution.
 
 Next P is a substantive perception-to-action workflow, with parent restricted18 fixed before its results: visible-region plane projection, displayed semantic roles, held-feature offset and a single-use frozen target. No original defaults, learned VLA capability, budget, hidden-state access or automatic release changes. See [report](iteration-04/report.md).
+
+## Iteration 05 — visible placement preview
+
+Logged: 2026-11-10T06:41:07.612952+00:00.
+
+C+M+P 19 tools: 0/2, both ordinary 600-second budget failures retained. Each issued nine model requests with eight completed responses; P was never called. No promotion and no inference about its execution efficacy. The first grasp in task4 has visual support, but a stated lift check was not executed; task0's grasp failed and manual recovery remained unfinished. All failures count, including attempts that did not reach placement.
+
+Actual 19-tool schemas, both initial-camera image pairs and 6017 protected hashes passed. Both actual environment child processes were captured contemporaneously, with isolated source/private configuration and all six proxy variables absent. Owned cleanup and the unchanged main workbench passed; runtime audit complete.
+
+Completed model waits total 1145.56 seconds across two episodes. Passive IPv6 sockets show upload queues and retransmissions; request images contribute approximately 1.8–7.2 MB of base64 payload. This supports a transport contribution without uniquely explaining total latency. A separately budgeted, same-payload family comparison begins only after episode termination and cleanup. Keep these valid failures; any subsequent transport change must be common to the candidate and C reference. See [report](iteration-05/report.md).
+
+The separate four-call family diagnostic completed without a stable IPv4 advantage; its costs and raw-httpx scope are recorded separately. The user then explicitly directed us to stop network investigation and keep Qwen proxy-free, with GPT experiments separate. No transport/image change is adopted. Next: R, a default-off correctly scaled rotation interface with retained-position feedback, exact plan recorded before implementation.

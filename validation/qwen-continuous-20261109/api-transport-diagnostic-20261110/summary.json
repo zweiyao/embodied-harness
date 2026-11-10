@@ -1,0 +1,8 @@
+{
+  "model_requests": 2,
+  "successful_pair": true,
+  "clear_directional_difference": false,
+  "larger_to_smaller_total_ratio": 1.4295699524380432,
+  "total_difference_s": 6.205831982195377,
+  "limitation": "Two sequential requests, same image bytes, different IP families/endpoints; diagnostic only, not task-success evidence. Client send completion is not remote ACK. Any second pair requires a separately recorded ambiguity decision."
+}

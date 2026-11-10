@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "compile": true,
+  "ruff_check": true,
+  "prepared_image_hashes_and_payload_verified": true,
+  "model_requests_before_start": 0,
+  "iteration05_owned_units_inactive": true,
+  "script_sha256": "876b54bcd9cff3bb71b97b9aafb46f1d81b0133f70987e9a09ab7b8ce4d5ace9",
+  "checked_at": "2026-11-10T06:40:33.833168+00:00"
+}

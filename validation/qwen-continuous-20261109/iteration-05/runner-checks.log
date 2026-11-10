@@ -1,0 +1,21 @@
+/home/zwy/work/harnessvla/.venv/bin/ruff check --config /home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/pyproject.toml audit_results.py cleanup.py metrics.py model_argument_failure.py preflight.py run_batch.py runtime_audit.py setup.py verify_classification.py verify_runtime_audit.py
+All checks passed!
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.
+
+/home/zwy/work/harnessvla/.venv/bin/ruff format --check --config /home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/pyproject.toml audit_results.py cleanup.py metrics.py model_argument_failure.py preflight.py run_batch.py runtime_audit.py setup.py verify_classification.py verify_runtime_audit.py
+10 files already formatted
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.
+
+/home/zwy/work/harnessvla/.venv/bin/python -m compileall -q /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05
+
+bash -n /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/start_batch.sh
+
+bash -n /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/start.sh
+
+bash -n /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/b/start.sh
