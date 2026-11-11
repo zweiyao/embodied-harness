@@ -69,5 +69,30 @@
     "skipped": 15,
     "seconds": 73.26
   },
-  "unrelated_untracked": "validation/qwen-continuous-20261109/iteration-11/ retained"
+  "unrelated_untracked": "validation/qwen-continuous-20261109/iteration-11/ retained",
+  "plan_amendment": {
+    "updated_at": "2026-11-11T12:50:59.079159+00:00",
+    "requirement": "All simulator research workbenches use the current LIBERO form, shared frontend, operations and record/result contracts. Robot differences are supplied by adapters.",
+    "environments": [
+      "libero",
+      "univtac",
+      "robodojo",
+      "robocasa",
+      "robotwin"
+    ],
+    "must_deliver": [
+      "shared setup/console/tools/history/video UI",
+      "metadata-driven task identity and scene/seed selection",
+      "consistent model/tool/configuration/run controls",
+      "consistent result and usage semantics with missing values preserved",
+      "per-environment memory and native control contracts",
+      "regression checklist for all five simulators"
+    ],
+    "identified_frontend_gaps": [
+      "setup.js uses profile.suites, numeric array task indices and special command construction.",
+      "Seed options are hardcoded with a UniVTAC-specific exception."
+    ],
+    "implementation": "not started; this amendment changes planning documentation only",
+    "pr_policy": "Stage commits/pushes on the development branch; create one PR after the complete adaptation and validation. Do not reopen PR #5 or create stage PRs."
+  }
 }
