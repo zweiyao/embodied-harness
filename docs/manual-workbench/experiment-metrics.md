@@ -18,39 +18,3 @@
 原 `runs_root` 的链接保持不变，重复目录去重，其他机器人记录不混入。
 该设置只影响历史浏览，不改变新实验输出目录、启动恢复范围或实验配置。
 录像仍从原始目录读取，不复制实验数据。
-
-## Qwen idle retry candidate
-
-The server-owned LIBERO workbench option `api_idle_retry: true` enables an
-isolated Qwen OpenAI Chat request policy. It is off by default and rejected for
-other robots or planner profiles. With this option, `planner_timeout_s: 0`
-explicitly disables the episode wall-clock limit; `max_turns` still bounds logical
-model requests. Omitting the timeout retains the existing default timeout.
-
-Each request allows 60 seconds without a nonempty reasoning, answer, refusal or
-tool-function delta. Empty chunks do not reset the clock. The clock begins before
-connection/upload and continues through streaming; a response can take longer
-than 60 seconds while making progress. Connection failures, idle expiration and
-streams ending without a terminal choice get one retry after two seconds. The
-original transport is reused and inner SDK retries are disabled only on a copied
-client for this candidate. No proxy or IP-family settings are changed.
-
-Qwen thinking requests use `tool_choice=auto`, because the provider rejects
-required or named tool choice in thinking mode. The local SDK output validator
-still requires a successful `finish` tool call; plain completion text cannot
-finish a task and remains subject to the logical request limit.
-
-A complete response is buffered before it reaches the planner's tool scheduler.
-A discarded attempt therefore cannot execute a tool, consume an additional
-logical turn, or publish partial reasoning into the conversation. Streaming text
-appears in the dashboard after completion; metadata-only `api_transport_attempt`
-events record actual progress while waiting. External cancellation closes the
-active stream and does not retry. Authentication and other non-transport errors
-are not retried. Two failed attempts terminate the run as an infrastructure
-incident, not a task-success observation.
-
-Record transport attempts separately from `model_request` / `model_response`
-events. Retries can incur provider charges even when the provider returns no
-usage; normal token totals cover accepted responses and are not guaranteed to
-include discarded attempts. A failed final logical request may still appear in
-SDK request usage. Existing action/tool execution deadlines remain in force.

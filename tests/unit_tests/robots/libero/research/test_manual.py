@@ -5,7 +5,6 @@
 from types import SimpleNamespace
 
 import numpy as np
-import pytest
 
 from robots.libero import toolkit as libero
 from robots.libero.research.manual import ManualToolkit
@@ -14,74 +13,25 @@ from rpent.memory import MemoryManager
 from rpent.tools import ToolResult
 
 
-@pytest.mark.parametrize("planner_view_mode", ["native", "calibrated-pair-v1"])
-@pytest.mark.parametrize(
-    "motion, invalid_eef",
-    [
-        ("pi0_pick", False),
-        ("translate_to", False),
-        ("translate_to", True),
-        ("align_placement", False),
-        ("rotate_axis", False),
-        ("rotate_axis", True),
-    ],
-)
 def test_native_controls_unchanged_and_disabled_tool_rejected(
-    tmp_path,
-    monkeypatch,
-    fake_single_arm_primitives,
-    motion,
-    invalid_eef,
-    planner_view_mode,
+    tmp_path, monkeypatch, fake_single_arm_primitives
 ):
     from rpent.utils import templates
 
     monkeypatch.setattr(
         templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
     )
-    names = {motion, "finish"} | (
-        {"move_eef"} if invalid_eef and motion != "rotate_axis" else set()
-    )
-    if planner_view_mode != "native":
-        names |= {"view_env_state", "read_image"}
-    if motion == "align_placement":
-        names.add("preview_placement")
-    selected = [t for t in native_catalog() if t["name"] in names]
+    selected = [t for t in native_catalog() if t["name"] in {"pi0_pick", "finish"}]
     fake = fake_single_arm_primitives.for_robot(libero.libero_tools.LiberoPrimitives)
-    fake.env = SimpleNamespace(terminated=False, truncated=False)
-    if invalid_eef:
-        fake.env.get_eef_controller_state = lambda: {
-            "error": "unsupported fixture controller"
-        }
+    fake.env = SimpleNamespace(truncated=False)
     fake._sam3_client = None
     calls = []
-    if motion == "rotate_axis":
-        from robots.libero.research.orientation import OrientationControl
-
-        if not invalid_eef:
-            fake.env.get_eef_controller_state = lambda: {}
-
-        def rotate(self, axis, angle_rad):
-            calls.append({"axis": axis, "angle_rad": angle_rad})
-            return ToolResult(data={"steps_used": 10, "gripper_command": 0.0})
-
-        monkeypatch.setattr(
-            OrientationControl,
-            "rotate_axis",
-            OrientationControl.rotate_axis.with_handler(rotate),
-        )
 
     def pick(self, **kwargs):
         calls.append(kwargs)
         return ToolResult(data={"chunks_used": 1})
 
     fake.pi0_pick = libero.libero_tools.LiberoPrimitives.pi0_pick.with_handler(pick)
-
-    def move(self, xyz, **kwargs):
-        calls.append({"xyz": xyz, **kwargs})
-        return ToolResult(data={"steps_used": 1})
-
-    fake.move_to = libero.libero_tools.LiberoPrimitives.move_to.with_handler(move)
     monkeypatch.setattr(libero.libero_tools, "LiberoPrimitives", fake)
 
     def dump(primitives, state, log):
@@ -93,93 +43,29 @@ def test_native_controls_unchanged_and_disabled_tool_rejected(
             result=log.get("result"),
             extras={"task_language": "fixture"},
         ) as step:
-            for name, size in (
-                ("agentview_policy.png", 16),
-                ("agentview_high.png", 32),
-                ("wrist_high.png", 24),
-            ):
+            for camera in ("agentview", "wrist"):
                 state.save(
-                    name, np.full((size, size, 3), size, dtype=np.uint8), step=step
+                    camera + ".png", np.zeros((256, 256, 3), dtype=np.uint8), step=step
                 )
         return state.get(step)
 
     monkeypatch.setattr(libero.libero_tools, "dump_state", dump)
     journal = RunJournal(tmp_path / "state")
-    arguments = {
-        "planner_view_mode": planner_view_mode,
-        "selected": selected,
-        "journal": journal,
-        "runtime_kwargs": {},
-        "dashboard_events": SimpleNamespace(enabled=False, emit=lambda x: None),
-        "memory": MemoryManager(tmp_path / "memory"),
-        "state_output_dir": tmp_path / "state",
-    }
-    if invalid_eef:
-        with pytest.raises(ValueError, match="unsupported fixture controller"):
-            ManualToolkit(**arguments)
-        assert not calls
-        return
-    t = ManualToolkit(**arguments)
-    assert {x.name for x in t.list_tools()} == names
+    t = ManualToolkit(
+        selected=selected,
+        journal=journal,
+        runtime_kwargs={},
+        dashboard_events=SimpleNamespace(enabled=False, emit=lambda x: None),
+        memory=MemoryManager(tmp_path / "memory"),
+        state_output_dir=tmp_path / "state",
+    )
+    assert {x.name for x in t.list_tools()} == {"pi0_pick", "finish"}
     assert t.execute_tool("move_to", {"target": [0, 0, 0]}).is_error
     assert t.execute_tool("segment", {"prompt": "can"}).is_error
-    if motion == "pi0_pick":
-        result = t.execute_tool(motion, {"prompt": "pick", "max_chunks": 3})
-        assert calls[0]["max_chunks"] == 3
-    elif motion == "align_placement":
-        from tests.unit_tests.robots.libero.research.test_placement import observation
-
-        frame, params = observation()
-        t.sensors.frames = lambda: [frame]
-        fake.env.raw_obs = lambda: frame["proprio"]
-        preview = t.execute_tool("preview_placement", params)
-        assert len(preview.images) == 2
-        result = t.execute_tool(motion, {"preview_id": preview.data["preview_id"]})
-        assert calls == [
-            {"xyz": preview.data["eef_target_xyz_keep_height"], "gripper": 0.0}
-        ]
-        assert t.state.latest_record().command["action"] == "align_placement"
-        assert (
-            t.state.latest_record().result["preview_id"] == preview.data["preview_id"]
-        )
-    elif motion == "rotate_axis":
-        result = t.execute_tool(motion, {"axis": "z", "angle_rad": 0.08})
-        assert calls == [{"axis": "z", "angle_rad": 0.08}]
-        assert t.state.latest_record().command["action"] == "rotate_axis"
-        assert t.state.latest_record().result["gripper_command"] == 0.0
-        assert t.execute_tool("rotate_wrist", {"delta_yaw": 0.08}).is_error
-    else:
-        result = t.execute_tool(motion, {"xyz": [0.1, 0.2, 0.3]})
-        assert calls == [{"xyz": [0.1, 0.2, 0.3], "gripper": 0.0}]
-        assert t.state.latest_record().command["action"] == "translate_to"
-        assert t.state.latest_record().result["gripper_command"] == 0.0
-    if planner_view_mode == "native":
-        assert len(result.images) == 3
-        assert "image_views" not in result.data
-    else:
-        assert [v["artifact"] for v in result.data["image_views"]] == [
-            "agentview_high.png",
-            "wrist_high.png",
-        ]
-        assert [v["width"] for v in result.data["image_views"]] == [32, 24]
-        assert all(v["step"] == 1 for v in result.data["image_views"])
-        assert result.images == [
-            t.state.load_bytes(v["artifact"], step=1)
-            for v in result.data["image_views"]
-        ]
-    if planner_view_mode == "native":
-        assert t.execute_tool("view_env_state", {}).is_error
-    else:
-        viewed = t.execute_tool("view_env_state", {"step": 1})
-        assert viewed.images == result.images
-        assert viewed.data["image_views"] == result.data["image_views"]
-        assert (
-            t.execute_tool(
-                "read_image", {"name": "agentview_policy.png", "step": 0}
-            ).data["image_views"][0]["coordinate_frame"]
-            == "policy"
-        )
-        assert t.state.latest_record().step_idx == 1
+    result = t.execute_tool("pi0_pick", {"prompt": "pick", "max_chunks": 3})
+    assert calls[0]["max_chunks"] == 3
+    assert len(result.images) == 2
+    assert t.execute_tool("view_env_state", {}).is_error
     t.close()
 
 
@@ -307,266 +193,3 @@ def test_generated_omitted_optional_parameters_are_not_sent_to_sandbox():
         result = instance.generated({"name": "sensor_fixture"}, **kwargs)
         assert result.data == {"step": expected}
         assert logged[-1]["params"] == supplied
-
-
-@pytest.mark.parametrize("name", ["preview_placement", "align_placement"])
-def test_incomplete_placement_pair_fails_before_environment_initialization(
-    monkeypatch, name
-):
-    initialized = []
-    monkeypatch.setattr(
-        libero.LiberoToolkit, "__init__", lambda *a, **k: initialized.append(True)
-    )
-    selected = [t for t in native_catalog() if t["name"] in {name, "finish"}]
-    with pytest.raises(ValueError, match="together"):
-        ManualToolkit(selected=selected, journal=None)
-    assert not initialized
-
-
-@pytest.fixture
-def presentation(tmp_path):
-    from rpent.session import EnvState
-
-    store = EnvState(tmp_path)
-    for index in range(2):
-        with store.record_step(state={"fixture": index}, terminated=False) as step:
-            for name, shape in [
-                ("agentview_policy.png", (8, 8)),
-                ("agentview.png", (12, 10)),
-                ("agentview_high.png", (24, 30)),
-                ("wrist_high.png", (20, 28)),
-                ("overlay.png", (14, 16)),
-            ]:
-                store.save(
-                    name,
-                    np.full((*shape, 3), index * 50 + shape[0], np.uint8),
-                    step=step,
-                )
-    instance = ManualToolkit.__new__(ManualToolkit)
-    instance._state = store
-    instance.planner_view_mode = "calibrated-pair-v1"
-    return instance
-
-
-@pytest.mark.parametrize("step", [0, -1])
-def test_explicit_view_preserves_bytes_state_and_resolved_step(presentation, step):
-    from robots.libero.tools import view_env_state
-
-    t = presentation
-    original = view_env_state(step=step, state=t.state)
-    actual = t._planner_view(lambda **kwargs: original, step=step)
-    expected_step = 0 if step == 0 else 1
-    assert {k: actual.data[k] for k in original.data} == original.data
-    assert actual.images == [
-        t.state.load_bytes(name, step=expected_step)
-        for name in ("agentview_high.png", "wrist_high.png")
-    ]
-    assert actual.data["image_views"] == [
-        {
-            "index": 0,
-            "artifact": "agentview_high.png",
-            "camera": "agentview",
-            "step": expected_step,
-            "width": 30,
-            "height": 24,
-            "coordinate_frame": "calibrated",
-        },
-        {
-            "index": 1,
-            "artifact": "wrist_high.png",
-            "camera": "wrist",
-            "step": expected_step,
-            "width": 28,
-            "height": 20,
-            "coordinate_frame": "calibrated",
-        },
-    ]
-    t.planner_view_mode = "native"
-    assert t._present_state(original) is original
-    assert t.state.latest_record().step_idx == 1  # Explicit reads never capture a step.
-    error = view_env_state(step=99, state=t.state)
-    t.planner_view_mode = "calibrated-pair-v1"
-    assert t._present_state(error) is error and error.is_error
-
-
-@pytest.mark.parametrize(
-    "name,frame,camera",
-    [
-        ("agentview_policy.png", "policy", "agentview"),
-        ("agentview.png", "calibrated", "agentview"),
-        ("wrist_high.png", "calibrated", "wrist"),
-        ("overlay.png", "unclassified", None),
-    ],
-)
-def test_explicit_reader_does_not_substitute_or_mislabel(
-    presentation, name, frame, camera
-):
-    t = presentation
-    actual = t.read_image(name=name, step=0)
-    assert actual.images == [t.state.load_bytes(name, step=0)]
-    assert actual.data["image_views"][0]["coordinate_frame"] == frame
-    assert actual.data["image_views"][0]["camera"] == camera
-    assert actual.data["image_views"][0]["step"] == 0
-    assert t.read_image(name="unknown.png").is_error
-    t.planner_view_mode = "native"
-    old = t.read_image(name=name, step=0)
-    assert old.data == {"artifact": name, "step": 0}
-    assert old.images == actual.images
-
-
-@pytest.mark.parametrize("name", ["agentview_high.png", "wrist_high.png"])
-@pytest.mark.parametrize("corrupt", [False, True])
-def test_missing_required_image_is_explicit_not_partial(presentation, name, corrupt):
-    from robots.libero.tools import view_env_state
-
-    t = presentation
-    path = t.state.artifact_path(name, step=1)
-    if corrupt:
-        path.write_bytes(b"unreadable fixture")
-    else:
-        path.unlink()
-    old = view_env_state(step=1, state=t.state)
-    actual = t._present_state(old)
-    assert actual.is_error and name in actual.data["error"]
-    assert actual.images == [] and actual.data["image_views"] == []
-    assert actual.data["step"] == 1
-    t.planner_view_mode = "native"
-    assert t._present_state(old) is old
-
-
-def test_manual_factory_receives_only_explicit_view_mode(tmp_path, monkeypatch):
-    from robots.libero.robot_spec import get_toolkit
-
-    config = SimpleNamespace(
-        prompt_vars={
-            "manual_tools": [],
-            "run_journal": object(),
-            "memory_dir": str(tmp_path / "memory"),
-        },
-        output_dir=tmp_path,
-        enable_direct_action=False,
-    )
-    monkeypatch.setattr(
-        "robots.libero.research.manual.ManualToolkit", lambda **kwargs: kwargs
-    )
-    default = get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)
-    assert "planner_view_mode" not in default
-    assert "initial_action_phase" not in default
-    config.prompt_vars["initial_action_phase"] = True
-    assert (
-        get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)[
-            "initial_action_phase"
-        ]
-        is True
-    )
-    config.prompt_vars["planner_view_mode"] = "calibrated-pair-v1"
-    assert (
-        get_toolkit(runtime_kwargs={}, dashboard_events=None, config=config)[
-            "planner_view_mode"
-        ]
-        == "calibrated-pair-v1"
-    )
-
-
-@pytest.mark.parametrize("enabled", [False, True])
-@pytest.mark.parametrize("pickup_success", [False, True])
-def test_initial_action_phase_uses_recorded_execution(
-    tmp_path, monkeypatch, fake_single_arm_primitives, enabled, pickup_success
-):
-    from rpent.utils import templates
-
-    monkeypatch.setattr(
-        templates, "default_variables", lambda: {"output_dir": str(tmp_path)}
-    )
-    names = {"pi0_pick", "translate_to", "view_env_state", "finish"}
-    selected = [t for t in native_catalog() if t["name"] in names]
-    fake = fake_single_arm_primitives.for_robot(libero.libero_tools.LiberoPrimitives)
-    fake.env = SimpleNamespace(terminated=False, truncated=False)
-    fake._sam3_client = None
-    chunks = [0]
-    calls = []
-
-    def pick(self, **kwargs):
-        calls.append("pick")
-        return ToolResult(data={"chunks_used": chunks[0], "success": pickup_success})
-
-    def move(self, xyz, **kwargs):
-        calls.append("move")
-        return ToolResult(data={"steps_used": 1})
-
-    fake.pi0_pick = libero.libero_tools.LiberoPrimitives.pi0_pick.with_handler(pick)
-    fake.move_to = libero.libero_tools.LiberoPrimitives.move_to.with_handler(move)
-    monkeypatch.setattr(libero.libero_tools, "LiberoPrimitives", fake)
-
-    def dump(primitives, state, log):
-        log = log or {}
-        with state.record_step(
-            state={},
-            terminated=False,
-            command=log.get("command"),
-            result=log.get("result"),
-            extras={"task_language": "fixture"},
-        ) as step:
-            for name in (
-                "agentview_policy.png",
-                "agentview_high.png",
-                "wrist_high.png",
-            ):
-                state.save(name, np.zeros((8, 8, 3), np.uint8), step=step)
-        return state.get(step)
-
-    monkeypatch.setattr(libero.libero_tools, "dump_state", dump)
-    t = ManualToolkit(
-        selected=selected,
-        journal=RunJournal(tmp_path / "state"),
-        initial_action_phase=enabled,
-        runtime_kwargs={},
-        dashboard_events=SimpleNamespace(enabled=False, emit=lambda x: None),
-        memory=MemoryManager(tmp_path / "memory"),
-        state_output_dir=tmp_path / "state",
-    )
-    try:
-        assert t.planner_tool_available("translate_to") is (not enabled)
-        assert t.planner_tool_available("finish")
-        assert not t.execute_tool("view_env_state", {}).is_error
-        assert t.planner_tool_available("translate_to") is (not enabled)
-        assert t.execute_tool("pi0_pick", {}).is_error
-        assert calls == []
-        if enabled:
-            assert t.execute_tool("translate_to", {"xyz": [0, 0, 0]}).is_error
-            assert calls == []
-        t.execute_tool("pi0_pick", {"prompt": "pick"})
-        assert t.planner_tool_available("translate_to") is (not enabled)
-        chunks[0] = 1
-        result = t.execute_tool("pi0_pick", {"prompt": "pick"})
-        assert not result.is_error
-        assert t.planner_tool_available("translate_to")
-        assert t.state.latest_record().result["success"] is pickup_success
-        t.execute_tool("translate_to", {"xyz": [0, 0, 0]})
-        assert calls == ["pick", "pick", "move"]
-        assert t.state.latest_record().command["action"] == "translate_to"
-    finally:
-        t.close()
-
-
-@pytest.mark.parametrize("flag", ["true", 1, None])
-def test_initial_action_phase_rejects_non_boolean(flag):
-    with pytest.raises(ValueError, match="boolean"):
-        ManualToolkit(selected=[], journal=None, initial_action_phase=flag)
-
-
-def test_initial_action_phase_requires_language_action():
-    with pytest.raises(ValueError, match="language primitive"):
-        ManualToolkit(selected=[], journal=None, initial_action_phase=True)
-
-
-def test_initial_action_prompt_is_opt_in():
-    from robots.libero.research.manual import availability_prompt
-
-    selected = [t for t in native_catalog() if t["name"] == "pi0_pick"]
-    default = availability_prompt(selected)
-    assert default == availability_prompt(selected, initial_action_phase=False)
-    candidate = availability_prompt(selected, initial_action_phase=True)
-    assert "Initially, inspect identity" not in default
-    assert "including failed pickup" in candidate
-    assert "finish if no suitable action is justified" in candidate

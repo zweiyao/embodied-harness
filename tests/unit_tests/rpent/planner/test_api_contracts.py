@@ -34,7 +34,6 @@ from pydantic_ai import (
     UserPromptPart,
 )
 from pydantic_ai.exceptions import UsageLimitExceeded
-from pydantic_ai.messages import RetryPromptPart
 from pydantic_ai.models.function import DeltaThinkingPart, DeltaToolCall, FunctionModel
 from pydantic_ai.models.test import TestModel
 
@@ -112,8 +111,6 @@ def solve(tmp_path, model, toolkit=None, events=None, **kwargs):
             "no_images",
             "reasoning_effort",
             "interactive",
-            "require_finish",
-            "recent_image_history",
         )
         if key in kwargs
     }
@@ -231,8 +228,7 @@ def test_model_response_timeout_excludes_tool_execution(tmp_path):
     assert [name for name, _ in toolkit.calls] == ["slow_tool", "finish"]
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_refused_finish_retries_without_claiming_success(tmp_path, require_finish):
+def test_refused_finish_retries_without_claiming_success(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)
     attempts = []
@@ -251,11 +247,7 @@ def test_refused_finish_retries_without_claiming_success(tmp_path, require_finis
         yield finish()
 
     result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        require_finish=require_finish,
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events
     )
     assert result.error is None
     assert len(attempts) == 3
@@ -265,8 +257,7 @@ def test_refused_finish_retries_without_claiming_success(tmp_path, require_finis
     assert "finish refused" in json.dumps(result.messages)
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_persistent_finish_refusal_stops_at_request_budget(tmp_path, require_finish):
+def test_persistent_finish_refusal_stops_at_request_budget(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)
     toolkit.register(
@@ -279,12 +270,7 @@ def test_persistent_finish_refusal_stops_at_request_budget(tmp_path, require_fin
         yield finish()
 
     result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        max_turns=3,
-        require_finish=require_finish,
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, max_turns=3
     )
     assert result.finish_result is None
     assert result.error is None
@@ -640,16 +626,11 @@ def test_invalid_numeric_strings_still_require_model_retry(tmp_path, invalid):
     assert received == [470]
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_finish_skips_sibling_actions_using_native_end_strategy(
-    tmp_path, require_finish
-):
+def test_finish_skips_sibling_actions_using_native_end_strategy(tmp_path):
     async def stream(messages, info):
         yield finish() | tool("observe", index=1)
 
-    result, toolkit, _ = solve(
-        tmp_path, FunctionModel(stream_function=stream), require_finish=require_finish
-    )
+    result, toolkit, _ = solve(tmp_path, FunctionModel(stream_function=stream))
     assert result.error is None
     assert [name for name, _ in toolkit.calls] == ["finish"]
     assert [m["name"] for m in result.messages if m["role"] == "tool"] == ["finish"]
@@ -805,9 +786,8 @@ def dashboard_interrupt_order(request, monkeypatch):
     monkeypatch.setattr(_Session, "interrupt", interrupt_after_tool_stop)
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
 def test_dashboard_interrupt_drains_tool_before_followup(
-    tmp_path, dashboard_interrupt_order, require_finish
+    tmp_path, dashboard_interrupt_order
 ):
     state = dashboard(tmp_path)
     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
@@ -863,7 +843,6 @@ def test_dashboard_interrupt_drains_tool_before_followup(
         state,
         dashboard_interaction=state,
         timeout_s=3,
-        require_finish=require_finish,
     )
     assert result.error is None
     assert result.finish_result["status"] == "success"
@@ -876,10 +855,8 @@ def test_dashboard_interrupt_drains_tool_before_followup(
     ]
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
-@pytest.mark.parametrize("recent_image_history", [False, True])
 def test_task_replacement_cancels_and_drains_physical_work(
-    tmp_path, dashboard_interrupt_order, require_finish, recent_image_history
+    tmp_path, dashboard_interrupt_order
 ):
     state = dashboard(tmp_path)
     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
@@ -913,8 +890,6 @@ def test_task_replacement_cancels_and_drains_physical_work(
         state,
         dashboard_interaction=state,
         timeout_s=3,
-        recent_image_history=recent_image_history,
-        require_finish=require_finish,
     )
     assert result.error is None
     assert stopped.is_set()
@@ -923,11 +898,7 @@ def test_task_replacement_cancels_and_drains_physical_work(
     assert result.finish_result is None
 
 
-@pytest.mark.parametrize("require_finish", [False, True])
-@pytest.mark.parametrize("recent_image_history", [False, True])
-def test_timeout_drains_physical_work_and_records_partial_history(
-    tmp_path, require_finish, recent_image_history
-):
+def test_timeout_drains_physical_work_and_records_partial_history(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)
     stopped = threading.Event()
@@ -946,13 +917,7 @@ def test_timeout_drains_physical_work_and_records_partial_history(
         yield tool("move")
 
     result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        timeout_s=0.15,
-        recent_image_history=recent_image_history,
-        require_finish=require_finish,
+        tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=0.15
     )
     assert "timed out" in result.error
     assert stopped.is_set()
@@ -1142,9 +1107,11 @@ def test_offline_http_planner_executes_action_and_finish(tmp_path):
         ("gpt-4.1", "none", None),
     ],
 )
-@pytest.mark.parametrize("require_finish", [False, True])
 def test_qwen_thinking_setting_reaches_serialized_http_body(
-    tmp_path, model_name, effort, expected, require_finish
+    tmp_path,
+    model_name,
+    effort,
+    expected,
 ):
     import httpx2
     from pydantic_ai.models.openai import OpenAIChatModel
@@ -1196,17 +1163,10 @@ def test_qwen_thinking_setting_reaches_serialized_http_body(
         ),
     )
     try:
-        result, _, _ = solve(
-            tmp_path,
-            model,
-            reasoning_effort=effort,
-            max_tokens=8192,
-            require_finish=require_finish,
-        )
+        result, _, _ = solve(tmp_path, model, reasoning_effort=effort, max_tokens=8192)
         assert result.error is None
         assert len(bodies) == 1
         body = bodies[0]
-        assert body["tool_choice"] == ("required" if require_finish else "auto")
         assert body["max_completion_tokens"] == 8192
         if expected is None:
             assert "enable_thinking" not in body
@@ -1280,459 +1240,3 @@ def test_api_executes_readonly_calls_concurrently(tmp_path):
     assert sorted(completed) == ["left", "right"]
     assert result.finish_result == {"_finish": True, **FINISH_ARGS}
     assert result.stats["tool_calls"] == 3
-
-
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_finish_only_text_response_uses_sdk_retry_without_dashboard_wait(
-    tmp_path, require_finish
-):
-    state = dashboard(tmp_path)
-    histories = []
-
-    async def stream(messages, info):
-        histories.append(copy.deepcopy(messages))
-        if len(histories) == 1:
-            yield "NEXT=observe; NEED=none"
-        else:
-            yield finish()
-
-    result, toolkit, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        events=state,
-        dashboard_interaction=state,
-        require_finish=require_finish,
-        timeout_s=1,
-    )
-    if require_finish:
-        assert result.error is None
-        assert result.finish_result == {"_finish": True, **FINISH_ARGS}
-        assert result.stats["turns_used"] == 2
-        assert toolkit.calls == [("finish", FINISH_ARGS)]
-        assert any(
-            isinstance(part, RetryPromptPart)
-            for message in histories[1]
-            for part in message.parts
-        )
-    else:
-        assert "planner timed out after 1s" in result.error
-        assert result.stats["turns_used"] == 1
-        assert result.finish_result is None and toolkit.calls == []
-
-
-@pytest.mark.parametrize("recent_image_history", [False, True])
-def test_finish_only_repeated_text_preserves_thirty_request_budget(
-    tmp_path, recent_image_history
-):
-    requests = 0
-
-    async def stream(messages, info):
-        nonlocal requests
-        requests += 1
-        yield "NEXT=observe; NEED=none"
-
-    result, toolkit, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        recent_image_history=recent_image_history,
-        require_finish=True,
-        max_turns=30,
-        timeout_s=600,
-    )
-    assert result.error is None and result.finish_result is None
-    assert result.stats["turns_used"] == requests == 30
-    assert toolkit.calls == []
-
-
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_finish_only_keeps_mixed_text_and_real_tool_calls(tmp_path, require_finish):
-    requests = 0
-
-    async def stream(messages, info):
-        nonlocal requests
-        requests += 1
-        if requests == 1:
-            yield "NEXT=observe; NEED=none"
-            yield tool("observe")
-        else:
-            yield finish()
-
-    result, toolkit, _ = solve(
-        tmp_path, FunctionModel(stream_function=stream), require_finish=require_finish
-    )
-    assert result.error is None and result.finish_result["_finish"]
-    assert [name for name, _ in toolkit.calls] == ["observe", "finish"]
-    assert result.messages[1]["content"][0]["text"] == "NEXT=observe; NEED=none"
-
-
-@pytest.mark.parametrize("require_finish", [False, True])
-def test_finish_only_keeps_environment_terminal_stop(tmp_path, require_finish):
-    events = Events()
-    toolkit = RobotToolkit(events)
-
-    def terminal():
-        toolkit.planner_stop_result = {"_finish": True, "status": "stopped"}
-        return ToolResult(data={"terminated": True})
-
-    toolkit.register("observe", terminal)
-
-    async def stream(messages, info):
-        yield tool("observe")
-
-    result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        require_finish=require_finish,
-    )
-    assert result.error is None
-    assert result.finish_result == {"_finish": True, "status": "stopped"}
-    assert result.stats["turns_used"] == 1
-    assert [name for name, _ in toolkit.calls] == ["observe"]
-
-
-def test_finish_only_rejects_missing_finish_before_model_request(tmp_path):
-    events = Events()
-    toolkit = RobotToolkit(events)
-    toolkit._tools.pop("finish")
-    with pytest.raises(ValueError, match="enabled finish tool"):
-        solve(tmp_path, TestModel(), toolkit, events, require_finish=True)
-    assert toolkit.calls == []
-
-
-@pytest.mark.parametrize("first_call", ["observe", "blocked"])
-def test_tool_availability_refreshes_each_sdk_request(tmp_path, first_call):
-    events = Events()
-    toolkit = RobotToolkit(events)
-    toolkit.planner_tools_only = True
-    toolkit.register("blocked", lambda: ToolResult(data={"value": 7}))
-    toolkit.planner_tool_available = lambda name: (
-        name != "blocked" or any(n == "observe" for n, _ in toolkit.calls)
-    )
-    seen = []
-
-    async def stream(messages, info):
-        names = {t.name for t in info.function_tools}
-        seen.append(names)
-        if len(seen) == 1:
-            assert "blocked" not in names
-            yield tool(first_call)
-        elif not toolkit.calls:
-            assert "blocked" not in names
-            yield tool("observe")
-        elif not any(n == "blocked" for n, _ in toolkit.calls):
-            assert "blocked" in names
-            yield tool("blocked")
-        else:
-            yield finish()
-
-    result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        require_finish=True,
-    )
-    assert result.error is None
-    assert [n for n, _ in toolkit.calls] == ["observe", "blocked", "finish"]
-    assert result.finish_result == {"_finish": True, **FINISH_ARGS}
-    assert len(seen) == (4 if first_call == "blocked" else 3)
-
-
-def test_availability_dispatch_guard_and_locked_finish(tmp_path):
-    from pydantic_ai import ModelRetry
-
-    from rpent.planner.api_loop import _HarnessToolkit
-
-    events = Events()
-    toolkit = RobotToolkit(events)
-    toolkit.planner_tools_only = True
-    toolkit.planner_tool_available = lambda name: name == "finish"
-    adapter = _HarnessToolkit(toolkit, dashboard_events=events, no_images=False)
-    with pytest.raises(ModelRetry, match="unavailable"):
-        asyncio.run(adapter.execute("observe", {}, SimpleNamespace()))
-    assert toolkit.calls == []
-
-    async def stream(messages, info):
-        assert info.function_tools == []
-        yield finish()
-
-    result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        require_finish=True,
-    )
-    assert result.error is None
-    assert [n for n, _ in toolkit.calls] == ["finish"]
-
-
-@pytest.mark.parametrize("enabled", [False, True])
-@pytest.mark.parametrize("no_images", [False, True])
-def test_recent_images_preserve_actual_sdk_history_and_explicit_reread(
-    tmp_path, image_state, enabled, no_images
-):
-    histories = []
-    logged = []
-    events = Events()
-    toolkit = RobotToolkit(events, state=image_state)
-    serial = 0
-
-    def observe():
-        nonlocal serial
-        serial += 1
-        return ToolResult(
-            data={"observation": serial}, images=[f"image{serial}".encode()]
-        )
-
-    toolkit.register("observe", observe)
-    toolkit.journal = SimpleNamespace(
-        append=lambda kind, payload: (
-            logged.append(copy.deepcopy(payload.messages))
-            if kind == "model_request"
-            else None
-        )
-    )
-
-    async def stream(messages, info):
-        histories.append(copy.deepcopy(messages))
-        count = len(histories)
-        if count <= 3:
-            yield tool("observe")
-        elif count == 4:
-            yield tool("read_image", {"name": "camera.png", "step": 0})
-        else:
-            yield finish()
-
-    result, _, _ = solve(
-        tmp_path,
-        FunctionModel(stream_function=stream),
-        toolkit,
-        events,
-        recent_image_history=enabled,
-        no_images=no_images,
-        require_finish=True,
-    )
-    assert result.error is None and result.finish_result["_finish"]
-    assert len(histories) == 5 and histories == logged
-
-    def images(messages):
-        return [
-            item.data
-            for message in messages
-            if isinstance(message, ModelRequest)
-            for part in message.parts
-            if isinstance(part, (UserPromptPart, ToolReturnPart))
-            and isinstance(part.content, (list, tuple))
-            for item in part.content
-            if isinstance(item, BinaryContent) and item.is_image
-        ]
-
-    if no_images:
-        assert all(not images(messages) for messages in histories)
-    else:
-        assert images(histories[2]) == [b"image1", b"image2"]
-        assert images(histories[3]) == (
-            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
-        )
-        reread = image_state.load_bytes("camera.png", step=0)
-        assert images(histories[4]) == (
-            [b"image3", reread]
-            if enabled
-            else [b"image1", b"image2", b"image3", reread]
-        )
-    # Text observations and all tool records survive removal of image bytes.
-    text = repr(histories[-1])
-    for number in range(1, 4):
-        assert f'"observation": {number}' in text
-    returns = [
-        part
-        for message in histories[-1]
-        if isinstance(message, ModelRequest)
-        for part in message.parts
-        if isinstance(part, ToolReturnPart)
-    ]
-    assert [part.tool_name for part in returns] == ["observe"] * 3 + ["read_image"]
-    assert bool("Earlier image omitted" in text) is (enabled and not no_images)
-
-
-def test_recent_images_copy_input_keep_audio_and_request_metadata():
-    from pydantic_ai.models import ModelRequestContext, ModelRequestParameters
-
-    from rpent.planner.api_loop import _RecentImageHistory
-
-    audio = BinaryContent(data=b"sound", media_type="audio/wav")
-    picture = BinaryContent(data=b"first", media_type="image/png")
-    records = [
-        ModelRequest(
-            parts=[
-                ToolReturnPart(
-                    tool_name="sense",
-                    tool_call_id="first-call",
-                    content=["keep text", picture, audio],
-                )
-            ],
-            metadata={"source": "original"},
-            run_id="run",
-        ),
-        ModelRequest(
-            parts=[
-                UserPromptPart(
-                    content=[
-                        "middle",
-                        BinaryContent(data=b"middle", media_type="image/png"),
-                    ]
-                )
-            ]
-        ),
-        ModelRequest(
-            parts=[
-                ToolReturnPart(
-                    tool_name="sense",
-                    tool_call_id="last-call",
-                    content=[BinaryContent(data=b"last", media_type="image/png")],
-                )
-            ]
-        ),
-    ]
-    original = copy.deepcopy(records)
-    context = ModelRequestContext(
-        model=TestModel(),
-        messages=records,
-        model_settings={},
-        model_request_parameters=ModelRequestParameters(),
-    )
-    result = asyncio.run(_RecentImageHistory().before_model_request(None, context))
-    assert records == original
-    first = result.messages[0]
-    assert first.metadata == records[0].metadata and first.run_id == "run"
-    assert first.timestamp == records[0].timestamp
-    assert first.parts[0].tool_call_id == "first-call"
-    assert first.parts[0].content[0] == "keep text"
-    assert first.parts[0].content[2] is audio
-    assert result.messages[1] is records[1] and result.messages[2] is records[2]
-    assert "Earlier image omitted" in first.parts[0].content[1]
-
-
-@pytest.mark.parametrize("value", [None, 1, "true"])
-def test_recent_images_reject_non_boolean(value):
-    with pytest.raises(ValueError, match="recent_image_history must be a boolean"):
-        ApiAgentLoop(
-            model=TestModel(), dashboard_events=Events(), recent_image_history=value
-        )
-
-
-def test_recent_image_history_factory_forwarding(tmp_path, monkeypatch):
-    from rpent.planner.base import build_planner
-
-    monkeypatch.setattr("rpent.planner.base.build_api_model", lambda *args: TestModel())
-    args = {
-        "output_dir": tmp_path,
-        "recipe_tag": "test",
-        "robot_name": "libero",
-        "dashboard_events": Events(),
-    }
-    assert not build_planner("api", **args).recent_image_history
-    assert build_planner(
-        "api", api_recent_image_history=True, **args
-    ).recent_image_history
-    with pytest.raises(ValueError, match="API planner"):
-        build_planner("codex", api_recent_image_history=True, **args)
-
-
-@pytest.mark.parametrize("enabled", [False, True])
-def test_recent_images_reach_serialized_provider_body(tmp_path, enabled):
-    import base64
-
-    import httpx2
-    from pydantic_ai.models.openai import OpenAIChatModel
-    from pydantic_ai.providers.openai import OpenAIProvider
-
-    bodies = []
-    events = Events()
-    toolkit = RobotToolkit(events)
-    sequence = iter([b"image1", b"image2", b"image3"])
-    toolkit.register(
-        "observe",
-        lambda: ToolResult(data={"keep": "evidence"}, images=[next(sequence)]),
-    )
-
-    def respond(request):
-        bodies.append(json.loads(request.content))
-        count = len(bodies)
-        name = "observe" if count <= 3 else "finish"
-        chunk = {
-            "id": f"offline-{count}",
-            "object": "chat.completion.chunk",
-            "created": 1,
-            "model": "qwen3.8-flash",
-            "choices": [
-                {
-                    "index": 0,
-                    "finish_reason": "tool_calls",
-                    "delta": {
-                        "role": "assistant",
-                        "tool_calls": [
-                            {
-                                "index": 0,
-                                "id": f"call-{count}",
-                                "type": "function",
-                                "function": {
-                                    "name": name,
-                                    "arguments": json.dumps(
-                                        FINISH_ARGS if name == "finish" else {}
-                                    ),
-                                },
-                            }
-                        ],
-                    },
-                }
-            ],
-        }
-        return httpx2.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            content=f"data: {json.dumps(chunk)}\n\ndata: [DONE]\n\n".encode(),
-        )
-
-    client = httpx2.AsyncClient(transport=httpx2.MockTransport(respond))
-    model = OpenAIChatModel(
-        "qwen3.8-flash",
-        provider=OpenAIProvider(
-            base_url="https://example.invalid/v1",
-            api_key="offline-test",
-            http_client=client,
-        ),
-    )
-    try:
-        result, _, _ = solve(
-            tmp_path,
-            model,
-            toolkit,
-            events,
-            recent_image_history=enabled,
-            require_finish=True,
-        )
-        assert result.error is None and result.finish_result["_finish"]
-        assert len(bodies) == 4
-        images = [
-            part["image_url"]["url"]
-            for message in bodies[-1]["messages"]
-            if isinstance(message.get("content"), list)
-            for part in message["content"]
-            if part.get("type") == "image_url"
-        ]
-        decoded = [base64.b64decode(url.split(",", 1)[1]) for url in images]
-        assert decoded == (
-            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
-        )
-        assert all(
-            b["enable_thinking"] is False and b["tool_choice"] == "required"
-            for b in bodies
-        )
-        assert all(f"call-{i}" in json.dumps(bodies[-1]) for i in range(1, 4))
-        assert json.dumps(bodies[-1]).count("evidence") == 3
-    finally:
-        asyncio.run(client.aclose())

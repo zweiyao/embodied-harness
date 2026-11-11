@@ -227,17 +227,8 @@ def build_planner(
     dashboard_events: DashboardEventSink,
     no_images: bool = False,
     interactive: bool = False,
-    api_require_finish: bool = False,
-    api_recent_image_history: bool = False,
-    api_idle_retry: bool = False,
 ) -> Planner:
     """Build a planner for the given backend, resolving credentials from env vars."""
-    if api_idle_retry and planner_type != "api":
-        raise ValueError("api_idle_retry requires the API planner")
-    if api_recent_image_history and planner_type != "api":
-        raise ValueError("api_recent_image_history requires the API planner")
-    if api_require_finish and planner_type != "api":
-        raise ValueError("api_require_finish requires the API planner")
     # Imports are deferred to avoid a circular import: api_loop / claude_code /
     # codex all import from this module (PlannerResult).
 
@@ -256,9 +247,6 @@ def build_planner(
             no_images=no_images,
             timeout_s=api_timeout_s,
             interactive=interactive,
-            require_finish=api_require_finish,
-            recent_image_history=api_recent_image_history,
-            idle_retry=api_idle_retry,
         )
     if planner_type == "claude_code":
         from rpent.planner.claude_code import ClaudeCodePlanner

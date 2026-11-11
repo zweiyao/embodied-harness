@@ -25,7 +25,6 @@ import math
 import threading
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
-from dataclasses import replace
 from functools import partial
 from typing import Any
 from uuid import uuid4
@@ -63,16 +62,9 @@ from pydantic_ai.capabilities.abstract import (
     WrapRunHandler,
 )
 from pydantic_ai.exceptions import UsageLimitExceeded, UserError
-from pydantic_ai.messages import (
-    ModelMessage,
-    ModelRequest,
-    ToolReturnPart,
-    UserContent,
-    UserPromptPart,
-)
+from pydantic_ai.messages import ModelMessage, UserContent
 from pydantic_ai.models import Model, ModelRequestContext
 from pydantic_ai.run import AgentRun, AgentRunResult
-from pydantic_ai.toolsets import ToolsetTool
 from pydantic_ai_harness.compaction import SlidingWindowCompaction
 
 from rpent.dashboard.events import DashboardEventSink, TranscriptEvent, UsageEvent
@@ -110,19 +102,10 @@ class ApiAgentLoop(Planner):
         no_images: bool = False,
         timeout_s: float = 1200,
         interactive: bool = False,
-        require_finish: bool = False,
-        recent_image_history: bool = False,
-        idle_retry: bool = False,
     ) -> None:
-        if type(recent_image_history) is not bool:
-            raise ValueError("recent_image_history must be a boolean")
-        if type(require_finish) is not bool:
-            raise ValueError("require_finish must be a boolean")
         if reasoning_effort not in REASONING_EFFORTS:
             raise ValueError(f"unsupported reasoning effort: {reasoning_effort}")
-        if type(idle_retry) is not bool:
-            raise ValueError("idle_retry must be a boolean")
-        if max_tokens < 1 or timeout_s < 0 or (timeout_s == 0 and not idle_retry):
+        if max_tokens < 1 or timeout_s <= 0:
             raise ValueError("max_tokens and timeout_s must be positive")
         self.model = model
         self.dashboard_events = dashboard_events
@@ -131,9 +114,6 @@ class ApiAgentLoop(Planner):
         self.no_images = no_images
         self.timeout_s = timeout_s
         self.interactive = interactive
-        self.require_finish = require_finish
-        self.recent_image_history = recent_image_history
-        self.idle_retry = idle_retry
 
     def solve(
         self,
@@ -172,24 +152,13 @@ class ApiAgentLoop(Planner):
     ) -> PlannerResult:
         conversation_id = uuid4().hex
         adapter = _HarnessToolkit(
-            toolkit,
-            dashboard_events=self.dashboard_events,
-            no_images=self.no_images,
-            require_finish=self.require_finish,
+            toolkit, dashboard_events=self.dashboard_events, no_images=self.no_images
         )
         session = _Session(
             adapter, conversation_id, max_turns, interactive=self.interactive
         )
-        model = self.model
-        if self.idle_retry:
-            from rpent.planner.api_idle_retry import IdleRetryChatModel
-
-            journal = getattr(toolkit, "journal", None)
-            model = IdleRetryChatModel(
-                model, record=journal.append if journal is not None else None
-            )
         agent = Agent(
-            model,
+            self.model,
             name="rpent_api",
             system_prompt=system_prompt,
             output_type=adapter.output_types,
@@ -208,7 +177,6 @@ class ApiAgentLoop(Planner):
                 Thinking(
                     False if self.reasoning_effort == "none" else self.reasoning_effort
                 ),
-                *([_RecentImageHistory()] if self.recent_image_history else []),
                 session,
             ],
         )
@@ -226,8 +194,7 @@ class ApiAgentLoop(Planner):
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
                 timeout=None
-                if self.timeout_s == 0
-                or (self.interactive and not getattr(toolkit, "journal", None))
+                if self.interactive and not getattr(toolkit, "journal", None)
                 else self.timeout_s,
             )
         except asyncio.TimeoutError:
@@ -279,53 +246,6 @@ def _build_model_settings(
             "enable_thinking": reasoning_effort != "none",
         }
     return settings
-
-
-class _RecentImageHistory(AbstractCapability):
-    """Keep binary images in the newest two image-bearing request groups.
-
-    Text and tool records stay intact. Saved artifacts remain available through
-    read_image; this only changes the outgoing model context.
-    """
-
-    async def before_model_request(
-        self, ctx: RunContext, request_context: ModelRequestContext
-    ) -> ModelRequestContext:
-        groups = []
-        for index, message in enumerate(request_context.messages):
-            if isinstance(message, ModelRequest) and any(
-                isinstance(part, (UserPromptPart, ToolReturnPart))
-                and isinstance(part.content, (list, tuple))
-                and any(
-                    isinstance(item, BinaryContent) and item.is_image
-                    for item in part.content
-                )
-                for part in message.parts
-            ):
-                groups.append(index)
-        if len(groups) <= 2:
-            return request_context
-        messages = list(request_context.messages)
-        for index in groups[:-2]:
-            message = messages[index]
-            parts = []
-            for part in message.parts:
-                if isinstance(part, (UserPromptPart, ToolReturnPart)) and isinstance(
-                    part.content, (list, tuple)
-                ):
-                    part = replace(
-                        part,
-                        content=[
-                            "[Earlier image omitted; use read_image to inspect it again.]"
-                            if isinstance(item, BinaryContent) and item.is_image
-                            else item
-                            for item in part.content
-                        ],
-                    )
-                parts.append(part)
-            messages[index] = replace(message, parts=parts)
-        request_context.messages = messages
-        return request_context
 
 
 class _ConversationAgent(WrapperAgent):
@@ -407,7 +327,6 @@ class _HarnessToolkit(FunctionToolset):
         *,
         dashboard_events: DashboardEventSink,
         no_images: bool,
-        require_finish: bool = False,
     ) -> None:
         super().__init__(id="rpent")
         self.toolkit = toolkit
@@ -418,7 +337,7 @@ class _HarnessToolkit(FunctionToolset):
         self.messages: list[dict[str, Any]] = []
         self.stopping = threading.Event()
         self.validators: dict[str, Draft202012Validator] = {}
-        self.output_types: list[Any] = [] if require_finish else [str]
+        self.output_types: list[Any] = [str]
         if not getattr(toolkit, "planner_tools_only", False):
             self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
         for declaration in toolkit.list_tools():
@@ -460,17 +379,6 @@ class _HarnessToolkit(FunctionToolset):
                         takes_ctx=True,
                     )
                 )
-
-        if require_finish and not self.output_types:
-            raise ValueError("require_finish needs an enabled finish tool")
-
-    async def get_tools(self, ctx: RunContext) -> dict[str, ToolsetTool]:
-        """Prepare only tools currently available in the toolkit's workflow."""
-        prepared = await super().get_tools(ctx)
-        available = getattr(self.toolkit, "planner_tool_available", None)
-        if available is None:
-            return prepared
-        return {name: spec for name, spec in prepared.items() if available(name)}
 
     async def read_image(
         self, ctx: RunContext, name: str, step: int = -1
@@ -517,11 +425,6 @@ class _HarnessToolkit(FunctionToolset):
         self, name: str, arguments: dict[str, Any], ctx: RunContext
     ) -> ToolResult:
         """Validate and run one physical operation, retaining cancellation ownership."""
-        available = getattr(self.toolkit, "planner_tool_available", None)
-        if available is not None and not available(name):
-            raise ModelRetry(
-                f"Tool {name} is unavailable in the current workflow phase"
-            )
         normalized = _normalize_numeric_arguments(
             arguments, self.validators[name].schema
         )

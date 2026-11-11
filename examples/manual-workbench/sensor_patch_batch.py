@@ -68,7 +68,7 @@ def run(frames, params):
                 ).tolist(),
             )
         out.append(item)
-    result = {
+    return {
         "step": frame["step"],
         "camera": camera,
         "image_size": [h, w],
@@ -79,40 +79,3 @@ def run(frames, params):
         "patches": out,
         "limitations": "Visible surface samples only. Depth spread may indicate edges or mixed surfaces. No semantic identity, object extent, grasp or placement success inferred. Historical frames may lack high-resolution metric depth; null depth statistics are not estimated from the low-resolution map.",
     }
-    pair = params.get("alignment_pair")
-    if pair is not None:
-        if step < 0 or frame["step"] != frames[-1]["step"]:
-            result["alignment"] = {
-                "status": "refresh_required",
-                "reason": "Use an explicit latest step and reselect both points in its image.",
-            }
-        elif (
-            not isinstance(pair, list)
-            or len(pair) != 2
-            or any(type(i) is not int or not 0 <= i < len(out) for i in pair)
-            or pair[0] == pair[1]
-        ):
-            result["alignment"] = {
-                "status": "invalid_pair",
-                "reason": "Choose two different existing point indices: object, then goal.",
-            }
-        elif any("error" in out[i] for i in pair) or not np.isfinite(eef).all():
-            result["alignment"] = {
-                "status": "unavailable",
-                "reason": "A selected surface or current EEF position is unavailable.",
-            }
-        else:
-            object_index, goal_index = pair
-            object_xyz = np.asarray(out[object_index]["world_median_xyz"])
-            goal_xyz = np.asarray(out[goal_index]["world_median_xyz"])
-            target = eef.copy()
-            target[:2] += goal_xyz[:2] - object_xyz[:2]
-            result["alignment"] = {
-                "status": "computed_not_verified",
-                "valid_at_step": frame["step"],
-                "object_index": object_index,
-                "goal_index": goal_index,
-                "eef_target_xyz_keep_height": target.tolist(),
-                "conditions": "Confirmed holding, unchanged orientation and correct same-frame point identities. Recheck images after motion; no vertical clearance or collision guarantee.",
-            }
-    return result

@@ -190,10 +190,6 @@ def get_toolkit(
             "selected": config.prompt_vars["manual_tools"],
             "journal": config.prompt_vars["run_journal"],
         }
-        if "initial_action_phase" in config.prompt_vars:
-            manual["initial_action_phase"] = config.prompt_vars["initial_action_phase"]
-        if "planner_view_mode" in config.prompt_vars:
-            manual["planner_view_mode"] = config.prompt_vars["planner_view_mode"]
     return toolkit_type(
         **manual,
         runtime_kwargs=runtime_kwargs,
@@ -241,7 +237,7 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool) -> None:
     parser.add_argument(
         "--enable-eef-control",
         action="store_true",
-        help="Enable controller feedback for optional workbench move_eef and rotate_axis tools.",
+        help="Enable controller feedback for the optional workbench move_eef tool.",
     )
     parser.add_argument(
         "--libero-type",
@@ -476,8 +472,7 @@ def _spawn_env_server(
                 ["--enable-eef-control"]
                 if getattr(args, "enable_eef_control", False)
                 or any(
-                    t["name"] in {"move_eef", "rotate_axis"}
-                    for t in getattr(args, "frozen_tools", [])
+                    t["name"] == "move_eef" for t in getattr(args, "frozen_tools", [])
                 )
                 else []
             ),

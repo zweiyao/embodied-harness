@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-v3-eef-restored-thinking-20261111/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+  "official_success": false,
+  "classification": "budget_timeout",
+  "status": "timeout",
+  "elapsed_s": 610.5,
+  "model_requests": 16,
+  "completed_responses": 15,
+  "thinking_responses": 15,
+  "actions": 8,
+  "first_action": "pi0_pick",
+  "all_requests_exposed_manual_and_geometry_tools": true,
+  "thinking_enabled_on_all_requests": true,
+  "workflow_flags_absent": true,
+  "v3_budget": {
+    "seconds": 600,
+    "turns": 30
+  },
+  "protected": {
+    "experiment": {
+      "count": 343,
+      "changed": []
+    },
+    "shared_source": {
+      "count": 344,
+      "changed": []
+    }
+  },
+  "runtime_audit": {
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-v3-eef-restored-thinking-20261111/a/runtime-audit-task0-seed0-0d8acf8615514b798c6fadcf51edac20.json",
+    "coverage_complete": true,
+    "guard_violations": []
+  },
+  "cleanup": true,
+  "runner": "Result=success\nExecMainStatus=0\nActiveState=inactive\n"
+}

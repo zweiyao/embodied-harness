@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "old_records": 198,
+  "records": 199,
+  "old_ids_preserved": true,
+  "session_config_preserved": true,
+  "entries": [
+    {
+      "id": "61bcb5efefcf9f875298",
+      "url": "http://10.162.250.228:8092/runs?id=61bcb5efefcf9f875298",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-v3-eef-restored-thinking-20261111/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "instruction": "put both the cream cheese and the tomato sauce in the basket",
+      "status": "timeout"
+    }
+  ]
+}

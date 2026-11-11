@@ -128,40 +128,21 @@ def native_catalog(robot="libero", *, control_mode="native"):
 
     from robots.libero import tools
     from robots.libero.eef_control import EefControl
-    from robots.libero.research import orientation as orientation_module
-    from robots.libero.research import placement as placement_module
-    from robots.libero.research.orientation import OrientationControl
-    from robots.libero.research.placement import PlacementTools
     from robots.libero.research.sensors import ACTIONS
     from rpent.tools import iter_tools
     from rpent.tools.common import CommonTools
 
     result = []
-    for owner in (
-        tools,
-        tools.LiberoPrimitives,
-        CommonTools,
-        EefControl,
-        PlacementTools,
-        OrientationControl,
-    ):
+    for owner in (tools, tools.LiberoPrimitives, CommonTools, EefControl):
         for tool in iter_tools(owner):
-            source = inspect.getsource(
-                placement_module
-                if owner is PlacementTools
-                else orientation_module
-                if owner is OrientationControl
-                else tool.handler
-            )
+            source = inspect.getsource(tool.handler)
             result.append(
                 {
                     "id": "native:" + tool.name,
                     "name": tool.name,
                     "origin": "native",
                     "category": "control"
-                    if tool.name in ACTIONS
-                    or owner in {EefControl, OrientationControl}
-                    or tool.name == "align_placement"
+                    if tool.name in ACTIONS or owner is EefControl
                     else "auxiliary"
                     if owner is CommonTools
                     else "perception",
@@ -170,13 +151,7 @@ def native_catalog(robot="libero", *, control_mode="native"):
                     "version": hashlib.sha256(source.encode()).hexdigest(),
                     "source": source,
                     "required": tool.name == "finish",
-                    "dependencies": [
-                        "align_placement"
-                        if tool.name == "preview_placement"
-                        else "preview_placement"
-                    ]
-                    if owner is PlacementTools
-                    else [],
+                    "dependencies": [],
                     "validation": "native",
                     "input_contract": "RPent 原生接口；保留原参数、图像与结果反馈",
                     "example": None,
@@ -215,36 +190,6 @@ class Workbench:
 
         self.config = config
         self.robot = robot
-        self.planner_view_mode = config.get("planner_view_mode", "native")
-        if self.planner_view_mode != "native":
-            if robot != "libero":
-                raise ValueError("planner_view_mode is available only for LIBERO")
-            from robots.libero.research.manual import PLANNER_VIEW_MODE
-
-            if self.planner_view_mode != PLANNER_VIEW_MODE:
-                raise ValueError("Unsupported LIBERO planner_view_mode")
-        self.initial_action_phase = config.get("initial_action_phase", False)
-        if type(self.initial_action_phase) is not bool:
-            raise ValueError("initial_action_phase must be a boolean")
-        if self.initial_action_phase and robot != "libero":
-            raise ValueError("initial_action_phase is available only for LIBERO")
-        self.api_idle_retry = config.get("api_idle_retry", False)
-        if type(self.api_idle_retry) is not bool:
-            raise ValueError("api_idle_retry must be a boolean")
-        if self.api_idle_retry and robot != "libero":
-            raise ValueError("api_idle_retry is available only for LIBERO")
-        self.api_recent_image_history = config.get("api_recent_image_history", False)
-        if type(self.api_recent_image_history) is not bool:
-            raise ValueError("api_recent_image_history must be a boolean")
-        if self.api_recent_image_history and robot != "libero":
-            raise ValueError("api_recent_image_history is available only for LIBERO")
-        self.api_require_finish = config.get("api_require_finish", False)
-        if type(self.api_require_finish) is not bool:
-            raise ValueError("api_require_finish must be a boolean")
-        if self.api_require_finish and robot != "libero":
-            raise ValueError(
-                "api_require_finish is available only for LIBERO workbenches"
-            )
         if config.get("robot", "libero") != robot:
             raise ValueError("Workbench configuration belongs to another robot")
         self.root = Path(config["runs_root"]).resolve()
@@ -469,20 +414,6 @@ class Workbench:
             if self.robot == "flexiv"
             else native_catalog(self.robot)
         )
-        if self.planner_view_mode != "native":
-            from robots.libero.research import manual
-
-            wrapper_source = inspect.getsource(manual)
-            for item in result:
-                if item["name"] in {"view_env_state", "read_image"}:
-                    item["source"] = (item.get("source") or "") + "\n" + wrapper_source
-                    item["version"] = hashlib.sha256(
-                        item["source"].encode()
-                    ).hexdigest()
-                    item["description"] = manual.planner_view_description(item["name"])
-                    item["input_contract"] = (
-                        "Ordered image_views; stored image bytes unchanged"
-                    )
         result += generated_catalog(self.library, runs_root=self.root)
         return combined_catalog(result, robot=self.robot, sources=self.catalog_sources)
 
@@ -494,17 +425,7 @@ class Workbench:
                 for i, t in catalog.items()
                 if t["origin"] == "native"
                 and t["selectable"]
-                and not (
-                    self.robot == "libero"
-                    and t["name"]
-                    in {
-                        "move_eef",
-                        "translate_to",
-                        "rotate_axis",
-                        "preview_placement",
-                        "align_placement",
-                    }
-                )
+                and not (self.robot == "libero" and t["name"] == "move_eef")
             ]
         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):
             raise ValueError("tools must be a list of catalog IDs")
@@ -544,16 +465,6 @@ class Workbench:
         return payload
 
     def prepare(self, request):
-        if "api_idle_retry" in request:
-            raise ValueError("api_idle_retry is a server-owned setting")
-        if "api_recent_image_history" in request:
-            raise ValueError("api_recent_image_history is a server-owned setting")
-        if "initial_action_phase" in request:
-            raise ValueError("initial_action_phase is a server-owned setting")
-        if "planner_view_mode" in request:
-            raise ValueError("planner_view_mode is a server-owned setting")
-        if "api_require_finish" in request:
-            raise ValueError("api_require_finish is a server-owned setting")
         if {"pilot_root", "pilot_freeze"} & request.keys():
             raise ValueError("Pilot root and frozen bundle are server-owned settings")
         if self.pilot is not None:
@@ -561,44 +472,13 @@ class Workbench:
         profile_id = request.get("model_profile", next(iter(self.profiles)))
         if not self.checks.get(profile_id, {}).get("ok"):
             raise ValueError("请先在开始页检查所选模型连接")
-        if (
-            self.api_recent_image_history
-            and self.profiles[profile_id]["planner"] != "api"
-        ):
-            raise ValueError("api_recent_image_history requires the API planner")
-        if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
-            raise ValueError("api_require_finish requires the API planner")
-        if self.api_idle_retry and (
-            self.profiles[profile_id]["planner"] != "api"
-            or not self.profiles[profile_id]["model"].startswith("openai-chat:qwen")
-        ):
-            raise ValueError("api_idle_retry requires the Qwen API profile")
         selected = self.selection(request.get("tools"))
-        if self.initial_action_phase:
-            if self.profiles[profile_id]["planner"] != "api":
-                raise ValueError("initial_action_phase requires the API planner")
-            from robots.libero.research.manual import INITIAL_ACTION_PRIMITIVES
-
-            if not ({t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES):
-                raise ValueError(
-                    "initial_action_phase requires a selected language primitive"
-                )
         prepared = {
             **request,
             "model_profile": profile_id,
             "tools": [t["id"] for t in selected],
             "frozen_tools": selected,
         }
-        if self.initial_action_phase:
-            prepared["initial_action_phase"] = True
-        if self.api_require_finish:
-            prepared["api_require_finish"] = True
-        if self.api_recent_image_history:
-            prepared["api_recent_image_history"] = True
-        if self.api_idle_retry:
-            prepared["api_idle_retry"] = True
-        if self.planner_view_mode != "native":
-            prepared["planner_view_mode"] = self.planner_view_mode
         self.validate_pilot_request(prepared)
         if (
             self.pilot

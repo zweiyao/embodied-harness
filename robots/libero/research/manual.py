@@ -5,7 +5,6 @@
 import threading
 import time
 import uuid
-from dataclasses import replace
 from functools import partial
 
 import numpy as np
@@ -15,40 +14,6 @@ from robots.libero.research.native import _OMITTED, _arguments_model
 from robots.libero.research.sensors import SensorInterface
 from robots.libero.toolkit import LiberoToolkit
 from rpent.tools import Tool, ToolResult, tool
-
-PLANNER_VIEW_MODE = "calibrated-pair-v1"
-PLANNER_VIEW_ARTIFACTS = ("agentview_high.png", "wrist_high.png")
-INITIAL_ACTION_TOOLS = frozenset(
-    {
-        "finish",
-        "list_dir",
-        "read_text_file",
-        "write_text_file",
-        "view_env_state",
-        "read_image",
-        "segment",
-        "pi0_pick",
-        "pi0_doubled",
-    }
-)
-INITIAL_ACTION_PRIMITIVES = frozenset({"pi0_pick", "pi0_doubled"})
-
-
-def planner_view_description(name):
-    if name == "read_image":
-        return (
-            "Read the exact saved image by artifact name and step. image_views "
-            "identifies its frame; policy and unclassified images are not "
-            "calibrated sampling inputs."
-        )
-    from robots.libero.tools import view_env_state
-
-    return view_env_state.description.replace(
-        "Embeds policy, agentview, and wrist images when available.",
-        "Embeds calibrated agentview high and wrist high images. "
-        "image_views identifies each attached image in order. "
-        "Missing required images are reported as an error.",
-    )
 
 
 class RecordingSam3:
@@ -66,80 +31,24 @@ class ManualToolkit(LiberoToolkit):
     planner_tools_only = True
 
     def __init__(
-        self,
-        *,
-        selected,
-        journal,
-        sandbox_image="embodied-sensor:pilot",
-        planner_view_mode="native",
-        initial_action_phase=False,
-        **kwargs,
+        self, *, selected, journal, sandbox_image="embodied-sensor:pilot", **kwargs
     ):
-        if planner_view_mode not in ("native", PLANNER_VIEW_MODE):
-            raise ValueError("Unsupported LIBERO planner_view_mode")
-        self.planner_view_mode = planner_view_mode
-        if type(initial_action_phase) is not bool:
-            raise ValueError("initial_action_phase must be a boolean")
-        if initial_action_phase and not (
-            {t["name"] for t in selected} & INITIAL_ACTION_PRIMITIVES
-        ):
-            raise ValueError(
-                "initial_action_phase requires a selected language primitive"
-            )
-        self.initial_action_phase = initial_action_phase
-        self._initial_action_done = False
-        placement_names = {t["name"] for t in selected} & {
-            "preview_placement",
-            "align_placement",
-        }
-        if placement_names and placement_names != {
-            "preview_placement",
-            "align_placement",
-        }:
-            raise ValueError("Select preview_placement and align_placement together")
         self.journal = journal
         self._ended = False
         self.mask_lock = threading.RLock()
         super().__init__(**kwargs)
         self.sensors = SensorInterface(self, [], None)
         self.add_tool(self.read_image)
-        optional_moves = {t["name"] for t in selected} & {"move_eef", "translate_to"}
-        if optional_moves:
+        if any(t["name"] == "move_eef" for t in selected):
             from robots.libero.eef_control import EefControl
-
-            if "move_eef" in optional_moves:
-                controller = self.primitives.env.get_eef_controller_state()
-                if "error" in controller:
-                    raise ValueError(controller["error"])
-            control = EefControl(self.primitives)
-            for name in sorted(optional_moves):
-                definition = getattr(control, name)
-                self.add_tool(
-                    definition.with_handler(
-                        partial(self._execute_primitive, name, definition)
-                    )
-                )
-        if any(t["name"] == "rotate_axis" for t in selected):
-            from robots.libero.research.orientation import OrientationControl
 
             controller = self.primitives.env.get_eef_controller_state()
             if "error" in controller:
                 raise ValueError(controller["error"])
-            definition = OrientationControl(self.primitives).rotate_axis
+            definition = EefControl(self.primitives).move_eef
             self.add_tool(
                 definition.with_handler(
-                    partial(self._execute_primitive, "rotate_axis", definition)
-                )
-            )
-        if placement_names:
-            from robots.libero.research.placement import PlacementTools
-
-            placement = PlacementTools(self.sensors, self.primitives)
-            self.add_tool(placement.preview_placement)
-            definition = placement.align_placement
-            self.add_tool(
-                definition.with_handler(
-                    partial(self._execute_primitive, "align_placement", definition)
+                    partial(self._execute_primitive, "move_eef", definition)
                 )
             )
         originals = self._tools
@@ -153,15 +62,6 @@ class ManualToolkit(LiberoToolkit):
             name = item["name"]
             if item["origin"] == "native":
                 original = originals[name]
-                if self.planner_view_mode != "native":
-                    if name == "view_env_state":
-                        original = original.with_handler(
-                            partial(self._planner_view, original)
-                        )
-                    if name in {"view_env_state", "read_image"}:
-                        original = replace(
-                            original, description=planner_view_description(name)
-                        )
                 if name == "segment":
                     original = original.with_handler(
                         partial(self.segment_recorded, original)
@@ -181,66 +81,6 @@ class ManualToolkit(LiberoToolkit):
                         readonly=True,
                     )
                 )
-
-    def _image_payload(self, name, step, index):
-        from io import BytesIO
-
-        from PIL import Image
-
-        image = self.state.load_bytes(name, step=step)
-        with Image.open(BytesIO(image)) as opened:
-            width, height = opened.size
-        calibrated = name in {
-            "agentview.png",
-            "agentview_high.png",
-            "wrist.png",
-            "wrist_high.png",
-        }
-        policy = name == "agentview_policy.png"
-        camera = (
-            ("agentview" if name.startswith("agentview") else "wrist")
-            if calibrated or policy
-            else None
-        )
-        return image, {
-            "index": index,
-            "artifact": name,
-            "camera": camera,
-            "step": step,
-            "width": width,
-            "height": height,
-            "coordinate_frame": "calibrated"
-            if calibrated
-            else "policy"
-            if policy
-            else "unclassified",
-        }
-
-    def _present_state(self, result):
-        if self.planner_view_mode == "native" or "step" not in result.data:
-            return result
-        data = {**result.data, "planner_view_mode": self.planner_view_mode}
-        images, views = [], []
-        try:
-            for index, name in enumerate(PLANNER_VIEW_ARTIFACTS):
-                image, view = self._image_payload(name, data["step"], index)
-                images.append(image)
-                views.append(view)
-        except OSError as exc:
-            return ToolResult(
-                data={
-                    **data,
-                    "error": f"Required planner image unavailable: {name}: {exc}",
-                    "image_views": [],
-                }
-            )
-        return ToolResult(data={**data, "image_views": views}, images=images)
-
-    def _planner_view(self, original, **kwargs):
-        return self._present_state(original(**kwargs))
-
-    def get_env_state(self, **kwargs):
-        return self._present_state(super().get_env_state(**kwargs))
 
     @property
     def planner_stop_result(self):
@@ -264,12 +104,6 @@ class ManualToolkit(LiberoToolkit):
         record = self.state.get(step)
         if name not in record.artifacts or not name.endswith((".png", ".jpg", ".jpeg")):
             return ToolResult(data={"error": "Unknown image artifact"})
-        if self.planner_view_mode != "native":
-            image, view = self._image_payload(name, record.step_idx, 0)
-            return ToolResult(
-                data={"artifact": name, "step": record.step_idx, "image_views": [view]},
-                images=[image],
-            )
         return ToolResult(
             data={"artifact": name, "step": record.step_idx},
             images=[self.state.load_bytes(name, step=record.step_idx)],
@@ -336,52 +170,19 @@ class ManualToolkit(LiberoToolkit):
         )
         return ToolResult(data=self.sandbox.run(definition, params, frames))
 
-    def planner_tool_available(self, name: str) -> bool:
-        """Defer geometry and manual actions until initial primitive feedback."""
-        return (
-            not self.initial_action_phase
-            or self._initial_action_done
-            or name in INITIAL_ACTION_TOOLS
-        )
-
     def execute_tool(self, name, input_dict):
         call_id = uuid.uuid4().hex
         started = time.monotonic()
         self.journal.append(
             "tool_request", {"call_id": call_id, "name": name, "arguments": input_dict}
         )
-        before_step = self.state.latest_step if self.initial_action_phase else None
         try:
-            if self.planner_tool_available(name):
-                result = super().execute_tool(name, input_dict)
-            else:
-                result = ToolResult(
-                    data={
-                        "error": f"Tool {name} is unavailable until initial language-action feedback"
-                    }
-                )
+            result = super().execute_tool(name, input_dict)
         except Exception as exc:
             self.journal.append(
                 "tool_error", {"call_id": call_id, "name": name, "error": str(exc)}
             )
             raise
-        if (
-            self.initial_action_phase
-            and not self._initial_action_done
-            and name in INITIAL_ACTION_PRIMITIVES
-            and self.state.latest_step is not None
-            and self.state.latest_step != before_step
-            and self.state.latest_record().result.get("chunks_used", 0) > 0
-        ):
-            self._initial_action_done = True
-            self.journal.append(
-                "workflow_phase",
-                {
-                    "phase": "manual_available",
-                    "trigger": name,
-                    "after_step": self.state.latest_step,
-                },
-            )
         self.journal.append(
             "tool_response",
             {
@@ -414,57 +215,18 @@ class ManualToolkit(LiberoToolkit):
         return result
 
 
-def availability_prompt(
-    selected, *, planner_view_mode="native", initial_action_phase=False
-):
+def availability_prompt(selected):
     names = ", ".join(t["name"] for t in selected)
     eef_guidance = (
-        "Use translate_to for position-only moves while retaining the gripper target. "
-        "Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\n\n"
-        if any(t["name"] == "translate_to" for t in selected)
-        else "Use the latest images and EEF pose to choose the next short move_eef target. "
+        "Use the latest images and EEF pose to choose the next short move_eef target. "
         "Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\n\n"
         if any(t["name"] == "move_eef" for t in selected)
-        else ""
-    )
-    rotation_guidance = (
-        "Use rotate_axis for relative world-axis rotation while retaining position "
-        "and the gripper target. Inspect returned images and pose errors before "
-        "the next move.\n\n"
-        if any(t["name"] == "rotate_axis" for t in selected)
-        else ""
-    )
-    placement_guidance = (
-        "For placing a held object on a plate or into an open container, "
-        "preview_placement selects a visible target region and includes the held-feature offset. "
-        "Inspect its O/P/R overlay, then use align_placement with that preview_id; "
-        "reselect incorrect marks. Recheck the returned images before lowering or releasing.\n\n"
-        if {"preview_placement", "align_placement"} <= {t["name"] for t in selected}
-        else ""
-    )
-    presentation = (
-        "Native observations and action feedback remain unchanged. "
-        if planner_view_mode == "native"
-        else "Stored observations and VLA inputs remain unchanged. "
-        "View and action images are ordered by image_views. "
-        "For sampling, use a calibrated view's camera, step and pixel size. "
-    )
-    phase_guidance = (
-        "Initially, inspect identity and choose an enabled language primitive; "
-        "finish if no suitable action is justified. Geometry and manual tools "
-        "become available after its first recorded action feedback, including "
-        "failed pickup. Sample geometry when the next manual action needs it.\n\n"
-        if initial_action_phase
         else ""
     )
     return (
         "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
         f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
-        "Skip guide steps that require disabled tools. "
-        + presentation
-        + "Generated perception tools compute evidence, not task success.\n\n"
-        + phase_guidance
+        "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
+        "Generated perception tools compute evidence, not task success.\n\n"
         + eef_guidance
-        + rotation_guidance
-        + placement_guidance
     )

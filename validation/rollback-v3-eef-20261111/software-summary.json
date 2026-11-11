@@ -1,0 +1,28 @@
+{
+  "full_unit": {
+    "passed": 2035,
+    "skipped": 15,
+    "seconds": 73.51,
+    "command": "python -m pytest tests/unit_tests -q"
+  },
+  "scoped_precommit": "passed",
+  "full_precommit": "failed on historical validation scripts and an independently preserved remote formatting difference; hook mutations restored",
+  "baseline": "f7bd005",
+  "independent_remote_files": {
+    "robots/flexiv/DIRECT_RDK.md": "169be362a0c5161134fe58f4e23ca7f49957c240b8e0c2915d16c8e478edea41",
+    "robots/flexiv/README.md": "bbfeb9c3103a4927101536c247de1c35b815ba436539fb4c4198a2d0dc9decbf",
+    "robots/libero/research/codex_sdk.py": "c8213325649237fd0f9bca5961bc8b70bbe0234025b748be74988cae0b66282a",
+    "robots/univtac/pilot/__init__.py": "ef650c33ca48408681a3fc409229415365867938ab0f03fe28c499f30968a32b",
+    "rpent/dashboard/server.py": "f7a97be14755a62d5e5fc9b2e2f11a14bcbdd663b656d6d56d504a28282dd4b1"
+  },
+  "removed_behavior_tests": "Tests tied only to removed optional behaviors rolled back with their implementations; baseline tests retained",
+  "source_restore": "15 files byte-identical to baseline; Workbench history/instruct changes retained separately",
+  "new_task_outcome": {
+    "official_success": false,
+    "classification": "budget_timeout",
+    "elapsed_s": 610.5,
+    "requests": 16,
+    "responses": 15,
+    "actions": 8
+  }
+}

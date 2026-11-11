@@ -1,0 +1,54 @@
+{
+  "authorization": "User selected option 2: return to pre-continuous-optimization v3+EEF",
+  "baseline": "f7bd005",
+  "previous_head": "fe03ce76e72eb32cc567d909cb6eb5745229dea4",
+  "restore_exactly": [
+    "examples/manual-workbench/candidate.json",
+    "examples/manual-workbench/sensor_patch_batch.py",
+    "memory/libero/MEMORY.md",
+    "robots/libero/eef_control.py",
+    "robots/libero/research/manual.py",
+    "robots/libero/robot_spec.py",
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/state.py",
+    "rpent/planner/api_loop.py",
+    "rpent/planner/base.py",
+    "tests/unit_tests/robots/libero/research/test_high_resolution.py",
+    "tests/unit_tests/robots/libero/research/test_manual.py",
+    "tests/unit_tests/robots/libero/test_eef_control.py",
+    "tests/unit_tests/rpent/planner/test_api_contracts.py",
+    "docs/manual-workbench/libero-eef-control.md"
+  ],
+  "remove_from_current_tree": [
+    "memory/libero/identity-and-transfer-evidence.md",
+    "robots/libero/research/orientation.py",
+    "robots/libero/research/placement.py",
+    "rpent/planner/api_idle_retry.py",
+    "tests/unit_tests/robots/libero/research/test_orientation.py",
+    "tests/unit_tests/robots/libero/research/test_placement.py",
+    "tests/unit_tests/rpent/planner/test_api_idle_retry.py",
+    "docs/manual-workbench/libero-orientation-feedback.md",
+    "docs/manual-workbench/libero-placement-preview.md"
+  ],
+  "selective_restore": [
+    "rpent/dashboard/workbench.py",
+    "tests/unit_tests/rpent/dashboard/test_workbench.py"
+  ],
+  "preserve": [
+    "history_roots and recorded task instructions",
+    "network-switch separation",
+    "all historical validation/experiments/videos/source checkouts",
+    "Flexiv and UniVTAC live services and independent changes"
+  ],
+  "runtime": "new isolated checkout; existing shared /home/zwy/work/harnessvla remains intact; switch idle LIBERO service to restored v3+EEF materials and tool selection",
+  "validation": [
+    "baseline hash parity",
+    "full remote unit suite",
+    "scoped pre-commit and document references",
+    "frozen v3 material/tool comparison",
+    "idle service/history/config checks without model or robot actions",
+    "One Flash thinking task0 seed0, restored v3 budget 600 seconds/30 logical requests; separate task result"
+  ],
+  "experiment_launch": true,
+  "followup_authorization": "User requested one Qwen thinking experiment after rollback"
+}

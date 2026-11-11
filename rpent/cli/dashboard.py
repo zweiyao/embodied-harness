@@ -332,14 +332,6 @@ def _run_dashboard_task_inner(
     if getattr(state, "workbench", None) is not None:
         run_config.prompt_vars["manual_tools"] = claimed.request["frozen_tools"]
         run_config.prompt_vars["run_journal"] = state.journal
-        if robot_spec.name == "libero" and "initial_action_phase" in claimed.request:
-            run_config.prompt_vars["initial_action_phase"] = claimed.request[
-                "initial_action_phase"
-            ]
-        if robot_spec.name == "libero" and "planner_view_mode" in claimed.request:
-            run_config.prompt_vars["planner_view_mode"] = claimed.request[
-                "planner_view_mode"
-            ]
     from rpent.memory.loading import prepare_run_memory
 
     prepare_run_memory(task_args, robot_spec, run_config)
@@ -458,15 +450,7 @@ def _run_dashboard_task_inner(
                     # Legacy guides still need the selection override.
                     if args.robot_name != "univtac":
                         system_prompt = (
-                            availability_prompt(
-                                claimed.request["frozen_tools"],
-                                initial_action_phase=claimed.request.get(
-                                    "initial_action_phase", False
-                                ),
-                                planner_view_mode=claimed.request.get(
-                                    "planner_view_mode", "native"
-                                ),
-                            )
+                            availability_prompt(claimed.request["frozen_tools"])
                             + system_prompt
                         )
                     write_json(
@@ -501,13 +485,6 @@ def _run_dashboard_task_inner(
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,
-                        api_idle_retry=claimed.request.get("api_idle_retry", False),
-                        api_recent_image_history=claimed.request.get(
-                            "api_recent_image_history", False
-                        ),
-                        api_require_finish=claimed.request.get(
-                            "api_require_finish", False
-                        ),
                     )
                     result = planner.solve(
                         system_prompt=system_prompt,
