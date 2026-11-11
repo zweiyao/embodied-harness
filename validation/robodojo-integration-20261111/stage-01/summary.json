@@ -1,0 +1,186 @@
+{
+  "updated_at": "2026-11-11T13:42:44.917100+00:00",
+  "status": "in_progress",
+  "stage": "01_dependency_and_resource_preparation",
+  "branch": "feat/robodojo-integration",
+  "source_commit": "5c57ad069f854a554dd5f4938aca726a8a441874",
+  "isolated_checkout": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111",
+  "python_created": "CPython 3.11.16",
+  "runtime_installation": "running; not yet validated",
+  "source_refs": {
+    "rlinf": [
+      "https://github.com/littleZ05/RLinf.git",
+      "91e0c6e361eff9371e2423a4183602481ae95ee5",
+      ""
+    ],
+    "rlinf-robodojo-runtime": [
+      "https://github.com/RLinf/RoboDojo.git",
+      "6d76a0c4a49a7a47bf5ee3924de2ccd7ecb8a8b7",
+      ""
+    ],
+    "isaaclab": [
+      "https://github.com/yuechen0614/IsaacLab.git",
+      "afca7b09d60d8beb9c1cb28b43066499940b969b",
+      "#subdirectory=source/isaaclab"
+    ],
+    "isaaclab-assets": [
+      "https://github.com/yuechen0614/IsaacLab.git",
+      "afca7b09d60d8beb9c1cb28b43066499940b969b",
+      "#subdirectory=source/isaaclab_assets"
+    ],
+    "isaaclab-tasks": [
+      "https://github.com/yuechen0614/IsaacLab.git",
+      "afca7b09d60d8beb9c1cb28b43066499940b969b",
+      "#subdirectory=source/isaaclab_tasks"
+    ],
+    "nvidia-curobo": [
+      "https://github.com/yuechen0614/curobo.git",
+      "895c6517243f8cb091c73c018c8167192d39599a",
+      ""
+    ],
+    "rpent-openpi": [
+      "https://github.com/RLinf/openpi.git",
+      "a560f4dd8205b8423ecd4c8a0fabb5f54140b8a0",
+      ""
+    ],
+    "sam3": [
+      "https://github.com/RLinf/sam3.git",
+      "c1f6b1e83967c912f675d8975d437ccdc41e17d8",
+      ""
+    ]
+  },
+  "resources": {
+    "repository": "RoboDojo-Benchmark/RoboDojo",
+    "revision": "1127bda94f172d757386945af3eb3a6754d1a4e6",
+    "all_assets": {
+      "files": 15365,
+      "bytes": 41269513111
+    },
+    "first_bottles_task_assets": {
+      "files": 376,
+      "bytes": 689140444
+    },
+    "policy_inference_parameters": {
+      "files": 18,
+      "bytes": 12440992402,
+      "checkpoint": "RoboDojo-sim-arx_x5-joint-0/59999",
+      "train_state_downloaded": false
+    },
+    "progress_observed": {
+      "checked_at": "2026-11-11T13:41:18.531592+00:00",
+      "baseline_assets": {
+        "files_expected": 376,
+        "files_size_complete": 207,
+        "bytes_expected": 689140444,
+        "bytes_size_complete": 431134789,
+        "size_complete": false,
+        "missing_examples": [
+          "Assets/Robots/x5/ARX.usd",
+          "Assets/Robots/x5/X5A.urdf",
+          "Assets/Robots/x5/configuration/ARX_base.usd",
+          "Assets/Robots/x5/configuration/ARX_physics.usd",
+          "Assets/Robots/x5/configuration/ARX_robot.usd"
+        ]
+      },
+      "all_assets": {
+        "files_expected": 15365,
+        "files_size_complete": 1017,
+        "bytes_expected": 41269513111,
+        "bytes_size_complete": 439497699,
+        "size_complete": false,
+        "missing_examples": [
+          "Assets/Eval_Layout/RoboDojo/arx_x5/0/imitate_sorting_sequence_45.json",
+          "Assets/Eval_Layout/RoboDojo/arx_x5/0/imitate_sorting_sequence_46.json",
+          "Assets/Eval_Layout/RoboDojo/arx_x5/0/imitate_sorting_sequence_47.json",
+          "Assets/Eval_Layout/RoboDojo/arx_x5/0/imitate_sorting_sequence_48.json",
+          "Assets/Eval_Layout/RoboDojo/arx_x5/0/imitate_sorting_sequence_49.json"
+        ]
+      },
+      "policy_parameters": {
+        "files_expected": 18,
+        "files_size_complete": 0,
+        "bytes_expected": 12440992402,
+        "bytes_size_complete": 0,
+        "size_complete": false,
+        "missing_examples": [
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/_CHECKPOINT_METADATA",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/assets/arx_x5_sim/norm_stats.json",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/params/_METADATA",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/params/_sharding",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/params/array_metadatas/process_0"
+        ]
+      },
+      "protected_files": {
+        "checked": 608,
+        "changed": []
+      },
+      "install-status": {
+        "status": "installing",
+        "started_at": "2026-11-11T13:40:02.848545+00:00",
+        "python": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111/.venv/bin/python",
+        "network": "inherited from dedicated remote-network.sh selection",
+        "installer_only_options": {
+          "UV_HTTP_TIMEOUT": 300,
+          "UV_CONCURRENT_DOWNLOADS": 4
+        },
+        "phase": "install"
+      },
+      "asset-download-status": {
+        "status": "downloading",
+        "revision": "1127bda94f172d757386945af3eb3a6754d1a4e6",
+        "destination": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6",
+        "started_at": "2026-11-11T13:24:30.476719+00:00",
+        "patterns": [
+          "Assets/**",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/params/**",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/assets/**",
+          "ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/_CHECKPOINT_METADATA"
+        ],
+        "phase": "baseline_assets",
+        "baseline_files": 376,
+        "baseline_bytes": 689140444
+      }
+    }
+  },
+  "curobo_wheel": {
+    "wheel": "/home/zwy/work/embodied_harness/validation/robodojo-integration-20261111/stage-01/wheelhouse/nvidia_curobo-0.0.post1.dev101-py3-none-any.whl",
+    "bytes": 65084984,
+    "sha256": "12d2e36ac1531a24ee687dfa17f4e818a924731ae26815ccfe965bf07ddc8eeb",
+    "source_commit": "895c6517243f8cb091c73c018c8167192d39599a",
+    "tracked_source_changes": [],
+    "binary_extensions": false,
+    "cuda_kernel_sources": 42,
+    "build_recipe": "uv build --wheel outside the RPent project; default CUROBO_USE_PYBIND=0. No Torch build dependency is required by this upstream source."
+  },
+  "network": {
+    "authorization": "User requested Mac reverse proxy for remote preparation.",
+    "forward": "remote 127.0.0.1:17997 -> Mac 127.0.0.1:7897",
+    "remote_selection": "/home/zwy/work/embodied_harness/remote-network.sh",
+    "remote_core_started": false,
+    "mac_network_settings_modified": false,
+    "lifecycle": "Temporary until owned preparation jobs finish; dedicated cleanup monitor restores remote direct mode and closes only the owned SSH master."
+  },
+  "installer_only_options": {
+    "UV_HTTP_TIMEOUT": 300,
+    "UV_CONCURRENT_DOWNLOADS": 4
+  },
+  "completed_checks": {
+    "source_and_resource_revision_inventory": "passed",
+    "curobo_wheel_build": "passed",
+    "curobo_tracked_source_unchanged": "passed",
+    "curobo_no_binary_extensions": "passed",
+    "existing_runtime_guards": {
+      "checked": 608,
+      "changed": []
+    }
+  },
+  "not_yet_verified": [
+    "Complete dependency installation and import compatibility",
+    "Complete first-task assets and external NVIDIA USD references",
+    "RoboDojo policy checkpoint download/conversion and inference",
+    "Real simulator, RPC, task and uniform workbench integration"
+  ],
+  "changes_to_harness": "none",
+  "experiments_started": 0,
+  "git_workflow": "Stage commits only; one PR after the entire adaptation and validation. PR #5 remains closed."
+}
