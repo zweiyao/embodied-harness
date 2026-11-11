@@ -228,6 +228,11 @@ class Workbench:
             raise ValueError("initial_action_phase must be a boolean")
         if self.initial_action_phase and robot != "libero":
             raise ValueError("initial_action_phase is available only for LIBERO")
+        self.api_idle_retry = config.get("api_idle_retry", False)
+        if type(self.api_idle_retry) is not bool:
+            raise ValueError("api_idle_retry must be a boolean")
+        if self.api_idle_retry and robot != "libero":
+            raise ValueError("api_idle_retry is available only for LIBERO")
         self.api_recent_image_history = config.get("api_recent_image_history", False)
         if type(self.api_recent_image_history) is not bool:
             raise ValueError("api_recent_image_history must be a boolean")
@@ -539,6 +544,8 @@ class Workbench:
         return payload
 
     def prepare(self, request):
+        if "api_idle_retry" in request:
+            raise ValueError("api_idle_retry is a server-owned setting")
         if "api_recent_image_history" in request:
             raise ValueError("api_recent_image_history is a server-owned setting")
         if "initial_action_phase" in request:
@@ -561,6 +568,11 @@ class Workbench:
             raise ValueError("api_recent_image_history requires the API planner")
         if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
             raise ValueError("api_require_finish requires the API planner")
+        if self.api_idle_retry and (
+            self.profiles[profile_id]["planner"] != "api"
+            or not self.profiles[profile_id]["model"].startswith("openai-chat:qwen")
+        ):
+            raise ValueError("api_idle_retry requires the Qwen API profile")
         selected = self.selection(request.get("tools"))
         if self.initial_action_phase:
             if self.profiles[profile_id]["planner"] != "api":
@@ -583,6 +595,8 @@ class Workbench:
             prepared["api_require_finish"] = True
         if self.api_recent_image_history:
             prepared["api_recent_image_history"] = True
+        if self.api_idle_retry:
+            prepared["api_idle_retry"] = True
         if self.planner_view_mode != "native":
             prepared["planner_view_mode"] = self.planner_view_mode
         self.validate_pilot_request(prepared)

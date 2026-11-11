@@ -1,0 +1,19 @@
+{
+  "protected_files": 323,
+  "protected_changed": [],
+  "thinking_tokens": 42686,
+  "task_runner": "Result=success\nExecMainStatus=0\nActiveState=inactive\n",
+  "runtime_audit": {
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-thinking-retry-20261111-retry/a/runtime-audit-task0-seed0-669d7da5122f47af8d6bd8f5a0f0bb92.json",
+    "coverage_complete": true,
+    "guard_violations": []
+  },
+  "actual_response_count": 30,
+  "actual_thinking_response_count": 30,
+  "real_transport_retries": 0,
+  "accepted_responses_over_60s": [
+    21,
+    30
+  ],
+  "cleanup_passed": true
+}

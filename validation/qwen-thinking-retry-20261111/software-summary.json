@@ -1,0 +1,28 @@
+{
+  "full_unit": {
+    "passed": 2204,
+    "skipped": 15,
+    "seconds": 75.6
+  },
+  "focused_passed": 144,
+  "scoped_precommit": "passed",
+  "full_precommit": "failed on historical validation scripts; unrelated hook edits restored",
+  "default_off": true,
+  "source_files": {
+    "rpent/planner/api_idle_retry.py": "d3996c810bc47e124359ab84952409b08e7ecbd31bfae14bb66ca862ca4026e6",
+    "rpent/planner/api_loop.py": "0f4424d1ac34d697195f48230349c5a8030ee045487fc0a5da18a168338873e5",
+    "rpent/planner/base.py": "7feac4f1be8fee4faa218685423e74ce77a0bb980a82b33ca509b917431e4568",
+    "rpent/cli/dashboard.py": "660474c94292ba284feaf5dd57caa1db383bb89761298c772e25a9a4c5f70bd8",
+    "rpent/dashboard/workbench.py": "3593765a5a6c8b6ebd658dc0ef26ef1f99cee1cfdf34aa0db5bd9c9ef6d845f7",
+    "rpent/dashboard/state.py": "e72255228f5aff2504b1b95fd2611b75c62cc04f9ba614cb25519f82c7c0f721"
+  },
+  "initial_incident": {
+    "type": "provider_parameter_incompatibility",
+    "http_status": 400,
+    "parameter": "tool_choice=required",
+    "context": "Qwen thinking enabled; images present",
+    "task_actions": 0,
+    "excluded": true,
+    "fix": "auto only in thinking candidate; local finish output validation retained"
+  }
+}

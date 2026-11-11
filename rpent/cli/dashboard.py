@@ -501,6 +501,7 @@ def _run_dashboard_task_inner(
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,
+                        api_idle_retry=claimed.request.get("api_idle_retry", False),
                         api_recent_image_history=claimed.request.get(
                             "api_recent_image_history", False
                         ),

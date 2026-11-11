@@ -112,6 +112,7 @@ class ApiAgentLoop(Planner):
         interactive: bool = False,
         require_finish: bool = False,
         recent_image_history: bool = False,
+        idle_retry: bool = False,
     ) -> None:
         if type(recent_image_history) is not bool:
             raise ValueError("recent_image_history must be a boolean")
@@ -119,7 +120,9 @@ class ApiAgentLoop(Planner):
             raise ValueError("require_finish must be a boolean")
         if reasoning_effort not in REASONING_EFFORTS:
             raise ValueError(f"unsupported reasoning effort: {reasoning_effort}")
-        if max_tokens < 1 or timeout_s <= 0:
+        if type(idle_retry) is not bool:
+            raise ValueError("idle_retry must be a boolean")
+        if max_tokens < 1 or timeout_s < 0 or (timeout_s == 0 and not idle_retry):
             raise ValueError("max_tokens and timeout_s must be positive")
         self.model = model
         self.dashboard_events = dashboard_events
@@ -130,6 +133,7 @@ class ApiAgentLoop(Planner):
         self.interactive = interactive
         self.require_finish = require_finish
         self.recent_image_history = recent_image_history
+        self.idle_retry = idle_retry
 
     def solve(
         self,
@@ -176,8 +180,16 @@ class ApiAgentLoop(Planner):
         session = _Session(
             adapter, conversation_id, max_turns, interactive=self.interactive
         )
+        model = self.model
+        if self.idle_retry:
+            from rpent.planner.api_idle_retry import IdleRetryChatModel
+
+            journal = getattr(toolkit, "journal", None)
+            model = IdleRetryChatModel(
+                model, record=journal.append if journal is not None else None
+            )
         agent = Agent(
-            self.model,
+            model,
             name="rpent_api",
             system_prompt=system_prompt,
             output_type=adapter.output_types,
@@ -214,7 +226,8 @@ class ApiAgentLoop(Planner):
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
                 timeout=None
-                if self.interactive and not getattr(toolkit, "journal", None)
+                if self.timeout_s == 0
+                or (self.interactive and not getattr(toolkit, "journal", None))
                 else self.timeout_s,
             )
         except asyncio.TimeoutError:

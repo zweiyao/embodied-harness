@@ -655,6 +655,14 @@ class DashboardState:
                     raise ValueError("model must be a non-empty string")
                 normalized[name] = value.strip()
             else:
+                if (
+                    name == "planner_timeout_s"
+                    and type(value) is int
+                    and value == 0
+                    and self.workbench is not None
+                    and self.workbench.api_idle_retry
+                ):
+                    continue
                 low, high = limits[name]
                 if type(value) is not int or not low <= value <= high:
                     raise ValueError(f"{name} must be an integer from {low} to {high}")

@@ -572,3 +572,24 @@ def test_history_roots_preserve_links_and_read_recorded_instruction(bench, tmp_p
 def test_history_roots_reject_invalid_paths(bench, value):
     with pytest.raises(ValueError, match="history_roots"):
         Workbench({**bench.config, "history_roots": value})
+
+
+def test_idle_retry_scope_and_zero_budget_are_explicit(bench, tmp_path):
+    config = {**bench.config, "api_idle_retry": True}
+    candidate = Workbench(config)
+    candidate.profiles["api"]["model"] = "openai-chat:qwen3.8-flash"
+    candidate.checks = {"api": {"ok": True}, "sdk": {"ok": True}}
+    frozen = candidate.prepare({"model_profile": "api", "tools": ["native:finish"]})
+    assert frozen["api_idle_retry"] is True
+    with pytest.raises(ValueError, match="server-owned"):
+        candidate.prepare({"api_idle_retry": False})
+    with pytest.raises(ValueError, match="Qwen API"):
+        candidate.prepare({"model_profile": "sdk", "tools": ["native:finish"]})
+    with pytest.raises(ValueError, match="LIBERO"):
+        Workbench(config, robot="univtac")
+    state = DashboardState(output_dir=tmp_path, dashboard_spec=DASHBOARD_SPEC)
+    state.workbench = candidate
+    state.set_next_config({"planner_timeout_s": 0, "max_turns": 30})
+    state.workbench = bench
+    with pytest.raises(ValueError, match="planner_timeout_s"):
+        state.set_next_config({"planner_timeout_s": 0})

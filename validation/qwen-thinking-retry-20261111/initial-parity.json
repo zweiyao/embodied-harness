@@ -1,0 +1,21 @@
+{
+  "baseline": "qwen-task0-upload-20261111",
+  "candidate": "qwen-thinking-retry-20261111-retry",
+  "initial_image_parity": [
+    {
+      "file": "agentview_high.png/00.png",
+      "both_exist": true,
+      "identical": true
+    },
+    {
+      "file": "wrist_high.png/00.png",
+      "both_exist": true,
+      "identical": true
+    }
+  ],
+  "comparison_limitations": [
+    "one seed and one completed trial per condition",
+    "thinking, API tool choice, retry policy and task total-time policy changed together",
+    "provider timing and caching not controlled"
+  ]
+}
