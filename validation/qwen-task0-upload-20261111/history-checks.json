@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "old_records": 195,
+  "records": 196,
+  "old_ids_preserved": true,
+  "id": "e803259c39bda01a41bc",
+  "url": "http://10.162.250.228:8092/runs?id=e803259c39bda01a41bc",
+  "instruction": "put both the cream cheese and the tomato sauce in the basket",
+  "session_config_effectively_preserved": true,
+  "session_config_normalization": {
+    "reasoning_effort": {
+      "before": null,
+      "after": "none"
+    }
+  },
+  "initial_verification": "Exact config equality initially failed on existing None-to-none profile normalization; subsequent check records that difference explicitly.",
+  "history_root_added": "/home/zwy/work/embodied_harness/experiments/qwen-task0-upload-20261111/a/runs",
+  "only_restarted_service": "embodied-manual-workbench.service",
+  "only_config_file_change": "append history_roots entry"
+}

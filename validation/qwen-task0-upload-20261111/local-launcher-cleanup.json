@@ -1,0 +1,12 @@
+[
+  {
+    "file": "harnessvla/local-setup/dashboard.sh",
+    "before_sha256": "54be53eaf12647751e023ce38c145e678d9a2bda4acead48d76d6553766a67aa",
+    "after_sha256": "220f05b9a353e59248cb3bdf78b3737d4ca72bdad93474aa85ef5d4976bd24be"
+  },
+  {
+    "file": "harnessvla/local-setup/flexiv-dashboard.sh",
+    "before_sha256": "338707162cfe9be7399b9d743c34f77824343d5687285206d19f4be8e127c1af",
+    "after_sha256": "72fdd9fd0f8f31b36b34478eaa1d4bddea99a5beecdf0ee11d741e2b3e07058f"
+  }
+]

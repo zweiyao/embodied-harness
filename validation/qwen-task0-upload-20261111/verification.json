@@ -1,0 +1,27 @@
+{
+  "targeted_trace_checks": true,
+  "formatted_trace_checks": true,
+  "network_switch_fake_systemd_checks": true,
+  "shell_syntax_checks": true,
+  "ruff_checks": true,
+  "scoped_precommit_snapshot": true,
+  "full_repository_precommit_rerun": false,
+  "full_unit_suite_rerun": false,
+  "reason": "No harness source changed; scoped operational/trace validation only.",
+  "mac_read_only_record_check": {
+    "records": 196,
+    "id": "e803259c39bda01a41bc",
+    "instruction_present": true
+  },
+  "mac_read_only_video_check": {
+    "status": 206,
+    "content_type": "video/mp4",
+    "bytes_read": 1024
+  },
+  "protected_files_verified_before_history_publish": 322,
+  "episode_runner_exit": 0,
+  "continuous_loop_resumed": false,
+  "new_trials": 1,
+  "network_incidents_in_diagnostic": 1,
+  "formal_benchmark_inclusion": false
+}

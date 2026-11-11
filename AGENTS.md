@@ -5,6 +5,16 @@ module ownership and interface contracts, and for testing and pull requests.
 Use the implementation and its callers to verify behavior; report disagreements
 with documentation instead of assuming either is correct.
 
+## Experiment networking
+
+- Experiment, probe, and launcher scripts inherit networking. Do not set, clear,
+  or switch proxy variables, force an IP family, or override client proxy handling
+  inside them. Read-only network checks are allowed.
+- Select networking explicitly on the remote host with `deploy/remote-network.sh`
+  before starting processes. Never change Mac networking for a remote experiment.
+  Completed experiment snapshots retain their original scripts as provenance;
+  remove network overrides before reusing any historical script.
+
 ## Project Git workflow
 
 - After each coherent code or documentation change and its applicable validation,

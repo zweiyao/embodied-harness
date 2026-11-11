@@ -1,0 +1,1 @@
+{"passed":true,"cases":["direct removes inherited proxies","proxy sets both cases","invalid mode preserves state","status is read-only"],"real_network_changes":false}
