@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-11-11T14:16:29.739979+00:00",
+  "status": "approved_pending_dependencies",
+  "user_response": "批准该范围，验证后继续下一项",
+  "condition": "依赖准备完成后实施并验证。",
+  "patch_sha256": "4805a7797c4463022b2bf91691871187ec5af02e1ea1c83e2b7abb643593df91",
+  "files": [
+    "robots/robodojo/robot_spec.py",
+    "robots/robodojo/toolkit.py",
+    "tests/unit_tests/robots/robodojo/test_robodojo_runtime_contracts.py"
+  ],
+  "scope": [
+    "Track ENV ownership from the runtime daemon only when ENV is initialized.",
+    "Close an ENV from the toolkit only when it is owned; preserve borrowed services.",
+    "Add owned/borrowed lifecycle regression tests and ensure VLA-only init does not overwrite ENV ownership."
+  ],
+  "excluded": [
+    "Prompt, tool parameter, motion, observation, memory and scoring changes",
+    "New video protocol or recorder ownership changes",
+    "Other robots and shared runtime contracts"
+  ],
+  "validation_plan": [
+    "Remote RoboDojo targeted CPU tests",
+    "Full unit tests and pre-commit",
+    "Owned ENV closes and borrowed ENV remains healthy in real simulator once prerequisites are ready"
+  ],
+  "implementation_applied": false,
+  "candidate_tests_executed": false,
+  "patch_artifact": "approved-change.json"
+}
