@@ -10,14 +10,14 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
+from run_batch import PLAN, ROOT, api, classify, save, unchanged
+
 from robots.libero.prompt_bundle import system_prompt, user_prompt
 from robots.libero.research.language_materials import freeze_materials
 from robots.libero.research.library import Library, Sandbox
-
 from rpent.memory import MemoryManager
 from rpent.prompt.utils import format_prompt
 from rpent.tools.common import CommonTools
-from run_batch import PLAN, ROOT, api, classify, save, unchanged
 
 report = {"passed": False, "environment_actions": 0}
 material = Path(PLAN["materials"])

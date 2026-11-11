@@ -6,11 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
-from robots.libero.research.manual import availability_prompt
-from robots.libero.robot_spec import get_robot_spec
-
 from metrics import analyze
 from model_argument_failure import argument_failure_evidence
+
+from robots.libero.research.manual import availability_prompt
+from robots.libero.robot_spec import get_robot_spec
 
 ROOT = Path(__file__).resolve().parent
 plan = json.loads((ROOT / "plan.json").read_text())

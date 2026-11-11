@@ -11,26 +11,26 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
-import robots.libero.eef_control as eef_module
-import robots.libero.research.manual as manual_module
 import robots.libero.research.orientation as orientation_module
 import robots.libero.research.placement as placement_module
-from robots.libero.prompt_bundle import system_prompt, user_prompt
-from robots.libero.research.language_materials import freeze_materials
-from robots.libero.research.library import Library, Sandbox
-from robots.libero.research.manual import availability_prompt
+from metrics import ACTIONS, analyze
+from run_batch import PLAN, ROOT, api, classify, save, unchanged
 
+import robots.libero.eef_control as eef_module
+import robots.libero.research.manual as manual_module
 import rpent.dashboard.workbench as workbench_module
 import rpent.memory.manager as memory_module
 import rpent.tools.common as common_module
 import rpent.utils.config as config_module
-from metrics import ACTIONS, analyze
+from robots.libero.prompt_bundle import system_prompt, user_prompt
+from robots.libero.research.language_materials import freeze_materials
+from robots.libero.research.library import Library, Sandbox
+from robots.libero.research.manual import availability_prompt
 from rpent.dashboard.workbench import native_catalog
 from rpent.memory import MemoryManager
 from rpent.prompt.utils import format_prompt
 from rpent.tools.common import CommonTools
 from rpent.utils.config import get_repo_root
-from run_batch import PLAN, ROOT, api, classify, save, unchanged
 
 assert (ROOT / "READY.json").is_file(), "Wait for coordinating agent READY"
 report = {"passed": False, "environment_actions": 0}

@@ -11,13 +11,13 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
+import robots.libero.research.orientation as orientation_module
+import robots.libero.research.placement as placement_module
 from metrics import ACTIONS, analyze
 from run_batch import PLAN, ROOT, api, classify, save, unchanged
 
 import robots.libero.eef_control as eef_module
 import robots.libero.research.manual as manual_module
-import robots.libero.research.orientation as orientation_module
-import robots.libero.research.placement as placement_module
 import rpent.dashboard.workbench as workbench_module
 import rpent.memory.manager as memory_module
 import rpent.tools.common as common_module

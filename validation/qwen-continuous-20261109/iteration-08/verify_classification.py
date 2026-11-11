@@ -9,6 +9,7 @@ from functools import partial
 from pathlib import Path
 
 from model_argument_failure import argument_failure_evidence, evidence_from_events
+
 from rpent.dashboard.workbench import native_catalog
 
 ROOT = Path(__file__).resolve().parent

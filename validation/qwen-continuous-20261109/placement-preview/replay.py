@@ -10,7 +10,6 @@ from types import SimpleNamespace
 
 import numpy as np
 from PIL import Image
-
 from robots.libero.research.placement import PlacementTools
 
 parser = argparse.ArgumentParser()

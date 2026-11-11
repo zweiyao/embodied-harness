@@ -32,7 +32,10 @@ assert old["cases"] == new["cases"]
 new_catalog = {item["name"]: item for item in new["catalog"]}
 assert all(item == new_catalog[item["name"]] for item in old["catalog"])
 assert set(new_catalog) - {item["name"] for item in old["catalog"]} == {"rotate_axis"}
-assert new_catalog["translate_to"]["version"] == "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af"
+assert (
+    new_catalog["translate_to"]["version"]
+    == "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af"
+)
 report = {
     "passed": True,
     "old_native_declarations_unchanged": len(old["catalog"]),

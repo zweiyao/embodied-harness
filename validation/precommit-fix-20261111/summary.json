@@ -1,0 +1,39 @@
+{
+  "baseline": "cc6d8d77b6fcb3b493874d6b9c8a160c636fff88",
+  "validated_at": "2026-11-11T12:22:07.572902+00:00",
+  "remote_checkout": "/home/zwy/work/embodied_harness/validation/precommit-fix-20261111/checkout",
+  "scope": "Style and static-check fixes in 32 tracked validation scripts; no runtime, tool, prompt, experience, CI configuration or result-data changes.",
+  "changes": {
+    "files": 32,
+    "copyright_headers_added": 17,
+    "unused_stdlib_imports_removed": 4,
+    "unused_none_placeholder_removed": 1,
+    "formatting_and_import_sorting": true
+  },
+  "ast_audit": {
+    "exact_ast_unchanged_files": 5,
+    "executable_statements_unchanged_except_unused_none_placeholder": true,
+    "import_changes": "Sorting and splitting imports; remove unused hashlib, subprocess, os and datetime imports only.",
+    "new_imports": 0,
+    "details": "ast-audit.json"
+  },
+  "checks": {
+    "precommit": {
+      "command": "/home/zwy/work/harnessvla/.venv/bin/python -m pre_commit run --all-files",
+      "precommit_version": "4.7.0",
+      "ruff_version": "0.15.22",
+      "ruff": "passed",
+      "ruff_format": "passed"
+    },
+    "unit_tests": {
+      "command": "/home/zwy/work/harnessvla/.venv/bin/python -m pytest tests/unit_tests -q",
+      "passed": 2035,
+      "skipped": 15,
+      "seconds": 72.85
+    },
+    "diff_check": "passed"
+  },
+  "provenance": "Original completed experiment scripts and raw data on the remote host were not overwritten. The Git revisions before this formatting commit retain the original tracked text. No experiment script was executed for this repair.",
+  "deployment": "No runtime source synced, no service restarted, no robot/model experiment started.",
+  "github_ci": "Pending push and fresh CI."
+}

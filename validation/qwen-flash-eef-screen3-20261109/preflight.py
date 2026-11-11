@@ -11,12 +11,12 @@ from pathlib import Path
 
 import numpy as np
 from metrics import ACTIONS
+from run_batch import PLAN, ROOT, api, classify, save, unchanged
+
 from robots.libero.prompt_bundle import system_prompt, user_prompt
 from robots.libero.research.language_materials import freeze_materials
 from robots.libero.research.library import Library, Sandbox
 from robots.libero.research.manual import availability_prompt
-from run_batch import PLAN, ROOT, api, classify, save, unchanged
-
 from rpent.dashboard.workbench import native_catalog
 from rpent.memory import MemoryManager
 from rpent.prompt.utils import format_prompt
