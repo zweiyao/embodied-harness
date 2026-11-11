@@ -1,0 +1,118 @@
+# RoboDojo 适配计划
+
+状态：待实施。本文规划适配范围和验收标准，不修改运行行为，不替代提示词、工具、经验或实验配置变更的具体草稿审批。
+
+## 目标与基线
+
+在 `feat/robodojo-integration` 分支补齐当前 RPent 对 RoboDojo 的适配，使真实仿真环境能够通过原生 CLI、Dashboard 和现有研究工作台完成配置、观测、工具调用、模型交互、记录及结果查看。
+
+分支基于 `c8029f02aa6577c7ae04e0bd854b56edd6ee4ab2`（PR #4 合并后的 `main`）。保留既有接口，以 RLinf 环境桥和现有动作模型组件为主；适配代码归属于 `robots/robodojo/`，只有现有扩展点确实不足时才提出共享接口的小范围修改。
+
+本轮只完成计划、源码核对和远程离线基线检查；安装、资源下载、GPU 仿真、模型请求及运行部署均未开始。
+
+## 已核实的现状
+
+| 项目 | 当前事实 | 对计划的影响 |
+| --- | --- | --- |
+| 注册与运行契约 | 已有 RobotSpec、RunConfig、PromptBundle、运行钩子和普通 Dashboard 描述 | 复用并补齐，不新建一套机器人注册或执行框架 |
+| 环境桥 | 已有 BaseEnvClient / BaseEnvFacade、RLinf RoboDojoEnv 包装和主线程 RPC 服务 | 核对实际安装版本及真实 RPC 数据，不能仅凭模拟依赖测试判定可运行 |
+| 观测与动作 | 已有头部及双腕 RGB-D、标定读取、双臂工具、14 维关节策略动作转换 | 重点验证图像时序、坐标系、左右臂顺序和夹爪约定 |
+| 动作模型 | 已有共享 Pi05VLAClient / server 的 RoboDojo 配置及可选 XPolicyLab 后端 | 首先验证默认 RLinf 路径；可选后端保持兼容，单独标注验证状态 |
+| 官方结果 | 已有机器人 finalizer；Flash 完成状态不等于官方成功 | 核对所有入口的结果来源、可用性和收尾时机 |
+| 借用服务收尾 | Toolkit.close 无条件调用 env.close，而对应 RPC 会设置服务退出事件 | 补齐服务所有权传递和回归；借用 ENV 不能随 toolkit 关闭而退出，录像收尾与服务退出需区分 |
+| 研究工作台 | 通用 native_catalog 会调用机器人包的同名工厂；RoboDojo 尚未导出该工厂 | 单独补齐机器人目录、选择及执行记录适配，不硬套 LIBERO 数据格式 |
+| GPU 测试 | 当前 GPU runner 只接受 libero-pro、robocasa、robotwin | 需要按现有测试组织新增 RoboDojo 目标及组件检查 |
+| 离线基线 | 远程独立副本中相关单测 157 passed / 1.09 秒；CLI 帮助加载成功 | 说明当前 CPU 契约已有基础，不代表 Isaac Sim 或任务兼容性 |
+| 远程当前环境 | `/home/zwy/work/harnessvla/.venv` 没有 RoboDojo runtime、Isaac Sim、IsaacLab；已装 RLinf 的 RoboDojo 适配模块也不存在 | 先构建独立环境，不向现有服务环境叠加依赖 |
+| 远程资源 | 只读查询显示单张 NVIDIA GeForce RTX 4090，驱动报告 49140 MiB；查询时已用约 16999 MiB，磁盘约余 1.3 TiB | 显存占用只是当时快照；启动前重新检查，不能据此承诺整套组件可并发驻留 |
+
+历史文档描述过其他机器或环境中的实权重调用；本机本分支仍须重新建立证据。场景资源、NVIDIA 资产包和兼容权重的实际存量尚未完成盘点，不能直接认定全部缺失或可用。
+
+## 框架约束
+
+1. 注册、参数和生命周期沿用 RobotSpec / RunConfig、惰性 registry、ProcessDaemon 及共享 runtime helpers。拥有的服务由本次运行清理；借用端点不被关闭。
+2. 仿真与控制适配留在机器人包或上游 runtime 中；模型推理复用共享 VLA 组件。共享 planner、session、memory 不加入 RoboDojo 专用分支。
+3. 使用现有 Toolkit、ToolResult、EnvState、MemoryManager 和记录接口。大数组与图片进入观测制品，工具文本只包含必要摘要。
+4. 可选依赖惰性加载；没有 Isaac Sim 的普通环境仍应能导入 RPent、列举机器人、查看 CLI 帮助和执行离线单测。
+5. 当前经验与任务策略不做迁移优化。不把 dustbin 等任务专用策略扩展为通用默认行为；如需调整已有提示词或工具，先给出具体前后内容和适用范围。
+6. 实验、探测及启动脚本只继承网络环境；切换网络仅使用远程独立 `deploy/remote-network.sh`。不修改 Mac 网络。
+7. 代码、资源、输出和运行凭据分开。保留独立修改及历史实验数据，不提交权重、录像、原始观测或凭据。
+
+## 分阶段实施与验收
+
+| 阶段 | 实施内容 | 验收标准 |
+| --- | --- | --- |
+| 1. 固定兼容组合与资源清单 | 固定 RPent、RLinf、RoboDojo runtime、IsaacLab、cuRobo 和策略配置的版本；核对资源、归一化统计及权重来源；在远程独立 Python 3.11 环境复现安装配方 | 有可复查的版本/资源清单；依赖解析和导入通过；启动前能报告缺失资源；现有服务解释器与配置保持不变 |
+| 2. 环境与观测 RPC | 按已有服务路径启动单环境；核对任务清单、官方指令、layout/seed、reset、步数计数、三相机 RGB-D 和标定；核对主线程启动与关闭 | 同一固定配置可重复初始化；不会在连接时意外重复 reset；观测、标定和指令属于同一场景；服务就绪、失败及清理均有证据 |
+| 3. 动作与策略闭环 | 核对左右臂、关节/EEF、夹爪及策略张量契约；验证现有 move_to、set_gripper 和 Pi0.5 路径；验证动作中止及终止后不继续提交 | 实际执行一段有界动作并读回状态；14 维策略动作的拆分与服务声明一致；无效形状/非有限值在动作前拒绝；无静默重排或截断 |
+| 4. CLI 与普通 Dashboard | 复用配置、工具声明、提示模板、任务结果 hook 和服务生命周期；核对任务显示、相机、终止原因及结果留档 | CLI 与 Dashboard 均能完成有界闭环；任务指令、模型配置、观测、动作、token/请求记录及官方结果可追踪；中止和启动失败不遗留本次子进程 |
+| 5. 研究工作台 | 在机器人包中补工具目录及选择校验，复用现有 Workbench、RunJournal、配置冻结、历史/视频及经验按需读取；仅在现有共享扩展点不足时补最小接口 | 目录、声明及实际可调用工具一致；选择可冻结并复现；任务/layout、官方 instruct、原始结果和录像可打开；不会读取 LIBERO/Flexiv/UniVTAC 经验 |
+| 6. 验证、文档与交付 | 补必要契约测试和 GPU 入口；分别验证真实组件、脚本规划器闭环和一次真实规划器运行；更新中英文文档和小型证据 | 检查矩阵逐项给出通过/失败/未验证；pre-commit、单测及 CI 通过；PR 描述支持范围与限制；不自动合并 |
+
+每阶段先消除依赖与接口问题，再验证上层行为。优先采用现有单环境安装配方；只有实际冲突证明有必要时，才利用已有 `--sim-python` / `--pi05-python` 参数分离解释器。
+
+初始只启动一个 RoboDojo 仿真环境，并先验证默认 RLinf Pi0.5 后端。保留 XPolicyLab 和 Flash 接口，执行必要回归；完整 XPolicyLab GPU 运行、Flash 跨 layout 复用和并行仿真另列后续验证，不默认为本轮已支持或已证实。
+
+## 必须明确的接口契约
+
+| 边界 | 核对项 |
+| --- | --- |
+| 任务 | 从固定 runtime 的任务目录生成清单；指令读取已初始化的官方 description manager；拒绝空指令及未替换模板，不用任务名替代指令 |
+| 图像 | 三相机名称、RGB/RGBA 通道与 dtype、分辨率、采样时序；核对上游修复过的 RGB 顺序和 get_obs 帧差问题 |
+| 深度与标定 | 深度单位、光轴深度/距离定义、内参、外参方向和相机坐标约定；用真实深度与独立几何参照核验投影，不能只验证公式可执行 |
+| 本体状态 | 左右臂顺序、关节单位、EEF 坐标系与四元数顺序、夹爪状态/命令映射；未控制的另一只手保持原有状态 |
+| 策略 | 当前转换顺序为左臂 6、右臂 6、左夹爪 1、右夹爪 1；核对 checkpoint、归一化、模型 padding、预测 horizon 与实际输出；不混用 joint 和 ee 权重 |
+| 步进 | 区分一次工具调用、策略预测、动作 chunk 和环境物理步；保留原计数/限幅/终止；不把当前不支持的 chunk_step 假装为成功 |
+| 结果 | official success、环境终止、截断、模型 finish、请求预算、模型错误和基础设施错误分别记录；结果不可读取时使用不可用状态，不填成成功或普通任务失败 |
+| 记忆 | 使用 RoboDojo 自己的目录和现有读取方式；基线闭环先用隔离的空本地记忆；本轮不生成新任务经验或接入其他机器人的经验 |
+
+## 预计修改位置
+
+以下为候选文件范围；只有实际缺口对应的文件才修改。实施前为行为改动提供具体 diff/新文件草稿，经确认后接入。
+
+| 文件范围 | 用途 |
+| --- | --- |
+| `robots/robodojo/{robot_spec,env_client,env_facade,env_server,rlinf_env,tasks}.py` | 环境/配置/RPC/结果边界的实际兼容问题 |
+| `robots/robodojo/{toolkit,tools,prompt_bundle}.py` 与 `prompts/` | 仅修正经验证的工具契约、观测流程或提示不一致，保持简洁 |
+| `robots/robodojo/__init__.py`；按需要新增 `catalog.py` 或机器人内的研究适配模块 | 提供工作台所需的机器人扩展接口，避免把专用逻辑写进通用页面或 planner |
+| `rpent/robots/components/pi05_vla_{client,server}.py` | 仅当已有 RoboDojo 编解码与实际 RLinf 契约不符时修正对应分支，复用共享服务 |
+| `pyproject.toml`、`requirements/robodojo-override.txt` | 只调整实际验证过的依赖组合，保留其他机器人已验证的解析结果 |
+| `tests/unit_tests/robots/robodojo/`；必要的 registry/dashboard 契约测试 | 补缺口、负例、作用域及生命周期测试，复用现有 fixtures |
+| `tests/e2e_tests/robodojo/`、`tests/e2e_tests/run_gpu_suite.sh`、必要的 `common.py` 修改 | 将真实组件检查接入现有 GPU 测试组织，并验证清理 |
+| `docs/source-en/rst_source/simulators/robodojo.rst`、中文对应页、`tests/README.md` | 更新安装、资源、运行、接口、结果和实测支持范围 |
+
+共享文件修改必须说明消费者和必要性，并覆盖其他机器人回归。普通适配不新增 planner、中央机器人白名单、专用 RPC 框架或自动多 agent 流程。
+
+## 验证矩阵
+
+1. **离线契约**：扩展已有 157 项 RoboDojo 基线测试；覆盖真实触发条件，如无效动作、错误元数据/模式、缺失指令/标定、组件部分启动失败、借用端点不被清理。
+2. **依赖与可导入性**：在不含 Isaac Sim 的环境检查基础导入、发现和 CLI 帮助；在新环境验证依赖安装、固定版本和组件导入。
+3. **真实组件**：分别检查环境 reset/step/render、三相机、SAM3 和实权重 Pi0.5 RPC；每项记录实际输入输出契约、耗时和错误。请求正常返回或输出有限数不能代替动作效果验证。
+4. **有界脚本闭环**：复用 `tests/e2e_tests/common.py` 的本地脚本规划器方法，连接真实仿真与动作组件，验证公开 CLI、至少一次动作、自动状态记录、finish、结果文件、视频和清理。这不是任务成功率实验。
+5. **真实规划器闭环**：前述检查通过后，先在 `put_bottles_into_dustbin` 的一个固定 layout 验证一次；再按固定 runtime 的实际任务清单，选一个不同操作类型任务和额外 layout 排除单场景硬编码。模型、预算、工具、记忆和重试配置在启动前单独冻结并确认，不自动沿用旧 LIBERO 实验配置。
+6. **回归与 CI**：远程运行 `pre-commit run --all-files`、`pytest tests/unit_tests -v`；新增 GPU 目标需实际接入 runner。修改 Sphinx 页面时构建中英文文档并核对内容。GPU 测试与模型服务不成为普通 CPU 单测的必需依赖。
+
+当前 `tests/e2e_tests/common.py::run_scripted_policy_chain` 会构造 NO_PROXY/no_proxy 覆盖。复用前必须先提交具体修正草稿，移除代码内网络切换并由独立远程网络脚本准备环境；本轮没有执行该 helper，也没有更改代理。
+
+完成适配要求证实完整执行与结果读取链路。官方任务成功单独报告；一次成功、工具可执行或 token 减少均不能用来声称 RoboDojo 全任务覆盖或研究方法有效。
+
+## 依赖与证据来源
+
+2026-11-11 通过 GitHub API 只读核实当前依赖分支可访问：
+
+| 来源 | 核实到的 revision | 用途 |
+| --- | --- | --- |
+| [RLinf/RoboDojo `rpent`](https://github.com/RLinf/RoboDojo/commit/6d76a0c4a49a7a47bf5ee3924de2ccd7ecb8a8b7) | `6d76a0c4a49a7a47bf5ee3924de2ccd7ecb8a8b7` | 当前 runtime 依赖来源，提交日期 2026-09-23 |
+| [littleZ05/RLinf `rpent/robodojo`](https://github.com/littleZ05/RLinf/commit/91e0c6e361eff9371e2423a4183602481ae95ee5) | `91e0c6e361eff9371e2423a4183602481ae95ee5` | 当前 RLinf 适配与策略配置来源，提交日期 2026-09-23 |
+| [官方 RoboDojo](https://github.com/RoboDojo-Benchmark/RoboDojo/commit/f57e1633ffed59761bc8e568cfe7530c4b33381c) | `f57e1633ffed59761bc8e568cfe7530c4b33381c` | 上游对照，提交日期 2026-10-21，不自动替换现有依赖 |
+
+runtime 分支与官方 main 不处于同一 revision。安装前核对桥接协议、RGB 顺序、资产与 layout 数据版本；不能将“使用最新代码”视为兼容性证据。
+
+本仓库依据：[机器人扩展指南](../source-en/rst_source/development/add_robot.rst)、[动作原语指南](../source-en/rst_source/development/add_primitive.rst)、[现有 RoboDojo 指南](../source-en/rst_source/simulators/robodojo.rst)、[测试指南](../../tests/README.md)。本轮核对摘要见 [summary.json](../../validation/robodojo-integration-plan-20261111/summary.json)。
+
+## 交付与停止条件
+
+- 每一批行为修改先展示文件、具体改动、依据、适用范围和验证计划，取得该范围的确认后实施；计划批准不等于允许无限优化。
+- 依赖、资源或接口不匹配时，先定位具体缺口并保留错误，不通过屏蔽错误、伪造观测/成功或修改官方目标绕过。
+- 每批获准改动验证后自动提交、推送当前分支并更新 PR；看板只记实际完成项，未验证能力明确列出，不自动合并。
+- 完成报告区分：CPU 契约、环境可启动、实权重调用、动作执行、完整闭环、官方任务结果，以及尚未覆盖的任务/后端/入口。

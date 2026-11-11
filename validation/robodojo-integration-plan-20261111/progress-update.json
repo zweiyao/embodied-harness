@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-11-11T12:42:12.639506+00:00",
+  "entry": {
+    "title": "RoboDojo 适配分支与计划",
+    "status": "计划完成；适配实现、安装和真实仿真尚未开始",
+    "change": "从PR #4合并后的main c8029f0创建feat/robodojo-integration；核对已有RLinf/ENV/VLA/Toolkit及网页契约，制定六阶段计划与验收矩阵。",
+    "evidence": "docs/plans/robodojo-integration.md；validation/robodojo-integration-plan-20261111/summary.json。远程RoboDojo单测157 passed；全仓2035 passed/15 skipped（73.26秒）、pre-commit通过、CLI帮助和文档相对链接检查通过。当前共享环境缺少RoboDojo仿真依赖/适配模块；研究工作台目录、GPU测试入口及借用ENV收尾有待补齐。未安装、下载、启动仿真/模型或部署服务。"
+  },
+  "local_remote_equal": true
+}

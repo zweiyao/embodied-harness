@@ -1,0 +1,73 @@
+{
+  "checked_at": "2026-11-11T12:40:03.530451+00:00",
+  "branch": "feat/robodojo-integration",
+  "base": "c8029f02aa6577c7ae04e0bd854b56edd6ee4ab2",
+  "previous_pr": {
+    "number": 4,
+    "state": "MERGED",
+    "merged_at": "2026-11-11T12:29:35Z"
+  },
+  "scope": "Planning, source/contract inspection, remote dependency metadata and offline tests only. No adapter implementation, deployment, installation, download, GPU simulation or model request.",
+  "remote_checkout": "/home/zwy/work/embodied_harness/reviews/robodojo-integration-plan-20261111/checkout",
+  "baseline": {
+    "robodojo_unit_tests": {
+      "command": "/home/zwy/work/harnessvla/.venv/bin/python -m pytest tests/unit_tests/robots/robodojo -q",
+      "passed": 157,
+      "seconds": 1.09
+    },
+    "cli_help": {
+      "command": "/home/zwy/work/harnessvla/.venv/bin/python -m rpent.cli.main --robot robodojo --help",
+      "exit_code": 0,
+      "robodojo_arguments_present": [
+        "--sim-python",
+        "--policy-backend",
+        "--env-endpoint"
+      ]
+    }
+  },
+  "current_shared_venv": {
+    "python": "/home/zwy/work/harnessvla/.venv/bin/python",
+    "rlinf": "0.4.0",
+    "rlinf_robodojo_module_present": false,
+    "rlinf-robodojo-runtime": null,
+    "isaacsim": null,
+    "isaaclab": null,
+    "torch": "2.7.1",
+    "rpent-openpi": "0.2.2",
+    "sam3": "0.1.0",
+    "assets_and_weights_inventory": "not completed"
+  },
+  "dependency_refs_checked": {
+    "RLinf/RoboDojo@rpent": "6d76a0c4a49a7a47bf5ee3924de2ccd7ecb8a8b7",
+    "littleZ05/RLinf@rpent/robodojo": "91e0c6e361eff9371e2423a4183602481ae95ee5",
+    "RoboDojo-Benchmark/RoboDojo@main": "f57e1633ffed59761bc8e568cfe7530c4b33381c"
+  },
+  "identified_gaps": [
+    "Current shared environment does not have the required simulator stack or RLinf RoboDojo module.",
+    "RoboDojo package does not export the native_catalog factory required by the research Workbench.",
+    "Existing GPU suite runner has no RoboDojo target.",
+    "Existing scripted GPU helper contains NO_PROXY overrides; review and correct before reuse under the project networking rule.",
+    "Real simulator, observation/action geometry, resource compatibility and full CLI/Dashboard/Workbench chains require validation.",
+    "Toolkit.close unconditionally calls env.close, whose RPC handler sets the server shutdown event; borrowed-service lifetime requires correction and a regression test before rollout."
+  ],
+  "plan": "docs/plans/robodojo-integration.md",
+  "documentation_checks": {
+    "relative_links": "passed",
+    "json_parse": "passed",
+    "diff_check": "passed"
+  },
+  "precommit": {
+    "command": "/home/zwy/work/harnessvla/.venv/bin/python -m pre_commit run --all-files",
+    "ruff": "passed",
+    "ruff_format": "passed",
+    "runtime_version": "4.7.0",
+    "pinned_ruff": "0.15.22"
+  },
+  "full_unit_tests": {
+    "command": "/home/zwy/work/harnessvla/.venv/bin/python -m pytest tests/unit_tests -q",
+    "passed": 2035,
+    "skipped": 15,
+    "seconds": 73.26
+  },
+  "unrelated_untracked": "validation/qwen-continuous-20261109/iteration-11/ retained"
+}
