@@ -1,6 +1,6 @@
 {
   "recorded_at": "2026-11-11T14:16:29.739979+00:00",
-  "status": "approved_pending_dependencies",
+  "status": "implemented_cpu_verified_gpu_incomplete",
   "user_response": "批准该范围，验证后继续下一项",
   "condition": "依赖准备完成后实施并验证。",
   "patch_sha256": "4805a7797c4463022b2bf91691871187ec5af02e1ea1c83e2b7abb643593df91",
@@ -24,7 +24,8 @@
     "Full unit tests and pre-commit",
     "Owned ENV closes and borrowed ENV remains healthy in real simulator once prerequisites are ready"
   ],
-  "implementation_applied": false,
-  "candidate_tests_executed": false,
-  "patch_artifact": "approved-change.json"
+  "implementation_applied": true,
+  "candidate_tests_executed": true,
+  "patch_artifact": "approved-change.json",
+  "verification_summary": "summary.json"
 }

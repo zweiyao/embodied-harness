@@ -46,6 +46,7 @@ class RoboDojoToolkit(Toolkit):
         eval_fair: bool = False,
     ) -> None:
         self.eval_fair = eval_fair
+        self._owns_env = primitives_kwargs.get("owns_env", False)
         self._task_name = primitives_kwargs.get("task", "")
         if eval_fair and not getattr(primitives_kwargs.get("env"), "eval_fair", False):
             raise ValueError("eval-fair requires a mode-validated environment client")
@@ -125,9 +126,10 @@ class RoboDojoToolkit(Toolkit):
         )
 
     def close(self) -> None:
-        """Flush the env server's episode videos before the daemon is stopped."""
+        """Close an owned environment; leave a borrowed server running."""
         super().close()
-        self._primitives.env.close()
+        if self._owns_env:
+            self._primitives.env.close()
 
     def solved(self) -> bool:
         """Read official success for the runner after planner execution."""

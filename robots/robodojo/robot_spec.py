@@ -554,6 +554,9 @@ def _init_runtime(
         )
         primitives_kwargs.update(component_kwargs)
 
+    if "env" in pending:
+        primitives_kwargs["owns_env"] = pending["env"][0] is not None
+
     primitives_kwargs["action_type"] = args.action_type
     primitives_kwargs["task"] = args.task
     return list(owned_daemons.values()), primitives_kwargs

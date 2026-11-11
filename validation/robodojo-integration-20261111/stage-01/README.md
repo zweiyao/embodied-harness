@@ -12,6 +12,9 @@ cuRobo 已由原提交 `895c651` 的独立源码副本构建为 wheel，源文�
 
 完整依赖闭包已解析为 411 项。最初的 367 项清单因安装覆盖项未保留 Isaac Sim 的 `all/extscache` 扩展而不完整，已被替代。当前显式保留所需扩展，25 项 Isaac Sim 发行包选择 NVIDIA 官方 Linux wheel，版本仍为 5.1.0.0；内核 wheel 已完整下载并验证 SHA256。安装器已使用 pip 26.3 的续传能力完成 uv 解析清单的安装，保留仓库已有依赖覆盖；`--no-deps` 用于避免 pip 再次解析已知冲突的上游元数据，不代表依赖或导入检查通过。
 
-基础 RPent、runtime 和 Torch 导入通过，CUDA 可用；Isaac Sim、IsaacLab 和 RLinf 包可发现。依赖元数据检查报告 10 项冲突，其中 8 项对应仓库现有覆盖，另外两项为 sse-starlette/Starlette 和 aiobotocore/wrapt 的版本要求，待处理。尚未初始化仿真或运行策略，不能把基础导入当作运行兼容性通过。下载任务结束后已自动恢复远程直连并关闭本次 SSH 隧道。外部 NVIDIA 资产和后续仿真/工作台仍未验收，本项保持进行中。ENV 所有权修复已获用户批准，按约定等待依赖准备完成后实施；尚未应用补丁或执行候选回归。
+基础 RPent、runtime 和 Torch 导入通过，CUDA 可用。独立环境的 sse-starlette/wrapt 额外冲突已处理；按既有文档将同一提交的 IsaacLab 改为 editable 安装，并运行官方路径生成脚本产生两份 curobo.yml，未改变模板数值。现有 Vulkan 兼容层仅用于本次诊断进程，默认启动器未改。
+
+真实场景已能初始化、响应 RPC，修改后的连接不再隐式复位；全仓 CPU 检查为 2041 passed / 15 skipped。对齐既有 Codex SDK 后新增 packaging 与 Isaac Sim 固定版本的元数据分歧，保留记录，不能据 CPU 与一次启动推断全面兼容。拥有者退出仍阻塞于固定 IsaacLab STOP 回调的 render 循环，另行草拟修复；第 1 项不标为全面验收完成。下载后远程已恢复直连，Mac 网络设置未改。
+
 
 实际状态与证据见 [summary.json](summary.json)。操作日志、完整文件清单和未完成下载保留在远程 `validation/robodojo-integration-20261111/stage-01/`，不提交原始日志、权重或场景资源。阶段提交不创建 PR。

@@ -242,6 +242,7 @@ def test_runtime_connects_matching_policy_client(monkeypatch, tmp_path, backend)
         _args("--policy-backend", backend), tmp_path, NullDashboardEventSink(), {"vla"}
     )
     assert daemons == []
+    assert "owns_env" not in kwargs
     client = kwargs["vla_client"]
     assert isinstance(
         client, Pi05VLAClient if backend == "rlinf" else XPolicyLabVLAClient
@@ -513,3 +514,48 @@ def test_place_in_bin_keeps_backend_phase_sequence(monkeypatch):
     ]
     assert result["released"] is True
     assert result["phases"]["release"]["status"]["success"] is True
+
+
+@pytest.mark.parametrize("owned", [False, True])
+def test_runtime_reports_env_ownership(monkeypatch, tmp_path, owned):
+    from robots.robodojo import env_client
+    from rpent.dashboard.events import NullDashboardEventSink
+
+    rpc = object()
+    client = object()
+    daemon = SimpleNamespace() if owned else None
+    monkeypatch.setattr(robot_spec, "_spawn_env_server", lambda *a: (daemon, rpc))
+    monkeypatch.setattr(robot_spec, "try_wait_server", lambda *a, post_fn: post_fn())
+    monkeypatch.setattr(env_client, "RoboDojoEnvClient", lambda *a, **kw: client)
+    daemons, kwargs = robot_spec._init_runtime(
+        _args(), tmp_path, NullDashboardEventSink(), {"env"}
+    )
+    assert daemons == ([daemon] if owned else [])
+    assert kwargs["env"] is client
+    assert kwargs["owns_env"] is owned
+
+
+@pytest.mark.parametrize("owned", [False, True])
+def test_toolkit_close_preserves_borrowed_env(monkeypatch, tmp_path, owned):
+    from robots.robodojo import toolkit as module
+    from rpent.dashboard.events import NullDashboardEventSink
+    from rpent.memory import MemoryManager
+    from rpent.utils import logging
+
+    monkeypatch.setattr(logging, "_output_dir", tmp_path / "output")
+    monkeypatch.setattr(module, "get_output_dir", lambda: tmp_path / "output")
+    closes = []
+    env = SimpleNamespace(
+        get_obs=lambda: {"vision": {}, "state": {}},
+        get_status=lambda: {"step": 0, "step_limit": 10},
+        get_task_language=lambda: "instruction",
+        get_reward_details=lambda: {"score": 100},
+        close=lambda: closes.append(True),
+    )
+    toolkit = module.RoboDojoToolkit(
+        primitives_kwargs={"env": env, "owns_env": owned},
+        dashboard_events=NullDashboardEventSink(),
+        memory=MemoryManager(root=tmp_path / "memory"),
+    )
+    toolkit.close()
+    assert closes == ([True] if owned else [])

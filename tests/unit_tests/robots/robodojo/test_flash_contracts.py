@@ -484,3 +484,22 @@ def test_flash_config_selects_mode_without_task_summary(monkeypatch, tmp_path):
     config = robot_spec._parse_config(args)
     assert config.prompt_vars["mode"] == "eval-fair"
     assert config.prompt_vars["task_summary"] == {}
+
+
+@pytest.mark.parametrize("mode", ["dev", "eval-fair"])
+def test_connect_validates_metadata_without_resetting_scene(mode):
+    calls = []
+
+    def call(method, **kwargs):
+        calls.append(method)
+        if method == "env.get_env_meta":
+            return {"mode": mode}
+        if method == "env.reset" and mode == "dev":
+            return {"instruction": "new episode"}
+        pytest.fail(f"unexpected RPC on connect: {method}")
+
+    client = RoboDojoEnvClient(SimpleNamespace(call=call), expected_meta={"mode": mode})
+    assert calls == ["env.get_env_meta"]
+    if mode == "dev":
+        assert client.reset() == {"instruction": "new episode"}
+        assert calls == ["env.get_env_meta", "env.reset"]

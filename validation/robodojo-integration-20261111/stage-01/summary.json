@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-11-11T23:12:13.016932+00:00",
+  "updated_at": "2026-11-11T23:49:35.382724+00:00",
   "status": "in_progress",
   "stage": "01_dependency_and_resource_preparation",
   "branch": "feat/robodojo-integration",
   "source_commit": "5c57ad069f854a554dd5f4938aca726a8a441874",
   "isolated_checkout": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111",
   "python_created": "CPython 3.11.16",
-  "runtime_installation": "411-package installation completed; basic imports passed; two additional metadata conflicts remain; real simulator not started",
+  "runtime_installation": "Installed; additional sse-starlette/wrapt conflicts resolved; basic imports, full CPU tests and a real scene/RPC initialized. Graceful owned shutdown remains incomplete.",
   "source_refs": {
     "rlinf": [
       "https://github.com/littleZ05/RLinf.git",
@@ -67,7 +67,7 @@
       "train_state_downloaded": false
     },
     "progress_observed": {
-      "checked_at": "2026-11-11T23:12:13.016932+00:00",
+      "checked_at": "2026-11-11T23:49:35.382724+00:00",
       "baseline_assets": {
         "files_expected": 376,
         "files_size_complete": 376,
@@ -210,11 +210,11 @@
     "network_restored_direct": true
   },
   "not_yet_verified": [
-    "Resolve two additional dependency metadata conflicts and verify affected imports",
-    "Full asset and policy checksums beyond 376 baseline assets; external NVIDIA USD reference closure",
-    "Real simulator initialization and policy inference",
-    "Approved ENV ownership implementation and its CPU/GPU regression checks",
-    "RPC, task and uniform workbench integration"
+    "Owned graceful shutdown; current pinned IsaacLab STOP callback blocks app.close",
+    "Full asset/policy checksums beyond baseline assets; complete external NVIDIA reference closure",
+    "Real explicit-reset stability, geometry and action validation",
+    "Policy checkpoint conversion and inference",
+    "Uniform workbench adaptation and end-to-end task workflow"
   ],
   "changes_to_harness": "none",
   "experiments_started": 0,
@@ -240,19 +240,26 @@
     "assets": "inactive"
   },
   "approved_next_change": {
-    "scope": "RoboDojo ENV ownership close behavior and regression tests",
-    "status": "approved_pending_dependencies",
-    "applied": false,
-    "approval": "../stage-02/approval.json"
+    "scope": "ENV ownership plus separately approved connection without implicit reset",
+    "status": "implemented; CPU and real connection checks passed; owned shutdown incomplete",
+    "summary": "../stage-02/summary.json"
   },
   "dependency_metadata_check": {
     "returncode": 1,
-    "conflicts": 10,
+    "conflicts": 9,
     "covered_by_existing_repository_overrides": 8,
     "additional_conflicts": [
-      "sse-starlette 3.7.0 requires starlette>=0.49.1; installed starlette 0.45.3",
-      "aiobotocore 2.24.0 requires wrapt<2.0.0,>=1.10.10; installed wrapt 2.6.0.dev1"
+      "isaacsim-core 5.1.0.0 requires packaging==23.0; aligned Codex SDK requires packaging>=26.2; installed packaging 26.3."
     ],
-    "note": "Basic imports do not establish server, simulator or policy runtime compatibility."
+    "note": "Eight original metadata overrides remain. The additional packaging disagreement is recorded; CPU tests and scene/RPC initialization passed, which does not establish all runtime compatibility."
+  },
+  "environment_updates_20261112": {
+    "sse_starlette": "3.0.3",
+    "wrapt": "1.17.3",
+    "codex_sdk_and_binary": "0.162.1",
+    "packaging": "26.3",
+    "isaaclab": "Editable installation of the same afca7b09 commit to retain extension configuration",
+    "resource_configuration": "Official update_embodiment_config_path.py generated two missing curobo.yml files by substituting only ASSETS_PATH; original templates unchanged",
+    "vulkan_compatibility": "Existing private layer enabled only in diagnostic processes; seven provenance hashes matched. No default launcher change."
   }
 }
