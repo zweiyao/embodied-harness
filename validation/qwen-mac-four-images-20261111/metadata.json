@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-11T01:45:48.027500+00:00",
+  "location": "Mac",
+  "model": "qwen3.8-flash",
+  "question": "这四张图片展示了什么场景？用一句话回答。",
+  "images": 4,
+  "image_bytes": 2714531,
+  "request_bytes": 3619985,
+  "request_sha256": "7a15cf044ca84afdaf5ca651190217352ea8031c8e0c5fc17fac6e2cf3402917",
+  "byte_identical_to_remote": true,
+  "route": "curl --noproxy *; no forced address family",
+  "max_tokens": 128,
+  "thinking": false,
+  "tools": 0,
+  "history_messages": 0,
+  "timeout_s": 120,
+  "attempts": 1,
+  "credentials": "retrieved via SSH into process memory; not persisted",
+  "curl_version": "curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.66.0"
+}

@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-11-11T01:46:46.320079+00:00",
+  "task": {
+    "title": "Mac同体量四PNG API延迟验证",
+    "status": "1次成功，首字14.39秒，完整15.13秒",
+    "change": "按用户要求在Mac直连Qwen Flash；四PNG＋同短问题，3,619,985字节，SHA256与远程一致；未压缩，无工具/历史，思考关闭。",
+    "evidence": "validation/qwen-mac-four-images-20261111/result.json：HTTP200、cache0、4139输入/40输出；Mac代理设置前后相同。此前远程默认120秒超时、强制IPv4 16.99秒，非同期单次比较，不宣称稳定速度倍率。未启动实验或改harness。"
+  },
+  "board_sha256": "14d70d4642ca03e166c8c79bf25659e5a6716d418835b3d3d6e80125813b1201"
+}
