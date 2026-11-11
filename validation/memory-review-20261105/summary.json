@@ -1,0 +1,25 @@
+{
+  "scope": "Flexiv memory cleanup and prior approval rules",
+  "changed": [
+    "AGENTS.md",
+    "memory/flexiv/global/insertion_local_alignment.md",
+    "memory/flexiv/global/insertion_grasp_revalidation.md"
+  ],
+  "checks": {
+    "remote_unit_tests": {
+      "passed": 2004,
+      "skipped": 11,
+      "seconds": 71.87
+    },
+    "pre_commit": "passed",
+    "memory_frontmatter_and_index_links": "passed",
+    "trajectory_numeric_scan": "passed"
+  },
+  "deployment": "Synced to remote harnessvla; workspace AGENTS and project board also synced. Original runtime files backed up.",
+  "limitations": [
+    "No model requests or robot experiments",
+    "No demonstrated performance improvement",
+    "Existing experiment records and snapshots unchanged",
+    "One Python environment; full CI matrix not run"
+  ]
+}

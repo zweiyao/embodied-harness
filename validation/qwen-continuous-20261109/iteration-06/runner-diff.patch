@@ -1,0 +1,539 @@
+--- iteration-05/audit_results.py
++++ iteration-06/audit_results.py
+@@ -1,6 +1,6 @@
+ # Copyright 2026 The RPent Authors.
+ # Licensed under the Apache License, Version 2.0.
+-"""Audit P against preserved C and restricted18 cells without replacing failures."""
++"""Audit R against preserved C and P19 cells without replacing failures."""
+ 
+ import hashlib
+ import json
+@@ -16,12 +16,12 @@
+ reference = [
+     r for r in json.loads((OLD / "results.json").read_text()) if r["condition"] == "C"
+ ]
+-reference_m = json.loads((ROOT.parent / "iteration-04/results.json").read_text())
++reference_p = json.loads((ROOT.parent / "iteration-05/results.json").read_text())
+ assert json.loads((ROOT / "status.json").read_text())["phase"] == "completed"
+ assert len(rows) == 2
+ assert {(r["task"], r["seed"], r["condition"]) for r in rows} == {
+-    (4, 0, "C+M+P"),
+-    (0, 0, "C+M+P"),
++    (4, 0, "C+M+P+R"),
++    (0, 0, "C+M+P+R"),
+ }
+ summary = {
+     "passed": False,
+@@ -38,21 +38,21 @@
+         assert row["evaluation_success"] is False
+     assert all(row["metrics"][k] == v for k, v in analyze(p).items())
+     declarations = json.loads((p / "manifest.json").read_text())["tools"]
+-    prior_row = next(r for r in reference_m if r["task"] == row["task"])
++    prior_row = next(r for r in reference_p if r["task"] == row["task"])
+     prior_tools = {
+         t["name"]: t
+         for t in json.loads((Path(prior_row["path"]) / "manifest.json").read_text())[
+             "tools"
+         ]
+     }
+-    assert len(declarations) == 19
++    assert len(declarations) == 18
+     assert all(
+         all(
+             t[key] == prior_tools[t["name"]][key]
+             for key in ["version", "description", "parameters"]
+         )
+         for t in declarations
+-        if t["name"] not in {"preview_placement", "align_placement"}
++        if t["name"] != "rotate_axis"
+     )
+     assert (
+         next(t["version"] for t in declarations if t["name"] == "translate_to")
+@@ -65,6 +65,13 @@
+         if t["name"] in {"preview_placement", "align_placement"}
+     } == plan["native_placement_versions"]
+ 
++    assert (
++        next(t["version"] for t in declarations if t["name"] == "rotate_axis")
++        == plan["native_orientation_version"]
++    )
++    assert not {"rotate_wrist", "rotate_pitch"}.intersection(
++        t["name"] for t in declarations
++    )
+     events = [
+         json.loads(line) for line in (p / "events.jsonl").read_text().splitlines()
+     ]
+@@ -106,15 +113,15 @@
+         assert "alignment_pair" not in patch["parameters_json_schema"]["properties"]
+         motion = next(t for t in tools if t["name"] == "translate_to")
+         assert set(motion["parameters_json_schema"]["properties"]) == {"xyz"}
+-        for name in ["preview_placement", "align_placement"]:
++        for name in ["preview_placement", "align_placement", "rotate_axis"]:
+             actual = next(t for t in tools if t["name"] == name)
+             expected = next(t for t in declarations if t["name"] == name)
+             assert actual["parameters_json_schema"] == expected["parameters"]
+     assert plan["benchmark"]["private_bddl"] in (p / "env_server.log").read_text()
+ for condition, group in [
+     ("C_reference", reference),
+-    ("C+M_restricted18_reference", reference_m),
+-    ("C+M+P", rows),
++    ("C+M+P_reference", reference_p),
++    ("C+M+P+R", rows),
+ ]:
+     summary["conditions"][condition] = {
+         "valid": len(group),
+@@ -128,7 +135,7 @@
+         ),
+     }
+ for task in [4, 0]:
+-    pair = [r for r in rows + reference + reference_m if r["task"] == task]
++    pair = [r for r in rows + reference + reference_p if r["task"] == task]
+     assert len(pair) == 3
+     cameras = {}
+     for camera in ["agentview_high.png", "wrist_high.png"]:
+@@ -177,6 +184,7 @@
+     for name in plan["lanes"]
+ ]
+ assert all(r["observer_stopped"] and not r["guard_violations"] for r in runtime)
++assert all(r["environment_eef_control_expected"] is True for r in runtime)
+ summary["runtime_guard_coverage"] = (
+     "complete"
+     if all(r["coverage_complete"] for r in runtime)
+@@ -204,7 +212,7 @@
+ )
+ summary["passed"] = True
+ summary["limitation"] = (
+-    "Development only, two tasks and one initial state; prior C and restricted18 references retained. P adds both conditional geometry and a review/commit interface; temporal/lane confounding remains. Tool acceptance does not verify semantic roles or holding, and these two cells do not establish ten-task or held-out improvement."
++    "Development only, two tasks and one initial state; prior C and P19 references retained. R replaces two selected rotation interfaces and enables existing controller observations; temporal/lane confounding remains. Tool acceptance does not verify semantic roles or holding, and these two cells do not establish ten-task or held-out improvement."
+ )
+ (ROOT / "final-verification.json").write_text(json.dumps(summary, indent=2) + "\n")
+ print(json.dumps(summary))
+--- iteration-05/metrics.py
++++ iteration-06/metrics.py
+@@ -9,6 +9,7 @@
+ from pathlib import Path
+ 
+ ACTIONS = {
++    "rotate_axis",
+     "align_placement",
+     "translate_to",
+     "move_eef",
+--- iteration-05/preflight.py
++++ iteration-06/preflight.py
+@@ -11,25 +11,26 @@
+ from pathlib import Path
+ 
+ import numpy as np
++from metrics import ACTIONS, analyze
++from run_batch import PLAN, ROOT, api, classify, save, unchanged
++
+ import robots.libero.eef_control as eef_module
+ import robots.libero.research.manual as manual_module
++import robots.libero.research.orientation as orientation_module
+ import robots.libero.research.placement as placement_module
++import rpent.dashboard.workbench as workbench_module
++import rpent.memory.manager as memory_module
++import rpent.tools.common as common_module
++import rpent.utils.config as config_module
+ from robots.libero.prompt_bundle import system_prompt, user_prompt
+ from robots.libero.research.language_materials import freeze_materials
+ from robots.libero.research.library import Library, Sandbox
+ from robots.libero.research.manual import availability_prompt
+-
+-import rpent.dashboard.workbench as workbench_module
+-import rpent.memory.manager as memory_module
+-import rpent.tools.common as common_module
+-import rpent.utils.config as config_module
+-from metrics import ACTIONS, analyze
+ from rpent.dashboard.workbench import native_catalog
+ from rpent.memory import MemoryManager
+ from rpent.prompt.utils import format_prompt
+ from rpent.tools.common import CommonTools
+ from rpent.utils.config import get_repo_root
+-from run_batch import PLAN, ROOT, api, classify, save, unchanged
+ 
+ assert (ROOT / "READY.json").is_file(), "Wait for coordinating agent READY"
+ report = {"passed": False, "environment_actions": 0}
+@@ -41,6 +42,7 @@
+         eef_module,
+         manual_module,
+         placement_module,
++        orientation_module,
+         workbench_module,
+         memory_module,
+         common_module,
+@@ -89,6 +91,23 @@
+ report["placement_catalog_and_selected_guidance"] = {
+     "passed": True,
+     "versions": PLAN["native_placement_versions"],
++}
++orientation = catalog["rotate_axis"]
++assert orientation["version"] == PLAN["native_orientation_version"]
++assert orientation["category"] == "control"
++assert set(orientation["parameters"]["properties"]) == {"axis", "angle_rad"}
++assert set(orientation["parameters"]["required"]) == {"axis", "angle_rad"}
++assert orientation["parameters"]["properties"]["axis"]["enum"] == ["x", "z"]
++assert "Use rotate_axis for relative world-axis rotation" in availability_prompt(
++    [orientation]
++)
++assert "Use rotate_axis for relative world-axis rotation" not in availability_prompt(
++    placements
++)
++assert "rotate_axis" in ACTIONS
++report["orientation_catalog_and_selected_guidance"] = {
++    "passed": True,
++    "version": orientation["version"],
+ }
+ with tempfile.TemporaryDirectory(prefix="qwen-motion-metrics-") as temp:
+     fixture = Path(temp) / "events.jsonl"
+@@ -138,8 +157,8 @@
+     "passed": True,
+     "limitation": "The legacy execution indicator is a recorded-step/command proxy, not measured displacement or holding.",
+ }
+-removed = {"move_to", "move_pose", "move_eef"}
+-assert len(PLAN["tool_names"]) == 19 and not removed.intersection(PLAN["tool_names"])
++removed = {"move_to", "move_pose", "move_eef", "rotate_wrist", "rotate_pitch"}
++assert len(PLAN["tool_names"]) == 18 and not removed.intersection(PLAN["tool_names"])
+ assert "native:move_eef" not in PLAN["config"]["tools"]
+ assert "sensor_container_geometry" not in PLAN["tool_names"]
+ assert PLAN["tool_versions"] == [
+@@ -156,19 +175,19 @@
+         str(source / "tests/unit_tests/robots/libero/test_eef_control.py"),
+         str(source / "tests/unit_tests/robots/libero/research/test_manual.py"),
+         "-k",
+-        "test_workbench_selection_enables_only_its_own_environment or test_native_controls_unchanged_and_disabled_tool_rejected or test_default_selection_and_prompt_do_not_enable_eef",
++        "rotate_axis or test_workbench_selection_enables_only_its_own_environment or test_native_controls_unchanged_and_disabled_tool_rejected or test_default_selection_and_prompt_do_not_enable_eef",
+     ],
+     cwd=source,
+     capture_output=True,
+     text=True,
+ )
+ (ROOT / "selection-check.log").write_text(checks.stdout + checks.stderr)
+-assert checks.returncode == 0, "M-only selection/controller registration checks failed"
+-report["placement_selection_checks"] = {
++assert checks.returncode == 0, "R selection/controller registration checks failed"
++report["orientation_selection_checks"] = {
+     "passed": True,
+-    "tools": 19,
++    "tools": 18,
+     "removed": sorted(removed),
+-    "eef_wrapper_expected": False,
++    "eef_wrapper_expected": True,
+     "log": "selection-check.log",
+ }
+ report["materials"] = []
+@@ -342,7 +361,7 @@
+             if "=" in x
+         )
+         assert not any(
+-            env.get(k)
++            k in env
+             for k in [
+                 "HTTP_PROXY",
+                 "HTTPS_PROXY",
+--- iteration-05/run_batch.py
++++ iteration-06/run_batch.py
+@@ -1,6 +1,6 @@
+ # Copyright 2026 The RPent Authors.
+ # Licensed under the Apache License, Version 2.0.
+-"""Run two approved placement-preview cells on two isolated workbenches."""
++"""Run two approved orientation-feedback cells on two isolated workbenches."""
+ 
+ import fcntl
+ import hashlib
+--- iteration-05/runtime_audit.py
++++ iteration-06/runtime_audit.py
+@@ -23,12 +23,15 @@
+     def __init__(self, root, lane, settings, source):
+         self.root, self.lane = Path(root), lane
+         self.settings, self.source = settings, str(source)
++        self.env_eef_expected = settings["eef_control_expected"]
++        assert self.env_eef_expected is True, "R screen requires controller observation"
+         self.stop_requested = threading.Event()
+         self.thread = None
+         self.seen = set()
+         self.report = {
+             "lane": lane,
+             "audit_type": "contemporaneous_owned_process_observer",
++            "environment_eef_control_expected": self.env_eef_expected,
+             "snapshots": [],
+             "observer_errors": [],
+             "observer_stopped": False,
+@@ -180,6 +183,7 @@
+             or not s["private_config_matches"]
+             or s["proxy_variables_present"]
+             or s["eef_control_flag_present"]
++            != (s["role"] == "environment_server" and self.env_eef_expected)
+             or (s["role"] == "environment_server" and not s["entrypoint_matches"])
+         ]
+         self.save()
+--- iteration-05/setup.py
++++ iteration-06/setup.py
+@@ -1,6 +1,6 @@
+ # Copyright 2026 The RPent Authors.
+ # Licensed under the Apache License, Version 2.0.
+-"""Prepare an isolated two-cell placement-preview screen without starting any service."""
++"""Prepare an isolated two-cell orientation-feedback screen without starting any service."""
+ 
+ import copy
+ import hashlib
+@@ -17,7 +17,7 @@
+ 
+ ROOT = Path(__file__).resolve().parent
+ BASE = Path("/home/zwy/work/embodied_harness")
+-OLD = BASE / "experiments/qwen-continuous-20261109/iteration-04"
++OLD = BASE / "experiments/qwen-continuous-20261109/iteration-05"
+ PREVIOUS = OLD
+ HANDOFF = json.loads((ROOT / "source-handoff.json").read_text())
+ SOURCE = Path(HANDOFF["source_root"]).resolve()
+@@ -27,6 +27,10 @@
+ )
+ assert HANDOFF["validation_passed"] and HANDOFF["simulator_probe_passed"]
+ assert SOURCE != Path("/home/zwy/work/harnessvla")
++assert (
++    SOURCE
++    != BASE / "validation/qwen-continuous-20261109/placement-preview-test-checkout"
++)
+ assert Path(get_repo_root.__code__.co_filename).resolve().is_relative_to(SOURCE)
+ assert get_repo_root() == SOURCE, "Override RPENT_REPO_ROOT after dependency activation"
+ source_files = {
+@@ -60,6 +64,7 @@
+     "robots/libero/tools.py",
+     "robots/libero/research/manual.py",
+     "robots/libero/research/placement.py",
++    "robots/libero/research/orientation.py",
+     "rpent/dashboard/workbench.py",
+     "robots/libero/robot_spec.py",
+ ]
+@@ -70,7 +75,8 @@
+ probe_cleanup = json.loads(Path(HANDOFF["probe_cleanup_path"]).read_text())
+ assert probe["passed"] and probe["model_requests"] == 0
+ assert Path(probe["source_root"]).resolve() == SOURCE
+-assert probe["vla_predictions"] == 0 and probe["enable_eef_control"] is False
++assert probe["vla_requests"] == 0 and probe["enable_eef_control"] is True
++assert probe["transform_gate_passed"] is True
+ assert probe_cleanup["passed"] and not probe_cleanup["owned_children_remaining"]
+ assert not probe_cleanup["forced_cleanup"] and not probe_cleanup["protected_changes"]
+ assert probe_cleanup["facade_closed"] and probe_cleanup["private_config_unchanged"]
+@@ -88,7 +94,7 @@
+ state = api("/api/session/state")
+ assert state["session_state"] == "ready" and not state["operator"]["active"]
+ original_config = api("/api/session/config")
+-# Keep C materials and M guidance; only the selected action set changes.
++# Keep C materials, M and P; replace the selected rotation interfaces only.
+ for name in ["system.md", "user.md", "guide.md"]:
+     assert (materials["a"] / name).read_bytes() == (
+         materials["b"] / name
+@@ -147,16 +153,14 @@
+     == selection["reference_plan_sha256"]
+ )
+ assert plan["config"]["tools"] == selection["before"]
+-assert selection["removed"] == [
+-    "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+-]
+-assert selection["added"] == ["native:preview_placement", "native:align_placement"]
++assert selection["removed"] == ["native:rotate_wrist", "native:rotate_pitch"]
++assert selection["added"] == ["native:rotate_axis"]
+ plan["config"]["tools"] = [
+     x for x in plan["config"]["tools"] if x not in selection["removed"]
+ ] + selection["added"]
+ plan["tool_names"] = [
+-    x for x in plan["tool_names"] if x != "sensor_container_geometry"
+-] + ["preview_placement", "align_placement"]
++    x for x in plan["tool_names"] if x not in {"rotate_wrist", "rotate_pitch"}
++] + ["rotate_axis"]
+ plan["tool_versions"] = [
+     "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf"
+ ]
+@@ -164,9 +168,15 @@
+ placement_versions = {
+     name: catalog[name]["version"] for name in ["preview_placement", "align_placement"]
+ }
+-assert placement_versions == HANDOFF["placement_tool_versions"]
++assert (
++    placement_versions
++    == HANDOFF["placement_tool_versions"]
++    == old["native_placement_versions"]
++)
++assert catalog["rotate_axis"]["version"] == HANDOFF["orientation_tool_version"]
++assert HANDOFF["native_motion_version"] == old["native_motion_version"]
+ assert catalog["translate_to"]["version"] == old["native_motion_version"]
+-assert plan["config"]["tools"] == selection["after"] and len(plan["tool_names"]) == 19
++assert plan["config"]["tools"] == selection["after"] and len(plan["tool_names"]) == 18
+ assert all(
+     plan["config"][key] == value for key, value in selection["preserved"].items()
+ )
+@@ -178,6 +188,7 @@
+     "tests/unit_tests/robots/libero/test_eef_control.py",
+     "tests/unit_tests/robots/libero/research/test_manual.py",
+     "tests/unit_tests/robots/libero/research/test_placement.py",
++    "tests/unit_tests/robots/libero/research/test_orientation.py",
+ ]:
+     source_hashes[str(SOURCE / name)] = hashlib.sha256(
+         (SOURCE / name).read_bytes()
+@@ -189,12 +200,13 @@
+ ).hexdigest()
+ plan.update(
+     approved=True,
+-    approval="Root reviewed the isolated placement-preview candidate. Startup requires validated source/probe handoff and a separate coordinating READY gate.",
++    approval="Root approved preparation of the isolated orientation-feedback candidate. Startup requires validated source/probe handoff and a separate coordinating READY gate.",
+     total=2,
+     benchmark=benchmark,
+-    comparison="Development P versus preserved iteration-04 restricted18; iteration-01 C retained as incumbent. Replace old container helper with preview/align and the reviewed conditional guidance; preserve C material, old patch, M and budgets. No overall success-rate claim.",
++    comparison="Development R on frozen iteration-05 P19; iteration-01 C retained as incumbent. Replace selected rotate_wrist/rotate_pitch with rotate_axis; preserve C material, old patch, M/P and budgets. P was not promoted. No overall success-rate claim.",
+     runtime_source=str(SOURCE),
+     native_placement_versions=placement_versions,
++    native_orientation_version=HANDOFF["orientation_tool_version"],
+     selection_difference=selection,
+     native_motion_version="6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+     process_working_directory=str(BASE),
+@@ -245,12 +257,17 @@
+         "unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy"
+         in script
+     )
++    assert script.index(
++        "unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy"
++    ) > script.index("activate.sh")
++    # The selected R tool causes robot_spec to add the flag only to env_server.
+     assert "--enable-eef-control" not in script
+     (lane / "start.sh").write_text(script)
+     plan["lanes"][name] = {
+         "port": port,
+-        "unit": f"rpent-qwen-continuous-20261109-i05-{name}.service",
+-        "condition": "C+M+P",
++        "unit": f"rpent-qwen-continuous-20261109-i06-{name}.service",
++        "condition": "C+M+P+R",
++        "eef_control_expected": True,
+         "materials": str(materials[name]),
+         "material_version": manifests[name]["version"],
+         "trials": [{"task": 4 if name == "a" else 0, "seed": 0}],
+--- iteration-05/start_batch.sh
++++ iteration-06/start_batch.sh
+@@ -3,7 +3,7 @@
+ cd /home/zwy/work/embodied_harness
+ source /home/zwy/work/harnessvla/local-setup/activate.sh
+ unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+-study_root=/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05
++study_root=/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-06
+ source_root=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["runtime_source"])' "$study_root/plan.json")
+ export RPENT_REPO_ROOT="$source_root"
+ export PYTHONPATH="$source_root" HF_HUB_OFFLINE=1
+--- iteration-05/verify_classification.py
++++ iteration-06/verify_classification.py
+@@ -1,16 +1,32 @@
+ # Copyright 2026 The RPent Authors.
+ # Licensed under the Apache License, Version 2.0.
+-"""Check argument-error classification against real prior evidence and P schemas."""
++"""Check argument-error classification against real prior evidence and P/R schemas."""
+ 
++import ast
+ import copy
+ import json
++from functools import partial
+ from pathlib import Path
+ 
+ from model_argument_failure import argument_failure_evidence, evidence_from_events
++
+ from rpent.dashboard.workbench import native_catalog
+-from run_batch import classify
+ 
+ ROOT = Path(__file__).resolve().parent
++runner_source = ROOT / "run_batch.py"
++classify_node = next(
++    node
++    for node in ast.parse(runner_source.read_text()).body
++    if isinstance(node, ast.FunctionDef) and node.name == "classify"
++)
++namespace = {"argument_failure_evidence": argument_failure_evidence}
++exec(
++    compile(
++        ast.Module(body=[classify_node], type_ignores=[]), str(runner_source), "exec"
++    ),
++    namespace,
++)
++classify = partial(namespace["classify"], timeout=600)
+ prior = json.loads((ROOT.parent / "iteration-04/a/incidents.json").read_text())[0]
+ outcome = json.loads((Path(prior["path"]) / "outcome.json").read_text())
+ assert argument_failure_evidence(prior["path"], outcome)
+@@ -118,8 +134,39 @@
+     {"status": "timeout", "error": "planner timed out after 600s", "elapsed_s": 20}
+ ) == ("unexpected", None)
+ checks.extend(["full_budget_timeout_failure", "early_timeout_unexpected"])
++orientation = next(t for t in native_catalog() if t["name"] == "rotate_axis")
++r_events = copy.deepcopy(events)
++r_invalid = [{"axis": "y", "angle_rad": 0.1}, {"axis": "x", "angle_rad": 4.0}]
++for index in range(2):
++    request = r_events[index * 2]["payload"]
++    request["model_request_parameters"]["function_tools"] = [
++        {"name": "rotate_axis", "parameters_json_schema": orientation["parameters"]}
++    ]
++    if index:
++        retry = request["messages"][0]["parts"][0]
++        retry["tool_name"] = "rotate_axis"
++        retry["content"] = "Invalid arguments for rotate_axis: invalid axis or angle"
++    response = r_events[index * 2 + 1]["payload"]["parts"][0]
++    response["tool_name"] = "rotate_axis"
++    response["args"] = json.dumps(r_invalid[index])
++r_manifest = {"tools": [orientation]}
++r_outcome = {
++    **p_outcome,
++    "error": "UnexpectedModelBehavior: Tool 'rotate_axis' exceeded max retries count of 1.",
++}
++assert evidence_from_events(r_events, r_manifest, r_outcome)
++checks.append("R_actual_axis_and_angle_schema_failure")
++r_valid = copy.deepcopy(r_events)
++r_valid[-1]["payload"]["parts"][0]["args"] = json.dumps({"axis": "x", "angle_rad": 0.1})
++assert evidence_from_events(r_valid, r_manifest, r_outcome) is None
++checks.append("valid_R_final_call_unexpected")
++r_mismatch = copy.deepcopy(r_manifest)
++r_mismatch["tools"][0]["parameters"]["properties"]["axis"]["enum"] = ["x", "z", "y"]
++assert evidence_from_events(r_events, r_mismatch, r_outcome) is None
++checks.append("R_declaration_mismatch_unexpected")
+ result = {
+     "passed": True,
++    "R_schema_version": orientation["version"],
+     "checks": checks,
+     "P_schema_version": tool["version"],
+     "model_requests": 0,
+--- iteration-05/verify_runtime_audit.py
++++ iteration-06/verify_runtime_audit.py
+@@ -15,7 +15,7 @@
+ 
+ ROOT = Path(__file__).resolve().parent
+ rows = []
+-for case in ["short_child", "unexpected_eef_flag", "missing_child", "cancel_observer"]:
++for case in ["short_child", "missing_eef_flag", "missing_child", "cancel_observer"]:
+     unit = "rpent-observer-fixture-" + uuid.uuid4().hex[:12] + ".service"
+     observer = None
+     with tempfile.TemporaryDirectory(prefix="rpent-observer-check-") as temporary:
+@@ -35,7 +35,7 @@
+             "from pathlib import Path\n"
+             "time.sleep(0.6)\n"
+             "if sys.argv[1] != 'missing_child':\n"
+-            " flags=['--enable-eef-control'] if sys.argv[1]=='unexpected_eef_flag' else []\n"
++            " flags=[] if sys.argv[1]=='missing_eef_flag' else ['--enable-eef-control']\n"
+             " subprocess.run([sys.executable,str(Path(os.environ['RPENT_REPO_ROOT'])/'robots/libero/env_server.py'),*flags,'--fixture-token','DO_NOT_RECORD_FIXTURE_SECRET'],check=True)\n"
+             "time.sleep(0.3)\n"
+         )
+@@ -61,7 +61,9 @@
+                 check=True,
+                 capture_output=True,
+             )
+-            observer = RuntimeAudit(root, "a", {"unit": unit}, source)
++            observer = RuntimeAudit(
++                root, "a", {"unit": unit, "eef_control_expected": True}, source
++            )
+             observer.start()
+             if case == "cancel_observer":
+                 time.sleep(0.05)
+@@ -92,9 +94,7 @@
+                 )
+             else:
+                 assert report["coverage_complete"] is True
+-                assert bool(report["guard_violations"]) is (
+-                    case == "unexpected_eef_flag"
+-                )
++                assert bool(report["guard_violations"]) is (case == "missing_eef_flag")
+             rows.append(
+                 {
+                     "case": case,

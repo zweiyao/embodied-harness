@@ -1,0 +1,18 @@
+{
+  "recorded_at": "2026-11-10T08:23:29.053485+00:00",
+  "cells": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/b/runs/session/tasks/0002_libero_10_task_t0_s0",
+      "condition": "R18+W2",
+      "task": 0,
+      "text_response_at": "2026-11-10T08:08:41.974047+00:00",
+      "outcome_ended_at": "2026-11-10T08:17:15.924314+00:00",
+      "text_response_to_outcome_s": 513.950267,
+      "model_requests_after_text": 0,
+      "tool_requests_after_text": 0,
+      "source_interpretation": "Allowed str final output without finish_result returns control to inbox.get until the outer task budget expires. No user message or synthetic tool call was injected.",
+      "measurement_limit": "Interval runs from journaled last text response to outcome finalization; includes small return/finalization overhead and is not model-network wait.",
+      "valid_failure_retained": true
+    }
+  ]
+}

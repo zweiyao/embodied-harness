@@ -1,0 +1,46 @@
+{
+  "processes": [
+    {
+      "pid": 2238875,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239328,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239333,
+      "proxy_absent": true
+    },
+    {
+      "pid": 2239458,
+      "proxy_absent": true
+    }
+  ],
+  "active_cells": [
+    {
+      "lane": "a",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "private_route": true,
+      "request_count": 7,
+      "response_count": 6,
+      "tools": {
+        "list_dir": 1,
+        "read_text_file": 5,
+        "view_env_state": 1,
+        "pi0_pick": 1
+      }
+    },
+    {
+      "lane": "b",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "private_route": true,
+      "request_count": 7,
+      "response_count": 6,
+      "tools": {
+        "read_text_file": 5,
+        "view_env_state": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "focused_remote_tests": {
+    "passed": 19,
+    "docker_enabled": true
+  },
+  "full_remote_unit_tests": {
+    "passed": 2008,
+    "skipped": 15,
+    "elapsed_s": 73.06
+  },
+  "zero_radius_regression": "failed against original schema; passed after repair",
+  "historical_valid_points_identical": 247,
+  "historical_zero_radius_points_rejected": 20,
+  "nested_metric_replay": "passed task0 20 failed points / 4 calls, others 0",
+  "published_docker_checks": "passed; radius0 rejected, valid data and missing step checked",
+  "scoped_precommit": "passed",
+  "full_precommit": "failed: 2218 reported errors, 1944 auto-fixed only in disposable checkout, 274 remain; identical in clean d366799 baseline; unrelated changes discarded",
+  "original_runtime_core_changes": false,
+  "original_library_preserved": true,
+  "repair": "completed: valid 300 s timeout, 5 actions, 10 calls before action, zero patch errors/incidents, cleanup passed",
+  "v3_screen": "completed corrected readable retries: 0/3 (0%), all full 600 s timeouts, 0 unexpected incidents; initial three export-defect attempts excluded",
+  "budget_change": "5 classification / 4 controller cases passed; active0/4 retained300, next8 set600; no workbench restart",
+  "memory_export_correction": "same bodies under corpus root, links corrected, no permission code changes; 3 actual CommonTools reads and 3 write denials",
+  "full_remote_unit_tests_after_export_regression": {
+    "passed": 2009,
+    "skipped": 15,
+    "elapsed_s": 71.74
+  },
+  "focused_memory_tests": 18,
+  "corrected_scope_precommit": "passed",
+  "final_audit": "passed: metrics recomputed, frozen config/material/tool/source hashes preserved, owned services stopped, original service/config/direct network unchanged",
+  "proxy_audit": "passed: two launcher scripts clear six variables, seven process environments and manager clear, previous proxy ports closed",
+  "direct_short_request_s": 0.603925
+}

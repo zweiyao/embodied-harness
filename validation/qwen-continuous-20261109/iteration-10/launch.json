@@ -1,0 +1,12 @@
+{
+  "launched_at": "2026-11-10T11:29:48.651541+00:00",
+  "unit": "rpent-qwen-continuous-20261109-i10-batch.service",
+  "systemd": {
+    "MainPID": "3125346",
+    "ExecMainStatus": "0",
+    "ActiveState": "active",
+    "InvocationID": "5158503480f7441eaaa8a08ccc4199df"
+  },
+  "READY_sha256": "d9afc415f029b3ec78274c5b85554522ba8995f4192348b08677e5cea4106f4d",
+  "protected_files": 12880
+}

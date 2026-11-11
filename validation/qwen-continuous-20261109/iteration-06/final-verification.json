@@ -1,0 +1,120 @@
+{
+  "passed": true,
+  "conditions": {
+    "C_reference": {
+      "valid": 2,
+      "successes": 1,
+      "success_rate_percent": 50.0,
+      "before_action_calls": [
+        7,
+        8
+      ],
+      "translate_to_calls": 0
+    },
+    "C+M+P_reference": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        8,
+        10
+      ],
+      "translate_to_calls": 1
+    },
+    "C+M+P+R": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        8,
+        7
+      ],
+      "translate_to_calls": 1
+    }
+  },
+  "paired_initial_images": [
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "C+M+P+R": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "C": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "C+M+P": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "C+M+P+R": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "C": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "C+M+P": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          "identical": true
+        }
+      },
+      "eligible_for_strict_pair": true
+    },
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "C+M+P+R": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "C": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "C+M+P": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "C+M+P+R": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "C": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "C+M+P": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          "identical": true
+        }
+      },
+      "eligible_for_strict_pair": true
+    }
+  ],
+  "motion_returns": [
+    {
+      "task": 4,
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "actual_movement": "Requires pose/frame review; not inferred from response count or steps_used."
+    },
+    {
+      "task": 0,
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "actual_movement": "Requires pose/frame review; not inferred from response count or steps_used."
+    }
+  ],
+  "initial_incident_entries_preserved": 0,
+  "corrected_model_argument_failures": 0,
+  "runtime_incidents": 0,
+  "runtime_guard_coverage": "complete",
+  "runtime_observers": [
+    {
+      "lane": "a",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    },
+    {
+      "lane": "b",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    }
+  ],
+  "task_results_valid": true,
+  "protected_files_verified": 7092,
+  "limitation": "Development only, two tasks and one initial state; prior C and P19 references retained. R replaces two selected rotation interfaces and enables existing controller observations; temporal/lane confounding remains. Tool acceptance does not verify semantic roles or holding, and these two cells do not establish ten-task or held-out improvement."
+}

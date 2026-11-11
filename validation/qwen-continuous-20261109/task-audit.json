@@ -1,0 +1,547 @@
+{
+  "environment_started": false,
+  "model_requests": 0,
+  "runtime_changes": 0,
+  "tasks": [
+    {
+      "task": 0,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.bddl",
+      "sha256": "b04e67b9118b6b0a41956541ef4f66e479a341dd408c21f045c372a169fe01ef",
+      "language": "put both the cream cheese and the tomato sauce in the basket",
+      "goal": [
+        [
+          "in",
+          "cream_cheese_1",
+          "basket_1_contain_region"
+        ],
+        [
+          "in",
+          "tomato_sauce_1",
+          "basket_1_contain_region"
+        ]
+      ],
+      "objects": {
+        "alphabet_soup": [
+          "alphabet_soup_1"
+        ],
+        "cream_cheese": [
+          "cream_cheese_1"
+        ],
+        "tomato_sauce": [
+          "tomato_sauce_1"
+        ],
+        "ketchup": [
+          "ketchup_1"
+        ],
+        "orange_juice": [
+          "orange_juice_1"
+        ],
+        "milk": [
+          "milk_1"
+        ],
+        "butter": [
+          "butter_1"
+        ],
+        "basket": [
+          "basket_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 1,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket.bddl",
+      "sha256": "070d643dfbe177e87e25c5a8ce626ae2417ee29bfbd0f7d2138bb08264ac0088",
+      "language": "put both the alphabet soup and the butter in the basket",
+      "goal": [
+        [
+          "in",
+          "alphabet_soup_1",
+          "basket_1_contain_region"
+        ],
+        [
+          "in",
+          "butter_1",
+          "basket_1_contain_region"
+        ]
+      ],
+      "objects": {
+        "alphabet_soup": [
+          "alphabet_soup_1"
+        ],
+        "cream_cheese": [
+          "cream_cheese_1"
+        ],
+        "tomato_sauce": [
+          "tomato_sauce_1"
+        ],
+        "ketchup": [
+          "ketchup_1"
+        ],
+        "orange_juice": [
+          "orange_juice_1"
+        ],
+        "milk": [
+          "milk_1"
+        ],
+        "butter": [
+          "butter_1"
+        ],
+        "basket": [
+          "basket_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 2,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.bddl",
+      "sha256": "cfa0b51a4ee20f3ee5fdcaa63bfa456b4b27e99a3572cffdd50fb5928b7cdf5e",
+      "language": "turn on the stove and put the pan on it",
+      "goal": [
+        [
+          "turnon",
+          "flat_stove_1"
+        ],
+        [
+          "on",
+          "chefmate_8_frypan_1",
+          "flat_stove_1_cook_region"
+        ]
+      ],
+      "objects": {
+        "chefmate_8_frypan": [
+          "chefmate_8_frypan_1"
+        ],
+        "moka_pot": [
+          "moka_pot_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 3,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.bddl",
+      "sha256": "a2e337fb11319c753beb7d0b83e6f952783e982a4cede7d9bf2dbb4e81aa3ee8",
+      "language": "put the bottle in the bottom drawer of the cabinet and close it",
+      "goal": [
+        [
+          "close",
+          "white_cabinet_1_bottom_region"
+        ],
+        [
+          "in",
+          "wine_bottle_1",
+          "white_cabinet_1_bottom_region"
+        ]
+      ],
+      "objects": {
+        "akita_black_bowl": [
+          "akita_black_bowl_1"
+        ],
+        "wine_bottle": [
+          "wine_bottle_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 4,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate.bddl",
+      "sha256": "f3458f2b14426e23057b40ccb5cf46e5d8e50d7d2799e5923164c58b87374bfd",
+      "language": "put the yellow and white mug on the left plate and put the white mug on the right plate",
+      "goal": [
+        [
+          "on",
+          "white_yellow_mug_1",
+          "plate_1"
+        ],
+        [
+          "on",
+          "porcelain_mug_1",
+          "plate_2"
+        ]
+      ],
+      "objects": {
+        "porcelain_mug": [
+          "porcelain_mug_1"
+        ],
+        "red_coffee_mug": [
+          "red_coffee_mug_1"
+        ],
+        "white_yellow_mug": [
+          "white_yellow_mug_1"
+        ],
+        "plate": [
+          "plate_1",
+          "plate_2"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 5,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy.bddl",
+      "sha256": "922aef6300ad8e14c2dce1fdd6304a5e84663b922b23f6e386742f1e01854add",
+      "language": "pick up the cup and place it in the back compartment of the caddy",
+      "goal": [
+        [
+          "in",
+          "white_yellow_mug_1",
+          "desk_caddy_1_back_contain_region"
+        ]
+      ],
+      "objects": {
+        "black_book": [
+          "black_book_1"
+        ],
+        "white_yellow_mug": [
+          "white_yellow_mug_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 6,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate.bddl",
+      "sha256": "c2e8edb0a4b146f655d040ea2c8fd25d230739671a1971abba212438382d0307",
+      "language": "put the red mug on the plate and put the chocolate pudding to the right of the plate",
+      "goal": [
+        [
+          "on",
+          "red_coffee_mug_1",
+          "plate_1"
+        ],
+        [
+          "on",
+          "chocolate_pudding_1",
+          "living_room_table_plate_right_region"
+        ]
+      ],
+      "objects": {
+        "porcelain_mug": [
+          "porcelain_mug_1"
+        ],
+        "red_coffee_mug": [
+          "red_coffee_mug_1"
+        ],
+        "plate": [
+          "plate_1"
+        ],
+        "chocolate_pudding": [
+          "chocolate_pudding_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 7,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.bddl",
+      "sha256": "96ca246fd570ffea9870b8ab63352168a13e429f2bffff98f3e419aa4b808245",
+      "language": "put both the ketchup and the cream cheese box in the basket",
+      "goal": [
+        [
+          "in",
+          "ketchup_1",
+          "basket_1_contain_region"
+        ],
+        [
+          "in",
+          "cream_cheese_1",
+          "basket_1_contain_region"
+        ]
+      ],
+      "objects": {
+        "alphabet_soup": [
+          "alphabet_soup_1"
+        ],
+        "cream_cheese": [
+          "cream_cheese_1"
+        ],
+        "tomato_sauce": [
+          "tomato_sauce_1"
+        ],
+        "ketchup": [
+          "ketchup_1"
+        ],
+        "basket": [
+          "basket_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    },
+    {
+      "task": 8,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+      "sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+      "language": "put the left moka pot on the stove",
+      "goal": [
+        [
+          "on",
+          "moka_pot_1",
+          "flat_stove_1_cook_region"
+        ],
+        [
+          "turnon",
+          "flat_stove_1"
+        ]
+      ],
+      "objects": {
+        "moka_pot": [
+          "moka_pot_1",
+          "moka_pot_2"
+        ]
+      },
+      "static_language_goal_review": "conflict: requested left pot but goal selects right-region object"
+    },
+    {
+      "task": 9,
+      "bddl": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files/libero_10_task/KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it.bddl",
+      "sha256": "f31d1b020ae25801beba84aa3c8b912f9beb0c2b5e33ce84005c556cd578c703",
+      "language": "put the white mug in the microwave and close it",
+      "goal": [
+        [
+          "in",
+          "porcelain_mug_1",
+          "microwave_1_heating_region"
+        ],
+        [
+          "close",
+          "microwave_1"
+        ]
+      ],
+      "objects": {
+        "porcelain_mug": [
+          "porcelain_mug_1"
+        ],
+        "white_yellow_mug": [
+          "white_yellow_mug_1"
+        ]
+      },
+      "static_language_goal_review": "no apparent mismatch in object/goal semantics; not full physical predicate validation"
+    }
+  ],
+  "task8_init": {
+    "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/init_files/libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.pruned_init",
+    "sha256": "a3972734eb5c9b0bbcf7664c1d141a74b921a179d46867b60ba9348d5de890f2",
+    "shape": [
+      50,
+      47
+    ],
+    "flattened_layout": {
+      "time": [
+        0,
+        1
+      ],
+      "robot_qpos": [
+        1,
+        10
+      ],
+      "moka_pot_1_free_qpos": [
+        10,
+        17
+      ],
+      "moka_pot_2_free_qpos": [
+        17,
+        24
+      ],
+      "stove_button_qpos": [
+        24,
+        25
+      ],
+      "qvel": [
+        25,
+        47
+      ],
+      "index_convention": "Python zero-based half-open slices"
+    },
+    "layout_basis": "7 Panda joints + 2 finger joints; two free objects in parsed declaration/merge order; fixed stove hinge; nq=24,nv=22",
+    "first_moka1_xyz": [
+      -0.048836886821062866,
+      0.26188401019032703,
+      0.97
+    ],
+    "first_moka2_xyz": [
+      0.05581501459291397,
+      0.07440691824586046,
+      0.97
+    ],
+    "moka1_in_right_region_count": 50,
+    "moka2_in_left_region_count": 50,
+    "right_region_xy_bounds": [
+      -0.07500000000000001,
+      0.225,
+      -0.025,
+      0.275
+    ],
+    "left_region_xy_bounds": [
+      0.025,
+      0.025,
+      0.07500000000000001,
+      0.07500000000000001
+    ],
+    "moka1_y_larger_all": true,
+    "first_center_projected_rc": {
+      "moka_pot_1": [
+        581.7036782110473,
+        851.7788119305984
+      ],
+      "moka_pot_2": [
+        681.4945374279224,
+        617.559879363278
+      ]
+    },
+    "world_map_projection_check": {
+      "source_pixel_rc": [
+        630,
+        840
+      ],
+      "reprojected_rc": [
+        629.9725191356647,
+        840.044113887123
+      ]
+    },
+    "calibration_source": "/home/zwy/work/embodied_harness/experiments/qwen-flash-eef-screen3-20261109/a/runs/session/tasks/0002_libero_10_task_t8_s0/agentview_metadata_high.json/00.json",
+    "scope": "Offline source-order and saved-array decoding; no live joint-name query or environment start."
+  },
+  "source_locations": [
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/__init__.py",
+      "sha256": "21b21a2421a0479f44c138e7b10ac44f9da25d7b0c5b1a2b0c463db0dd69d4b1",
+      "lines": {
+        "libero_config_path =": [
+          7
+        ],
+        "def get_libero_path": [
+          41
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/envs/bddl_utils.py",
+      "sha256": "c8d4a068823f1388d9bb3e0b736668fb037e7f1319aaf448c42492fc0d8be089",
+      "lines": {
+        "elif t == \":objects\"": [
+          134
+        ],
+        "object_list.append(group.pop(0))": [
+          143
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/envs/bddl_base_domain.py",
+      "sha256": "943403b4f009928e6ebb33b7bf35af246a86b9f4fcabdddefe8dc2be53d329f8",
+      "lines": {
+        "self.objects = list(self.objects_dict.values())": [
+          383
+        ],
+        "mujoco_objects=self.objects + self.fixtures": [
+          390
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/envs/problems/libero_kitchen_tabletop_manipulation.py",
+      "sha256": "28874dd1ee30b8cba0aa766481626f42463cf3b9a409f841bdf253f76b0d9619",
+      "lines": {
+        "def _load_objects_in_arena": [
+          55
+        ],
+        "def _load_fixtures_in_arena": [
+          44
+        ],
+        "def _check_success": [
+          136
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/envs/objects/turbosquid_objects.py",
+      "sha256": "97c7bec3a5e7ca62deea01c35dc69c1bae21797278158d3f38974b2bb1ed0306",
+      "lines": {
+        "class MokaPot(": [
+          164
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/envs/env_wrapper.py",
+      "sha256": "c6e8a430d52cc487bfe2683e16974c0affb2c4ae7b0c35228ae283d133142cda",
+      "lines": {
+        "def set_init_state": [
+          154
+        ],
+        "problem_info = BDDLUtils.get_problem_info(bddl_file_name)": [
+          59
+        ],
+        "self.env = TASK_MAPPING": [
+          66
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/robosuite/utils/binding_utils.py",
+      "sha256": "c8463cddb558f22247b1c8f202443ddeabe1469e5433b5b9d0eb7b938f32f480",
+      "lines": {
+        "def from_flattened": [
+          230
+        ],
+        "def set_state_from_flattened": [
+          1169
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/robosuite/models/tasks/task.py",
+      "sha256": "a89be36ac1b19143453a405fa1191b3b35c9b7431a18307a83c2b5cb665a72bb",
+      "lines": {
+        "def merge_objects": [
+          105
+        ],
+        "self.worldbody.append(mujoco_obj.get_obj())": [
+          119
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/rlinf/envs/sim/libero/libero_env.py",
+      "sha256": "03d8b098d3f9bb51c03cd1a2daf1ecdc2bf5a921017497f7d1c349fe777e61eb",
+      "lines": {
+        "def _repoint_libero_config": [
+          43
+        ],
+        "if configured_root != installed_root:": [
+          56
+        ],
+        "bddl_root = l_pro.get_libero_path(\"bddl_files\")": [
+          277
+        ],
+        "original_path = os.path.join(bddl_root, folder_name, file_name)": [
+          314
+        ],
+        "\"bddl_file_name\": final_path": [
+          441
+        ],
+        "WorkerEnv(**param)": [
+          247
+        ],
+        "init_root = l_pro.get_libero_path(\"init_states\")": [
+          622
+        ]
+      }
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/benchmark/__init__.py",
+      "sha256": "629480814de1735eeb2900a65ba6d02586c5e2ed832173886ff20fd80dc1da6a",
+      "lines": {
+        "def _make_benchmark": [
+          219
+        ],
+        "def get_task_init_states": [
+          294
+        ]
+      }
+    }
+  ]
+}

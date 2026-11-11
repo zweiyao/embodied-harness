@@ -18,7 +18,7 @@ def generated_availability(item: dict) -> tuple[bool, str | None]:
     if adapter is None and item["name"] == "sensor_alignment_contact":
         # The first published version predates explicit input-adapter metadata.
         adapter = "flexiv.alignment.v1"
-    if adapter != "flexiv.alignment.v1":
+    if adapter not in {"flexiv.alignment.v1", "flexiv.visual_alignment.v1"}:
         return False, "尚无此工具的 Flexiv 观测适配器。"
     fields = {
         "anchor_step",
@@ -27,9 +27,18 @@ def generated_availability(item: dict) -> tuple[bool, str | None]:
         "compare_steps",
         "track_with_tcp",
     }
+    if adapter == "flexiv.visual_alignment.v1":
+        fields = {
+            "anchor_step",
+            "compare_steps",
+            "camera",
+            "feature_axis_px",
+            "reference_axis_px",
+        }
     schema = item.get("parameters", {})
+    optional = {"reselected_axes"} if adapter == "flexiv.visual_alignment.v1" else set()
     if (
-        set(schema.get("properties", {})) != fields
+        set(schema.get("properties", {})) != fields | optional
         or set(schema.get("required", [])) != fields
     ):
         return False, "工具参数与 Flexiv 对齐／接触观测适配器不匹配。"

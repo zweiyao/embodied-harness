@@ -14,11 +14,6 @@ unset SAM3_CHECKPOINT_PATH OPENPI_DATA_HOME
 export PYTHONPATH="$repo"
 export RPENT_WORKBENCH="$workspace/native-univtac/workbench.json"
 export DISPLAY=:1
-export HTTP_PROXY=http://127.0.0.1:7900 HTTPS_PROXY=http://127.0.0.1:7900
-export ALL_PROXY=http://127.0.0.1:7900
-export http_proxy="$HTTP_PROXY" https_proxy="$HTTPS_PROXY" all_proxy="$ALL_PROXY"
-export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1,10.162.250.228}"
-export no_proxy="$NO_PROXY"
 
 exec "$repo/.venv/bin/python" -m rpent.cli.main \
   --robot univtac \

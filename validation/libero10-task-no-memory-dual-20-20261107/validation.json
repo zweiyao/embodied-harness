@@ -1,0 +1,18 @@
+{
+  "approved": true,
+  "material_version": "v1-empty-memory-a11c16cc5536",
+  "material_unit_tests": "3 passed in 0.02s",
+  "preflight": "passed; 5 statistics fixtures, 3 classification cases, both historical adapter logs replayed, both model checks passed",
+  "script_sha256": {
+    "preflight.py": "7a26635d35b692a2439adb938c4e45922f9b013bdabbb492a61eaec35e582856",
+    "cleanup.py": "bad00d5f80b4817e7fcffa409277e414903929c88b1bbf7aed937a4a71b67070",
+    "setup.py": "c5f0046215182e5a47f0297b2133862a4aee46b431657017b56c7825c61b204e",
+    "run_batch.py": "fc8cf707e11a8cb2ff26aabdc171d8e483090b582a8e42c9362878ee8abbaf77",
+    "metrics.py": "43a3cdacabd1b53170e99ea918a2ff1f87cf2c3d92a079e5e4f685494ce6ff96"
+  },
+  "memory_access": "local readonly empty index per run; original system/user/guide unchanged; successful reads outside current run excluded by audit",
+  "execution": "2 independent workbenches, 1 sequential 10-task lane per model, shared VLA/SAM dispatch locks",
+  "reviewed_harness_changes": "none",
+  "not_yet_validated": "20-run results, long-running stability, full benchmark throughput; no causal success-rate conclusion",
+  "known_caveat": "Run IDs hash relative paths and can match across lanes; always identify with lane and full path."
+}

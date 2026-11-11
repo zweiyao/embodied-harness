@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "pid": 2947819,
+  "model_requests": 0,
+  "vla_predictions": 0,
+  "enable_eef_control": false,
+  "purpose": "Interface only; O is a diagnostic visible surface, not a verified held object",
+  "selected_names": [
+    "finish",
+    "align_placement",
+    "preview_placement"
+  ],
+  "consumed_preview_rejected": true,
+  "actual_control_steps": 3,
+  "recorded_step": 1,
+  "motion_result": {
+    "name": "align_placement",
+    "target_xyz": [
+      -0.05864258110523224,
+      0.019893748685717583,
+      0.6812794804573059
+    ],
+    "final_eef_pos": [
+      -0.0586,
+      0.0102,
+      0.6813
+    ],
+    "final_dist_m": 0.0097,
+    "steps_used": 4,
+    "max_steps": 80,
+    "terminated": false,
+    "truncated": false,
+    "gripper_command": 0.0,
+    "preview_id": "f72bbea1910c499e92fb4e1194ca41f4",
+    "semantic_status": "model_accepted_not_verified"
+  },
+  "initial_eef_xyz": [
+    -0.05846466056582393,
+    2.228028059340067e-12,
+    0.6812794757296399
+  ],
+  "final_eef_xyz": [
+    -0.058577987980655534,
+    0.010166879314647978,
+    0.6812727162206405
+  ],
+  "actual_xy_displacement_m": 0.010167510907604926,
+  "returned_images": 3,
+  "zero_rotation_and_gripper_commands": true,
+  "gripper_limit": "Command checked; target retention relies on unchanged M and its prior installed-controller probe",
+  "owned_children_start_ticks": {
+    "2947885": "251558534",
+    "2947886": "251558534"
+  },
+  "facade_closed": true,
+  "private_config_unchanged": true
+}

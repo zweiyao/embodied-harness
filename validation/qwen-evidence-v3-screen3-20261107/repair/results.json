@@ -1,0 +1,77 @@
+[
+  {
+    "lane": "a",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-repair1-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 300s",
+    "elapsed_s": 309.7,
+    "stats": {
+      "total_input_tokens": 273410,
+      "total_output_tokens": 1107,
+      "total_cached_input_tokens": 229120,
+      "turns_used": 12,
+      "tool_calls": 15
+    },
+    "actions": 5,
+    "material_version": "qwen-evidence-v2-56708d55045b",
+    "planner_timeout_s": 300,
+    "metrics": {
+      "tool_calls": {
+        "read_text_file": 3,
+        "list_dir": 1,
+        "view_env_state": 1,
+        "segment": 2,
+        "sensor_container_geometry": 2,
+        "sensor_patch_batch": 1,
+        "pi0_pick": 1,
+        "set_gripper": 1,
+        "move_to": 2,
+        "move_pose": 1
+      },
+      "all_calls": 15,
+      "action_calls": 5,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 10,
+      "before_action_observations": 1,
+      "before_action_perception": 5,
+      "before_action_file_reads": 3,
+      "prefix_or_no_action_calls": {
+        "read_text_file": 3,
+        "list_dir": 1,
+        "view_env_state": 1,
+        "segment": 2,
+        "sensor_container_geometry": 2,
+        "sensor_patch_batch": 1
+      },
+      "first_action_seconds_since_first_event": 98.949763,
+      "first_action_model_request": 7,
+      "tool_error_responses": 0,
+      "patch_point_count": 2,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {
+        "inconsistent_rim": 1,
+        "measured": 1
+      },
+      "grasp_attempt_calls": 2,
+      "completed_model_responses": 11,
+      "completed_model_wait_sum_s": 282.668325,
+      "completed_model_wait_mean_s": 25.697120454545455,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 1,
+        "sensor_container_geometry": 2
+      }
+    }
+  }
+]

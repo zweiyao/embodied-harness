@@ -1,0 +1,19 @@
+{
+  "route": "direct",
+  "stream": true,
+  "exit_code": 28,
+  "status": 0,
+  "dns_s": 0.086476,
+  "connect_s": 0.159811,
+  "tls_s": 0.371101,
+  "first_byte_s": 0.0,
+  "total_s": 120.000985,
+  "first_content_s": null,
+  "first_reasoning_s": null,
+  "usage": null,
+  "finish_reason": null,
+  "returned_model": null,
+  "content_chars": 0,
+  "error_code": null,
+  "request_bytes": 3619985
+}

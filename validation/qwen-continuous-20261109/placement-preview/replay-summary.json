@@ -1,0 +1,489 @@
+{
+  "cases": [
+    {
+      "id": "task4-step3-visible-plate",
+      "roles": "O on front surface of held yellow-white mug; P on visible white inner plate surface; R a visible subset of plate support, not whole plate",
+      "result": {
+        "step": 3,
+        "camera": "agentview",
+        "image_size": [
+          1024,
+          1024
+        ],
+        "crop_bounds_xyxy": [
+          1,
+          486,
+          200,
+          775
+        ],
+        "crop_coordinate_rule": "Inputs remain integer [row,column] in the full image",
+        "labels": {
+          "O": "held feature",
+          "P": "support/rim plane samples",
+          "R": "visible target subregion",
+          "C": "computed target in the selected region"
+        },
+        "held_feature_xyz": [
+          0.01372528076171875,
+          -0.190185546875,
+          0.591796875
+        ],
+        "held_feature_patch_spread_m": 0.0018825122477109646,
+        "plane_sample_xyz": [
+          [
+            -0.0055389404296875,
+            -0.3056640625,
+            0.4443359375
+          ],
+          [
+            -0.004638671875,
+            -0.2763671875,
+            0.445068359375
+          ],
+          [
+            0.03814697265625,
+            -0.263671875,
+            0.445556640625
+          ],
+          [
+            0.050323486328125,
+            -0.29345703125,
+            0.444580078125
+          ]
+        ],
+        "plane_patch_spread_m": [
+          0.002372231996011481,
+          0.0023567475403432564,
+          0.002324982846104522,
+          0.0022900550044629552
+        ],
+        "plane_max_residual_m": 6.735634053933857e-05,
+        "plane_normal_xyz": [
+          0.00021533449708725536,
+          -0.029107786567625336,
+          0.9995762554163579
+        ],
+        "selected_region_xyz": [
+          [
+            0.004138502220686013,
+            -0.30891809516477914,
+            0.44418596690525103
+          ],
+          [
+            0.001218099249100324,
+            -0.28110649865045123,
+            0.4449964732318662
+          ],
+          [
+            0.029833299236537547,
+            -0.269276692419779,
+            0.44533479422875655
+          ],
+          [
+            0.04155463999503528,
+            -0.2963312522410094,
+            0.4445444369571687
+          ]
+        ],
+        "selected_region_center_xyz": [
+          0.019565517305827528,
+          -0.28939123740807315,
+          0.44475126808794896
+        ],
+        "selected_region_center_pixel_rc": [
+          715.5808388473425,
+          47.855486846494536
+        ],
+        "eef_target_xyz_keep_height": [
+          -0.02329505911423291,
+          -0.2553289940544219,
+          0.6193684894130101
+        ],
+        "xy_correction_m": 0.09937744913729182,
+        "semantic_status": "caller_selected_not_verified",
+        "limits": "Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.",
+        "status": "review_required",
+        "second_camera_target_pixel_rc": [
+          504.94026610044506,
+          798.8493139640425
+        ],
+        "second_camera_projection_limit": "Projection for independent image review, not a semantic or accuracy verdict"
+      },
+      "source_sha256": {
+        "rgb": "eba577a8977d764c730293b8554d45e539a4fdcce520973bea7cb4d474228a33",
+        "world": "f588496838ffd4d483aaffbdf1b06e4fd8a0433b7f255cc551224d81ffc048b0",
+        "calibration": "066ee687222062b2305980abe0df6e08d173687b7eb5de6ae4cd45844b8b330e",
+        "state": "77ffb54e2d1b78efd89a0af6be6a64dffb7cb261f848714d8f1f95b0b70fde0a"
+      },
+      "images": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task4-step3-visible-plate-0.png",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task4-step3-visible-plate-1.png"
+      ]
+    },
+    {
+      "id": "task4-step3-wrong-robot-feature",
+      "roles": "O deliberately on robot housing, not cup; same valid plate anchors/region",
+      "result": {
+        "step": 3,
+        "camera": "agentview",
+        "image_size": [
+          1024,
+          1024
+        ],
+        "crop_bounds_xyxy": [
+          1,
+          326,
+          195,
+          775
+        ],
+        "crop_coordinate_rule": "Inputs remain integer [row,column] in the full image",
+        "labels": {
+          "O": "held feature",
+          "P": "support/rim plane samples",
+          "R": "visible target subregion",
+          "C": "computed target in the selected region"
+        },
+        "held_feature_xyz": [
+          -0.01416015625,
+          -0.1871337890625,
+          0.677734375
+        ],
+        "held_feature_patch_spread_m": 0.001508260097183438,
+        "plane_sample_xyz": [
+          [
+            -0.0055389404296875,
+            -0.3056640625,
+            0.4443359375
+          ],
+          [
+            -0.004638671875,
+            -0.2763671875,
+            0.445068359375
+          ],
+          [
+            0.03814697265625,
+            -0.263671875,
+            0.445556640625
+          ],
+          [
+            0.050323486328125,
+            -0.29345703125,
+            0.444580078125
+          ]
+        ],
+        "plane_patch_spread_m": [
+          0.002372231996011481,
+          0.0023567475403432564,
+          0.002324982846104522,
+          0.0022900550044629552
+        ],
+        "plane_max_residual_m": 6.735634053933857e-05,
+        "plane_normal_xyz": [
+          0.00021533449708725536,
+          -0.029107786567625336,
+          0.9995762554163579
+        ],
+        "selected_region_xyz": [
+          [
+            0.004138502220686013,
+            -0.30891809516477914,
+            0.44418596690525103
+          ],
+          [
+            0.001218099249100324,
+            -0.28110649865045123,
+            0.4449964732318662
+          ],
+          [
+            0.029833299236537547,
+            -0.269276692419779,
+            0.44533479422875655
+          ],
+          [
+            0.04155463999503528,
+            -0.2963312522410094,
+            0.4445444369571687
+          ]
+        ],
+        "selected_region_center_xyz": [
+          0.019565517305827528,
+          -0.28939123740807315,
+          0.44475126808794896
+        ],
+        "selected_region_center_pixel_rc": [
+          715.5808388473425,
+          47.855486846494536
+        ],
+        "eef_target_xyz_keep_height": [
+          0.004590377897485839,
+          -0.2583807518669219,
+          0.6193684894130101
+        ],
+        "xy_correction_m": 0.10767546981063889,
+        "semantic_status": "caller_selected_not_verified",
+        "limits": "Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.",
+        "status": "review_required",
+        "second_camera_target_pixel_rc": [
+          504.94026610044506,
+          798.8493139640425
+        ],
+        "second_camera_projection_limit": "Projection for independent image review, not a semantic or accuracy verdict"
+      },
+      "source_sha256": {
+        "rgb": "eba577a8977d764c730293b8554d45e539a4fdcce520973bea7cb4d474228a33",
+        "world": "f588496838ffd4d483aaffbdf1b06e4fd8a0433b7f255cc551224d81ffc048b0",
+        "calibration": "066ee687222062b2305980abe0df6e08d173687b7eb5de6ae4cd45844b8b330e",
+        "state": "77ffb54e2d1b78efd89a0af6be6a64dffb7cb261f848714d8f1f95b0b70fde0a"
+      },
+      "images": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task4-step3-wrong-robot-feature-0.png",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task4-step3-wrong-robot-feature-1.png"
+      ]
+    },
+    {
+      "id": "task0-step4-visible-interior",
+      "roles": "O on visible cream-cheese face below gripper; P visually selected far/near rim cloth; R visible region through the basket opening, not complete opening boundary",
+      "result": {
+        "step": 4,
+        "camera": "agentview",
+        "image_size": [
+          1024,
+          1024
+        ],
+        "crop_bounds_xyxy": [
+          121,
+          440,
+          1020,
+          714
+        ],
+        "crop_coordinate_rule": "Inputs remain integer [row,column] in the full image",
+        "labels": {
+          "O": "held feature",
+          "P": "support/rim plane samples",
+          "R": "visible target subregion",
+          "C": "computed target in the selected region"
+        },
+        "held_feature_xyz": [
+          0.1239013671875,
+          -0.1854248046875,
+          0.55419921875
+        ],
+        "held_feature_patch_spread_m": 0.0018506841708962384,
+        "plane_sample_xyz": [
+          [
+            -0.0628662109375,
+            0.2115478515625,
+            0.576171875
+          ],
+          [
+            -0.06610107421875,
+            0.29296875,
+            0.576171875
+          ],
+          [
+            0.084228515625,
+            0.2034912109375,
+            0.57275390625
+          ],
+          [
+            0.08575439453125,
+            0.2447509765625,
+            0.5732421875
+          ]
+        ],
+        "plane_patch_spread_m": [
+          0.001872416942267,
+          0.001827633522677049,
+          0.0014921067300876234,
+          0.0014932547542356514
+        ],
+        "plane_max_residual_m": 0.00022212838798596292,
+        "plane_normal_xyz": [
+          0.02083055804671059,
+          -0.0019480137492056241,
+          0.9997811225932882
+        ],
+        "selected_region_xyz": [
+          [
+            -0.0028543380937637863,
+            0.2262953990188752,
+            0.574834897431123
+          ],
+          [
+            -0.007999401484381052,
+            0.2833642779590054,
+            0.5750532907349224
+          ],
+          [
+            0.04232457639625953,
+            0.26689734672633625,
+            0.573972699867163
+          ],
+          [
+            0.04692439744678023,
+            0.22419610326695322,
+            0.5737936612308862
+          ]
+        ],
+        "selected_region_center_xyz": [
+          0.0183910515512772,
+          0.2503410163955864,
+          0.5744390986707487
+        ],
+        "selected_region_center_pixel_rc": [
+          540.5429564931574,
+          952.1082574316628
+        ],
+        "eef_target_xyz_keep_height": [
+          0.019973025519074414,
+          0.24968588503954725,
+          0.5471886289210046
+        ],
+        "xy_correction_m": 0.448357310110889,
+        "semantic_status": "caller_selected_not_verified",
+        "limits": "Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.",
+        "status": "requires_waypoint",
+        "reason": "Choose an intermediate carry-height translation, then preview again",
+        "second_camera_target_pixel_rc": [
+          2509.754921651001,
+          -3382.8030418729495
+        ],
+        "second_camera_projection_limit": "Projection for independent image review, not a semantic or accuracy verdict"
+      },
+      "source_sha256": {
+        "rgb": "e7c747e12bd0de51b5020d879fec8aff618437d9130e7b5d9e62a94127b864b6",
+        "world": "bb7b743f1599a54d99b62cb2dc133f634d1e3c2000fdb30ba7d508be4a9e08e8",
+        "calibration": "066ee687222062b2305980abe0df6e08d173687b7eb5de6ae4cd45844b8b330e",
+        "state": "ec40aa2ba89e3eb78ebe71b7657cfc5ff8b4e03c794602d3721b78dd723505f1"
+      },
+      "images": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task0-step4-visible-interior-0.png",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task0-step4-visible-interior-1.png"
+      ]
+    },
+    {
+      "id": "task0-step4-wrong-table-plane",
+      "roles": "P deliberately on table rather than rim; O/R unchanged",
+      "result": {
+        "step": 4,
+        "camera": "agentview",
+        "image_size": [
+          1024,
+          1024
+        ],
+        "crop_bounds_xyxy": [
+          121,
+          491,
+          1020,
+          975
+        ],
+        "crop_coordinate_rule": "Inputs remain integer [row,column] in the full image",
+        "labels": {
+          "O": "held feature",
+          "P": "support/rim plane samples",
+          "R": "visible target subregion",
+          "C": "computed target in the selected region"
+        },
+        "held_feature_xyz": [
+          0.1239013671875,
+          -0.1854248046875,
+          0.55419921875
+        ],
+        "held_feature_patch_spread_m": 0.0018506841708962384,
+        "plane_sample_xyz": [
+          [
+            0.11175537109375,
+            -0.035247802734375,
+            0.42529296875
+          ],
+          [
+            0.11175537109375,
+            0.050018310546875,
+            0.42529296875
+          ],
+          [
+            0.1802978515625,
+            0.0458984375,
+            0.42529296875
+          ],
+          [
+            0.1802978515625,
+            -0.032318115234375,
+            0.42529296875
+          ]
+        ],
+        "plane_patch_spread_m": [
+          0.0018759153039354065,
+          0.0018607616222940677,
+          0.0016140192851423556,
+          0.0016220315266013564
+        ],
+        "plane_max_residual_m": 0.0,
+        "plane_normal_xyz": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "selected_region_xyz": [
+          [
+            -0.23946869560359585,
+            0.31415551457774876,
+            0.42529296875
+          ],
+          [
+            -0.24709539378370593,
+            0.39360479823045774,
+            0.42529296875
+          ],
+          [
+            -0.17499931198304108,
+            0.3696937700194576,
+            0.42529296875
+          ],
+          [
+            -0.16826848231805025,
+            0.31040203321820287,
+            0.42529296875
+          ]
+        ],
+        "selected_region_center_xyz": [
+          -0.20920295822713336,
+          0.34720488880220657,
+          0.42529296875
+        ],
+        "selected_region_center_pixel_rc": [
+          540.496734857605,
+          952.1141102482991
+        ],
+        "eef_target_xyz_keep_height": [
+          -0.20762098425933614,
+          0.3465497574461674,
+          0.5471886289210046
+        ],
+        "xy_correction_m": 0.6282140415470484,
+        "semantic_status": "caller_selected_not_verified",
+        "limits": "Selected feature is not a footprint center; selected region is not the full opening. No holding, height clearance, path, release or task-success conclusion.",
+        "status": "requires_waypoint",
+        "reason": "Choose an intermediate carry-height translation, then preview again",
+        "second_camera_target_pixel_rc": [
+          1881.4683038069106,
+          -947.7288226751717
+        ],
+        "second_camera_projection_limit": "Projection for independent image review, not a semantic or accuracy verdict"
+      },
+      "source_sha256": {
+        "rgb": "e7c747e12bd0de51b5020d879fec8aff618437d9130e7b5d9e62a94127b864b6",
+        "world": "bb7b743f1599a54d99b62cb2dc133f634d1e3c2000fdb30ba7d508be4a9e08e8",
+        "calibration": "066ee687222062b2305980abe0df6e08d173687b7eb5de6ae4cd45844b8b330e",
+        "state": "ec40aa2ba89e3eb78ebe71b7657cfc5ff8b4e03c794602d3721b78dd723505f1"
+      },
+      "images": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task0-step4-wrong-table-plane-0.png",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/replay-artifacts/task0-step4-wrong-table-plane-1.png"
+      ]
+    }
+  ],
+  "simulator_actions": 0,
+  "model_calls": 0,
+  "limitation": "Independent manual annotations; no target policy evaluated, no action or semantic verification performed"
+}

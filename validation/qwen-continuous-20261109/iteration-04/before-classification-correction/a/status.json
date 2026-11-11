@@ -1,0 +1,5 @@
+{
+  "phase": "stopped",
+  "completed": 0,
+  "error": "Unexpected incident excluded; diagnose before retry"
+}

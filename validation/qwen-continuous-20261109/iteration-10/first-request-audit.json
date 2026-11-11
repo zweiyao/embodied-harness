@@ -1,0 +1,413 @@
+{
+  "passed": true,
+  "observed_at": "2026-11-10T11:31:24.827128+00:00",
+  "rows": [
+    {
+      "lane": "a",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "first_request_at": "2026-11-10T11:30:03.907439+00:00",
+      "actual_initial_tool_names": [
+        "list_dir",
+        "read_text_file",
+        "write_text_file",
+        "pi0_doubled",
+        "pi0_pick",
+        "read_image",
+        "segment",
+        "view_env_state",
+        "finish"
+      ],
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "allow_text_output": false,
+      "mode": "calibrated-pair-v1",
+      "phase_audit": {
+        "passed": true,
+        "requests": [
+          {
+            "request": 1,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 2,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 3,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 4,
+            "phase": "manual_available",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "release",
+              "set_gripper",
+              "back_project",
+              "read_image",
+              "segment",
+              "view_camera_meta",
+              "view_env_state",
+              "sensor_patch_batch",
+              "translate_to",
+              "preview_placement",
+              "align_placement",
+              "rotate_axis",
+              "finish"
+            ]
+          },
+          {
+            "request": 5,
+            "phase": "manual_available",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "release",
+              "set_gripper",
+              "back_project",
+              "read_image",
+              "segment",
+              "view_camera_meta",
+              "view_env_state",
+              "sensor_patch_batch",
+              "translate_to",
+              "preview_placement",
+              "align_placement",
+              "rotate_axis",
+              "finish"
+            ]
+          }
+        ],
+        "transition": {
+          "step": 1,
+          "trigger": "pi0_pick",
+          "chunks_used": 18
+        },
+        "limit": "Phase/dispatch evidence only; no success, holding or outcome-classification inference."
+      },
+      "view_audit": {
+        "checked_bundles": 3,
+        "explicit_policy_reads": 0,
+        "error_returns": 0,
+        "bindings": [
+          {
+            "tool": "view_env_state",
+            "index": 0,
+            "artifact": "agentview_high.png",
+            "camera": "agentview",
+            "step": 0,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          {
+            "tool": "view_env_state",
+            "index": 1,
+            "artifact": "wrist_high.png",
+            "camera": "wrist",
+            "step": 0,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          {
+            "tool": "pi0_pick",
+            "index": 0,
+            "artifact": "agentview_high.png",
+            "camera": "agentview",
+            "step": 1,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "7af3d8e52b01f597cc452d2a3dbd66eb29fcd1a8d432163d46431d49420501ab"
+          },
+          {
+            "tool": "pi0_pick",
+            "index": 1,
+            "artifact": "wrist_high.png",
+            "camera": "wrist",
+            "step": 1,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "aa89fd4b0814686d8a9cc544d180e2441c5192e0aa171aba3a0c74aabc417cd0"
+          },
+          {
+            "tool": "translate_to",
+            "index": 0,
+            "artifact": "agentview_high.png",
+            "camera": "agentview",
+            "step": 2,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "b2d516c41f77e8169f92afbb5e52bf9c2bc41399415e3d97e3fcf4bdd5621913"
+          },
+          {
+            "tool": "translate_to",
+            "index": 1,
+            "artifact": "wrist_high.png",
+            "camera": "wrist",
+            "step": 2,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "e83ecfc156edecfbd076140abfbe0425fdaeada4778a3738a2093bc6e9448114"
+          }
+        ],
+        "passed": true,
+        "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+      },
+      "initial_view_delivery": [
+        {
+          "view_step": 0,
+          "image_artifacts": [
+            "inputs/a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729.bin",
+            "inputs/34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8.bin"
+          ],
+          "next_request_attachment_count": 2
+        }
+      ],
+      "tool_sequence": [
+        "view_env_state",
+        "read_text_file",
+        "read_text_file",
+        "read_text_file",
+        "read_text_file",
+        "pi0_pick",
+        "translate_to"
+      ]
+    },
+    {
+      "lane": "b",
+      "task_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "first_request_at": "2026-11-10T11:30:04.065659+00:00",
+      "actual_initial_tool_names": [
+        "list_dir",
+        "read_text_file",
+        "write_text_file",
+        "pi0_doubled",
+        "pi0_pick",
+        "read_image",
+        "segment",
+        "view_env_state",
+        "finish"
+      ],
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "allow_text_output": false,
+      "mode": "calibrated-pair-v1",
+      "phase_audit": {
+        "passed": true,
+        "requests": [
+          {
+            "request": 1,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 2,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 3,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 4,
+            "phase": "initial",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "read_image",
+              "segment",
+              "view_env_state",
+              "finish"
+            ]
+          },
+          {
+            "request": 5,
+            "phase": "manual_available",
+            "tool_names": [
+              "list_dir",
+              "read_text_file",
+              "write_text_file",
+              "pi0_doubled",
+              "pi0_pick",
+              "release",
+              "set_gripper",
+              "back_project",
+              "read_image",
+              "segment",
+              "view_camera_meta",
+              "view_env_state",
+              "sensor_patch_batch",
+              "translate_to",
+              "preview_placement",
+              "align_placement",
+              "rotate_axis",
+              "finish"
+            ]
+          }
+        ],
+        "transition": {
+          "step": 1,
+          "trigger": "pi0_pick",
+          "chunks_used": 19
+        },
+        "limit": "Phase/dispatch evidence only; no success, holding or outcome-classification inference."
+      },
+      "view_audit": {
+        "checked_bundles": 2,
+        "explicit_policy_reads": 0,
+        "error_returns": 0,
+        "bindings": [
+          {
+            "tool": "view_env_state",
+            "index": 0,
+            "artifact": "agentview_high.png",
+            "camera": "agentview",
+            "step": 0,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          {
+            "tool": "view_env_state",
+            "index": 1,
+            "artifact": "wrist_high.png",
+            "camera": "wrist",
+            "step": 0,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          {
+            "tool": "pi0_pick",
+            "index": 0,
+            "artifact": "agentview_high.png",
+            "camera": "agentview",
+            "step": 1,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "ec9839fd109e211fe8b3c9c173d3b53407be233c3244018bb165b0de49e6896f"
+          },
+          {
+            "tool": "pi0_pick",
+            "index": 1,
+            "artifact": "wrist_high.png",
+            "camera": "wrist",
+            "step": 1,
+            "width": 1024,
+            "height": 1024,
+            "coordinate_frame": "calibrated",
+            "sha256": "736887932a948b94fb34b7ff70b3b3e90619f1aeaef708837aab307af79f3ba9"
+          }
+        ],
+        "passed": true,
+        "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+      },
+      "initial_view_delivery": [
+        {
+          "view_step": 0,
+          "image_artifacts": [
+            "inputs/3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61.bin",
+            "inputs/612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d.bin"
+          ],
+          "next_request_attachment_count": 2
+        }
+      ],
+      "tool_sequence": [
+        "view_env_state",
+        "read_text_file",
+        "read_text_file",
+        "read_text_file",
+        "read_text_file",
+        "segment",
+        "segment",
+        "pi0_pick"
+      ]
+    }
+  ],
+  "limit": "Live partial evidence, no outcome or promotion claim."
+}

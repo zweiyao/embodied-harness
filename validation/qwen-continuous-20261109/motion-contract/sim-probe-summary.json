@@ -1,0 +1,279 @@
+{
+  "passed": true,
+  "model_requests": 0,
+  "cases": [
+    {
+      "gripper_case": "open",
+      "variant": "old",
+      "warmup_steps": 5,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "move_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2280074920416615e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false
+      },
+      "rotation_change_rad": 0.0035361293648995705,
+      "initial_gripper_target": [
+        1.0,
+        -1.0
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.03922865864373005,
+        -0.03922859832009343
+      ],
+      "qpos_after": [
+        0.039323716572369195,
+        -0.039323655617163444
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    },
+    {
+      "gripper_case": "open",
+      "variant": "B",
+      "warmup_steps": 5,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "translate_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2280074920416615e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false,
+        "gripper_command": 0.0
+      },
+      "rotation_change_rad": 0.0035361293648995705,
+      "initial_gripper_target": [
+        1.0,
+        -1.0
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.03922865864373005,
+        -0.03922859832009343
+      ],
+      "qpos_after": [
+        0.039323716572369195,
+        -0.039323655617163444
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    },
+    {
+      "gripper_case": "closed",
+      "variant": "old",
+      "warmup_steps": 10,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "move_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2368259588317896e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false
+      },
+      "rotation_change_rad": 0.003536129365561138,
+      "initial_gripper_target": [
+        -1.0,
+        1.0
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.007103953632927745,
+        -0.007103893268484195
+      ],
+      "qpos_after": [
+        0.0020737135688591946,
+        -0.0020736509755804183
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    },
+    {
+      "gripper_case": "closed",
+      "variant": "B",
+      "warmup_steps": 10,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "translate_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2368259588317896e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false,
+        "gripper_command": 0.0
+      },
+      "rotation_change_rad": 0.003536129365561138,
+      "initial_gripper_target": [
+        -1.0,
+        1.0
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.007103953632927745,
+        -0.007103893268484195
+      ],
+      "qpos_after": [
+        0.0020737135688591946,
+        -0.0020736509755804183
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    },
+    {
+      "gripper_case": "partial",
+      "variant": "old",
+      "warmup_steps": 1,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "move_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2346749017215783e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false
+      },
+      "rotation_change_rad": 0.003536129365035657,
+      "initial_gripper_target": [
+        0.8,
+        -0.8
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.03837507346466803,
+        -0.038375013133817804
+      ],
+      "qpos_after": [
+        0.03724241391091602,
+        -0.03724235256011817
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    },
+    {
+      "gripper_case": "partial",
+      "variant": "B",
+      "warmup_steps": 1,
+      "actual_motion_steps": 3,
+      "result": {
+        "name": "translate_to",
+        "target_xyz": [
+          -0.0584646612405777,
+          2.2346749017215783e-12,
+          0.706279456615448
+        ],
+        "final_eef_pos": [
+          -0.0591,
+          0.0,
+          0.6944
+        ],
+        "final_dist_m": 0.0119,
+        "steps_used": 4,
+        "max_steps": 80,
+        "terminated": false,
+        "truncated": false,
+        "gripper_command": 0.0
+      },
+      "rotation_change_rad": 0.003536129365035657,
+      "initial_gripper_target": [
+        0.8,
+        -0.8
+      ],
+      "gripper_class": "PandaGripper",
+      "qpos_before": [
+        0.03837507346466803,
+        -0.038375013133817804
+      ],
+      "qpos_after": [
+        0.03724241391091602,
+        -0.03724235256011817
+      ],
+      "at_target_actual_steps": 0,
+      "at_target_reported_steps": 1
+    }
+  ],
+  "pid": 2310617,
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+  "module_paths": {
+    "eef_control": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/eef_control.py",
+    "env_server": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/env_server.py"
+  },
+  "actual_task": {
+    "suite": "libero_10_task",
+    "task": 0,
+    "seed": 0,
+    "bddl_path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/benchmark/bddl_files/libero_10_task/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.bddl",
+    "bddl_sha256": "b04e67b9118b6b0a41956541ef4f66e479a341dd408c21f045c372a169fe01ef"
+  },
+  "task_language": "put both the cream cheese and the tomato sauce in the basket",
+  "config": {
+    "assets": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./assets",
+    "bddl_files": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-02/benchmark/bddl_files",
+    "benchmark_root": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+    "datasets": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/../datasets",
+    "init_states": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+  },
+  "facade_closed": true,
+  "owned_children_start_ticks": {
+    "2310685": "242259873",
+    "2310686": "242259873"
+  },
+  "private_config_unchanged": true,
+  "proxy_variables_present": [],
+  "purpose": "Interface comparison only; not a scored task or holding test.",
+  "gripper_case_labels": "Warmup command labels; measured qpos is reported separately and not assumed settled."
+}

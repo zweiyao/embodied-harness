@@ -1,0 +1,110 @@
+{
+  "approved": true,
+  "approval": "User requested Qwen Max with thinking enabled for the just-completed three tasks; preserve the latest 600-second conditions",
+  "suite": "libero_10_task",
+  "trials": [
+    {
+      "task": 0,
+      "seed": 0
+    },
+    {
+      "task": 4,
+      "seed": 0
+    },
+    {
+      "task": 8,
+      "seed": 0
+    }
+  ],
+  "total": 3,
+  "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+  "material_version": "qwen-evidence-v3-c6c7f677d400",
+  "parent_material_version": "qwen-evidence-v2-56708d55045b",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+    ],
+    "model_profile": "qwen3.8-max",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-max",
+    "reasoning_effort": "medium"
+  },
+  "tool_names": [
+    "finish",
+    "list_dir",
+    "read_text_file",
+    "write_text_file",
+    "move_pose",
+    "move_to",
+    "pi0_doubled",
+    "pi0_pick",
+    "release",
+    "rotate_pitch",
+    "rotate_wrist",
+    "set_gripper",
+    "back_project",
+    "read_image",
+    "segment",
+    "view_camera_meta",
+    "view_env_state",
+    "sensor_patch_batch",
+    "sensor_container_geometry"
+  ],
+  "tool_versions": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+  ],
+  "route": "remote direct; all proxy variables unset",
+  "repair_repeat": false,
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "lanes": {
+    "a": {
+      "port": 40659,
+      "unit": "rpent-qwen-max-v3-screen3-20261107-a.service",
+      "trials": [
+        {
+          "task": 0,
+          "seed": 0
+        },
+        {
+          "task": 8,
+          "seed": 0
+        }
+      ]
+    },
+    "b": {
+      "port": 48133,
+      "unit": "rpent-qwen-max-v3-screen3-20261107-b.service",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        }
+      ]
+    }
+  },
+  "incident_policy": "Preserve and exclude unexpected incidents; diagnose before retrying same cell. Full configured-budget timeout is failure.",
+  "comparison": "Same frozen material/tools/tasks/seeds/budgets as the latest Flash screen; model plus thinking enabled; small development sample",
+  "reference_root": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v3-screen3-retry-20261107"
+}

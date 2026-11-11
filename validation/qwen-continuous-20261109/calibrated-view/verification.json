@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "recorded_at": "2026-11-10T10:30:44.235004+00:00",
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/calibrated-view-test-checkout",
+  "parent_source_files_verified": 303,
+  "production_changes": [
+    "robots/libero/research/manual.py",
+    "robots/libero/robot_spec.py",
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "full_unit": {
+    "passed": 2154,
+    "skipped": 15,
+    "seconds": 71.75
+  },
+  "focused": {
+    "passed": 69,
+    "seconds": 1.3
+  },
+  "scoped_precommit_passed": true,
+  "full_precommit_passed": false,
+  "full_precommit_limit": "Existing historical validation script errors; all output retained. Final unit run repeated after hooks.",
+  "factory_propagation_checked": true,
+  "native_catalog_records_identical": 22,
+  "native_availability_identical": true,
+  "candidate_catalog_changed_names": [
+    "view_env_state",
+    "read_image"
+  ],
+  "archived_frames_replayed": 3,
+  "W2_material_files_unchanged": 7,
+  "external_model_requests": 0,
+  "simulator_actions": 0,
+  "task_benefit_verified": false,
+  "initial_validation_failures": [
+    "One assertion compared combined catalog with undecorated native catalog; corrected expected construction, preserving all fields.",
+    "14 full-suite failures from omitted parent examples and memory inputs; copied9 exact parent files, retained log.",
+    "Full hook old script errors; reran unit suite after all hooks."
+  ]
+}

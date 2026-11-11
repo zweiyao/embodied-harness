@@ -1,0 +1,659 @@
+[
+  {
+    "lane": "a",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 611.0,
+    "stats": {
+      "total_input_tokens": 169811,
+      "total_output_tokens": 827,
+      "total_cached_input_tokens": 129536,
+      "turns_used": 11,
+      "tool_calls": 13
+    },
+    "actions": 5,
+    "condition": "R18+W2+F+V+A",
+    "material_version": "qwen-decision-w2-381e10402bd1",
+    "planner_timeout_s": 600,
+    "runtime_audit": {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runtime-audit-task0-seed0-778237e9145b4b169b683a7d00287b71.json",
+      "coverage_complete": true,
+      "guard_violations": []
+    },
+    "metrics": {
+      "workflow": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "index": 1,
+            "guide": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "index": 1,
+            "guide": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 9,
+        "required_tag_responses": 9,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 9,
+        "descriptive_marker_status_counts": {
+          "missing": 9
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file",
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "24f44a42133f4e4b8fa098fe8357a421",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "6b135f5a47034bba8ebd418d53644711",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "1ce94de4a6844056bbb20f578e51b0a6",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "2c3da2db09d74d3298bef927a78a0513",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "e31835fd93644c5f830f0c7dd2e773e1",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "finish_only": {
+        "actual_allow_text_output_counts": {
+          "False": 11
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 10
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 4,
+        "pi0_pick": 1,
+        "translate_to": 4,
+        "segment": 1,
+        "sensor_patch_batch": 1,
+        "preview_placement": 1
+      },
+      "all_calls": 13,
+      "action_calls": 5,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 5,
+      "before_action_observations": 1,
+      "before_action_perception": 0,
+      "before_action_file_reads": 4,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 4
+      },
+      "first_action_seconds_since_first_event": 46.620028,
+      "first_action_model_request": 3,
+      "tool_error_responses": 0,
+      "patch_point_count": 4,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "placement_preview_status_counts": {
+        "resample_required": 1
+      },
+      "placement_preview_ids_returned": 0,
+      "placement_align_non_error_responses": 0,
+      "release_calls_without_any_prior_non_error_align": 0,
+      "placement_metric_limit": "Non-error alignment and earlier preview do not prove motion, correct point roles, holding or image review; trace/frame audit remains required.",
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 10,
+      "completed_model_wait_sum_s": 513.164552,
+      "completed_model_wait_mean_s": 51.3164552,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md",
+        "object-relative-transfer.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 1
+      }
+    }
+  },
+  {
+    "lane": "b",
+    "task": 4,
+    "seed": 0,
+    "run_id": "9cbe14f94f25bc734075",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 611.0,
+    "stats": {
+      "total_input_tokens": 202252,
+      "total_output_tokens": 1307,
+      "total_cached_input_tokens": 154368,
+      "turns_used": 12,
+      "tool_calls": 15
+    },
+    "actions": 4,
+    "condition": "R18+W2+F+V+A",
+    "material_version": "qwen-decision-w2-381e10402bd1",
+    "planner_timeout_s": 600,
+    "runtime_audit": {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runtime-audit-task4-seed0-50165afe1a5846c8b85f3c54ba28a03f.json",
+      "coverage_complete": true,
+      "guard_violations": []
+    },
+    "metrics": {
+      "workflow": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 10,
+        "required_tag_responses": 10,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 10,
+        "descriptive_marker_status_counts": {
+          "missing": 10
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file",
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment",
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "f1382765624d4dec844b6cd420a354b2",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "2ba53ef323da4e1a9b1850b2dfe68aa0",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "8a4cc354bff1455f8cdc9fe49d0550ec",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 11,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "align_placement"
+            ],
+            "action_dispatches": [
+              "align_placement"
+            ],
+            "action_returns": [
+              {
+                "name": "align_placement",
+                "call_id": "58bfd6bd6990459fa01026ca230cecc2",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "finish_only": {
+        "actual_allow_text_output_counts": {
+          "False": 12
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 11
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 4,
+        "segment": 2,
+        "pi0_pick": 1,
+        "translate_to": 2,
+        "preview_placement": 3,
+        "sensor_patch_batch": 1,
+        "align_placement": 1
+      },
+      "all_calls": 15,
+      "action_calls": 4,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 7,
+      "before_action_observations": 1,
+      "before_action_perception": 2,
+      "before_action_file_reads": 4,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 4,
+        "segment": 2
+      },
+      "first_action_seconds_since_first_event": 81.728254,
+      "first_action_model_request": 4,
+      "tool_error_responses": 0,
+      "patch_point_count": 4,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "placement_preview_status_counts": {
+        "resample_required": 1,
+        "requires_waypoint": 1,
+        "review_required": 1
+      },
+      "placement_preview_ids_returned": 1,
+      "placement_align_non_error_responses": 1,
+      "release_calls_without_any_prior_non_error_align": 0,
+      "placement_metric_limit": "Non-error alignment and earlier preview do not prove motion, correct point roles, holding or image review; trace/frame audit remains required.",
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 11,
+      "completed_model_wait_sum_s": 531.005364,
+      "completed_model_wait_mean_s": 48.27321490909091,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md",
+        "object-relative-transfer.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 1
+      }
+    }
+  }
+]

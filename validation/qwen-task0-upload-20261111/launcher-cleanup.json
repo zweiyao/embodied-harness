@@ -1,0 +1,84 @@
+{
+  "rows": [
+    {
+      "path": "/home/zwy/work/embodied_harness/run-sdk-smoke.sh",
+      "before_sha256": "668f9bf9978ad93f601d1c76d65d8a1dcf81e4d72719cc98ccf43c1a829ca2dc",
+      "after_sha256": "904fcf07f841d9a918c300ab29b6167e31ebba3068cf9632985e441c15f2d74e",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-univtac/start-workbench.sh",
+      "before_sha256": "593989451b731480a4a659642a9387162858ccc6b44d8252acaa40f16c2e8f00",
+      "after_sha256": "1625f92857afbfb229cef59f1fc1cf0f8f6a9861e285297f891d50fc2b484133",
+      "removed_lines": 3,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/local-setup/dashboard.sh",
+      "before_sha256": "54be53eaf12647751e023ce38c145e678d9a2bda4acead48d76d6553766a67aa",
+      "after_sha256": "220f05b9a353e59248cb3bdf78b3737d4ca72bdad93474aa85ef5d4976bd24be",
+      "removed_lines": 2,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh",
+      "before_sha256": "b5eb742ebc25ab27188e529b01b39e2f35489e81ad51949049ca6f76d05b4ed2",
+      "after_sha256": "6f8b23047d146c675a037955d96e96ce9cabb3058a2878683f6d72e3233933f4",
+      "removed_lines": 3,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-dashboard.sh",
+      "before_sha256": "221b431e9992a1359b35b9d85a297605cd3b8ebcb536ac5508f39d86d8e4bfd8",
+      "after_sha256": "995b3e4bce866cbe5cf652e2c002da1782f937ccf9850516058b23a0426a49d7",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-original-astra.sh",
+      "before_sha256": "6c766f0e5520b4289cdf0d1e7e7b7ebf3cf935b91fd6c28f887dabfdd87e11cd",
+      "after_sha256": "f23f362f3bee95d45fa0c98607d7f34f17eb55227effc95bf278f45b52728c70",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-original-qwen.sh",
+      "before_sha256": "c7c44b04c763f2226eae735d779db77c295da233181fab9a7e86d2f029f56d25",
+      "after_sha256": "898a1d31edeb63fdd95e46e18108bd85ceb4db0473b435396ec47876f0721364",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-qwen-api-basket.sh",
+      "before_sha256": "dbde32117f16330d5e61569299edd0c3a746239efea1370827e4346b6cce1146",
+      "after_sha256": "3619dfab5488afa4ed8fea001d267fd12dd3237c67b96bfa6f63bbef1876c2fc",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-qwen-basket.sh",
+      "before_sha256": "819ebeee78db069f237bee17bb1f24c76d20f93cc8f1d215507709ae51d599b6",
+      "after_sha256": "0f04d7d87df859a77e0b878046ddcc879a2f4a0b28ea45211ded47c3faacb32b",
+      "removed_lines": 1,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-workbench.before-max-20261022.sh",
+      "before_sha256": "de19604ac32a3a4c59e469a55a084d54269957e98f7b8794b9185697dbad6c1a",
+      "after_sha256": "de19604ac32a3a4c59e469a55a084d54269957e98f7b8794b9185697dbad6c1a",
+      "removed_lines": 0,
+      "syntax_passed": true
+    },
+    {
+      "path": "/home/zwy/work/embodied_harness/native-rpent/start-workbench.sh",
+      "before_sha256": "1270e29c46afea6d704cbaec80001173b11be030eb085d52791a40725598aa9c",
+      "after_sha256": "1270e29c46afea6d704cbaec80001173b11be030eb085d52791a40725598aa9c",
+      "removed_lines": 0,
+      "syntax_passed": true
+    }
+  ],
+  "backup": "/home/zwy/work/embodied_harness/backups/network-separation-20261111",
+  "services_restarted": [],
+  "scope": "current general launchers; completed experiment snapshots and backups retained"
+}

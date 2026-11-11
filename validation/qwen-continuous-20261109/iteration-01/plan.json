@@ -1,0 +1,114 @@
+{
+  "suite": "libero_10_task",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:move_eef"
+    ],
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none"
+  },
+  "tool_names": [
+    "finish",
+    "list_dir",
+    "read_text_file",
+    "write_text_file",
+    "move_pose",
+    "move_to",
+    "pi0_doubled",
+    "pi0_pick",
+    "release",
+    "rotate_pitch",
+    "rotate_wrist",
+    "set_gripper",
+    "back_project",
+    "read_image",
+    "segment",
+    "view_camera_meta",
+    "view_env_state",
+    "sensor_patch_batch",
+    "sensor_container_geometry",
+    "move_eef"
+  ],
+  "tool_versions": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+  ],
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "route": "remote direct; all proxy variables unset",
+  "incident_policy": "Preserve and exclude unexpected incidents; diagnose before retrying same cell. Full configured-budget timeout is failure.",
+  "approved": true,
+  "approval": "User approved automatic C/E optimization, private task-8 language correction and same-budget reference. Root READY required before launch.",
+  "total": 4,
+  "benchmark": {
+    "cohort": "libero_10_task-language-right-v1",
+    "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files",
+    "private_bddl": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-01/benchmark/bddl_files",
+    "changed_file": "libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+    "before_sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+    "after_sha256": "8d2d6cd8673e826ddef3183d67a79b75431a5b293e97649af9040b2dd9a47c7c",
+    "goal_and_init_unchanged": true,
+    "benchmark_root_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+    "init_states_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+  },
+  "comparison": "Development C versus experience-only E; same tools and budgets; task4 then task0, seed0 once per condition; lane and condition confounded.",
+  "lanes": {
+    "a": {
+      "port": 60189,
+      "unit": "rpent-qwen-continuous-20261109-i01-a.service",
+      "condition": "C",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        },
+        {
+          "task": 0,
+          "seed": 0
+        }
+      ]
+    },
+    "b": {
+      "port": 35327,
+      "unit": "rpent-qwen-continuous-20261109-i01-b.service",
+      "condition": "E",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v4-e-readable",
+      "material_version": "qwen-evidence-v4-e-f2ec2fe10f63",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        },
+        {
+          "task": 0,
+          "seed": 0
+        }
+      ]
+    }
+  }
+}

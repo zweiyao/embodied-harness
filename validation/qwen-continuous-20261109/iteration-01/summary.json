@@ -1,0 +1,147 @@
+{
+  "completed": 4,
+  "successes": 1,
+  "with_action": 4,
+  "without_action": 0,
+  "first_action_not_confirmed": 0,
+  "before_action_observations": {
+    "n": 4,
+    "mean": 1,
+    "median": 1.0,
+    "min": 1,
+    "max": 1
+  },
+  "before_action_calls": {
+    "n": 4,
+    "mean": 9.25,
+    "median": 9.0,
+    "min": 7,
+    "max": 12
+  },
+  "before_action_perception": {
+    "n": 4,
+    "mean": 3,
+    "median": 3.5,
+    "min": 0,
+    "max": 5
+  },
+  "before_action_file_reads": {
+    "n": 4,
+    "mean": 4.75,
+    "median": 5.0,
+    "min": 4,
+    "max": 5
+  },
+  "planned": 4,
+  "conditions": {
+    "C": {
+      "completed": 2,
+      "successes": 1,
+      "with_action": 2,
+      "without_action": 0,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 2,
+        "mean": 1,
+        "median": 1.0,
+        "min": 1,
+        "max": 1
+      },
+      "before_action_calls": {
+        "n": 2,
+        "mean": 7.5,
+        "median": 7.5,
+        "min": 7,
+        "max": 8
+      },
+      "before_action_perception": {
+        "n": 2,
+        "mean": 1.5,
+        "median": 1.5,
+        "min": 0,
+        "max": 3
+      },
+      "before_action_file_reads": {
+        "n": 2,
+        "mean": 4.5,
+        "median": 4.5,
+        "min": 4,
+        "max": 5
+      }
+    },
+    "E": {
+      "completed": 2,
+      "successes": 0,
+      "with_action": 2,
+      "without_action": 0,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 2,
+        "mean": 1,
+        "median": 1.0,
+        "min": 1,
+        "max": 1
+      },
+      "before_action_calls": {
+        "n": 2,
+        "mean": 11,
+        "median": 11.0,
+        "min": 10,
+        "max": 12
+      },
+      "before_action_perception": {
+        "n": 2,
+        "mean": 4.5,
+        "median": 4.5,
+        "min": 4,
+        "max": 5
+      },
+      "before_action_file_reads": {
+        "n": 2,
+        "mean": 5,
+        "median": 5.0,
+        "min": 5,
+        "max": 5
+      }
+    }
+  },
+  "mixed_budget": false,
+  "budget_cohorts": {
+    "600": {
+      "completed": 4,
+      "successes": 1,
+      "with_action": 4,
+      "without_action": 0,
+      "first_action_not_confirmed": 0,
+      "before_action_observations": {
+        "n": 4,
+        "mean": 1,
+        "median": 1.0,
+        "min": 1,
+        "max": 1
+      },
+      "before_action_calls": {
+        "n": 4,
+        "mean": 9.25,
+        "median": 9.0,
+        "min": 7,
+        "max": 12
+      },
+      "before_action_perception": {
+        "n": 4,
+        "mean": 3,
+        "median": 3.5,
+        "min": 0,
+        "max": 5
+      },
+      "before_action_file_reads": {
+        "n": 4,
+        "mean": 4.75,
+        "median": 5.0,
+        "min": 4,
+        "max": 5
+      }
+    }
+  },
+  "success_rate_percent": 25.0
+}

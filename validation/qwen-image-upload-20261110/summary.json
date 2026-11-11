@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-11-10T13:24:53.251286+00:00",
+  "measured_api_requests": 7,
+  "initial_png_ipv4_s": 16.988581,
+  "same_images_jpeg_default_s": [
+    29.38976,
+    6.802469,
+    3.485464
+  ],
+  "fresh_jpeg_ipv4_s": [
+    4.543759,
+    3.947506,
+    4.106301
+  ],
+  "fresh_jpeg_ipv4_mean_s": 4.199188666666666,
+  "fresh_cached_input_tokens": [
+    0,
+    0,
+    0
+  ],
+  "same_images_request_reduction_percent": 87.21351055322053,
+  "no_task_launches": true,
+  "no_settings_changes": true,
+  "candidate_only": "Same-size JPEG quality85 plus per-client IPv4 direct; harness not modified",
+  "limitations": [
+    "Small sequential sample; IP endpoints, cache and time differed across conditions. No isolated causal compression or address-family speedup claimed.",
+    "Fresh combined probes use different archived frames, not matched PNG controls.",
+    "JPEG is lossy despite unchanged dimensions; coordinate selection and task performance remain unverified.",
+    "Short-question API latency is not full-harness latency or task success."
+  ]
+}

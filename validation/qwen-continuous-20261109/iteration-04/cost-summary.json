@@ -1,0 +1,12 @@
+{
+  "formal_model_requests": 36,
+  "elapsed_s": 408.4,
+  "input_tokens": 1168835,
+  "cached_input_tokens": 733184,
+  "output_tokens": 4205,
+  "preflight_connectivity_requests": 2,
+  "preflight_tokens": "not measured; excluded from formal episode totals",
+  "model_rejected_argument_attempts": 2,
+  "rejected_attempts_in_model_request_total": true,
+  "rejected_attempts_in_runtime_tool_request_total": false
+}

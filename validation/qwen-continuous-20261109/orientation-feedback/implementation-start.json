@@ -1,0 +1,17 @@
+{
+  "authorization": "change-decision.md",
+  "source_before": {
+    "robots/libero/research/manual.py": "065ddfe60f90bf1844b7e5bdb5c433f01fb9b0c4c0e3156fbea82893d2841d36",
+    "robots/libero/robot_spec.py": "ee8b7be29e480b8974f9bfddacc8c03faf1deecbfba156266df19bcb9cd1623a",
+    "rpent/dashboard/workbench.py": "2df811ef9c9cf789fe22712f7d462fad6f94a637cabe7e82b365649a18526983"
+  },
+  "drafts_sha256": {
+    "test_orientation.py.draft": "ceb76f338a5c8e0540f35e3b8c25f91bcd11f219ed63002293acc428a301956e",
+    "registration.patch.draft": "5d1994de644dc7542369bb5b78ef1d4b14134619f133faeec56856badf61296e",
+    "plan.md": "b06a07a4ce410465d27ee483907a10234b60f7d8f7d26f0b82ff81a74481a262",
+    "draft-base-hashes.json": "cb0c7c77538d3a94cad5652cab69e2e6c03beda842cb78a179aa5943c224f612",
+    "orientation.py.draft": "a91775e7cc386fb53c99485a9ba81e6b0678d5cd62ce36bf2470d916c1429854"
+  },
+  "parent": "placement-preview-test-checkout",
+  "policy_experiments_authorized_here": false
+}

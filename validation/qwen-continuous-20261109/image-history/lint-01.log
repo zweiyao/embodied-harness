@@ -1,0 +1,57 @@
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.
+I001 [*] Import block is un-sorted or un-formatted
+    --> tests/unit_tests/rpent/planner/test_api_contracts.py:1554:5
+     |
+1553 |   def test_recent_images_copy_input_keep_audio_and_request_metadata():
+1554 | /     from pydantic_ai.models import ModelRequestContext, ModelRequestParameters
+1555 | |     from rpent.planner.api_loop import _RecentImageHistory
+     | |__________________________________________________________^
+1556 |
+1557 |       audio = BinaryContent(data=b"sound", media_type="audio/wav")
+     |
+help: Organize imports
+     |
+1554 |     from pydantic_ai.models import ModelRequestContext, ModelRequestParameters
+1555 +
+1556 |     from rpent.planner.api_loop import _RecentImageHistory
+     |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+    --> tests/unit_tests/rpent/planner/test_api_contracts.py:1622:12
+     |
+1621 |       monkeypatch.setattr("rpent.planner.base.build_api_model", lambda *args: TestModel())
+1622 |       args = dict(
+     |  ____________^
+1623 | |         output_dir=tmp_path,
+1624 | |         recipe_tag="test",
+1625 | |         robot_name="libero",
+1626 | |         dashboard_events=Events(),
+1627 | |     )
+     | |_____^
+1628 |       assert not build_planner("api", **args).recent_image_history
+1629 |       assert build_planner(
+     |
+help: Rewrite as a literal
+     |
+1621 |     monkeypatch.setattr("rpent.planner.base.build_api_model", lambda *args: TestModel())
+     -     args = dict(
+     -         output_dir=tmp_path,
+     -         recipe_tag="test",
+     -         robot_name="libero",
+     -         dashboard_events=Events(),
+     -     )
+1622 +     args = {
+1623 +         "output_dir": tmp_path,
+1624 +         "recipe_tag": "test",
+1625 +         "robot_name": "libero",
+1626 +         "dashboard_events": Events(),
+1627 +     }
+1628 |     assert not build_planner("api", **args).recent_image_history
+     |
+note: This is an unsafe fix and may change runtime behavior
+
+Found 2 errors.
+[*] 1 fixable with `--fix` (1 unsafe fix available with `--fix --unsafe-fixes`).

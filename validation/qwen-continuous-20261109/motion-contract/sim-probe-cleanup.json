@@ -1,0 +1,14 @@
+{
+  "probe_exit_code": 0,
+  "elapsed_s": 15.02,
+  "owned_children_start_ticks": {
+    "2310685": "242259873",
+    "2310686": "242259873"
+  },
+  "forced_cleanup_pids": [],
+  "remaining_owned_processes": [],
+  "protected_hashes_unchanged": true,
+  "runtime_hashes_unchanged": true,
+  "private_config_unchanged": true,
+  "passed": true
+}

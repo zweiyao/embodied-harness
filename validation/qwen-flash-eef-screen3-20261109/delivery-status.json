@@ -1,0 +1,16 @@
+{
+  "experiment_completed": true,
+  "remote_results_audited": true,
+  "local_board_updated": true,
+  "remote_final_board_synced": false,
+  "remote_validation_archive_synced": false,
+  "remote_experiment_originals_preserved": true,
+  "reason": "Post-experiment SSH resets followed by SSH and HTTP connection timeouts",
+  "local_video_tasks": [
+    0,
+    8
+  ],
+  "pending_local_video_tasks": [
+    4
+  ]
+}

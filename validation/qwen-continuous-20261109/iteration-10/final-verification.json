@@ -1,0 +1,1743 @@
+{
+  "passed": true,
+  "conditions": {
+    "R18+W2+F+V+A": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        5,
+        7
+      ]
+    }
+  },
+  "paired_initial_images": [
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F+V+A": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_V_09": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "historical_C01": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F+V+A": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_V_09": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "historical_C01": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          "identical": true
+        }
+      }
+    },
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "R18+W2+F+V+A": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_V_09": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "historical_C01": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "R18+W2+F+V+A": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_V_09": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "historical_C01": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          "identical": true
+        }
+      }
+    }
+  ],
+  "tool_returns": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "translate_to",
+      "requests": 4,
+      "responses": 4,
+      "responses_without_error": 4,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "preview_placement",
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "name": "align_placement",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "translate_to",
+      "requests": 2,
+      "responses": 2,
+      "responses_without_error": 2,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "rotate_axis",
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "preview_placement",
+      "requests": 3,
+      "responses": 3,
+      "responses_without_error": 3,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "name": "align_placement",
+      "requests": 1,
+      "responses": 1,
+      "responses_without_error": 1,
+      "limit": "Counts do not establish handler entry, movement, holding or task benefit."
+    }
+  ],
+  "workflow_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "condition": "R18+W2+F+V+A",
+      "task": 0,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "index": 1,
+            "guide": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "index": 1,
+            "guide": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 9,
+        "required_tag_responses": 9,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 9,
+        "descriptive_marker_status_counts": {
+          "missing": 9
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file",
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "24f44a42133f4e4b8fa098fe8357a421",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "6b135f5a47034bba8ebd418d53644711",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "1ce94de4a6844056bbb20f578e51b0a6",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "2c3da2db09d74d3298bef927a78a0513",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "e31835fd93644c5f830f0c7dd2e773e1",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "condition": "R18+W2+F+V+A",
+      "task": 4,
+      "workflow_requested": true,
+      "metrics": {
+        "workflow_requested": true,
+        "parent_tag_interpretation": null,
+        "bootstrap": {
+          "request": 1,
+          "response_completed": true,
+          "attempted_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "dispatched_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "successful_required_counts": {
+            "view_env_state": 1,
+            "guide": 1,
+            "index": 1
+          },
+          "three_attempted_together": true,
+          "three_dispatched_together": true,
+          "three_succeeded_together": true,
+          "extra_action_attempts": [],
+          "extra_action_dispatches": [],
+          "action_returns": [],
+          "other_dispatches": [],
+          "grouped_success_without_action": true
+        },
+        "poststartup_completed_responses": 10,
+        "required_tag_responses": 10,
+        "valid_required_tags": 0,
+        "required_tag_deviations": 10,
+        "descriptive_marker_status_counts": {
+          "missing": 10
+        },
+        "need_none_responses": 0,
+        "need_none_matching_dispatches": 0,
+        "need_none_unmatched_dispatches": 0,
+        "incomplete_model_requests": 1,
+        "responses": [
+          {
+            "request": 2,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "read_text_file",
+              "read_text_file"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 3,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "segment",
+              "segment"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 4,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "pi0_pick"
+            ],
+            "action_dispatches": [
+              "pi0_pick"
+            ],
+            "action_returns": [
+              {
+                "name": "pi0_pick",
+                "call_id": "f1382765624d4dec844b6cd420a354b2",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 5,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "2ba53ef323da4e1a9b1850b2dfe68aa0",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 6,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 7,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "sensor_patch_batch"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 8,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 9,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "translate_to"
+            ],
+            "action_dispatches": [
+              "translate_to"
+            ],
+            "action_returns": [
+              {
+                "name": "translate_to",
+                "call_id": "8a4cc354bff1455f8cdc9fe49d0550ec",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 10,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [],
+            "action_dispatches": [],
+            "action_returns": [],
+            "nonaction_dispatches": [
+              "preview_placement"
+            ],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          },
+          {
+            "request": 11,
+            "tag_required": true,
+            "status": "missing",
+            "need_semantics": "not_mechanically_verified",
+            "action_attempts": [
+              "align_placement"
+            ],
+            "action_dispatches": [
+              "align_placement"
+            ],
+            "action_returns": [
+              {
+                "name": "align_placement",
+                "call_id": "58bfd6bd6990459fa01026ca230cecc2",
+                "return_status": "returned_without_reported_error",
+                "return_code": null
+              }
+            ],
+            "nonaction_dispatches": [],
+            "none_action_attempted": null,
+            "none_action_dispatched": null,
+            "none_only_matching_action_dispatches": null
+          }
+        ],
+        "limit": "Observational public task labels only. Dispatch fields mean ManualToolkit tool_request entry before scheduler/argument validation, not proven handler entry or physical execution/success; returned errors, cancellations and missing returns are separate; NEED truth is not inferred. Markers never change official success, classification, retries, or actions."
+      },
+      "outcome_interpretation": "Observational only; no success/classification override."
+    }
+  ],
+  "finish_only_observations": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 11
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 10
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "metrics": {
+        "actual_allow_text_output_counts": {
+          "False": 12
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 11
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      },
+      "official_success": false,
+      "classification": "budget_timeout",
+      "interpretation": "Finish acceptance, pure text and retries do not override official success."
+    }
+  ],
+  "invocation_metadata": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical09_V_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "finish",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "list_dir",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_text_file",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "write_text_file",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_doubled",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "pi0_pick",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "release",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "set_gripper",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "back_project",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "read_image",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "segment",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_camera_meta",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "view_env_state",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "sensor_patch_batch",
+      "current_invoked": false,
+      "historical09_V_invoked": false,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "translate_to",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "preview_placement",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "align_placement",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "tool": "rotate_axis",
+      "current_invoked": null,
+      "historical09_V_invoked": null,
+      "prior_same_lane_cells_with_toolkit_entry": [],
+      "interpretation": "Usage metadata recorded separately; no other manifest field excluded."
+    }
+  ],
+  "contract_comparison": {
+    "excluded_fields": [
+      "invoked"
+    ],
+    "reason": "Per-session catalog usage metadata; values are reported separately. Boundary retained from iteration07 postrun audit correction."
+  },
+  "planner_view_audits": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "checked_bundles": 6,
+      "explicit_policy_reads": 0,
+      "error_returns": 0,
+      "bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "7af3d8e52b01f597cc452d2a3dbd66eb29fcd1a8d432163d46431d49420501ab"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "aa89fd4b0814686d8a9cc544d180e2441c5192e0aa171aba3a0c74aabc417cd0"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "b2d516c41f77e8169f92afbb5e52bf9c2bc41399415e3d97e3fcf4bdd5621913"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "e83ecfc156edecfbd076140abfbe0425fdaeada4778a3738a2093bc6e9448114"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3d85f3e36329383f99e274c2a4595491a25d900d4725d225ba44798f72069888"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "25865d27086f0f392078ae4bcdb29f6594635a042a199f72a9e5e1f051a26c9d"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "fe2e04213741f866b6fb61161ed6379c2c4534a94ab17edc7319f57c62007aec"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "11e0dc8e06f0921fe12f11c4372d57b5b47ce84d5dfc267248811ecbdea2ecb2"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 5,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "d0a95464948f6effbdddb2c94b271829d2d0ffe89dbfe3f88236504c3d543eba"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 5,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "47a8a4585f53931ce5daedbc3754987c693f166dc6d7353e31cff65813562945"
+        }
+      ],
+      "passed": true,
+      "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "checked_bundles": 5,
+      "explicit_policy_reads": 0,
+      "error_returns": 0,
+      "bindings": [
+        {
+          "tool": "view_env_state",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+        },
+        {
+          "tool": "view_env_state",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 0,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "ec9839fd109e211fe8b3c9c173d3b53407be233c3244018bb165b0de49e6896f"
+        },
+        {
+          "tool": "pi0_pick",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 1,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "736887932a948b94fb34b7ff70b3b3e90619f1aeaef708837aab307af79f3ba9"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "5819eb2550048cdb2233b90a4418ec7f64f47f03ce9841c786eb9889f3422333"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 2,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "a56831d443b94a1bc54e64aef65d1ea68e08cc6fa7a1aba79da438b8e7f7568c"
+        },
+        {
+          "tool": "translate_to",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "1de13ae99e05f711bbf93f8d9b31a29078b2f5d419bcd9837af47dc92e43ccaf"
+        },
+        {
+          "tool": "translate_to",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 3,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "b7e755197c994cf685a3c013e1bd7297b681b54a2b654f21d35a441b6785aee8"
+        },
+        {
+          "tool": "align_placement",
+          "index": 0,
+          "artifact": "agentview_high.png",
+          "camera": "agentview",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "ba9abc014de8c3a69a74f0d4d569f6f111736741508963d8f21892efd9525433"
+        },
+        {
+          "tool": "align_placement",
+          "index": 1,
+          "artifact": "wrist_high.png",
+          "camera": "wrist",
+          "step": 4,
+          "width": 1024,
+          "height": 1024,
+          "coordinate_frame": "calibrated",
+          "sha256": "c5f6cc82be14efb089674553dbde35df413985283bb5cd7213340db32e82532e"
+        }
+      ],
+      "passed": true,
+      "limit": "Byte/frame provenance only; no target identity, holding, official success or outcome classification inference. Errors remain observable, not silently excluded."
+    }
+  ],
+  "initial_action_phase_audits": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "passed": true,
+      "requests": [
+        {
+          "request": 1,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 2,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 3,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 4,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 5,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 6,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 7,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 8,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 9,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 10,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 11,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        }
+      ],
+      "transition": {
+        "step": 1,
+        "trigger": "pi0_pick",
+        "chunks_used": 18
+      },
+      "limit": "Phase/dispatch evidence only; no success, holding or outcome-classification inference."
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "passed": true,
+      "requests": [
+        {
+          "request": 1,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 2,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 3,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 4,
+          "phase": "initial",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "read_image",
+            "segment",
+            "view_env_state",
+            "finish"
+          ]
+        },
+        {
+          "request": 5,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 6,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 7,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 8,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 9,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 10,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 11,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        },
+        {
+          "request": 12,
+          "phase": "manual_available",
+          "tool_names": [
+            "list_dir",
+            "read_text_file",
+            "write_text_file",
+            "pi0_doubled",
+            "pi0_pick",
+            "release",
+            "set_gripper",
+            "back_project",
+            "read_image",
+            "segment",
+            "view_camera_meta",
+            "view_env_state",
+            "sensor_patch_batch",
+            "translate_to",
+            "preview_placement",
+            "align_placement",
+            "rotate_axis",
+            "finish"
+          ]
+        }
+      ],
+      "transition": {
+        "step": 1,
+        "trigger": "pi0_pick",
+        "chunks_used": 19
+      },
+      "limit": "Phase/dispatch evidence only; no success, holding or outcome-classification inference."
+    }
+  ],
+  "initial_incident_entries_preserved": 0,
+  "corrected_model_argument_failures": 0,
+  "runtime_incidents": 0,
+  "runtime_guard_coverage": "complete",
+  "runtime_observers": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/a/runtime-audit-task0-seed0-778237e9145b4b169b683a7d00287b71.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/b/runtime-audit-task4-seed0-50165afe1a5846c8b85f3c54ba28a03f.json",
+      "coverage_complete": true,
+      "observer_stopped": true,
+      "snapshot_count": 2
+    }
+  ],
+  "task_results_valid": true,
+  "protected_files_verified": 12880,
+  "limitation": "Two fresh A tasks at seed0 versus historical09 V, with time and environment-allocation confounds. Historical09 V and C01 remain separate references. Official success is primary; compliant labels, fewer calls, tool acceptance and geometric arrival do not establish holding or task benefit. This screen does not establish ten-task or held-out improvement."
+}

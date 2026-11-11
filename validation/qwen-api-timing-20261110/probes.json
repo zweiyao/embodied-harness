@@ -1,0 +1,302 @@
+[
+  {
+    "label": "short-1",
+    "request_bytes": 183,
+    "request_sha256": "1b27af1d32ca160556e59331dbdd5909d6411a7602d92c7b710618d4a9c61ad1",
+    "images": 0,
+    "tools": 0,
+    "enable_thinking": false,
+    "max_tokens": 32,
+    "route": "remote direct, trust_env=False, no retry",
+    "status": 200,
+    "headers_s": 1.0156042063608766,
+    "first_content_s": 1.0157899223268032,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "total_s": 1.0161114283837378,
+    "trace": [
+      {
+        "name": "connection.connect_tcp.started",
+        "s": 0.009270985145121813
+      },
+      {
+        "name": "connection.connect_tcp.complete",
+        "s": 0.6436854200437665
+      },
+      {
+        "name": "connection.start_tls.started",
+        "s": 0.6437128731049597
+      },
+      {
+        "name": "connection.start_tls.complete",
+        "s": 0.6862284140661359
+      },
+      {
+        "name": "http11.send_request_headers.started",
+        "s": 0.686366748996079
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "s": 0.6865487680770457
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "s": 0.6865510721690953
+      },
+      {
+        "name": "http11.send_request_body.complete",
+        "s": 0.6866123699583113
+      },
+      {
+        "name": "http11.receive_response_headers.started",
+        "s": 0.6866144239902496
+      },
+      {
+        "name": "http11.receive_response_headers.complete",
+        "s": 1.0151548739522696
+      },
+      {
+        "name": "http11.receive_response_body.started",
+        "s": 1.0157391540706158
+      },
+      {
+        "name": "http11.receive_response_body.complete",
+        "s": 1.015895324293524
+      },
+      {
+        "name": "http11.response_closed.started",
+        "s": 1.0159205319359899
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "s": 1.015952774323523
+      }
+    ]
+  },
+  {
+    "label": "short-2",
+    "request_bytes": 183,
+    "request_sha256": "1b27af1d32ca160556e59331dbdd5909d6411a7602d92c7b710618d4a9c61ad1",
+    "images": 0,
+    "tools": 0,
+    "enable_thinking": false,
+    "max_tokens": 32,
+    "route": "remote direct, trust_env=False, no retry",
+    "status": 200,
+    "headers_s": 0.670464179944247,
+    "first_content_s": 0.6705828881822526,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "total_s": 0.6708670929074287,
+    "trace": [
+      {
+        "name": "connection.connect_tcp.started",
+        "s": 0.002535431180149317
+      },
+      {
+        "name": "connection.connect_tcp.complete",
+        "s": 0.10608216235414147
+      },
+      {
+        "name": "connection.start_tls.started",
+        "s": 0.10610561724752188
+      },
+      {
+        "name": "connection.start_tls.complete",
+        "s": 0.21755136223509908
+      },
+      {
+        "name": "http11.send_request_headers.started",
+        "s": 0.2177130519412458
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "s": 0.21784963412210345
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "s": 0.2178514371626079
+      },
+      {
+        "name": "http11.send_request_body.complete",
+        "s": 0.21790345711633563
+      },
+      {
+        "name": "http11.receive_response_headers.started",
+        "s": 0.21790483919903636
+      },
+      {
+        "name": "http11.receive_response_headers.complete",
+        "s": 0.6703120181336999
+      },
+      {
+        "name": "http11.receive_response_body.started",
+        "s": 0.6705386131070554
+      },
+      {
+        "name": "http11.receive_response_body.complete",
+        "s": 0.6706693032756448
+      },
+      {
+        "name": "http11.response_closed.started",
+        "s": 0.6706938510760665
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "s": 0.67072350718081
+      }
+    ]
+  },
+  {
+    "label": "short-3",
+    "request_bytes": 183,
+    "request_sha256": "1b27af1d32ca160556e59331dbdd5909d6411a7602d92c7b710618d4a9c61ad1",
+    "images": 0,
+    "tools": 0,
+    "enable_thinking": false,
+    "max_tokens": 32,
+    "route": "remote direct, trust_env=False, no retry",
+    "status": 200,
+    "headers_s": 1.48420570185408,
+    "first_content_s": 1.4843236380256712,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 30,
+      "total_tokens": 31,
+      "completion_tokens": 1,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 30
+      }
+    },
+    "total_s": 1.496638748794794,
+    "trace": [
+      {
+        "name": "connection.connect_tcp.started",
+        "s": 0.0024701161310076714
+      },
+      {
+        "name": "connection.connect_tcp.complete",
+        "s": 0.05840172804892063
+      },
+      {
+        "name": "connection.start_tls.started",
+        "s": 0.05842801881954074
+      },
+      {
+        "name": "connection.start_tls.complete",
+        "s": 1.1015094239264727
+      },
+      {
+        "name": "http11.send_request_headers.started",
+        "s": 1.1016303561627865
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "s": 1.1017377311363816
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "s": 1.1017395351082087
+      },
+      {
+        "name": "http11.send_request_body.complete",
+        "s": 1.10178844910115
+      },
+      {
+        "name": "http11.receive_response_headers.started",
+        "s": 1.1017900719307363
+      },
+      {
+        "name": "http11.receive_response_headers.complete",
+        "s": 1.4840476689860225
+      },
+      {
+        "name": "http11.receive_response_body.started",
+        "s": 1.484278761781752
+      },
+      {
+        "name": "http11.receive_response_body.complete",
+        "s": 1.4964246489107609
+      },
+      {
+        "name": "http11.response_closed.started",
+        "s": 1.4964602068066597
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "s": 1.496483881957829
+      }
+    ]
+  },
+  {
+    "label": "task0-request13-replay",
+    "request_bytes": 3680058,
+    "request_sha256": "bf7d340668c63264be267073b450bda40b48b7029a2440a419d958bc30c612ee",
+    "images": 4,
+    "tools": 18,
+    "enable_thinking": false,
+    "max_tokens": 16384,
+    "route": "remote direct, trust_env=False, no retry",
+    "error_type": "WriteTimeout",
+    "total_s": 90.33749404828995,
+    "trace": [
+      {
+        "name": "connection.connect_tcp.started",
+        "s": 0.0028011612594127655
+      },
+      {
+        "name": "connection.connect_tcp.complete",
+        "s": 0.260144020896405
+      },
+      {
+        "name": "connection.start_tls.started",
+        "s": 0.26015767687931657
+      },
+      {
+        "name": "connection.start_tls.complete",
+        "s": 0.33447698317468166
+      },
+      {
+        "name": "http11.send_request_headers.started",
+        "s": 0.3346454161219299
+      },
+      {
+        "name": "http11.send_request_headers.complete",
+        "s": 0.33476192923262715
+      },
+      {
+        "name": "http11.send_request_body.started",
+        "s": 0.3347636219114065
+      },
+      {
+        "name": "http11.send_request_body.failed",
+        "s": 90.3371868589893
+      },
+      {
+        "name": "http11.response_closed.started",
+        "s": 90.33722716616467
+      },
+      {
+        "name": "http11.response_closed.complete",
+        "s": 90.33736960915849
+      }
+    ]
+  }
+]

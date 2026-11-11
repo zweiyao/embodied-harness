@@ -1,0 +1,40 @@
+{
+  "root": "/home/zwy/work/embodied_harness/experiments/qwen-v3-eef-restored-thinking-20261111",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:move_eef"
+    ],
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "medium"
+  },
+  "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+  "material_version": "qwen-evidence-v3-c6c7f677d400",
+  "workflow_flags_absent": true,
+  "official_bddl_unchanged": true,
+  "maximum_episodes": 1,
+  "protected_files": 343
+}

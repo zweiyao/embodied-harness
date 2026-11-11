@@ -1,0 +1,3 @@
+# Read-only terminal cost summary
+
+Recorded while08 is running, before adding `summarize.py`. This reporting script will refuse to run until both planned cells and the existing final audit/cleanup have completed. It reads existing results and metrics, sums request/token/outcome-time costs, and emits a separate ledger delta keyed by full task paths. It does not edit outcomes, classifications, budgets, prompts, tools, source or the cumulative ledger, and cannot launch/retry a task. Confirm its totals against results and the existing official summary after execution. Running experiment scripts remain frozen.

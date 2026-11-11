@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-07/audit_results.py", line 111, in <module>
+    assert declarations == prior_tools
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+rpent-qwen-continuous-20261109-i07-batch.service: Main process exited, code=exited, status=1/FAILURE
+rpent-qwen-continuous-20261109-i07-batch.service: Failed with result 'exit-code'.
+rpent-qwen-continuous-20261109-i07-batch.service: Consumed 17.214s CPU time, 168.9M memory peak, 0B memory swap peak.

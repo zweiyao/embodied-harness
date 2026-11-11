@@ -13,6 +13,27 @@ workbench does not set, clear or switch proxy variables. Configure networking on
 the remote host; for a systemd service, configure its service environment rather
 than only an interactive SSH shell, and restart the service when idle.
 
+Use the standalone [remote network script](../../deploy/remote-network.sh) on the
+Linux host before launching an experiment:
+
+```bash
+source /home/zwy/work/embodied_harness/remote-network.sh direct
+# Or select an already-running remote loopback HTTP proxy:
+source /home/zwy/work/embodied_harness/remote-network.sh proxy http://127.0.0.1:17997
+source /home/zwy/work/embodied_harness/remote-network.sh status
+```
+
+Choose one mode; the proxy example requires a working listener at that address.
+The script updates the current shell and user systemd manager. It does not start
+a proxy, modify Mac networking, or restart existing services. Existing processes
+retain their environment; restart only the intended idle dashboard when needed.
+Explicit service-level environment overrides take precedence over manager values
+and must be removed separately. Experiment and probe scripts inherit this choice;
+they must not load the switcher or override proxy/IP-family behavior themselves.
+Archived experiment scripts describe historical conditions and must be cleaned
+before reuse. Local-only MCP transport safeguards in the original harness remain
+separate from model-provider networking.
+
 Use `/` to select the model and tools, `/tools` to inspect source and metadata,
 `/console` to run, and `/runs` to inspect history. Saving/copying a configuration
 does not start it. New tools are never selected automatically. `finish` is

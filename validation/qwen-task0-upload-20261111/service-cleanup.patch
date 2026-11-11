@@ -1,0 +1,13 @@
+--- /home/zwy/.config/systemd/user/rpent-univtac-workbench.service.d/40-qwen-direct.conf
++++ /home/zwy/.config/systemd/user/rpent-univtac-workbench.service.d/40-qwen-direct.conf
+@@ -1,3 +1 @@
+ [Service]
+-Environment="NO_PROXY=localhost,127.0.0.1,::1,10.162.250.228,llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com"
+-Environment="no_proxy=localhost,127.0.0.1,::1,10.162.250.228,llm-mcmnmslm9fd9hzmt.cn-beijing.maas.aliyuncs.com"
+--- /home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf
++++ /home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf
+@@ -1,4 +1 @@
+ [Service]
+-UnsetEnvironment=HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+-Environment="NO_PROXY=localhost,127.0.0.1,::1,10.162.250.228"
+-Environment="no_proxy=localhost,127.0.0.1,::1,10.162.250.228"

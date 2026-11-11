@@ -1,0 +1,10 @@
+{
+  "transport": "mac_relay",
+  "sdk": "installed build_api_model + provider client",
+  "max_retries": 0,
+  "request_index": 18,
+  "tools_executed": 0,
+  "success": false,
+  "error_type": "TypeError",
+  "total_s": 0.004369940143078566
+}

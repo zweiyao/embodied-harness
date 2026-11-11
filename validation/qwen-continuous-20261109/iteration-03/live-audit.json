@@ -1,0 +1,135 @@
+{
+  "cells": [
+    {
+      "lane": "a",
+      "task": 4,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-03/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "counts": {
+        "dashboard_event": 160,
+        "model_request": 30,
+        "model_response": 29,
+        "tool_request": 38,
+        "tool_response": 38,
+        "generated_input": 5
+      },
+      "actual_M_version_matches": true,
+      "actual_motion_only_xyz": true,
+      "old_patch_without_alignment_pair": true,
+      "actual_tool_names_match": true,
+      "function_tools": 20,
+      "output_tools": 1,
+      "private_bddl_used": true
+    },
+    {
+      "lane": "b",
+      "task": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-03/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "counts": {
+        "dashboard_event": 150,
+        "model_request": 30,
+        "model_response": 29,
+        "tool_request": 33,
+        "tool_response": 33,
+        "generated_input": 11
+      },
+      "actual_M_version_matches": true,
+      "actual_motion_only_xyz": true,
+      "old_patch_without_alignment_pair": true,
+      "actual_tool_names_match": true,
+      "function_tools": 20,
+      "output_tools": 1,
+      "private_bddl_used": true
+    }
+  ],
+  "owned_processes_checked": [
+    2317663,
+    2317668,
+    2317762,
+    2317763,
+    2317894,
+    2317895,
+    2317897,
+    2317899
+  ],
+  "all_proxy_variables_absent": true,
+  "all_source_roots_match": true,
+  "environment_entries": [
+    {
+      "pid": 2317762,
+      "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/env_server.py",
+      "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+    },
+    {
+      "pid": 2317763,
+      "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/env_server.py",
+      "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+      "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+    }
+  ],
+  "pythonpath_checks": [
+    {
+      "pid": 2317663,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317668,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317762,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317763,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317894,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317895,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317897,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    },
+    {
+      "pid": 2317899,
+      "paths": [
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf",
+        "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout"
+      ],
+      "extra_prefix_exists": false
+    }
+  ],
+  "pythonpath_note": "ProcessDaemon prepends source-parent/rlinf. That prefix does not exist; the isolated source remains the only existing PYTHONPATH root. No live harnessvla prefix is present."
+}

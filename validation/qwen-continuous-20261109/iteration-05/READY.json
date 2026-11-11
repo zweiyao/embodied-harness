@@ -1,0 +1,14 @@
+{
+  "approved": true,
+  "coordinator": "root",
+  "approved_at": "2026-11-10T06:26:53.029426+00:00",
+  "scope": "Root authorizes P preview/align two-cell task4/task0 seed0 screen after runner/classification checks. 19 tools on frozen restricted18 parent, C material/old patch/M, Qwen Flash thinking off, 600s/30 requests. No original harness deployment; valid failures retained; contemporaneous child observer enabled.",
+  "source_handoff_sha256": "e46b48a36dc905f39371851358bd1cc8b9090e0717b6bbdad56a51421b1b653b",
+  "native_placement_versions": {
+    "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+  },
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "classification_checks_passed": true,
+  "observer_checks_passed": true
+}

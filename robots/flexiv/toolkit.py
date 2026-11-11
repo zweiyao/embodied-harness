@@ -165,6 +165,12 @@ class FlexivToolkit(Toolkit):
                 buf = io.BytesIO()
                 picture.save(buf, format="PNG")
                 images.append(buf.getvalue())
+        if "camera_calibration" in info:
+            from robots.flexiv.feedback import compact_camera_metadata
+
+            info["camera_calibration"] = compact_camera_metadata(
+                info["camera_calibration"]
+            )
         info.update(step=index, action_result=result, native_success=None)
         if command is None:
             self._publish_step(self.state.get(index))

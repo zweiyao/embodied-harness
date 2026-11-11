@@ -1,0 +1,67 @@
+{
+  "observed_at": "2026-11-10T06:43:54.974622+00:00",
+  "total_model_requests": 4,
+  "image_count": 3,
+  "body_bytes": 1801183,
+  "identical_payload_sha256": "ab1c81b8f0ffd5303f0c6ec5dfbfdb6a66bade94af5003de7916214200b3f01c",
+  "all_status_200_and_expected_peer_families": true,
+  "raw_client": "httpx0.28.1/httpcore1.0.9; not planner httpx2 integration",
+  "families": {
+    "IPv6": {
+      "total_s": [
+        20.65244759619236,
+        24.854121775366366
+      ],
+      "send_body_duration_s": [
+        16.37389361485839,
+        21.711870292201638
+      ],
+      "post_send_to_headers_s": [
+        4.081658714450896,
+        3.042337057646364
+      ],
+      "mean_total_s": 22.753284685779363
+    },
+    "IPv4": {
+      "total_s": [
+        14.446615613996983,
+        25.27787824627012
+      ],
+      "send_body_duration_s": [
+        11.469315542839468,
+        21.93087481101975
+      ],
+      "post_send_to_headers_s": [
+        2.857148304115981,
+        2.9250241317786276
+      ],
+      "mean_total_s": 19.86224693013355
+    }
+  },
+  "cost": {
+    "input_tokens": 8588,
+    "cached_input_tokens_subset": 6144,
+    "output_tokens": 8,
+    "summed_request_elapsed_s": 85.23106323182583
+  },
+  "interpretation": "No stable large address-family advantage observed: reversed order nearly equal; substantial client body-send time in both families. This supports upload cost for these bytes but neither establishes that IPv6 is the cause nor verifies planner integration. No additional calls or task reruns authorized by this result.",
+  "closure": {
+    "units": {
+      "rpent-api-transport-diagnostic-20261110.service": {
+        "ExecMainStatus": "0",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "rpent-api-transport-diagnostic-20261110-reverse.service": {
+        "ExecMainStatus": "0",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      }
+    },
+    "protected_files_verified": 6017,
+    "original_workbench_same_server": true,
+    "original_config_unchanged": true,
+    "no_simulator_actions": true,
+    "no_global_network_changes": true
+  }
+}

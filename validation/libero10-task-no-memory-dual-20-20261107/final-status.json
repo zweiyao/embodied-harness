@@ -1,0 +1,15 @@
+{
+  "phase": "completed",
+  "completed": 20,
+  "planned": 20,
+  "lanes": {
+    "qwen": {
+      "phase": "completed",
+      "completed": 10
+    },
+    "astra": {
+      "phase": "completed",
+      "completed": 10
+    }
+  }
+}

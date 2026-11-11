@@ -1,0 +1,31 @@
+{
+  "approved_at": "2026-11-09T04:06:26.724497+00:00",
+  "approval_source": "Root explicit READY after reviewing four-file B patch and validation plan, within user-authorized bounded continuous optimization",
+  "candidate": "B: opt-in translate_to(xyz), unchanged move_to servo with gripper=0",
+  "approved_patch": "candidate-translate-to.patch",
+  "scope": [
+    "B only",
+    "Default selection and old prompts unchanged when B not selected",
+    "No changes to robots/libero/tools.py or core planner",
+    "Existing primitive budgets and steps_used semantics preserved",
+    "Meaningful unit tests and isolated remote validation"
+  ],
+  "excluded": [
+    "W1 workflow",
+    "API hook",
+    "New memory entries",
+    "Live harnessvla",
+    "Old tool libraries",
+    "Iteration 01/02 runtime configuration",
+    "New model calls",
+    "New simulator episodes without root coordination"
+  ],
+  "verification_plan": [
+    "Per-step equivalence to old move_to(...,gripper=0) from identical starting conditions",
+    "Default selection and old prompt preservation",
+    "Explicit B registration, observation feedback, no controller RPC when B selected alone",
+    "Installed gripper format_action(0) check without simulation",
+    "Focused/full unit suite and scoped pre-commit in new remote isolated checkout"
+  ],
+  "assessment": "Interface isolation only; task efficacy remains unverified; next experiment background chosen after E+T result"
+}

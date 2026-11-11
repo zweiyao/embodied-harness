@@ -1,0 +1,26 @@
+[
+  {
+    "task": 0,
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-flash-eef-screen3-20261109/a/runs/session/tasks/0001_libero_10_task_t0_s0/episode.mp4",
+    "sha256": "d8c2a6dde1107551712e1d53966ad4d4e3f611c82c580c96825634ad2a69981b",
+    "frames": 768,
+    "fps": 20.0,
+    "seconds": 38.4
+  },
+  {
+    "task": 8,
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-flash-eef-screen3-20261109/a/runs/session/tasks/0002_libero_10_task_t8_s0/episode.mp4",
+    "sha256": "941fce900eb20df79c8bdf800c0451b6d1fd839252dd07da8f3cb32baef27a3d",
+    "frames": 394,
+    "fps": 20.0,
+    "seconds": 19.7
+  },
+  {
+    "task": 4,
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-flash-eef-screen3-20261109/b/runs/session/tasks/0001_libero_10_task_t4_s0/episode.mp4",
+    "sha256": "135f45efabe03af93558627fa0235b4d64a81f068faea34f0536ca4d821d5779",
+    "frames": 253,
+    "fps": 20.0,
+    "seconds": 12.65
+  }
+]

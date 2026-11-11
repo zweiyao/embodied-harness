@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "unique_cells": 20,
+  "budget_assignments_match_run_configs": true,
+  "first_action_counts_independently_recomputed": 20,
+  "successful_file_reads_audited": 51,
+  "outside_run_successful_file_reads": 0,
+  "unexpected_incidents": 0,
+  "protected_files_unchanged": 345,
+  "temporary_units_inactive": true,
+  "original_workbench_ready_and_unchanged": true,
+  "cleanup_passed": true,
+  "outcomes": [
+    {
+      "lane": "qwen",
+      "budget_s": 1500,
+      "status": "timeout",
+      "count": 4
+    },
+    {
+      "lane": "qwen",
+      "budget_s": 1500,
+      "status": "completed",
+      "count": 1
+    },
+    {
+      "lane": "qwen",
+      "budget_s": 300,
+      "status": "timeout",
+      "count": 5
+    },
+    {
+      "lane": "astra",
+      "budget_s": 1500,
+      "status": "completed",
+      "count": 6
+    },
+    {
+      "lane": "astra",
+      "budget_s": 1500,
+      "status": "budget_exhausted",
+      "count": 4
+    }
+  ],
+  "limits": [
+    "Old system/user/guide retained; only experience library empty.",
+    "Qwen uses two time-budget cohorts and different task sets, not a uniform-budget benchmark.",
+    "Pre-action averages condition on reaching an action; zero-action episodes reported separately.",
+    "Each task/seed run once, no new experience-enabled control; no causal memory or success-rate improvement claim."
+  ]
+}

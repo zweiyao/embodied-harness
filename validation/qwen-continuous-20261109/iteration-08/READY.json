@@ -1,0 +1,15 @@
+{
+  "approved_at": "2026-11-10T09:03:20.779215+00:00",
+  "scope": "F two-cell development screen only; remote Qwen direct; Mac unchanged",
+  "source_commit": "2438c070aef9e846f0de3fbd807c9aa0d5ffc257",
+  "inputs_sha256": {
+    "plan.json": "2deecb0fdbca6aa5325655aa084e8e8a59651a06c0108486edde43b22f711592",
+    "source-handoff.json": "fd097c6dbf03400a528bb33b416bd64adac9827c38e68ddb5e1f3f11dc3d3bb2",
+    "material-handoff.json": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57",
+    "runner-checks.json": "b88f6658db85d5bf68a74508717b898d5411586d10abf5008ec9e6a63fd37a2e"
+  },
+  "full_unit": "2135 passed / 15 skipped",
+  "focused": "101 passed",
+  "classifier_unchanged": true,
+  "no_valid_failure_retries": true
+}

@@ -1,0 +1,32 @@
+{
+  "full_unit_passed": 2204,
+  "full_unit_skipped": 15,
+  "full_unit_log": "full-unit-v2.log",
+  "focused_passed": 144,
+  "scoped_precommit_passed": true,
+  "full_precommit_passed": false,
+  "full_precommit_limitation": "Historical validation-script diagnostics; unrelated hook changes restored",
+  "unchanged_parent_source_files": 298,
+  "modified_runtime_files": [
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/state.py",
+    "rpent/dashboard/workbench.py",
+    "rpent/planner/api_loop.py",
+    "rpent/planner/base.py",
+    "rpent/planner/api_idle_retry.py"
+  ],
+  "native_tools_and_materials_unchanged": true,
+  "candidate_path": "/home/zwy/work/embodied_harness/validation/qwen-thinking-retry-20261111/test-checkout-v2",
+  "preparation_only": false,
+  "full_unit_seconds": 75.6,
+  "state": "software validated; corrected thinking trial completed",
+  "experiment": {
+    "official_success": false,
+    "status": "budget_exhausted",
+    "elapsed_s": 1068.0,
+    "logical_responses": 30,
+    "actions": 12,
+    "thinking_responses": 30,
+    "real_transport_retries": 0
+  }
+}

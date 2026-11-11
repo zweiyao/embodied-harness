@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "environment_actions": 0,
+  "eef_catalog_and_action_metrics": true,
+  "materials": [
+    {
+      "lane": "a",
+      "version": "qwen-evidence-v4-e-f2ec2fe10f63",
+      "files": 8,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    },
+    {
+      "lane": "b",
+      "version": "qwen-evidence-v4-e-f2ec2fe10f63",
+      "files": 8,
+      "actual_reads": 3,
+      "write_denials": 3,
+      "freeze_render_links": true
+    }
+  ],
+  "classification_checks": 5,
+  "published_tool_checks": [
+    {
+      "name": "sensor_patch_batch",
+      "version": "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195",
+      "docker_execution": true,
+      "missing_step_rejected": true,
+      "alignment_and_stale_checks": true
+    },
+    {
+      "name": "sensor_container_geometry",
+      "version": "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "docker_execution": true,
+      "missing_step_rejected": true,
+      "alignment_and_stale_checks": false
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "a",
+      "server_id": "efd15e0674dd491da79c14e0fab1f536",
+      "port": 54195,
+      "config_matches": true,
+      "proxy_absent": true,
+      "connectivity_ok": true
+    },
+    {
+      "lane": "b",
+      "server_id": "29840c75da4448f9a0cd1bd4b3960050",
+      "port": 43867,
+      "config_matches": true,
+      "proxy_absent": true,
+      "connectivity_ok": true
+    }
+  ]
+}

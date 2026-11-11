@@ -1,0 +1,83 @@
+{
+  "recorded_at": "2026-11-10T09:15:02.955507+00:00",
+  "valid_attempts": 2,
+  "model_requests": 12,
+  "input_tokens_including_cached": 104744,
+  "cached_input_tokens_subset": 64256,
+  "output_tokens": 1021,
+  "summed_outcome_elapsed_s": 1222.3,
+  "cells": [
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "task": 0,
+      "condition": "R18+W2+F",
+      "official_success": false,
+      "classification": "budget_timeout",
+      "model_requests": 6,
+      "input_tokens_including_cached": 50530,
+      "cached_input_tokens_subset": 31744,
+      "output_tokens": 419,
+      "elapsed_s": 611.0,
+      "completed_responses": 5,
+      "completed_wait_s": 565.993453,
+      "toolkit_action_entries": 0,
+      "before_action_calls": null,
+      "first_action_s": null,
+      "finish_only": {
+        "actual_allow_text_output_counts": {
+          "False": 6
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 5
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      }
+    },
+    {
+      "cell_id": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-08/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "task": 4,
+      "condition": "R18+W2+F",
+      "official_success": false,
+      "classification": "budget_timeout",
+      "model_requests": 6,
+      "input_tokens_including_cached": 54214,
+      "cached_input_tokens_subset": 32512,
+      "output_tokens": 602,
+      "elapsed_s": 611.3,
+      "completed_responses": 5,
+      "completed_wait_s": 547.335523,
+      "toolkit_action_entries": 1,
+      "before_action_calls": 7,
+      "first_action_s": 301.583441,
+      "finish_only": {
+        "actual_allow_text_output_counts": {
+          "False": 6
+        },
+        "completed_response_kinds": {
+          "tool_calls_only": 5
+        },
+        "finish_model_attempts": 0,
+        "finish_toolkit_entries": 0,
+        "finish_returns": [],
+        "accepted_finish_returns": 0,
+        "pure_text_followed_by_output_retry": [],
+        "last_pure_text_without_followup_request": null,
+        "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+      }
+    }
+  ],
+  "completed_responses": 10,
+  "completed_wait_s": 1113.328976,
+  "preflight_connectivity_requests_excluded": 2,
+  "notes": [
+    "Cached input is a subset, not additive; canceled usage is not estimated.",
+    "Tool entry/accepted finish do not establish holding or official success.",
+    "Historical parent and timing/lane confounds remain separate."
+  ]
+}

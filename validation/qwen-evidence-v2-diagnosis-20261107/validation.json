@@ -1,0 +1,16 @@
+{
+  "remote_replay": "40 calls / 267 points match recorded published helper output",
+  "independent_medians": "247 valid points passed",
+  "radius_zero_minimal_reproduction": "confirmed with fully valid synthetic input; radius 1 succeeds",
+  "nested_errors": "20 points in 4 task-0 calls; affected attempt separately flagged",
+  "ruff": "passed",
+  "original_protected_files": 776,
+  "protected_hashes_unchanged": true,
+  "original_workbench_unchanged": true,
+  "new_model_requests": 0,
+  "new_environment_actions": 0,
+  "production_changes": 0,
+  "full_unit_suite": "not rerun: standalone analysis/report only",
+  "sphinx": "not run: no Sphinx inputs changed",
+  "proposed_changes": "not implemented; exact-scope approval pending"
+}

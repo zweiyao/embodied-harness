@@ -1,0 +1,67 @@
+{
+  "status": "prepared proposal; no READY or experiments",
+  "reference": "iteration-04 C+M-restricted18",
+  "reference_plan_sha256": "df699c30093285f38c7a840fe4b433aa83e58844faab1b27fa2c9d8f6ab72815",
+  "before": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:rotate_pitch",
+    "native:rotate_wrist",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+    "native:translate_to"
+  ],
+  "removed": [
+    "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+  ],
+  "added": [
+    "native:preview_placement",
+    "native:align_placement"
+  ],
+  "after": [
+    "native:finish",
+    "native:list_dir",
+    "native:read_text_file",
+    "native:write_text_file",
+    "native:pi0_doubled",
+    "native:pi0_pick",
+    "native:release",
+    "native:rotate_pitch",
+    "native:rotate_wrist",
+    "native:set_gripper",
+    "native:back_project",
+    "native:read_image",
+    "native:segment",
+    "native:view_camera_meta",
+    "native:view_env_state",
+    "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+    "native:translate_to",
+    "native:preview_placement",
+    "native:align_placement"
+  ],
+  "preserved": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none"
+  },
+  "condition": "C+M+P",
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "C_material_version": "qwen-evidence-v3-c6c7f677d400",
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "new_native_versions": "Freeze from validated isolated P source-handoff and actual catalog before setup"
+}

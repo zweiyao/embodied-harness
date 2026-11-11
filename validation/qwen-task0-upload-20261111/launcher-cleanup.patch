@@ -1,0 +1,41 @@
+--- /home/zwy/work/embodied_harness/run-sdk-smoke.sh
++++ /home/zwy/work/embodied_harness/run-sdk-smoke.sh
+@@ -4 +3,0 @@
+-source remote-proxy-env.sh
+--- /home/zwy/work/embodied_harness/native-univtac/start-workbench.sh
++++ /home/zwy/work/embodied_harness/native-univtac/start-workbench.sh
+@@ -17,3 +16,0 @@
+-unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+-export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1,10.162.250.228}"
+-export no_proxy="$NO_PROXY"
+--- /home/zwy/work/harnessvla/local-setup/dashboard.sh
++++ /home/zwy/work/harnessvla/local-setup/dashboard.sh
+@@ -7,2 +6,0 @@
+-unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+-export NO_PROXY=localhost,127.0.0.1
+--- /home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh
++++ /home/zwy/work/harnessvla/local-setup/flexiv-dashboard.sh
+@@ -10,3 +9,0 @@
+-unset HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+-export NO_PROXY=localhost,127.0.0.1,.aliyuncs.com
+-export no_proxy="$NO_PROXY"
+--- /home/zwy/work/embodied_harness/native-rpent/start-dashboard.sh
++++ /home/zwy/work/embodied_harness/native-rpent/start-dashboard.sh
+@@ -5 +4,0 @@
+-source /home/zwy/work/embodied_harness/remote-proxy-env.sh
+--- /home/zwy/work/embodied_harness/native-rpent/start-original-astra.sh
++++ /home/zwy/work/embodied_harness/native-rpent/start-original-astra.sh
+@@ -5 +4,0 @@
+-source /home/zwy/work/embodied_harness/remote-proxy-env.sh
+--- /home/zwy/work/embodied_harness/native-rpent/start-original-qwen.sh
++++ /home/zwy/work/embodied_harness/native-rpent/start-original-qwen.sh
+@@ -5 +4,0 @@
+-source /home/zwy/work/embodied_harness/remote-proxy-env.sh
+--- /home/zwy/work/embodied_harness/native-rpent/start-qwen-api-basket.sh
++++ /home/zwy/work/embodied_harness/native-rpent/start-qwen-api-basket.sh
+@@ -5 +4,0 @@
+-source /home/zwy/work/embodied_harness/remote-proxy-env.sh
+--- /home/zwy/work/embodied_harness/native-rpent/start-qwen-basket.sh
++++ /home/zwy/work/embodied_harness/native-rpent/start-qwen-basket.sh
+@@ -5 +4,0 @@
+-source /home/zwy/work/embodied_harness/remote-proxy-env.sh

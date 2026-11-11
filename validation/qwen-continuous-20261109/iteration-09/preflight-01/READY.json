@@ -1,0 +1,15 @@
+{
+  "approved_at": "2026-11-10T10:38:20.620210+00:00",
+  "scope": "V two-cell development screen only; Flash remote direct; Mac untouched",
+  "source_commit": "f47da19",
+  "inputs_sha256": {
+    "plan.json": "db4470890494c7d45068fc21b9817fc826ad8f40ea8a1ebb080223d55f812526",
+    "source-handoff.json": "4086796a974698af95704c054adc7ec1c6d7f2ff6ad407d3d334a689e2be4974",
+    "material-handoff.json": "a1ccce152b332ab096828e2c3923e0ea669cbb0e544ae95963513f80dc32fa57",
+    "runner-checks.json": "3adf1118e72e07db4435e3ee01bdd3acd2bd36eb662661b889417c1fbee40691"
+  },
+  "full_unit": "2154 passed / 15 skipped",
+  "runner_cases": 55,
+  "classifier_unchanged": true,
+  "no_valid_failure_retries": true
+}

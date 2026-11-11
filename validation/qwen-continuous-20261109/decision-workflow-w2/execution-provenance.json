@@ -1,0 +1,17 @@
+{
+  "build_passed": true,
+  "executed_build_script_sha256": "34bda8f5a9556ae287944653a4bcfc1777f042b2022b53f56260492d49194a91",
+  "final_build_script_sha256": "62e59d178c0eb25aaed57b84dcd59fc27cbe6278d60955a9a596648cbdd20d33",
+  "post_execution_script_changes": "Ruff E731: replace path-normalization lambda with equivalent function; apply Ruff formatting. Published material unchanged. Exact executed script retained remotely.",
+  "remote_artifacts": {
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/decision-workflow-w2/build_validate.executed.py": "34bda8f5a9556ae287944653a4bcfc1777f042b2022b53f56260492d49194a91",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/decision-workflow-w2/build_validate.py": "62e59d178c0eb25aaed57b84dcd59fc27cbe6278d60955a9a596648cbdd20d33",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/decision-workflow-w2/default-prompts.json": "89fb11db49c8e0a0e0388a7c008048b554e7643a752d0370a4780457cfb9633f",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/decision-workflow-w2/catalog.json": "da20e5f2da4148452d5309bd0dd98c52a3ae33a52ca8dfdae5bf0f5d5e6baf88",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/decision-workflow-w2/focused-tests.log": "99cef98de12a8b8a90abbcb2033d076bfc563ea7951d4da90263da27288d16f6"
+  },
+  "scoped_ruff_check": "passed",
+  "scoped_ruff_format_check": "passed",
+  "focused_tests": "4 passed in 0.02s",
+  "full_suite_rerun": false
+}

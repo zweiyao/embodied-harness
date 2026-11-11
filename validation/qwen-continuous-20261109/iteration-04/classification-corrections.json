@@ -1,0 +1,161 @@
+[
+  {
+    "observed_at": "2026-11-10T06:08:15.923833+00:00",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "from_classification": "unexpected",
+    "to_classification": "model_argument_error",
+    "evaluation_success": false,
+    "original_incident_sha256": "9bbc0a668a790ff4f83058f4a19c06c9edc4f0700747e50eb427f2c0ab54c96a",
+    "original_outcome_sha256": "6dac3839b9f03c832c5f9f528d0ac30cb81b51904041b8818c51faed72ef5aa2",
+    "events_sha256": "ed982ee9fdb900c822fd21d91f2b5d7885e6b13d0b91a825994826a34a995dde",
+    "evidence": {
+      "tool": "sensor_patch_batch",
+      "actual_schema_matches_published": true,
+      "rejected_model_calls": [
+        {
+          "model_request": 5,
+          "tool_call_id": "call_e4e4630819984d63a22c7793",
+          "validation_errors": [
+            {
+              "path": [
+                "points",
+                0,
+                0
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                0,
+                1
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                1,
+                0
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                1,
+                1
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                2,
+                0
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                2,
+                1
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                3,
+                0
+              ],
+              "validator": "maximum"
+            },
+            {
+              "path": [
+                "points",
+                3,
+                1
+              ],
+              "validator": "maximum"
+            }
+          ]
+        },
+        {
+          "model_request": 6,
+          "tool_call_id": "call_0d02bcc776124895a259aa84",
+          "validation_errors": [
+            {
+              "path": [
+                "points",
+                0
+              ],
+              "validator": "maxItems"
+            },
+            {
+              "path": [
+                "points",
+                0,
+                0
+              ],
+              "validator": "type"
+            },
+            {
+              "path": [
+                "points",
+                1
+              ],
+              "validator": "maxItems"
+            },
+            {
+              "path": [
+                "points",
+                1,
+                0
+              ],
+              "validator": "type"
+            },
+            {
+              "path": [
+                "points",
+                2
+              ],
+              "validator": "maxItems"
+            },
+            {
+              "path": [
+                "points",
+                2,
+                0
+              ],
+              "validator": "type"
+            },
+            {
+              "path": [
+                "points",
+                3
+              ],
+              "validator": "maxItems"
+            },
+            {
+              "path": [
+                "points",
+                3,
+                0
+              ],
+              "validator": "type"
+            }
+          ]
+        }
+      ],
+      "retry_feedback_present": true,
+      "rejected_calls_dispatched": false,
+      "classification": "model_argument_error",
+      "evaluation_success": false
+    },
+    "rerun": false,
+    "sdk_retry_limit_changed": false,
+    "reason": "Both model replies violate the same actual/published schema; correction prompt was supplied; rejected calls never entered tool implementation. Valid model failure under the original protocol."
+  }
+]

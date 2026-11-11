@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-11-10T06:42:18.581719+00:00",
+  "authorized": true,
+  "authorization": "root approved at most4 requests if initial2 inconclusive; plan.md preregistered thresholds/order",
+  "reason": "Both200 and verifiedfamily, but1.43x/6.21s initialdifference below3x/10s threshold. Firstrequest uncached and secondcached; one reverseorderpair reduces ordering/cacheconfound.",
+  "order": [
+    "IPv4",
+    "IPv6"
+  ],
+  "same_body_required": true,
+  "max_total_requests": 4
+}

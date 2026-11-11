@@ -1,0 +1,2 @@
+- [libero/next-action-evidence.md](libero/next-action-evidence.md): Choose the next primitive and resolve only its missing evidence; relevant when localization continues without action.
+- [libero/object-relative-transfer.md](libero/object-relative-transfer.md): Separate holding evidence, object placement geometry and observed motion; relevant to grasp-and-transfer failures.

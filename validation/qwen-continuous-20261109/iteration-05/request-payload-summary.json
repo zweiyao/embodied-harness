@@ -1,0 +1,161 @@
+{
+  "observed_at": "2026-11-10T06:42:49.492048+00:00",
+  "phase": "completed",
+  "source": "saved model-request binary metadata; base64 estimate excludes JSON overhead/compression",
+  "lanes": [
+    {
+      "lane": "a",
+      "requests": [
+        {
+          "request": 1,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "completed_response": true,
+          "model_wait_s": 3.152612
+        },
+        {
+          "request": 2,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "completed_response": true,
+          "model_wait_s": 64.682866
+        },
+        {
+          "request": 3,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "completed_response": true,
+          "model_wait_s": 75.422281
+        },
+        {
+          "request": 4,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "completed_response": true,
+          "model_wait_s": 64.685297
+        },
+        {
+          "request": 5,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "completed_response": true,
+          "model_wait_s": 42.265343
+        },
+        {
+          "request": 6,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "completed_response": true,
+          "model_wait_s": 93.462878
+        },
+        {
+          "request": 7,
+          "binary_count": 6,
+          "binary_bytes": 2686027,
+          "base64_binary_bytes_estimate": 3581376,
+          "completed_response": true,
+          "model_wait_s": 124.888711
+        },
+        {
+          "request": 8,
+          "binary_count": 9,
+          "binary_bytes": 4021439,
+          "base64_binary_bytes_estimate": 5361928,
+          "completed_response": true,
+          "model_wait_s": 127.660723
+        },
+        {
+          "request": 9,
+          "binary_count": 9,
+          "binary_bytes": 4021439,
+          "base64_binary_bytes_estimate": 5361928,
+          "completed_response": false,
+          "model_wait_s": null
+        }
+      ]
+    },
+    {
+      "lane": "b",
+      "requests": [
+        {
+          "request": 1,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "completed_response": true,
+          "model_wait_s": 3.562423
+        },
+        {
+          "request": 2,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "completed_response": true,
+          "model_wait_s": 3.897932
+        },
+        {
+          "request": 3,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "completed_response": true,
+          "model_wait_s": 40.420395
+        },
+        {
+          "request": 4,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "completed_response": true,
+          "model_wait_s": 107.278754
+        },
+        {
+          "request": 5,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "completed_response": true,
+          "model_wait_s": 79.216095
+        },
+        {
+          "request": 6,
+          "binary_count": 4,
+          "binary_bytes": 2281152,
+          "base64_binary_bytes_estimate": 3041540,
+          "completed_response": true,
+          "model_wait_s": 116.454073
+        },
+        {
+          "request": 7,
+          "binary_count": 5,
+          "binary_bytes": 3058797,
+          "base64_binary_bytes_estimate": 4078400,
+          "completed_response": true,
+          "model_wait_s": 127.322061
+        },
+        {
+          "request": 8,
+          "binary_count": 8,
+          "binary_bytes": 4202453,
+          "base64_binary_bytes_estimate": 5603280,
+          "completed_response": true,
+          "model_wait_s": 71.191314
+        },
+        {
+          "request": 9,
+          "binary_count": 11,
+          "binary_bytes": 5382326,
+          "base64_binary_bytes_estimate": 7176448,
+          "completed_response": false,
+          "model_wait_s": null
+        }
+      ]
+    }
+  ]
+}

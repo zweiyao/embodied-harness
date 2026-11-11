@@ -1,0 +1,15 @@
+{
+  "phase": "completed",
+  "completed": 3,
+  "planned": 3,
+  "lanes": {
+    "a": {
+      "phase": "completed",
+      "completed": 2
+    },
+    "b": {
+      "phase": "completed",
+      "completed": 1
+    }
+  }
+}

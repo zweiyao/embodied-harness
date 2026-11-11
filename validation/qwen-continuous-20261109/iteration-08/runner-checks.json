@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "classification_unchanged": true,
+  "classification_scenarios": 14,
+  "workflow_scenarios": 18,
+  "finish_scenarios": 10,
+  "observer_scenarios": 4,
+  "real_manual_journal_replay": true,
+  "ruff_config": "F checkout pyproject.toml",
+  "initial_lint_issue": "First command picked up outside-project lint configuration; rerun with project config corrected three import orders.",
+  "model_requests": 0,
+  "simulator_actions": 0
+}

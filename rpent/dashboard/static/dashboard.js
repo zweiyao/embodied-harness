@@ -1,3 +1,4 @@
+import { formatRunMetrics } from './run-metrics.js?v=experiment-metrics-20261103';
 import { formatValue as fmtArgs, requestJSON } from "./http.js";
 import { createInteractionController } from "./interaction.js";
 import { makeAssistantTextElement } from "./markdown_table.js";
@@ -813,6 +814,7 @@ function resetRenderedTaskProjection() {
   $("#evCount").textContent = "";
   $("#stepCount").textContent = "";
   $("#usageMeta").textContent = "";
+  $("#experimentMetrics").textContent = "";
   $("#taskMeta").textContent = copy.awaitingTask(taskCommandUsage);
   $("#frameCap").textContent = copy.waitingFrame;
   setResult(false, null);
@@ -923,7 +925,10 @@ let resultState = null;
 
 async function updateResult(snapshot) {
   const key = `${snapshot.server_id}:${snapshot.run_id}:${snapshot.state}`;
-  if (resultState?.key !== key) resultState = { key, pending: false, outcome: null };
+  if (resultState?.key !== key) {
+    resultState = { key, pending: false, outcome: null };
+    $("#experimentMetrics").textContent = "";
+  }
   const current = resultState;
   if (!snapshot.workbench) {
     setResult(snapshot.terminated, snapshot.state);
@@ -950,6 +955,7 @@ async function updateResult(snapshot) {
     }
   }
   if (resultState !== current) return;
+  $("#experimentMetrics").textContent = current.outcome ? formatRunMetrics(current.outcome, LANGUAGE) : "";
   const success = current.outcome?.environment_success;
   badge.className = "badge" + (success === true ? " b-ok" : success === false ? " b-fail" : "");
   badge.textContent = success === true ? copy.solved : success === false ? copy.notSolved : copy.resultUnknown;

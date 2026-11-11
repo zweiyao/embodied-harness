@@ -1,0 +1,148 @@
+[
+  {
+    "lane": "a",
+    "task": 4,
+    "seed": 0,
+    "run_id": "9cbe14f94f25bc734075",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "model_argument_error",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "error",
+    "error": "UnexpectedModelBehavior: Tool 'sensor_patch_batch' exceeded max retries count of 1. Consider raising the retry limit, or see the docs on tool retries: https://pydantic.dev/docs/ai/tools-toolsets/tools-advanced/#tool-retries",
+    "elapsed_s": 42.7,
+    "stats": {
+      "total_input_tokens": 57445,
+      "total_output_tokens": 796,
+      "total_cached_input_tokens": 40448,
+      "turns_used": 6,
+      "tool_calls": 7
+    },
+    "actions": 0,
+    "condition": "C+M-restricted18",
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "classification_evidence": "classification-corrections.json",
+    "metrics": {
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 5,
+        "list_dir": 1
+      },
+      "all_calls": 7,
+      "action_calls": 0,
+      "has_action_call": false,
+      "first_action_confirmed_executed": false,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": null,
+      "before_action_calls": null,
+      "before_action_observations": null,
+      "before_action_perception": null,
+      "before_action_file_reads": null,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 5,
+        "list_dir": 1
+      },
+      "first_action_seconds_since_first_event": null,
+      "first_action_model_request": null,
+      "tool_error_responses": 0,
+      "patch_point_count": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "grasp_attempt_calls": 0,
+      "completed_model_responses": 6,
+      "completed_model_wait_sum_s": 32.149724,
+      "completed_model_wait_mean_s": 5.358287333333333,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md",
+        "grasp-feature-evidence.md",
+        "object-relative-transfer.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 0
+      }
+    }
+  },
+  {
+    "lane": "b",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-04/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "task_result",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "budget_exhausted",
+    "error": null,
+    "elapsed_s": 365.7,
+    "stats": {
+      "total_input_tokens": 1111390,
+      "total_output_tokens": 3409,
+      "total_cached_input_tokens": 692736,
+      "turns_used": 30,
+      "tool_calls": 33
+    },
+    "actions": 13,
+    "condition": "C+M-restricted18",
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "metrics": {
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 3,
+        "list_dir": 2,
+        "pi0_pick": 1,
+        "sensor_patch_batch": 6,
+        "read_image": 2,
+        "sensor_container_geometry": 1,
+        "view_camera_meta": 4,
+        "translate_to": 6,
+        "rotate_pitch": 2,
+        "rotate_wrist": 2,
+        "set_gripper": 2
+      },
+      "all_calls": 33,
+      "action_calls": 13,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 6,
+      "before_action_observations": 1,
+      "before_action_perception": 0,
+      "before_action_file_reads": 3,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 3,
+        "list_dir": 2
+      },
+      "first_action_seconds_since_first_event": 30.109693,
+      "first_action_model_request": 4,
+      "tool_error_responses": 0,
+      "patch_point_count": 40,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {
+        "measured": 1
+      },
+      "grasp_attempt_calls": 3,
+      "completed_model_responses": 30,
+      "completed_model_wait_sum_s": 328.758565,
+      "completed_model_wait_mean_s": 10.958618833333333,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 6,
+        "sensor_container_geometry": 1
+      }
+    }
+  }
+]

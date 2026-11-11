@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "purpose": "two-move interface fixture, not benchmark",
+  "model": "qwen3.8-max",
+  "enable_thinking": true,
+  "request_budget": 6,
+  "wall_time_budget_s": 300,
+  "output_token_limit": 4096,
+  "stats": {
+    "total_input_tokens": 26869,
+    "total_output_tokens": 3196,
+    "total_cached_input_tokens": 11264,
+    "turns_used": 4,
+    "tool_calls": 4
+  },
+  "native_success": false,
+  "environment_closed": true,
+  "actions": [
+    {
+      "step": 1,
+      "images": 3,
+      "steps_used": 5,
+      "position_error_m": 0.020493082179080715,
+      "orientation_error_rad": 0.005440820588340413
+    },
+    {
+      "step": 2,
+      "images": 3,
+      "steps_used": 8,
+      "position_error_m": 0.0040980836151390644,
+      "orientation_error_rad": 0.006895131402549835
+    }
+  ],
+  "feedback_delivery": [
+    {
+      "step": 1,
+      "images": 3,
+      "delivered_to_next_request": true
+    },
+    {
+      "step": 2,
+      "images": 3,
+      "delivered_to_next_request": true
+    }
+  ],
+  "returned_model_wait_s": [
+    2.847179,
+    32.929902,
+    26.40149,
+    30.766913
+  ],
+  "thinking_response_count": 4,
+  "limitation": "This fixture forces two free-space movements and omits experience reads; it validates the interface, not task policy or success-rate gains.",
+  "task_smoke": {
+    "status": "budget_exhausted",
+    "stats": {
+      "total_input_tokens": 50573,
+      "total_output_tokens": 10165,
+      "total_cached_input_tokens": 32000,
+      "turns_used": 8,
+      "tool_calls": 9
+    },
+    "elapsed_s": 300.3,
+    "actions": 0,
+    "environment_success": false,
+    "error": null
+  }
+}

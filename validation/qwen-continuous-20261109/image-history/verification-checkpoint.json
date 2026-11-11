@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-11-10T12:03:37.140205+00:00",
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/image-history-test-checkout",
+  "full_unit": {
+    "passed": 2179,
+    "skipped": 15,
+    "seconds": 75.65
+  },
+  "focused_summary": "119 passed in 5.29s",
+  "scoped_hooks_passed": true,
+  "full_hooks_passed": false,
+  "full_hooks_limit": "18 historical validation-script diagnostics",
+  "initial_lint_failures": "I001 import spacing and C408 dict literal in new tests; corrected before pytest, first log retained",
+  "external_policy_requests": 0,
+  "simulator_actions": 0,
+  "policy_screen_ready": false,
+  "remaining_validation": [
+    "Provider serialized HTTP request body with trimmed images",
+    "Enabled-option request-budget and cancellation/timeout checks",
+    "Frozen source handoff and fresh two-cell runner preflight"
+  ]
+}

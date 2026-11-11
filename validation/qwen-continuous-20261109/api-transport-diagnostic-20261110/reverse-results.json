@@ -1,0 +1,180 @@
+[
+  {
+    "family_requested": "IPv4",
+    "started_at": "2026-11-10T06:42:18.679259+00:00",
+    "body_sha256": "ab1c81b8f0ffd5303f0c6ec5dfbfdb6a66bade94af5003de7916214200b3f01c",
+    "body_bytes": 1801183,
+    "events": [
+      {
+        "event": "connection.connect_tcp.started",
+        "elapsed_s": 0.019353777170181274
+      },
+      {
+        "event": "connection.connect_tcp.complete",
+        "elapsed_s": 0.29211492417380214
+      },
+      {
+        "event": "connection.start_tls.started",
+        "elapsed_s": 0.2922193640843034
+      },
+      {
+        "event": "connection.start_tls.complete",
+        "elapsed_s": 0.42068443121388555
+      },
+      {
+        "event": "http11.send_request_headers.started",
+        "elapsed_s": 0.42085586907342076
+      },
+      {
+        "event": "http11.send_request_headers.complete",
+        "elapsed_s": 0.42101255990564823
+      },
+      {
+        "event": "http11.send_request_body.started",
+        "elapsed_s": 0.4210155550390482
+      },
+      {
+        "event": "http11.send_request_body.complete",
+        "elapsed_s": 22.351890366058797
+      },
+      {
+        "event": "http11.receive_response_headers.started",
+        "elapsed_s": 22.351899764034897
+      },
+      {
+        "event": "http11.receive_response_headers.complete",
+        "elapsed_s": 25.276914497837424
+      },
+      {
+        "event": "http11.receive_response_body.started",
+        "elapsed_s": 25.277554776053876
+      },
+      {
+        "event": "http11.receive_response_body.complete",
+        "elapsed_s": 25.277618668973446
+      },
+      {
+        "event": "http11.response_closed.started",
+        "elapsed_s": 25.277658896055073
+      },
+      {
+        "event": "http11.response_closed.complete",
+        "elapsed_s": 25.277692009229213
+      }
+    ],
+    "actual_peer_families": [
+      "IPv4"
+    ],
+    "http_status": 200,
+    "usage": {
+      "prompt_tokens": 2147,
+      "total_tokens": 2149,
+      "completion_tokens": 2,
+      "prompt_tokens_details": {
+        "cached_tokens": 2048,
+        "image_tokens": 2118,
+        "text_tokens": 29
+      },
+      "completion_tokens_details": {
+        "text_tokens": 2
+      }
+    },
+    "model": "qwen3.8-flash",
+    "finish_reason": "stop",
+    "response_equals_OK": true,
+    "total_s": 25.27787824627012,
+    "expected_peer_family_verified": true,
+    "send_body_start_s": 0.4210155550390482,
+    "send_body_complete_s": 22.351890366058797,
+    "response_headers_s": 25.276914497837424
+  },
+  {
+    "family_requested": "IPv6",
+    "started_at": "2026-11-10T06:42:43.957484+00:00",
+    "body_sha256": "ab1c81b8f0ffd5303f0c6ec5dfbfdb6a66bade94af5003de7916214200b3f01c",
+    "body_bytes": 1801183,
+    "events": [
+      {
+        "event": "connection.connect_tcp.started",
+        "elapsed_s": 0.0025343094021081924
+      },
+      {
+        "event": "connection.connect_tcp.complete",
+        "elapsed_s": 0.043119924142956734
+      },
+      {
+        "event": "connection.start_tls.started",
+        "elapsed_s": 0.04320519743487239
+      },
+      {
+        "event": "connection.start_tls.complete",
+        "elapsed_s": 0.09903094219043851
+      },
+      {
+        "event": "http11.send_request_headers.started",
+        "elapsed_s": 0.09922649711370468
+      },
+      {
+        "event": "http11.send_request_headers.complete",
+        "elapsed_s": 0.09934364212676883
+      },
+      {
+        "event": "http11.send_request_body.started",
+        "elapsed_s": 0.09934544516727328
+      },
+      {
+        "event": "http11.send_request_body.complete",
+        "elapsed_s": 21.81121573736891
+      },
+      {
+        "event": "http11.receive_response_headers.started",
+        "elapsed_s": 21.811222630087286
+      },
+      {
+        "event": "http11.receive_response_headers.complete",
+        "elapsed_s": 24.853552795015275
+      },
+      {
+        "event": "http11.receive_response_body.started",
+        "elapsed_s": 24.85376668535173
+      },
+      {
+        "event": "http11.receive_response_body.complete",
+        "elapsed_s": 24.853835196234286
+      },
+      {
+        "event": "http11.response_closed.started",
+        "elapsed_s": 24.85387901030481
+      },
+      {
+        "event": "http11.response_closed.complete",
+        "elapsed_s": 24.85391012020409
+      }
+    ],
+    "actual_peer_families": [
+      "IPv6"
+    ],
+    "http_status": 200,
+    "usage": {
+      "prompt_tokens": 2147,
+      "total_tokens": 2149,
+      "completion_tokens": 2,
+      "prompt_tokens_details": {
+        "cached_tokens": 2048,
+        "image_tokens": 2118,
+        "text_tokens": 29
+      },
+      "completion_tokens_details": {
+        "text_tokens": 2
+      }
+    },
+    "model": "qwen3.8-flash",
+    "finish_reason": "stop",
+    "response_equals_OK": true,
+    "total_s": 24.854121775366366,
+    "expected_peer_family_verified": true,
+    "send_body_start_s": 0.09934544516727328,
+    "send_body_complete_s": 21.81121573736891,
+    "response_headers_s": 24.853552795015275
+  }
+]

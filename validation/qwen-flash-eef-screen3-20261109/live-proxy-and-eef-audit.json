@@ -1,0 +1,51 @@
+{
+  "lanes": {
+    "a": [
+      {
+        "pid": 2175496,
+        "proxy_absent": true,
+        "env_server": false
+      },
+      {
+        "pid": 2175906,
+        "proxy_absent": true,
+        "env_server": true,
+        "eef_enabled": true
+      },
+      {
+        "pid": 2176258,
+        "proxy_absent": true,
+        "env_server": false
+      },
+      {
+        "pid": 2176260,
+        "proxy_absent": true,
+        "env_server": false
+      }
+    ],
+    "b": [
+      {
+        "pid": 2175501,
+        "proxy_absent": true,
+        "env_server": false
+      },
+      {
+        "pid": 2175905,
+        "proxy_absent": true,
+        "env_server": true,
+        "eef_enabled": true
+      },
+      {
+        "pid": 2176257,
+        "proxy_absent": true,
+        "env_server": false
+      },
+      {
+        "pid": 2176259,
+        "proxy_absent": true,
+        "env_server": false
+      }
+    ]
+  },
+  "passed": true
+}

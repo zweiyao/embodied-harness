@@ -1,0 +1,71 @@
+# REVIEW SKETCH ONLY, not applied. Complete implementation module is alongside.
+# Root must approve/rebase this in a NEW isolated candidate checkout.
+# No core API planner / tools.py / existing published generated versions change.
+
+--- robots/libero/research/manual.py
++++ robots/libero/research/manual.py
+@@ in ManualToolkit.__init__, after self.sensors and before originals = self._tools
++        placement_names = {t["name"] for t in selected} & {
++            "preview_placement", "align_placement"
++        }
++        if placement_names:
++            if placement_names != {"preview_placement", "align_placement"}:
++                raise ValueError("Select preview_placement and align_placement together")
++            from robots.libero.research.placement import PlacementTools
++
++            placement = PlacementTools(self.sensors, self.primitives)
++            self.add_tool(placement.preview_placement)
++            definition = placement.align_placement
++            self.add_tool(definition.with_handler(
++                partial(self._execute_primitive, "align_placement", definition)
++            ))
+
+# Pair validation must additionally happen at selected-configuration validation,
+# before any environment is created. Constructor check is the owning fallback.
+# Reuse the current catalog dependency validation for that earlier admission.
+
+@@ availability_prompt
++    placement_guidance = (
++        "For placing a held object on a plate or into an open container, "
++        "preview_placement selects a visible target region and includes the held-feature offset. "
++        "Inspect its O/P/R overlay, then use align_placement with that preview_id; "
++        "reselect incorrect marks. Recheck the returned images before lowering or releasing.\n\n"
++        if {"preview_placement", "align_placement"} <= {t["name"] for t in selected}
++        else ""
++    )
+@@ return value
+-        + eef_guidance
++        + eef_guidance
++        + placement_guidance
+
+--- rpent/dashboard/workbench.py
++++ rpent/dashboard/workbench.py
+@@ native_catalog imports
++    from robots.libero.research import placement as placement_module
++    from robots.libero.research.placement import PlacementTools
+@@ owner collection
+-    for owner in (tools, tools.LiberoPrimitives, CommonTools, EefControl):
++    for owner in (tools, tools.LiberoPrimitives, CommonTools, EefControl, PlacementTools):
+@@ source = inspect.getsource(tool.handler)
++            if owner is PlacementTools:
++                # The helper mathematics/overlay/admission are part of this version.
++                source = inspect.getsource(placement_module)
+@@ category
+-                    if tool.name in ACTIONS or owner is EefControl
++                    if tool.name in ACTIONS or owner is EefControl or tool.name == "align_placement"
+@@ dependencies
+-                    "dependencies": [],
++                    "dependencies": [
++                        "align_placement" if tool.name == "preview_placement" else "preview_placement"
++                    ] if owner is PlacementTools else [],
+@@ default tool selection exclusion
+-                    self.robot == "libero" and t["name"] in {"move_eef", "translate_to"}
++                    self.robot == "libero" and t["name"] in {
++                        "move_eef", "translate_to", "preview_placement", "align_placement"
++                    }
+
+# No --enable-eef-control flag: align uses M/old move_to and no controller RPC.
+# New module source is included in source manifests. No dependency install needed.
+# Workbench.selection compares dependencies to selected tool NAMES (not native IDs).
+# Its existing dependency check rejects either member of this pair alone before
+# startup. Test both directions and inspect the actual native schemas.

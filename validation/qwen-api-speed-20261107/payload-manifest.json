@@ -1,0 +1,32 @@
+[
+  {
+    "request_index": 0,
+    "bytes": 17842,
+    "sha256": "dc8ddd9e1be1e3543f7a0ea5ee768ed1ede5901dadc8f792c91143998c28f455",
+    "messages": 2,
+    "tools": 17,
+    "images": 0,
+    "enable_thinking": false,
+    "max_tokens": 16384
+  },
+  {
+    "request_index": 4,
+    "bytes": 1834009,
+    "sha256": "c96db34d064220df1b01ac0760e2608a964ef115589b683d8433c8e7b6d96b97",
+    "messages": 17,
+    "tools": 17,
+    "images": 3,
+    "enable_thinking": false,
+    "max_tokens": 16384
+  },
+  {
+    "request_index": 18,
+    "bytes": 4658163,
+    "sha256": "e8bc1e1ca43f6257ab9ac73dd9f28867f08bbb6a2d7bb1803b2f4ce0ab828f33",
+    "messages": 63,
+    "tools": 17,
+    "images": 6,
+    "enable_thinking": false,
+    "max_tokens": 16384
+  }
+]

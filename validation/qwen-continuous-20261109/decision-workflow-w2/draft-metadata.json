@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-11-10T07:31:32.593381+00:00",
+  "before_sha256": "4f748c4359fc0d5a66fbc7299704cae265340d983953005cf538853b338c9df9",
+  "after_sha256": "c2fcb0c20b6df26c943a04377b9ed064897783fe2559dcc7cab716046bddffe8",
+  "before_words": 132,
+  "after_words": 96,
+  "status": "recorded before material implementation"
+}

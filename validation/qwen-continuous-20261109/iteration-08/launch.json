@@ -1,0 +1,6 @@
+{
+  "unit": "rpent-qwen-continuous-20261109-i08-batch.service",
+  "launched_at": "2026-11-10T09:03:20.797329+00:00",
+  "state": "MainPID=3034713\nActiveState=active\nInvocationID=fd3419afb23341659b8d410f6c71b883\n",
+  "ready_sha256": "bf3165e7da2b23fad96d9282db0500cf47f7152a5539b95a5530f4a7578583a5"
+}

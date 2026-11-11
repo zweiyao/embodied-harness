@@ -1,0 +1,90 @@
+{
+  "version": "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195",
+  "library": "/home/zwy/work/embodied_harness/tool-library/qwen-continuous-20261109",
+  "old_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "old_library_hashes": {
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.json": "885b97bfd980cab069cc384659d0fda111bf6eeda71fdb4f9be5b3e66312d11c",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.meta.json": "f8f10fab836f7d748b3c33c37af39a38181ef42894ad7963cf80956a5b8bc55c",
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.json": "8953f3f4dc6499644df8e4058e02443a0e917e36ec70f05c5698d46e7510f94c",
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.meta.json": "1e0f128b733323a604383f177d2af2e330b693f115b16a2c87fc685092938ff2"
+  },
+  "new_library_hashes": {
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.json": "885b97bfd980cab069cc384659d0fda111bf6eeda71fdb4f9be5b3e66312d11c",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.meta.json": "f8f10fab836f7d748b3c33c37af39a38181ef42894ad7963cf80956a5b8bc55c",
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.json": "8953f3f4dc6499644df8e4058e02443a0e917e36ec70f05c5698d46e7510f94c",
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.meta.json": "1e0f128b733323a604383f177d2af2e330b693f115b16a2c87fc685092938ff2",
+    "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.json": "5b49561b7595b1502ef4da1fab3599d2b09942ffb1c55e5fb4c8f39a730eac22",
+    "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.meta.json": "94bf8610cb061db3a7eba680e53df1acaadbe5b17192b9e61d2a16d7baacce43"
+  },
+  "old_library_preserved": true,
+  "new_library_added_files": [
+    "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.json",
+    "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195.meta.json"
+  ],
+  "publisher_behavior": "Existing publish() removes older same-name entries only in its target directory. Restored old patch JSON and metadata byte-for-byte from the unchanged source library, retaining old four plus new two.",
+  "validation": "replay_passed",
+  "replay": {
+    "at": "2026-11-09T03:44:12.536702+00:00",
+    "run": "/home/zwy/work/embodied_harness/experiments/qwen-flash-eef-screen3-20261109/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "steps": [
+      0,
+      1
+    ],
+    "params": {
+      "points": [
+        [
+          0.5669599217986315,
+          0.7135874877810362
+        ],
+        [
+          0.6647116324535679,
+          0.04887585532746823
+        ]
+      ],
+      "camera": "agentview",
+      "step": 1,
+      "radius": 1,
+      "alignment_pair": [
+        0,
+        1
+      ]
+    },
+    "sandbox_image": "sha256:5b39471628bc35a7d34a2a5af7e688493135c35cfdb7dddf26e976b7bfc066c0"
+  },
+  "alignment_result": {
+    "status": "computed_not_verified",
+    "valid_at_step": 1,
+    "object_index": 0,
+    "goal_index": 1,
+    "eef_target_xyz_keep_height": [
+      -0.053295874257573955,
+      -0.2540186356818104,
+      0.5745265398143425
+    ],
+    "conditions": "Confirmed holding, unchanged orientation and correct same-frame point identities. Recheck images after motion; no vertical clearance or collision guarantee."
+  },
+  "independent_numeric_check": {
+    "expected_target": [
+      -0.053295874257573955,
+      -0.2540186356818104,
+      0.5745265398143425
+    ],
+    "current_eef": [
+      -0.056561255116948955,
+      0.17957511431818965,
+      0.5745265398143425
+    ],
+    "passed": true,
+    "tolerance": 1e-12,
+    "z_unchanged": true
+  },
+  "explicit_version_selection": {
+    "passed": true,
+    "id": "generated:eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195",
+    "same_name_double_selection_rejected": "finish is required; select one version per tool name"
+  },
+  "selected_for_experiments": false,
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "limitations": "Archived Docker replay and numeric/API checks only. Semantic point identity, confirmed holding, task safety, adoption and task success not established. Replay uses an archived prefix through step 1; stale-frame rejection is tested separately with a later frame present."
+}

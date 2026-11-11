@@ -1,0 +1,31 @@
+{
+  "verified_at": "2026-11-10T12:39:53.891702+00:00",
+  "passed": true,
+  "before_count": 169,
+  "after_count": 195,
+  "restored_records": 26,
+  "old_links_preserved": true,
+  "record_bytes_unchanged": true,
+  "all_restored_instructions_present": true,
+  "detail_and_video_http_verified": true,
+  "idle_no_new_tasks": true,
+  "latest": [
+    {
+      "id": "49e2a5e7f56dd574f5dc",
+      "instruction": "put the yellow and white mug on the left plate and put the white mug on the right plate",
+      "status": "timeout",
+      "success": false,
+      "video_bytes": 137136,
+      "url": "http://10.162.250.228:8092/runs?id=49e2a5e7f56dd574f5dc"
+    },
+    {
+      "id": "437f336ee460122abace",
+      "instruction": "put both the cream cheese and the tomato sauce in the basket",
+      "status": "timeout",
+      "success": false,
+      "video_bytes": 75802,
+      "url": "http://10.162.250.228:8092/runs?id=437f336ee460122abace"
+    }
+  ],
+  "browser_visual_check": "Unavailable: browser access host is unavailable"
+}

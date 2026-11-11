@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "completed": 3,
+  "details": [
+    {
+      "task": 0,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "requests_checked": 11,
+      "responses_checked": 10,
+      "enable_thinking_true_on_every_request": true,
+      "provider_model": "qwen3.8-max",
+      "nonempty_thinking_parts": 10,
+      "reported_reasoning_tokens_completed": 12381,
+      "reported_output_tokens_completed": 14203,
+      "max_single_response_reasoning_tokens": 3315
+    },
+    {
+      "task": 8,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+      "requests_checked": 7,
+      "responses_checked": 6,
+      "enable_thinking_true_on_every_request": true,
+      "provider_model": "qwen3.8-max",
+      "nonempty_thinking_parts": 6,
+      "reported_reasoning_tokens_completed": 18558,
+      "reported_output_tokens_completed": 19873,
+      "max_single_response_reasoning_tokens": 7132
+    },
+    {
+      "task": 4,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "requests_checked": 9,
+      "responses_checked": 8,
+      "enable_thinking_true_on_every_request": true,
+      "provider_model": "qwen3.8-max",
+      "nonempty_thinking_parts": 8,
+      "reported_reasoning_tokens_completed": 18329,
+      "reported_output_tokens_completed": 19922,
+      "max_single_response_reasoning_tokens": 9242
+    }
+  ],
+  "scope": "Actual recorded model settings and returned provider part types; no thought text included. The setting is a Qwen boolean switch, not a graded intensity."
+}

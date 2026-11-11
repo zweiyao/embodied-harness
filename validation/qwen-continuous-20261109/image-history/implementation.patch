@@ -1,0 +1,576 @@
+diff --git a/rpent/cli/dashboard.py b/rpent/cli/dashboard.py
+index 91f0852..33cb454 100644
+--- a/rpent/cli/dashboard.py
++++ b/rpent/cli/dashboard.py
+@@ -501,6 +501,9 @@ def _run_dashboard_task_inner(
+                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
+                         dashboard_events=state,
+                         no_images=args.no_images,
++                        api_recent_image_history=claimed.request.get(
++                            "api_recent_image_history", False
++                        ),
+                         api_require_finish=claimed.request.get(
+                             "api_require_finish", False
+                         ),
+diff --git a/rpent/dashboard/workbench.py b/rpent/dashboard/workbench.py
+index 454f000..97b82d1 100644
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -228,6 +228,11 @@ class Workbench:
+             raise ValueError("initial_action_phase must be a boolean")
+         if self.initial_action_phase and robot != "libero":
+             raise ValueError("initial_action_phase is available only for LIBERO")
++        self.api_recent_image_history = config.get("api_recent_image_history", False)
++        if type(self.api_recent_image_history) is not bool:
++            raise ValueError("api_recent_image_history must be a boolean")
++        if self.api_recent_image_history and robot != "libero":
++            raise ValueError("api_recent_image_history is available only for LIBERO")
+         self.api_require_finish = config.get("api_require_finish", False)
+         if type(self.api_require_finish) is not bool:
+             raise ValueError("api_require_finish must be a boolean")
+@@ -528,6 +533,8 @@ class Workbench:
+         return payload
+ 
+     def prepare(self, request):
++        if "api_recent_image_history" in request:
++            raise ValueError("api_recent_image_history is a server-owned setting")
+         if "initial_action_phase" in request:
+             raise ValueError("initial_action_phase is a server-owned setting")
+         if "planner_view_mode" in request:
+@@ -541,6 +548,11 @@ class Workbench:
+         profile_id = request.get("model_profile", next(iter(self.profiles)))
+         if not self.checks.get(profile_id, {}).get("ok"):
+             raise ValueError("请先在开始页检查所选模型连接")
++        if (
++            self.api_recent_image_history
++            and self.profiles[profile_id]["planner"] != "api"
++        ):
++            raise ValueError("api_recent_image_history requires the API planner")
+         if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
+             raise ValueError("api_require_finish requires the API planner")
+         selected = self.selection(request.get("tools"))
+@@ -563,6 +575,8 @@ class Workbench:
+             prepared["initial_action_phase"] = True
+         if self.api_require_finish:
+             prepared["api_require_finish"] = True
++        if self.api_recent_image_history:
++            prepared["api_recent_image_history"] = True
+         if self.planner_view_mode != "native":
+             prepared["planner_view_mode"] = self.planner_view_mode
+         self.validate_pilot_request(prepared)
+diff --git a/rpent/planner/api_loop.py b/rpent/planner/api_loop.py
+index dcdf549..c655652 100644
+--- a/rpent/planner/api_loop.py
++++ b/rpent/planner/api_loop.py
+@@ -25,6 +25,7 @@ import math
+ import threading
+ from collections.abc import AsyncIterator, Sequence
+ from contextlib import asynccontextmanager
++from dataclasses import replace
+ from functools import partial
+ from typing import Any
+ from uuid import uuid4
+@@ -62,7 +63,13 @@ from pydantic_ai.capabilities.abstract import (
+     WrapRunHandler,
+ )
+ from pydantic_ai.exceptions import UsageLimitExceeded, UserError
+-from pydantic_ai.messages import ModelMessage, UserContent
++from pydantic_ai.messages import (
++    ModelMessage,
++    ModelRequest,
++    ToolReturnPart,
++    UserContent,
++    UserPromptPart,
++)
+ from pydantic_ai.models import Model, ModelRequestContext
+ from pydantic_ai.run import AgentRun, AgentRunResult
+ from pydantic_ai.toolsets import ToolsetTool
+@@ -104,7 +111,10 @@ class ApiAgentLoop(Planner):
+         timeout_s: float = 1200,
+         interactive: bool = False,
+         require_finish: bool = False,
++        recent_image_history: bool = False,
+     ) -> None:
++        if type(recent_image_history) is not bool:
++            raise ValueError("recent_image_history must be a boolean")
+         if type(require_finish) is not bool:
+             raise ValueError("require_finish must be a boolean")
+         if reasoning_effort not in REASONING_EFFORTS:
+@@ -119,6 +129,7 @@ class ApiAgentLoop(Planner):
+         self.timeout_s = timeout_s
+         self.interactive = interactive
+         self.require_finish = require_finish
++        self.recent_image_history = recent_image_history
+ 
+     def solve(
+         self,
+@@ -185,6 +196,7 @@ class ApiAgentLoop(Planner):
+                 Thinking(
+                     False if self.reasoning_effort == "none" else self.reasoning_effort
+                 ),
++                *([_RecentImageHistory()] if self.recent_image_history else []),
+                 session,
+             ],
+         )
+@@ -256,6 +268,53 @@ def _build_model_settings(
+     return settings
+ 
+ 
++class _RecentImageHistory(AbstractCapability):
++    """Keep binary images in the newest two image-bearing request groups.
++
++    Text and tool records stay intact. Saved artifacts remain available through
++    read_image; this only changes the outgoing model context.
++    """
++
++    async def before_model_request(
++        self, ctx: RunContext, request_context: ModelRequestContext
++    ) -> ModelRequestContext:
++        groups = []
++        for index, message in enumerate(request_context.messages):
++            if isinstance(message, ModelRequest) and any(
++                isinstance(part, (UserPromptPart, ToolReturnPart))
++                and isinstance(part.content, (list, tuple))
++                and any(
++                    isinstance(item, BinaryContent) and item.is_image
++                    for item in part.content
++                )
++                for part in message.parts
++            ):
++                groups.append(index)
++        if len(groups) <= 2:
++            return request_context
++        messages = list(request_context.messages)
++        for index in groups[:-2]:
++            message = messages[index]
++            parts = []
++            for part in message.parts:
++                if isinstance(part, (UserPromptPart, ToolReturnPart)) and isinstance(
++                    part.content, (list, tuple)
++                ):
++                    part = replace(
++                        part,
++                        content=[
++                            "[Earlier image omitted; use read_image to inspect it again.]"
++                            if isinstance(item, BinaryContent) and item.is_image
++                            else item
++                            for item in part.content
++                        ],
++                    )
++                parts.append(part)
++            messages[index] = replace(message, parts=parts)
++        request_context.messages = messages
++        return request_context
++
++
+ class _ConversationAgent(WrapperAgent):
+     """Preserve completed operations across failed and cancelled runs.
+ 
+diff --git a/rpent/planner/base.py b/rpent/planner/base.py
+index 493e383..8f3907e 100644
+--- a/rpent/planner/base.py
++++ b/rpent/planner/base.py
+@@ -228,8 +228,11 @@ def build_planner(
+     no_images: bool = False,
+     interactive: bool = False,
+     api_require_finish: bool = False,
++    api_recent_image_history: bool = False,
+ ) -> Planner:
+     """Build a planner for the given backend, resolving credentials from env vars."""
++    if api_recent_image_history and planner_type != "api":
++        raise ValueError("api_recent_image_history requires the API planner")
+     if api_require_finish and planner_type != "api":
+         raise ValueError("api_require_finish requires the API planner")
+     # Imports are deferred to avoid a circular import: api_loop / claude_code /
+@@ -251,6 +254,7 @@ def build_planner(
+             timeout_s=api_timeout_s,
+             interactive=interactive,
+             require_finish=api_require_finish,
++            recent_image_history=api_recent_image_history,
+         )
+     if planner_type == "claude_code":
+         from rpent.planner.claude_code import ClaudeCodePlanner
+diff --git a/tests/unit_tests/rpent/dashboard/test_workbench.py b/tests/unit_tests/rpent/dashboard/test_workbench.py
+index de2ede4..36b16ff 100644
+--- a/tests/unit_tests/rpent/dashboard/test_workbench.py
++++ b/tests/unit_tests/rpent/dashboard/test_workbench.py
+@@ -136,6 +136,7 @@ def test_finish_only_flag_is_server_owned_and_api_scoped(bench):
+     "field,value",
+     [
+         ("api_require_finish", True),
++        ("api_recent_image_history", True),
+         ("planner_view_mode", "calibrated-pair-v1"),
+         ("initial_action_phase", True),
+     ],
+@@ -492,3 +493,28 @@ def test_initial_action_phase_is_owned_and_requires_api_language_tool(bench):
+     for value in (1, "true", None):
+         with pytest.raises(ValueError, match="boolean"):
+             Workbench({**bench.config, "initial_action_phase": value})
++
++
++def test_recent_image_history_is_owned_and_requires_libero_api(bench):
++    bench.checks = {"api": {"ok": True}}
++    request = {"model_profile": "api", "tools": ["native:finish"]}
++    assert "api_recent_image_history" not in bench.prepare(request)
++    enabled = Workbench({**bench.config, "api_recent_image_history": True})
++    enabled.checks = {"api": {"ok": True}, "sdk": {"ok": True}}
++    assert enabled.prepare(request)["api_recent_image_history"] is True
++    assert enabled.catalog() == bench.catalog()
++    for target in (bench, enabled):
++        with pytest.raises(ValueError, match="server-owned"):
++            target.prepare({**request, "api_recent_image_history": False})
++        with pytest.raises(ValueError):
++            target.normalize({"api_recent_image_history": True})
++    with pytest.raises(ValueError, match="API planner"):
++        enabled.prepare({**request, "model_profile": "sdk"})
++    with pytest.raises(ValueError, match="only for LIBERO"):
++        Workbench(
++            {**bench.config, "robot": "flexiv", "api_recent_image_history": True},
++            robot="flexiv",
++        )
++    for value in (1, "true", None):
++        with pytest.raises(ValueError, match="boolean"):
++            Workbench({**bench.config, "api_recent_image_history": value})
+diff --git a/tests/unit_tests/rpent/planner/test_api_contracts.py b/tests/unit_tests/rpent/planner/test_api_contracts.py
+index 114f375..7e792c5 100644
+--- a/tests/unit_tests/rpent/planner/test_api_contracts.py
++++ b/tests/unit_tests/rpent/planner/test_api_contracts.py
+@@ -113,6 +113,7 @@ def solve(tmp_path, model, toolkit=None, events=None, **kwargs):
+             "reasoning_effort",
+             "interactive",
+             "require_finish",
++            "recent_image_history",
+         )
+         if key in kwargs
+     }
+@@ -876,8 +877,9 @@ def test_dashboard_interrupt_drains_tool_before_followup(
+ 
+ 
+ @pytest.mark.parametrize("require_finish", [False, True])
++@pytest.mark.parametrize("recent_image_history", [False, True])
+ def test_task_replacement_cancels_and_drains_physical_work(
+-    tmp_path, dashboard_interrupt_order, require_finish
++    tmp_path, dashboard_interrupt_order, require_finish, recent_image_history
+ ):
+     state = dashboard(tmp_path)
+     toolkit = RobotToolkit(state, state=EnvState(tmp_path / "observations"))
+@@ -911,6 +913,7 @@ def test_task_replacement_cancels_and_drains_physical_work(
+         state,
+         dashboard_interaction=state,
+         timeout_s=3,
++        recent_image_history=recent_image_history,
+         require_finish=require_finish,
+     )
+     assert result.error is None
+@@ -921,8 +924,9 @@ def test_task_replacement_cancels_and_drains_physical_work(
+ 
+ 
+ @pytest.mark.parametrize("require_finish", [False, True])
++@pytest.mark.parametrize("recent_image_history", [False, True])
+ def test_timeout_drains_physical_work_and_records_partial_history(
+-    tmp_path, require_finish
++    tmp_path, require_finish, recent_image_history
+ ):
+     events = Events()
+     toolkit = RobotToolkit(events)
+@@ -947,6 +951,7 @@ def test_timeout_drains_physical_work_and_records_partial_history(
+         toolkit,
+         events,
+         timeout_s=0.15,
++        recent_image_history=recent_image_history,
+         require_finish=require_finish,
+     )
+     assert "timed out" in result.error
+@@ -1315,7 +1320,10 @@ def test_finish_only_text_response_uses_sdk_retry_without_dashboard_wait(
+         assert result.finish_result is None and toolkit.calls == []
+ 
+ 
+-def test_finish_only_repeated_text_preserves_thirty_request_budget(tmp_path):
++@pytest.mark.parametrize("recent_image_history", [False, True])
++def test_finish_only_repeated_text_preserves_thirty_request_budget(
++    tmp_path, recent_image_history
++):
+     requests = 0
+ 
+     async def stream(messages, info):
+@@ -1326,6 +1334,7 @@ def test_finish_only_repeated_text_preserves_thirty_request_budget(tmp_path):
+     result, toolkit, _ = solve(
+         tmp_path,
+         FunctionModel(stream_function=stream),
++        recent_image_history=recent_image_history,
+         require_finish=True,
+         max_turns=30,
+         timeout_s=600,
+@@ -1458,3 +1467,272 @@ def test_availability_dispatch_guard_and_locked_finish(tmp_path):
+     )
+     assert result.error is None
+     assert [n for n, _ in toolkit.calls] == ["finish"]
++
++
++@pytest.mark.parametrize("enabled", [False, True])
++@pytest.mark.parametrize("no_images", [False, True])
++def test_recent_images_preserve_actual_sdk_history_and_explicit_reread(
++    tmp_path, image_state, enabled, no_images
++):
++    histories = []
++    logged = []
++    events = Events()
++    toolkit = RobotToolkit(events, state=image_state)
++    serial = 0
++
++    def observe():
++        nonlocal serial
++        serial += 1
++        return ToolResult(
++            data={"observation": serial}, images=[f"image{serial}".encode()]
++        )
++
++    toolkit.register("observe", observe)
++    toolkit.journal = SimpleNamespace(
++        append=lambda kind, payload: (
++            logged.append(copy.deepcopy(payload.messages))
++            if kind == "model_request"
++            else None
++        )
++    )
++
++    async def stream(messages, info):
++        histories.append(copy.deepcopy(messages))
++        count = len(histories)
++        if count <= 3:
++            yield tool("observe")
++        elif count == 4:
++            yield tool("read_image", {"name": "camera.png", "step": 0})
++        else:
++            yield finish()
++
++    result, _, _ = solve(
++        tmp_path,
++        FunctionModel(stream_function=stream),
++        toolkit,
++        events,
++        recent_image_history=enabled,
++        no_images=no_images,
++        require_finish=True,
++    )
++    assert result.error is None and result.finish_result["_finish"]
++    assert len(histories) == 5 and histories == logged
++
++    def images(messages):
++        return [
++            item.data
++            for message in messages
++            if isinstance(message, ModelRequest)
++            for part in message.parts
++            if isinstance(part, (UserPromptPart, ToolReturnPart))
++            and isinstance(part.content, (list, tuple))
++            for item in part.content
++            if isinstance(item, BinaryContent) and item.is_image
++        ]
++
++    if no_images:
++        assert all(not images(messages) for messages in histories)
++    else:
++        assert images(histories[2]) == [b"image1", b"image2"]
++        assert images(histories[3]) == (
++            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
++        )
++        reread = image_state.load_bytes("camera.png", step=0)
++        assert images(histories[4]) == (
++            [b"image3", reread]
++            if enabled
++            else [b"image1", b"image2", b"image3", reread]
++        )
++    # Text observations and all tool records survive removal of image bytes.
++    text = repr(histories[-1])
++    for number in range(1, 4):
++        assert f'"observation": {number}' in text
++    returns = [
++        part
++        for message in histories[-1]
++        if isinstance(message, ModelRequest)
++        for part in message.parts
++        if isinstance(part, ToolReturnPart)
++    ]
++    assert [part.tool_name for part in returns] == ["observe"] * 3 + ["read_image"]
++    assert bool("Earlier image omitted" in text) is (enabled and not no_images)
++
++
++def test_recent_images_copy_input_keep_audio_and_request_metadata():
++    from pydantic_ai.models import ModelRequestContext, ModelRequestParameters
++
++    from rpent.planner.api_loop import _RecentImageHistory
++
++    audio = BinaryContent(data=b"sound", media_type="audio/wav")
++    picture = BinaryContent(data=b"first", media_type="image/png")
++    records = [
++        ModelRequest(
++            parts=[
++                ToolReturnPart(
++                    tool_name="sense",
++                    tool_call_id="first-call",
++                    content=["keep text", picture, audio],
++                )
++            ],
++            metadata={"source": "original"},
++            run_id="run",
++        ),
++        ModelRequest(
++            parts=[
++                UserPromptPart(
++                    content=[
++                        "middle",
++                        BinaryContent(data=b"middle", media_type="image/png"),
++                    ]
++                )
++            ]
++        ),
++        ModelRequest(
++            parts=[
++                ToolReturnPart(
++                    tool_name="sense",
++                    tool_call_id="last-call",
++                    content=[BinaryContent(data=b"last", media_type="image/png")],
++                )
++            ]
++        ),
++    ]
++    original = copy.deepcopy(records)
++    context = ModelRequestContext(
++        model=TestModel(),
++        messages=records,
++        model_settings={},
++        model_request_parameters=ModelRequestParameters(),
++    )
++    result = asyncio.run(_RecentImageHistory().before_model_request(None, context))
++    assert records == original
++    first = result.messages[0]
++    assert first.metadata == records[0].metadata and first.run_id == "run"
++    assert first.timestamp == records[0].timestamp
++    assert first.parts[0].tool_call_id == "first-call"
++    assert first.parts[0].content[0] == "keep text"
++    assert first.parts[0].content[2] is audio
++    assert result.messages[1] is records[1] and result.messages[2] is records[2]
++    assert "Earlier image omitted" in first.parts[0].content[1]
++
++
++@pytest.mark.parametrize("value", [None, 1, "true"])
++def test_recent_images_reject_non_boolean(value):
++    with pytest.raises(ValueError, match="recent_image_history must be a boolean"):
++        ApiAgentLoop(
++            model=TestModel(), dashboard_events=Events(), recent_image_history=value
++        )
++
++
++def test_recent_image_history_factory_forwarding(tmp_path, monkeypatch):
++    from rpent.planner.base import build_planner
++
++    monkeypatch.setattr("rpent.planner.base.build_api_model", lambda *args: TestModel())
++    args = {
++        "output_dir": tmp_path,
++        "recipe_tag": "test",
++        "robot_name": "libero",
++        "dashboard_events": Events(),
++    }
++    assert not build_planner("api", **args).recent_image_history
++    assert build_planner(
++        "api", api_recent_image_history=True, **args
++    ).recent_image_history
++    with pytest.raises(ValueError, match="API planner"):
++        build_planner("codex", api_recent_image_history=True, **args)
++
++
++@pytest.mark.parametrize("enabled", [False, True])
++def test_recent_images_reach_serialized_provider_body(tmp_path, enabled):
++    import base64
++
++    import httpx2
++    from pydantic_ai.models.openai import OpenAIChatModel
++    from pydantic_ai.providers.openai import OpenAIProvider
++
++    bodies = []
++    events = Events()
++    toolkit = RobotToolkit(events)
++    sequence = iter([b"image1", b"image2", b"image3"])
++    toolkit.register(
++        "observe",
++        lambda: ToolResult(data={"keep": "evidence"}, images=[next(sequence)]),
++    )
++
++    def respond(request):
++        bodies.append(json.loads(request.content))
++        count = len(bodies)
++        name = "observe" if count <= 3 else "finish"
++        chunk = {
++            "id": f"offline-{count}",
++            "object": "chat.completion.chunk",
++            "created": 1,
++            "model": "qwen3.8-flash",
++            "choices": [
++                {
++                    "index": 0,
++                    "finish_reason": "tool_calls",
++                    "delta": {
++                        "role": "assistant",
++                        "tool_calls": [
++                            {
++                                "index": 0,
++                                "id": f"call-{count}",
++                                "type": "function",
++                                "function": {
++                                    "name": name,
++                                    "arguments": json.dumps(
++                                        FINISH_ARGS if name == "finish" else {}
++                                    ),
++                                },
++                            }
++                        ],
++                    },
++                }
++            ],
++        }
++        return httpx2.Response(
++            200,
++            headers={"content-type": "text/event-stream"},
++            content=f"data: {json.dumps(chunk)}\n\ndata: [DONE]\n\n".encode(),
++        )
++
++    client = httpx2.AsyncClient(transport=httpx2.MockTransport(respond))
++    model = OpenAIChatModel(
++        "qwen3.8-flash",
++        provider=OpenAIProvider(
++            base_url="https://example.invalid/v1",
++            api_key="offline-test",
++            http_client=client,
++        ),
++    )
++    try:
++        result, _, _ = solve(
++            tmp_path,
++            model,
++            toolkit,
++            events,
++            recent_image_history=enabled,
++            require_finish=True,
++        )
++        assert result.error is None and result.finish_result["_finish"]
++        assert len(bodies) == 4
++        images = [
++            part["image_url"]["url"]
++            for message in bodies[-1]["messages"]
++            if isinstance(message.get("content"), list)
++            for part in message["content"]
++            if part.get("type") == "image_url"
++        ]
++        decoded = [base64.b64decode(url.split(",", 1)[1]) for url in images]
++        assert decoded == (
++            [b"image2", b"image3"] if enabled else [b"image1", b"image2", b"image3"]
++        )
++        assert all(
++            b["enable_thinking"] is False and b["tool_choice"] == "required"
++            for b in bodies
++        )
++        assert all(f"call-{i}" in json.dumps(bodies[-1]) for i in range(1, 4))
++        assert json.dumps(bodies[-1]).count("evidence") == 3
++    finally:
++        asyncio.run(client.aclose())

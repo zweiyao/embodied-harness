@@ -1,0 +1,16 @@
+{
+  "changed": [
+    {
+      "path": "/home/zwy/.config/systemd/user/rpent-univtac-workbench.service.d/40-qwen-direct.conf",
+      "before_sha256": "4a52ac87dfcba2a6848fc830f3df2f1ef76130c8d9490f76d782050a74260e55",
+      "after_sha256": "40d8baaabac85ad8ac5a2ec40dd065b4ea0fb47c25ce3ddad4c290d22503c90f"
+    },
+    {
+      "path": "/home/zwy/.config/systemd/user/embodied-manual-workbench.service.d/10-remote-proxy.conf",
+      "before_sha256": "feb8826adde80fb3b7a9615eec2d01659ba17bbe4ff71d209bc184a37376cc61",
+      "after_sha256": "40d8baaabac85ad8ac5a2ec40dd065b4ea0fb47c25ce3ddad4c290d22503c90f"
+    }
+  ],
+  "daemon_reload": true,
+  "services_restarted_for_network_cleanup": []
+}

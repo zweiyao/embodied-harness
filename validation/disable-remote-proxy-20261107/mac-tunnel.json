@@ -1,0 +1,8 @@
+{
+  "time": "2026-11-07T12:59:08.519566+00:00",
+  "label": "com.embodied-harness.mac-proxy",
+  "remote_proxy_tunnel_booted_out": true,
+  "remote_proxy_tunnel_disabled": true,
+  "local_proxy_application_changed": false,
+  "plist_content_changed": false
+}

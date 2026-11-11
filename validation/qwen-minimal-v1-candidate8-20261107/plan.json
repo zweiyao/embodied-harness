@@ -1,0 +1,93 @@
+{
+  "trials": [
+    {
+      "task": 0,
+      "seed": 0,
+      "condition": "candidate"
+    },
+    {
+      "task": 0,
+      "seed": 1,
+      "condition": "candidate"
+    },
+    {
+      "task": 4,
+      "seed": 0,
+      "condition": "candidate"
+    },
+    {
+      "task": 4,
+      "seed": 1,
+      "condition": "candidate"
+    },
+    {
+      "task": 6,
+      "seed": 0,
+      "condition": "candidate"
+    },
+    {
+      "task": 6,
+      "seed": 1,
+      "condition": "candidate"
+    },
+    {
+      "task": 8,
+      "seed": 0,
+      "condition": "candidate"
+    },
+    {
+      "task": 8,
+      "seed": 1,
+      "condition": "candidate"
+    }
+  ],
+  "materials": {
+    "baseline": "/home/zwy/work/embodied_harness/language-materials/v1",
+    "candidate": "/home/zwy/work/embodied_harness/language-materials/qwen-minimal-v1"
+  },
+  "versions": {
+    "baseline": "language-c592f23a3a324c08",
+    "candidate": "qwen-minimal-v1-a4a9130c693e"
+  },
+  "config": {
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 1500,
+    "model_profile": "qwen3.8-flash",
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ],
+    "reasoning_effort": "none"
+  },
+  "primary": "official success",
+  "secondary": [
+    "first_action_request",
+    "reads",
+    "localization_calls",
+    "argument_errors",
+    "movement_residuals",
+    "elapsed_s",
+    "tokens"
+  ],
+  "original_files_modified": false,
+  "comparison": "Existing historical results only; no new baseline. Historical budget/time differences must be reported.",
+  "supersedes": "/home/zwy/work/embodied_harness/experiments/qwen-minimal-v1-screening-20261107"
+}

@@ -1,0 +1,164 @@
+[
+  {
+    "lane": "a",
+    "task": 4,
+    "seed": 0,
+    "run_id": "9cbe14f94f25bc734075",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 610.5,
+    "stats": {
+      "total_input_tokens": 90875,
+      "total_output_tokens": 1103,
+      "total_cached_input_tokens": 66816,
+      "turns_used": 9,
+      "tool_calls": 11
+    },
+    "actions": 1,
+    "condition": "C+M+P",
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "runtime_audit": {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/runtime-audit.json",
+      "coverage_complete": true,
+      "guard_violations": []
+    },
+    "metrics": {
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 5,
+        "back_project": 2,
+        "pi0_pick": 1,
+        "sensor_patch_batch": 1
+      },
+      "all_calls": 11,
+      "action_calls": 1,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 8,
+      "before_action_observations": 1,
+      "before_action_perception": 2,
+      "before_action_file_reads": 5,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 5,
+        "back_project": 2
+      },
+      "first_action_seconds_since_first_event": 352.695737,
+      "first_action_model_request": 6,
+      "tool_error_responses": 0,
+      "patch_point_count": 3,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "placement_preview_status_counts": {},
+      "placement_preview_ids_returned": 0,
+      "placement_align_non_error_responses": 0,
+      "release_calls_without_any_prior_non_error_align": 0,
+      "placement_metric_limit": "Non-error alignment and earlier preview do not prove motion, correct point roles, holding or image review; trace/frame audit remains required.",
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 8,
+      "completed_model_wait_sum_s": 596.220711,
+      "completed_model_wait_mean_s": 74.527588875,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "grasp-feature-evidence.md",
+        "next-action-evidence.md",
+        "object-relative-transfer.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 1
+      }
+    }
+  },
+  {
+    "lane": "b",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/b/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 600s",
+    "elapsed_s": 610.2,
+    "stats": {
+      "total_input_tokens": 89343,
+      "total_output_tokens": 852,
+      "total_cached_input_tokens": 63232,
+      "turns_used": 9,
+      "tool_calls": 12
+    },
+    "actions": 2,
+    "condition": "C+M+P",
+    "material_version": "qwen-evidence-v3-c6c7f677d400",
+    "planner_timeout_s": 600,
+    "runtime_audit": {
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/b/runtime-audit.json",
+      "coverage_complete": true,
+      "guard_violations": []
+    },
+    "metrics": {
+      "tool_calls": {
+        "read_text_file": 5,
+        "list_dir": 1,
+        "view_env_state": 1,
+        "back_project": 1,
+        "segment": 2,
+        "pi0_pick": 1,
+        "translate_to": 1
+      },
+      "all_calls": 12,
+      "action_calls": 2,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_execution_evidence": "Recorded step > 0 and command log; not measured simulator displacement, verified holding, or a count of actual controller actions.",
+      "first_action_tool": "pi0_pick",
+      "before_action_calls": 10,
+      "before_action_observations": 1,
+      "before_action_perception": 3,
+      "before_action_file_reads": 5,
+      "prefix_or_no_action_calls": {
+        "read_text_file": 5,
+        "list_dir": 1,
+        "view_env_state": 1,
+        "back_project": 1,
+        "segment": 2
+      },
+      "first_action_seconds_since_first_event": 487.94004,
+      "first_action_model_request": 7,
+      "tool_error_responses": 0,
+      "patch_point_count": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "container_status_counts": {},
+      "placement_preview_status_counts": {},
+      "placement_preview_ids_returned": 0,
+      "placement_align_non_error_responses": 0,
+      "release_calls_without_any_prior_non_error_align": 0,
+      "placement_metric_limit": "Non-error alignment and earlier preview do not prove motion, correct point roles, holding or image review; trace/frame audit remains required.",
+      "grasp_attempt_calls": 1,
+      "completed_model_responses": 8,
+      "completed_model_wait_sum_s": 549.343047,
+      "completed_model_wait_mean_s": 68.667880875,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [
+        "object-relative-transfer.md",
+        "grasp-feature-evidence.md",
+        "next-action-evidence.md"
+      ],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0
+      }
+    }
+  }
+]

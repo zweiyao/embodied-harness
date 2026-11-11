@@ -1,0 +1,8 @@
+{
+  "approved": true,
+  "coordinator": "root",
+  "scope": "Final ROOT READY: unified preflight then two C+M cells task4seed0 and task0seed0, C material, old generated tools, 21 tools, 600 seconds and 30 requests, Flash API thinking off, isolated source and memory roots; failed preflight prevents episodes",
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "source_handoff_sha256": "4b4b2d82ce69bdb8c44392e95ead9db4a4e30582bcb6df024b58f469b0ae0225",
+  "source_commit_for_review": "bce2c59"
+}

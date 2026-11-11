@@ -1,0 +1,130 @@
+[
+  {
+    "kind": "png",
+    "family_requested": "ipv4",
+    "repeat": 1,
+    "request_bytes": 3619985,
+    "request_sha256": "7a15cf044ca84afdaf5ca651190217352ea8031c8e0c5fc17fac6e2cf3402917",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 16.988581,
+    "first_content_s": 16.35030969977379,
+    "tls_completed_s": 0.876405,
+    "first_byte_s": 16.339871,
+    "upload_bytes": 3619985,
+    "upload_speed_Bps": 213083,
+    "peer_ip": "47.94.20.201",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4163,
+      "completion_tokens": 24,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 24
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 41,
+    "timeout_s": 40
+  },
+  {
+    "kind": "jpeg",
+    "family_requested": "default",
+    "repeat": 1,
+    "request_bytes": 462869,
+    "request_sha256": "c0dff369f2f4c92accb4ef80b0a711c42ddc854549c1d0ee024d6e9622b68f40",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 29.38976,
+    "first_content_s": 28.90011448506266,
+    "tls_completed_s": 0.267227,
+    "first_byte_s": 28.895622,
+    "upload_bytes": 462869,
+    "upload_speed_Bps": 15749,
+    "peer_ip": "2408:400a:3e:effd:6ac1:ae6e:cde9:4efe",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4163,
+      "completion_tokens": 24,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 24
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 42,
+    "timeout_s": 40
+  },
+  {
+    "kind": "jpeg",
+    "family_requested": "default",
+    "repeat": 2,
+    "request_bytes": 462869,
+    "request_sha256": "c0dff369f2f4c92accb4ef80b0a711c42ddc854549c1d0ee024d6e9622b68f40",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 6.802469,
+    "first_content_s": 6.542816990986466,
+    "tls_completed_s": 0.156555,
+    "first_byte_s": 6.538902,
+    "upload_bytes": 462869,
+    "upload_speed_Bps": 68044,
+    "peer_ip": "2408:400a:3e:effd:6ac1:ae6e:cde9:4efe",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4167,
+      "completion_tokens": 28,
+      "prompt_tokens_details": {
+        "cached_tokens": 4096,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 28
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 48,
+    "timeout_s": 40
+  },
+  {
+    "kind": "jpeg",
+    "family_requested": "default",
+    "repeat": 3,
+    "request_bytes": 462869,
+    "request_sha256": "c0dff369f2f4c92accb4ef80b0a711c42ddc854549c1d0ee024d6e9622b68f40",
+    "exit_code": 0,
+    "status": 200,
+    "total_s": 3.485464,
+    "first_content_s": 3.202782406937331,
+    "tls_completed_s": 0.546522,
+    "first_byte_s": 3.199544,
+    "upload_bytes": 462869,
+    "upload_speed_Bps": 132799,
+    "peer_ip": "47.94.20.201",
+    "usage": {
+      "prompt_tokens": 4139,
+      "total_tokens": 4175,
+      "completion_tokens": 36,
+      "prompt_tokens_details": {
+        "cached_tokens": 4096,
+        "image_tokens": 4104,
+        "text_tokens": 35
+      },
+      "completion_tokens_details": {
+        "text_tokens": 36
+      }
+    },
+    "finish_reason": "stop",
+    "content_chars": 61,
+    "timeout_s": 40
+  }
+]

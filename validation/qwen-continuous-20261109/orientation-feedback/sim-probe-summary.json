@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "transform_gate_passed": true,
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+  "model_requests": 0,
+  "vla_requests": 0,
+  "vla_predictions": 0,
+  "enable_eef_control": true,
+  "previous_attempt_control_steps": 1,
+  "this_attempt_control_budget": 159,
+  "aggregate_control_budget": 160,
+  "actual_control_steps": 40,
+  "aggregate_control_steps": 41,
+  "max_body_site_offset_change_rad": 7.7727588568356615e-16,
+  "max_cached_live_position_discrepancy_m": 6.085606583819766e-05,
+  "max_cached_live_orientation_discrepancy_rad": 0.0006647438777417387,
+  "actual_gripper_target_preserved": true,
+  "actual_gripper_target_value": [
+    1.0,
+    -1.0
+  ],
+  "gripper_scope": "Only the initialized target was tested; no held object or alternate grip target",
+  "controller_reference_matches_observed_site": true,
+  "facade_closed": true,
+  "private_config_unchanged": true,
+  "runtime_frame_mapping": {
+    "robot_class": "FixedBaseRobot",
+    "gripper_class": "PandaGripper",
+    "body_name": "robot0_right_hand",
+    "site_name": "gripper0_right_grip_site",
+    "site_id": 11,
+    "controller_ref_name": "gripper0_right_grip_site",
+    "controller_ref_site_id": 11
+  },
+  "cases": [
+    {
+      "axis": "x",
+      "angle_rad": 0.08,
+      "actual_control_steps": 10,
+      "live_position_error_m": 0.0008713268111516055,
+      "live_orientation_error_rad": 0.001703987744216402,
+      "returned_images": 3,
+      "passed": true,
+      "reported_position_error_m": 0.0008754122790348085,
+      "reported_orientation_error_rad": 0.001722066189833642
+    },
+    {
+      "axis": "x",
+      "angle_rad": -0.08,
+      "actual_control_steps": 10,
+      "live_position_error_m": 0.0008406437315122286,
+      "live_orientation_error_rad": 0.0013095800843757623,
+      "returned_images": 3,
+      "passed": true,
+      "reported_position_error_m": 0.0008449961040552618,
+      "reported_orientation_error_rad": 0.0013315986969406537
+    },
+    {
+      "axis": "z",
+      "angle_rad": 0.08,
+      "actual_control_steps": 10,
+      "live_position_error_m": 0.00020699518718408891,
+      "live_orientation_error_rad": 0.002446292516332941,
+      "returned_images": 3,
+      "passed": true,
+      "reported_position_error_m": 0.00020729673569210637,
+      "reported_orientation_error_rad": 0.002480228146643232
+    },
+    {
+      "axis": "z",
+      "angle_rad": -0.08,
+      "actual_control_steps": 10,
+      "live_position_error_m": 0.00020383865810711302,
+      "live_orientation_error_rad": 0.0024824154205142163,
+      "returned_images": 3,
+      "passed": true,
+      "reported_position_error_m": 0.00020408852716517385,
+      "reported_orientation_error_rad": 0.0025171306806712783
+    }
+  ],
+  "raw_summary_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback/sim-probe-20261110-attempt02/summary.json"
+}

@@ -1,0 +1,118 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/audit_results.py:5:1
+   |
+ 3 |   """Audit two A cells against historical V; finish and labels remain observational."""
+ 4 |
+ 5 | / import hashlib
+ 6 | | import json
+ 7 | | from pathlib import Path
+ 8 | |
+ 9 | | from metrics import analyze
+10 | | from model_argument_failure import argument_failure_evidence
+11 | | from robots.libero.research.manual import availability_prompt
+12 | | from robots.libero.robot_spec import get_robot_spec
+   | |___________________________________________________^
+13 |
+14 |   ROOT = Path(__file__).resolve().parent
+   |
+help: Organize imports
+   |
+10 | from model_argument_failure import argument_failure_evidence
+11 +
+12 | from robots.libero.research.manual import availability_prompt
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/preflight.py:5:1
+   |
+ 3 |   """Verify approved material/tool parity and two idle isolated workbenches."""
+ 4 |
+ 5 | / import json
+ 6 | | import os
+ 7 | | import subprocess
+ 8 | | import tempfile
+ 9 | | import time
+10 | | from concurrent.futures import ThreadPoolExecutor
+11 | | from pathlib import Path
+12 | |
+13 | | import numpy as np
+14 | | import robots.libero.eef_control as eef_module
+15 | | import robots.libero.research.manual as manual_module
+16 | | import robots.libero.research.orientation as orientation_module
+17 | | import robots.libero.research.placement as placement_module
+18 | | from metrics import ACTIONS, analyze
+19 | | from robots.libero.prompt_bundle import system_prompt, user_prompt
+20 | | from robots.libero.research.language_materials import freeze_materials
+21 | | from robots.libero.research.library import Library, Sandbox
+22 | | from robots.libero.research.manual import availability_prompt
+23 | | from run_batch import PLAN, ROOT, api, classify, save, unchanged
+24 | |
+25 | | import rpent.dashboard.workbench as workbench_module
+26 | | import rpent.memory.manager as memory_module
+27 | | import rpent.tools.common as common_module
+28 | | import rpent.utils.config as config_module
+29 | | from rpent.dashboard.workbench import native_catalog
+30 | | from rpent.memory import MemoryManager
+31 | | from rpent.prompt.utils import format_prompt
+32 | | from rpent.tools.common import CommonTools
+33 | | from rpent.utils.config import get_repo_root
+   | |____________________________________________^
+34 |
+35 |   assert (ROOT / "READY.json").is_file(), "Wait for coordinating agent READY"
+   |
+help: Organize imports
+   |
+13 | import numpy as np
+14 + from metrics import ACTIONS, analyze
+15 + from run_batch import PLAN, ROOT, api, classify, save, unchanged
+16 +
+17 | import robots.libero.eef_control as eef_module
+18 | import robots.libero.research.manual as manual_module
+19 | import robots.libero.research.orientation as orientation_module
+20 | import robots.libero.research.placement as placement_module
+   - from metrics import ACTIONS, analyze
+21 + import rpent.dashboard.workbench as workbench_module
+22 + import rpent.memory.manager as memory_module
+23 + import rpent.tools.common as common_module
+24 + import rpent.utils.config as config_module
+25 | from robots.libero.prompt_bundle import system_prompt, user_prompt
+26 | from robots.libero.research.language_materials import freeze_materials
+27 | from robots.libero.research.library import Library, Sandbox
+28 | from robots.libero.research.manual import availability_prompt
+   - from run_batch import PLAN, ROOT, api, classify, save, unchanged
+   -
+   - import rpent.dashboard.workbench as workbench_module
+   - import rpent.memory.manager as memory_module
+   - import rpent.tools.common as common_module
+   - import rpent.utils.config as config_module
+29 | from rpent.dashboard.workbench import native_catalog
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> /home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-10/view_audit.py:5:1
+   |
+ 3 |   """Observe actual planner image bindings; never classify or execute a task."""
+ 4 |
+ 5 | / import copy
+ 6 | | import hashlib
+ 7 | | from pathlib import Path
+ 8 | |
+ 9 | | from PIL import Image
+10 | | from robots.libero.research.manual import planner_view_description
+   | |__________________________________________________________________^
+11 |
+12 |   ACTIONS = {
+   |
+help: Organize imports
+   |
+9  | from PIL import Image
+10 +
+11 | from robots.libero.research.manual import planner_view_description
+   |
+
+Found 3 errors.
+[*] 3 fixable with `--fix`.
+warning: Selection `DOC102` has no effect because preview is not enabled.
+warning: Selection `DOC202` has no effect because preview is not enabled.
+warning: Selection `DOC403` has no effect because preview is not enabled.
+warning: Selection `DOC502` has no effect because preview is not enabled.

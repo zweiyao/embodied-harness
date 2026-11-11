@@ -1,0 +1,12 @@
+{
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/orientation-feedback-test-checkout",
+  "parent_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "changed_from_parent": [
+    "robots/libero/research/manual.py",
+    "robots/libero/robot_spec.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "new_files": [
+    "robots/libero/research/orientation.py"
+  ]
+}

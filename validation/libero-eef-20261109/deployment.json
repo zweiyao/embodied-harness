@@ -1,0 +1,27 @@
+{
+  "files": [
+    "robots/libero/env_client.py",
+    "robots/libero/env_server.py",
+    "robots/libero/robot_spec.py",
+    "robots/libero/research/manual.py",
+    "rpent/dashboard/workbench.py",
+    "robots/libero/eef_control.py",
+    "tests/unit_tests/robots/libero/test_eef_control.py",
+    "docs/manual-workbench/libero-eef-control.md"
+  ],
+  "independent_formatting_preserved": [
+    "robots/libero/research/manual.py",
+    "rpent/dashboard/workbench.py"
+  ],
+  "ast_matches_validated_checkout": true,
+  "hashes": {
+    "robots/libero/env_client.py": "12b91d6b4a1792e2da9b3de8f9cb6a0b26e0fc6edc2b83e2fa2d98e2b2cbaead",
+    "robots/libero/env_server.py": "1c302e564e253464b1981a2b8a96b54e143c6cd3ff747f24612b4d8115bcf9dd",
+    "robots/libero/robot_spec.py": "ee8b7be29e480b8974f9bfddacc8c03faf1deecbfba156266df19bcb9cd1623a",
+    "robots/libero/research/manual.py": "fe13111f2321950f7b8dd5c3cb51086e6647db105fe285287509e550924f4b04",
+    "rpent/dashboard/workbench.py": "f311cd8f7358129c6bbc784e901f255791071309f7ac4440df5f810c99206806",
+    "robots/libero/eef_control.py": "e2d4826cada55634fc5d2e79b876295df2963b4c468382afed57359420ff33d2",
+    "tests/unit_tests/robots/libero/test_eef_control.py": "3e1533cc80c675e7f028ec18b33e1862d55e4fad273477d59434cca4e501db36",
+    "docs/manual-workbench/libero-eef-control.md": "85421b9615ddba7cdd255a8a3a276d53610d7d4c9231c05d727c099ba00dff54"
+  }
+}

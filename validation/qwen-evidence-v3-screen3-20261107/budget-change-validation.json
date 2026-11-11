@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "classification_cases": 5,
+  "controller_cases": 4,
+  "live_lanes": [
+    {
+      "lane": "a",
+      "same_server": true,
+      "single_existing_episode": true,
+      "budget": 300
+    },
+    {
+      "lane": "b",
+      "same_server": true,
+      "single_existing_episode": true,
+      "budget": 300
+    }
+  ],
+  "task8_budget": 600,
+  "active_episodes_restarted": false
+}

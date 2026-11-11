@@ -1,0 +1,41 @@
+{
+  "status.json": {
+    "phase": "running",
+    "task": 0,
+    "seed": 4,
+    "completed": 0,
+    "run_id": "4634ed131ecf3118ce6e",
+    "elapsed_s": 30.3
+  },
+  "connectivity.json": {
+    "ok": true,
+    "status": "ok",
+    "detail": "",
+    "latency_s": 1.968,
+    "checked_at": "2026-11-06T05:42:37.092516+00:00"
+  },
+  "astra": {
+    "valid": 50,
+    "successes": 35
+  },
+  "flash_prior": {
+    "valid": 4,
+    "successes": 0,
+    "timeouts": 4,
+    "excluded_incidents": 1
+  },
+  "remaining": 46,
+  "scope": "Temporary NO_PROXY/no_proxy addition of only Aliyun model hostname via independent LIBERO startup override. No harness, tools, memory or budget changes.",
+  "restoration": {
+    "installed": "systemd ExecStopPost restore.py",
+    "verified_completed": false,
+    "safety": "Only restart if dashboard ready; restoration.json confirms original NO_PROXY values"
+  },
+  "validation": {
+    "connectivity": "passed via actual workbench",
+    "config": "equals pre-restart configuration",
+    "source_memory_data": "batch startup hash checks passed",
+    "unit_tests": "not rerun: external launch/batch orchestration only"
+  },
+  "remote_directory": "/home/zwy/work/embodied_harness/experiments/libero10-task-qwenflash-50-20261105/resume46-direct"
+}

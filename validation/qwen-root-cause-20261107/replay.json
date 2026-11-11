@@ -1,0 +1,49 @@
+{
+  "run_path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0",
+  "published_version": "cca2f3c424d195fe3e55896ec0fe4c54b08b9f6929fdf794cfc98595458155c3",
+  "library_file_sha256": "ae4d062e8810352fa3c36e78326d1e6e40faac77917fdb68ec2356f311fd18a9",
+  "checks": [
+    {
+      "pixel_rc": [
+        530,
+        700
+      ],
+      "valid_count": 25,
+      "patch_spread_m": 0.00435365100100757
+    },
+    {
+      "pixel_rc": [
+        560,
+        700
+      ],
+      "valid_count": 25,
+      "patch_spread_m": 0.003840863626964684
+    },
+    {
+      "pixel_rc": [
+        520,
+        690
+      ],
+      "valid_count": 25,
+      "patch_spread_m": 0.004072046800035306
+    },
+    {
+      "pixel_rc": [
+        490,
+        280
+      ],
+      "valid_count": 25,
+      "patch_spread_m": 0.004178015829185024
+    }
+  ],
+  "patch_median_and_eef_offsets_match": true,
+  "missing_high_resolution_rejected": true,
+  "selected_native_tools": 17,
+  "sensor_tools_selected": false,
+  "segment_artifact_is_directory": true,
+  "segment_index_is_not_frame_step": true,
+  "new_environment_actions": 0,
+  "runtime_source_changes": 0,
+  "demonstrates_task_gain": false,
+  "scope": "One archived frame; direct published function replay, not Docker/integration/semantic validation."
+}

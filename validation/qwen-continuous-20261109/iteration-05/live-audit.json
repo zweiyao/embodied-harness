@@ -1,0 +1,99 @@
+{
+  "audit_type": "contemporaneous_owned_process_observer",
+  "lanes": [
+    {
+      "lane": "a",
+      "audit_type": "contemporaneous_owned_process_observer",
+      "snapshots": [
+        {
+          "observed_at": "2026-11-10T06:26:58.823953+00:00",
+          "pid": 2952421,
+          "start_ticks": "251611283",
+          "role": "workbench",
+          "entrypoint": "rpent.cli.main",
+          "command_sha256": "a9a37c4c8aa3a1549cfd50f61bef0d442ef91000801cbb30af654469b59e6aec",
+          "eef_control_flag_present": false,
+          "source_environment": {
+            "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/libero-config"
+          },
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": []
+        },
+        {
+          "observed_at": "2026-11-10T06:26:59.024639+00:00",
+          "pid": 2952529,
+          "start_ticks": "251611678",
+          "role": "environment_server",
+          "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/robots/libero/env_server.py",
+          "command_sha256": "78fe4cca3fc149bb85afb8264cf32c187f512aef8a9aec80f602f68119753b5c",
+          "eef_control_flag_present": false,
+          "source_environment": {
+            "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/libero-config"
+          },
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": [],
+          "entrypoint_matches": true
+        }
+      ],
+      "observer_errors": [],
+      "observer_stopped": true,
+      "episode_ended_at": "2026-11-10T06:37:09.374793+00:00",
+      "child_observed_before_episode_end": true,
+      "coverage_complete": true,
+      "guard_violations": []
+    },
+    {
+      "lane": "b",
+      "audit_type": "contemporaneous_owned_process_observer",
+      "snapshots": [
+        {
+          "observed_at": "2026-11-10T06:26:58.822807+00:00",
+          "pid": 2952426,
+          "start_ticks": "251611286",
+          "role": "workbench",
+          "entrypoint": "rpent.cli.main",
+          "command_sha256": "1e4f2038d7eb91a2922d0b6b97437f6010a29ffa5a61620207966b932bb83604",
+          "eef_control_flag_present": false,
+          "source_environment": {
+            "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/b/libero-config"
+          },
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": []
+        },
+        {
+          "observed_at": "2026-11-10T06:26:59.023536+00:00",
+          "pid": 2952528,
+          "start_ticks": "251611677",
+          "role": "environment_server",
+          "entrypoint": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/robots/libero/env_server.py",
+          "command_sha256": "f196d70a1c689fe029364f0cf619d3968a8543115fef94bb5ab016d73de1a62d",
+          "eef_control_flag_present": false,
+          "source_environment": {
+            "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "PYTHONPATH": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/rlinf:/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+            "LIBERO_CONFIG_PATH": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/b/libero-config"
+          },
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": [],
+          "entrypoint_matches": true
+        }
+      ],
+      "observer_errors": [],
+      "observer_stopped": true,
+      "episode_ended_at": "2026-11-10T06:37:09.081939+00:00",
+      "child_observed_before_episode_end": true,
+      "coverage_complete": true,
+      "guard_violations": []
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "checkout_hashes": {
+    "examples/manual-workbench/sensor_patch_batch.py": "54eb5937ae6c5c944216b6808baa8a155b91981d0f085cb57eb34e05a6afe57c",
+    "examples/manual-workbench/candidate.json": "ed5253bf76ed89f1f0a28a42182bde9e66f7628d4432fe2db444c165f5e0e00a",
+    "tests/unit_tests/robots/libero/research/test_high_resolution.py": "39a1a6d44a67960b625feaff2aa0aacf8fe52aae37c4ba509b4381fced4c40d4"
+  },
+  "live_hashes": {
+    "examples/manual-workbench/sensor_patch_batch.py": "26cd064c5e7a4e1a4d11e89c6d7ca7c1c807ec55c7f716a0aa3980ce15de75a7",
+    "examples/manual-workbench/candidate.json": "79a7a37a7e9056f64b12352ccbffeebc72a64b2e631d5298a7775c9a8fccdc0b",
+    "tests/unit_tests/robots/libero/research/test_high_resolution.py": "de685377d9102685e0f5bd2f30af15b25bf4c352f9d2ad8e9860865d570c836c"
+  },
+  "library_files": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.json",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.meta.json",
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf.meta.json",
+    "2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829.json"
+  ],
+  "passed": true,
+  "focused": "27 passed in 1.13s",
+  "research_tests": "76 passed, 4 skipped in 1.90s",
+  "full_unit_tests": "2045 passed, 15 skipped in 73.19s",
+  "scoped_precommit": "passed for T three files after formatting one test line",
+  "full_precommit": "Not rerun; historical unrelated baseline findings remain",
+  "simulator_actions": 0,
+  "model_requests": 0,
+  "live_source_preserved": true,
+  "scope": "Numerical/API compatibility and archived Docker replay only; semantic identity, holding, adoption and task success not established",
+  "new_library_existed_at_preflight": false,
+  "new_library_exists_after_publication": true,
+  "verification_environment": {
+    "type": "remote isolated checkout",
+    "path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/tool-test-checkout",
+    "live_runtime_source_modified": false
+  },
+  "full_unit_tests_scope": "All tests/unit_tests in the isolated checkout; not a live instance test",
+  "root_audit_scoped_precommit": "passed for audit_task_definitions.py; unrelated iteration-01 files not modified",
+  "publication": {
+    "summary": "tool-publication.json",
+    "params": "tool-replay-params.json",
+    "result": "tool-replay-result.json",
+    "version": "eb961cc0f520a6b5f6814fad350af7a285a2725c9b50c442b8267745ad1b9195",
+    "json_sha256": "5b49561b7595b1502ef4da1fab3599d2b09942ffb1c55e5fb4c8f39a730eac22",
+    "docker_replay": "passed",
+    "independent_numeric_check": "passed",
+    "explicit_hash_selection": "passed",
+    "selected_for_experiments": false
+  }
+}

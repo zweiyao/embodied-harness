@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-11-10T07:08:34.452630+00:00",
+  "passed": true,
+  "compile": true,
+  "shell_syntax": true,
+  "ruff_check": true,
+  "initial_lint_failures": "Two import-order errors corrected in owned runner scripts; no production edits.",
+  "classification_checks": 14,
+  "observer_cases": 4,
+  "model_requests": 0,
+  "simulator_actions": 0,
+  "owned_dummy_units_cleaned": true,
+  "setup_executed": false,
+  "source_version_checked": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+  "source_hash_verification": "Final source handoff verified separately before setup."
+}

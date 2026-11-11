@@ -1,0 +1,315 @@
+{
+  "scope": "Read-only historical analysis; no environment actions or runtime modifications",
+  "cohorts": {
+    "qwen_original": {
+      "runs": 50,
+      "successes": 3,
+      "zero_action": 5,
+      "first_action_kinds": {
+        "move_to": 30,
+        "pi0_pick": 9,
+        "null": 5,
+        "pi0_doubled": 2,
+        "move_pose": 3,
+        "set_gripper": 1
+      },
+      "calls": {
+        "view_env_state": 73,
+        "read_text_file": 411,
+        "back_project": 637,
+        "segment": 184,
+        "move_to": 267,
+        "pi0_pick": 68,
+        "set_gripper": 52,
+        "view_camera_meta": 25,
+        "release": 26,
+        "list_dir": 47,
+        "move_pose": 127,
+        "pi0_doubled": 4,
+        "rotate_pitch": 2,
+        "read_image": 8,
+        "rotate_wrist": 7
+      },
+      "errors": {
+        "back_project": 22,
+        "segment": 26,
+        "read_text_file": 2
+      },
+      "response_latency_s": {
+        "n": 1421,
+        "sum": 28139.98819708824,
+        "mean": 19.80294735896428,
+        "median": 5.920758008956909,
+        "min": 0.9281520843505859,
+        "max": 342.18999099731445
+      },
+      "tool_elapsed_sum_s": 1007.6827800273895,
+      "model_response_wait_total_s": 28139.98819708824,
+      "unreturned_request_wait_to_end_s": 957.594174861908,
+      "file_error_runs": 1,
+      "before_geometry_started_only": {
+        "n": 45,
+        "sum": 522,
+        "mean": 11.6,
+        "median": 10,
+        "min": 0,
+        "max": 34
+      },
+      "exact_repeated_geometry": 7
+    },
+    "qwen_short": {
+      "runs": 8,
+      "successes": 3,
+      "zero_action": 1,
+      "first_action_kinds": {
+        "pi0_pick": 2,
+        "move_to": 5,
+        "null": 1
+      },
+      "calls": {
+        "view_env_state": 10,
+        "read_text_file": 35,
+        "segment": 21,
+        "back_project": 57,
+        "pi0_pick": 10,
+        "set_gripper": 8,
+        "move_to": 44,
+        "release": 6,
+        "rotate_wrist": 3,
+        "move_pose": 23,
+        "list_dir": 1,
+        "view_camera_meta": 1
+      },
+      "errors": {
+        "segment": 3,
+        "back_project": 2
+      },
+      "response_latency_s": {
+        "n": 189,
+        "sum": 4553.144607543945,
+        "mean": 24.090712209227224,
+        "median": 14.907680034637451,
+        "min": 1.7590551376342773,
+        "max": 499.9783818721771
+      },
+      "tool_elapsed_sum_s": 152.4575400352478,
+      "model_response_wait_total_s": 4553.144607543945,
+      "unreturned_request_wait_to_end_s": 156.78180813789368,
+      "file_error_runs": 0,
+      "before_geometry_started_only": {
+        "n": 7,
+        "sum": 61,
+        "mean": 8.714285714285714,
+        "median": 8,
+        "min": 6,
+        "max": 15
+      },
+      "exact_repeated_geometry": 0
+    },
+    "qwen_empty": {
+      "runs": 10,
+      "successes": 1,
+      "zero_action": 5,
+      "first_action_kinds": {
+        "pi0_pick": 3,
+        "pi0_doubled": 1,
+        "null": 5,
+        "move_to": 1
+      },
+      "calls": {
+        "view_env_state": 13,
+        "read_text_file": 36,
+        "list_dir": 16,
+        "segment": 34,
+        "back_project": 112,
+        "view_camera_meta": 8,
+        "pi0_pick": 5,
+        "move_to": 4,
+        "release": 1,
+        "pi0_doubled": 1,
+        "read_image": 2
+      },
+      "errors": {
+        "back_project": 6,
+        "read_text_file": 5,
+        "list_dir": 2,
+        "segment": 1,
+        "read_image": 1
+      },
+      "response_latency_s": {
+        "n": 138,
+        "sum": 7073.419967889786,
+        "mean": 51.25666643398395,
+        "median": 38.73898649215698,
+        "min": 1.6870050430297852,
+        "max": 515.5307919979095
+      },
+      "tool_elapsed_sum_s": 49.04978370666504,
+      "model_response_wait_total_s": 7073.419967889786,
+      "unreturned_request_wait_to_end_s": 1001.5057983398438,
+      "file_error_runs": 1,
+      "before_geometry_started_only": {
+        "n": 5,
+        "sum": 57,
+        "mean": 11.4,
+        "median": 11,
+        "min": 7,
+        "max": 17
+      },
+      "exact_repeated_geometry": 0
+    },
+    "astra_original": {
+      "runs": 50,
+      "successes": 35,
+      "zero_action": 0,
+      "first_action_kinds": {
+        "pi0_pick": 28,
+        "move_to": 16,
+        "pi0_doubled": 5,
+        "move_pose": 1
+      },
+      "calls": {
+        "read_text_file": 236,
+        "view_env_state": 50,
+        "back_project": 425,
+        "pi0_pick": 136,
+        "move_to": 369,
+        "release": 57,
+        "move_pose": 114,
+        "set_gripper": 35,
+        "pi0_doubled": 40,
+        "segment": 2,
+        "rotate_wrist": 20,
+        "rotate_pitch": 4,
+        "finish": 4
+      },
+      "errors": {
+        "segment": 1
+      },
+      "response_latency_s": null,
+      "tool_elapsed_sum_s": 1582.48890042305,
+      "model_response_wait_total_s": 0,
+      "unreturned_request_wait_to_end_s": 0,
+      "file_error_runs": 0,
+      "before_geometry_started_only": {
+        "n": 50,
+        "sum": 198,
+        "mean": 3.96,
+        "median": 3.0,
+        "min": 2,
+        "max": 9
+      },
+      "exact_repeated_geometry": 0
+    },
+    "astra_empty": {
+      "runs": 10,
+      "successes": 4,
+      "zero_action": 0,
+      "first_action_kinds": {
+        "pi0_pick": 9,
+        "pi0_doubled": 1
+      },
+      "calls": {
+        "read_text_file": 20,
+        "view_env_state": 11,
+        "back_project": 78,
+        "pi0_pick": 61,
+        "move_to": 83,
+        "release": 18,
+        "pi0_doubled": 5,
+        "move_pose": 14,
+        "segment": 1,
+        "finish": 2,
+        "set_gripper": 1
+      },
+      "errors": {},
+      "response_latency_s": null,
+      "tool_elapsed_sum_s": 404.87306475639343,
+      "model_response_wait_total_s": 0,
+      "unreturned_request_wait_to_end_s": 0,
+      "file_error_runs": 0,
+      "before_geometry_started_only": {
+        "n": 10,
+        "sum": 35,
+        "mean": 3.5,
+        "median": 3.0,
+        "min": 3,
+        "max": 5
+      },
+      "exact_repeated_geometry": 0
+    }
+  },
+  "declarations_audit": {
+    "episodes": 128,
+    "native_tools_per_episode": 17,
+    "sensor_tools_selected": false,
+    "exceptions": []
+  },
+  "causal_task_gain_established": false,
+  "case_paths": {
+    "qwen_empty": [
+      {
+        "task": 2,
+        "seed": 0,
+        "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0003_libero_10_task_t2_s0",
+        "run_id": "2d036e226be5428b6e7c",
+        "success": true,
+        "first_action": "pi0_doubled",
+        "before_calls": 10,
+        "before_geometry": 7,
+        "exact_repeated_geometry": 0,
+        "file_errors": []
+      },
+      {
+        "task": 3,
+        "seed": 0,
+        "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0004_libero_10_task_t3_s0",
+        "run_id": "e3d9426eae71f638df8e",
+        "success": false,
+        "first_action": null,
+        "before_calls": 40,
+        "before_geometry": 31,
+        "exact_repeated_geometry": 0,
+        "file_errors": []
+      },
+      {
+        "task": 4,
+        "seed": 0,
+        "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0",
+        "run_id": "29934c6a1161fad03610",
+        "success": false,
+        "first_action": null,
+        "before_calls": 51,
+        "before_geometry": 30,
+        "exact_repeated_geometry": 0,
+        "file_errors": [
+          {
+            "index": 23,
+            "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/agentview_metadata_high.json",
+            "error": "is a directory: /home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/agentview_metadata_high.json"
+          },
+          {
+            "index": 25,
+            "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_00.json",
+            "error": "is a directory: /home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_00.json"
+          },
+          {
+            "index": 26,
+            "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_01.json",
+            "error": "is a directory: /home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_01.json"
+          },
+          {
+            "index": 29,
+            "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_01.json/01.json",
+            "error": "file not found: /home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_01.json/01.json"
+          },
+          {
+            "index": 30,
+            "path": "/home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_02.json/02.json",
+            "error": "file not found: /home/zwy/work/embodied_harness/experiments/libero10-task-no-memory-dual-20-20261107/qwen/runs/session/tasks/0005_libero_10_task_t4_s0/segment_02.json/02.json"
+          }
+        ]
+      }
+    ]
+  }
+}

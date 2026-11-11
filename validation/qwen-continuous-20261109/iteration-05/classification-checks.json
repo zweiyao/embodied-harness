@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "real_04_rejected_arguments",
+    "missing_run_evidence_unexpected",
+    "P_actual_integer_pixel_schema_failure",
+    "valid_P_final_call_unexpected",
+    "P_declaration_mismatch_unexpected",
+    "P_missing_retry_unexpected",
+    "P_dispatched_implementation_unexpected",
+    "unselected_tool_unexpected",
+    "network_error_unexpected",
+    "full_budget_timeout_failure",
+    "early_timeout_unexpected"
+  ],
+  "P_schema_version": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+  "model_requests": 0,
+  "simulator_actions": 0
+}

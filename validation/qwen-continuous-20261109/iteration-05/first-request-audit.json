@@ -1,0 +1,82 @@
+{
+  "observed_at": "2026-11-10T06:31:34.165314+00:00",
+  "phase": "running",
+  "lanes": [
+    {
+      "lane": "a",
+      "task": 4,
+      "first_model_request_at": "2026-11-10T06:27:07.720578+00:00",
+      "actual_tool_count": 19,
+      "P_M_patch_schemas_equal_frozen_manifest": true,
+      "retained_actual_schemas_equal_04_after_output_path_substitution": [
+        "list_dir",
+        "read_text_file",
+        "write_text_file",
+        "pi0_doubled",
+        "pi0_pick",
+        "release",
+        "rotate_pitch",
+        "rotate_wrist",
+        "set_gripper",
+        "back_project",
+        "read_image",
+        "segment",
+        "view_camera_meta",
+        "view_env_state",
+        "sensor_patch_batch",
+        "translate_to",
+        "finish"
+      ],
+      "thinking_enabled": false,
+      "placement_versions": {
+        "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+        "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+      },
+      "motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+      "manifest_to_actual_differences": {
+        "list_dir": "output_dir placeholder rendered",
+        "read_image": "SDK omitted optional default -1",
+        "finish": "SDK adds title FinishArguments"
+      },
+      "differences_unchanged_from_04": true
+    },
+    {
+      "lane": "b",
+      "task": 0,
+      "first_model_request_at": "2026-11-10T06:27:07.456586+00:00",
+      "actual_tool_count": 19,
+      "P_M_patch_schemas_equal_frozen_manifest": true,
+      "retained_actual_schemas_equal_04_after_output_path_substitution": [
+        "list_dir",
+        "read_text_file",
+        "write_text_file",
+        "pi0_doubled",
+        "pi0_pick",
+        "release",
+        "rotate_pitch",
+        "rotate_wrist",
+        "set_gripper",
+        "back_project",
+        "read_image",
+        "segment",
+        "view_camera_meta",
+        "view_env_state",
+        "sensor_patch_batch",
+        "translate_to",
+        "finish"
+      ],
+      "thinking_enabled": false,
+      "placement_versions": {
+        "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+        "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+      },
+      "motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+      "manifest_to_actual_differences": {
+        "list_dir": "output_dir placeholder rendered",
+        "read_image": "SDK omitted optional default -1",
+        "finish": "SDK adds title FinishArguments"
+      },
+      "differences_unchanged_from_04": true
+    }
+  ]
+}

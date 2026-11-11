@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "source_sha256": "b004f79f8a86d21163861aec735811ddcec5eb9ae0e39b1744befac2a8a0391c",
+  "metrics": {
+    "actual_allow_text_output_counts": {},
+    "completed_response_kinds": {},
+    "finish_model_attempts": 0,
+    "finish_toolkit_entries": 2,
+    "finish_returns": [
+      {
+        "call_id": "8821cc08d26c404f9502e6829c57247e",
+        "returned": true,
+        "accepted_finish_flag": false,
+        "return_error": true,
+        "return_code": null
+      },
+      {
+        "call_id": "41dd462337b544df808f4d5f9ca7f161",
+        "returned": true,
+        "accepted_finish_flag": true,
+        "return_error": false,
+        "return_code": null
+      }
+    ],
+    "accepted_finish_returns": 1,
+    "pure_text_followed_by_output_retry": [],
+    "last_pure_text_without_followup_request": null,
+    "limit": "Observational only. Toolkit entry precedes handler validation; accepted finish is not official success. Retry feedback is associated with the immediately preceding pure-text response and a false allow_text_output gate, without changing classification or budgets."
+  }
+}

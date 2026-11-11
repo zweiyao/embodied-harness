@@ -1,0 +1,11 @@
+{
+  "lanes": {
+    "a": {
+      "stopped": true
+    }
+  },
+  "original_workbench_same_server": true,
+  "original_config_unchanged": true,
+  "original_network_unchanged": true,
+  "passed": true
+}

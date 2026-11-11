@@ -1,0 +1,267 @@
+{
+  "scopes": [
+    "rpent",
+    "robots",
+    "examples",
+    "tests"
+  ],
+  "excluded": [
+    "__pycache__",
+    "macOS ._ sidecar files",
+    "validation scripts (not runtime)"
+  ],
+  "differences": [
+    {
+      "file": "examples/manual-workbench/sensor_patch_batch.py",
+      "ast_equivalent": false,
+      "live_sha256": "26cd064c5e7a4e1a4d11e89c6d7ca7c1c807ec55c7f716a0aa3980ce15de75a7",
+      "source_sha256": "54eb5937ae6c5c944216b6808baa8a155b91981d0f085cb57eb34e05a6afe57c",
+      "classification": "prior_T_example_not_selected"
+    },
+    {
+      "file": "examples/univtac/develop_tools.py",
+      "ast_equivalent": true,
+      "live_sha256": "6d5a014c252e9eefba581df667eddc84086b41027984adf308c4e75071a4a69f",
+      "source_sha256": "08ded7d3e72b18c871e58fa768ec17104c0ac986dd0586f3b8960e0f2b7d034d",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "examples/univtac/evaluate_authored_tool.py",
+      "ast_equivalent": true,
+      "live_sha256": "dd5836d674eca3d58b9f6d01e7fcc0131d89e8169c7e0947a637862be023e7de",
+      "source_sha256": "b8f649731eb3271e1d10150ff99deaef58503ad9fae299f8b4179c0f09be86bc",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "robots/libero/eef_control.py",
+      "ast_equivalent": false,
+      "live_sha256": "e2d4826cada55634fc5d2e79b876295df2963b4c468382afed57359420ff33d2",
+      "source_sha256": "6fb8ea2e40237a94c8a4822fbf57018201254bba216bbfb09805ce58484f79bd",
+      "classification": "approved_M"
+    },
+    {
+      "file": "robots/libero/research/codex_sdk.py",
+      "ast_equivalent": false,
+      "live_sha256": "c8213325649237fd0f9bca5961bc8b70bbe0234025b748be74988cae0b66282a",
+      "source_sha256": "31a06fca6c4725b9e666e43f547d25d1dbc38a9743717efd2d47de3693607a2a",
+      "classification": "preexisting_codex_sdk_compat_not_Qwen_API"
+    },
+    {
+      "file": "robots/libero/research/manual.py",
+      "ast_equivalent": false,
+      "live_sha256": "fe13111f2321950f7b8dd5c3cb51086e6647db105fe285287509e550924f4b04",
+      "source_sha256": "044dba5f16ac1326957c770444b1d06e3c6cdb77685e6cab9a0dacfc3efa227e",
+      "classification": "approved_M"
+    },
+    {
+      "file": "robots/univtac/pilot/__init__.py",
+      "ast_equivalent": true,
+      "live_sha256": "ef650c33ca48408681a3fc409229415365867938ab0f03fe28c499f30968a32b",
+      "source_sha256": "e790c1837d1267d4f12137adebbb75b300e9f16eec96ca1693b33729e2d94505",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "rpent/dashboard/server.py",
+      "ast_equivalent": true,
+      "live_sha256": "f7a97be14755a62d5e5fc9b2e2f11a14bcbdd663b656d6d56d504a28282dd4b1",
+      "source_sha256": "acbfc3375b74e1ea516feed2196746ac066c5c66b482c11820f97ad82a808e99",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "rpent/dashboard/workbench.py",
+      "ast_equivalent": false,
+      "live_sha256": "f311cd8f7358129c6bbc784e901f255791071309f7ac4440df5f810c99206806",
+      "source_sha256": "e1cee348dd7eeb5f8b6ce26962d2e2bb8d667f6df189c0db436237d427a54adf",
+      "classification": "approved_M"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_catalog.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_contracts.py",
+      "ast_equivalent": false,
+      "live_sha256": "4c27a596cfed5b3c09ad1811f3e0ef2c0c81ffbfe4ad8daba1bda15c7e5ceb45",
+      "source_sha256": "52f5981c8ffa84b27c9028198539c894a0a566bdc05cb6d2439dac8cdf50122a",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_manual.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_memory.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_motion.py",
+      "ast_equivalent": false,
+      "live_sha256": "26cbf0ffb970f90227e10e1c7888bd60944024ed1a5e6898d811f3b52612fec6",
+      "source_sha256": "33f9f521ebcc4db841031fb65bb701a2b324882ee96f66f2cb6217d43f78e4ed",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_operator_ui.py",
+      "ast_equivalent": false,
+      "live_sha256": "328b041d121615b9d87a3c281e91ac7e3b7a53831f75581e525926cfbb969fd7",
+      "source_sha256": "4cb93576d4093f9972b518a15624c707a376f1b1bbf4d7ed61afc4343c913f64",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_perception.py",
+      "ast_equivalent": false,
+      "live_sha256": "f5182b0c7b90709706b5e28b78a87c69e6f515a6d04cb5c8faa70d55de445164",
+      "source_sha256": "0a3058a8d3b9f29b1e19d858a1b0b7cd93f2af285c33d74f5a8f472ff18f639b",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_rdk_server.py",
+      "ast_equivalent": false,
+      "live_sha256": "3b7f9214cc170117759a043a7bc5dce6a2cd709aff64f764ad9b01a906fd072b",
+      "source_sha256": "eeaee333ccb93cb0de33c8f387739e9eef2ead588c9fb039b5364ef75016c77a",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_reset_ui.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_tactile.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/flexiv/test_visual_alignment.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/libero/research/test_high_resolution.py",
+      "ast_equivalent": false,
+      "live_sha256": "de685377d9102685e0f5bd2f30af15b25bf4c352f9d2ad8e9860865d570c836c",
+      "source_sha256": "39a1a6d44a67960b625feaff2aa0aacf8fe52aae37c4ba509b4381fced4c40d4",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/libero/research/test_language_materials.py",
+      "ast_equivalent": false,
+      "live_sha256": "5e18b4bb9ebc63ef0d4b57fdeee438f49a773bdc28b0fe89627e5882cb779dae",
+      "source_sha256": "4e7cf006471837ddc7adf8e92cceb37f28325d678ad4af5f0fe7d94620113a31",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/libero/research/test_manual.py",
+      "ast_equivalent": false,
+      "live_sha256": "82f5600d1c925de4b8f6f645ac1a0bd5aaf46011c9ff755a4fa8ca54f63fb8bc",
+      "source_sha256": "749283e53a42ce86a68e25283762206f72f6eb445acec3ea905df4b368919f4c",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/libero/research/test_manual_library.py",
+      "ast_equivalent": true,
+      "live_sha256": "dd40c5708daba55623df69fb32f0e2e4f06eb958e6c3748f72aef183be770ef9",
+      "source_sha256": "6bcd08a67f4bf7b8fd982deccd6d1bb6704c10c93bd886110c609549715c94e1",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "tests/unit_tests/robots/libero/test_eef_control.py",
+      "ast_equivalent": false,
+      "live_sha256": "3e1533cc80c675e7f028ec18b33e1862d55e4fad273477d59434cca4e501db36",
+      "source_sha256": "f6ed8af66f47ae152d06eb877897dde2602ce6785bbfe670142a4e595208bda7",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/univtac/test_develop_tools.py",
+      "ast_equivalent": false,
+      "live_sha256": "ace0f582cc224518912b307e0f907c2f49000133bac0fd216771f0bdb253557b",
+      "source_sha256": "b958dcb26c243a80f8ce9bc9592742b94e2cc87238c886486206793d025ebf65",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/robots/univtac/test_maker.py",
+      "ast_equivalent": true,
+      "live_sha256": "a8851d4bf1fbc7ca592028454b6667f71a2a45d1831e8236d1ab98b5a7aadd79",
+      "source_sha256": "d6aaeda8357490ffa66932ad1b20d4f12d1cd2974b0109452c68d353ba5fa571",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "tests/unit_tests/robots/univtac/test_maker_revision.py",
+      "ast_equivalent": true,
+      "live_sha256": "0c9566bb894667730f51234a4f371cb01ed6ad80f66b468ab5e054e740c005ef",
+      "source_sha256": "ccc6151e7a941c106889e4486a32582abe489ee71f1a40d521326db98dda5d82",
+      "classification": "formatting_only"
+    },
+    {
+      "file": "tests/unit_tests/rpent/cli/test_dashboard_contracts.py",
+      "ast_equivalent": false,
+      "live_sha256": "94d813139a0a09c35e361308b2a190bfd13d2e8fe3f8434f7999ee0a54a4c5e8",
+      "source_sha256": "5e98b6be345bdb8a179afad6a2dd78583f6b4e9ba91a3c4b835e80dfce8bbff8",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_catalog.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_lan_access.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_pilot_workbench.py",
+      "ast_equivalent": false,
+      "live_sha256": "daed30bcde6425ce3efdfed75a879696e130b987cdc269a2146ea7775e248a2c",
+      "source_sha256": "688eb038198b40b0af63cbb33a781308764a8a5a94fb625d9f2eebbf66e258e3",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_result_badge_ui.py",
+      "ast_equivalent": false,
+      "live_sha256": "a7702a97bd1839e40ce3cb11b967aef0b977a2f2bba2b680c4919ca7ff1ec908",
+      "source_sha256": "5c9198d27da3bdc465c596ca083f3aeba3fe4018d6f76b0674e2a35f3d1df45b",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_run_metrics_ui.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_server_contracts.py",
+      "ast_equivalent": false,
+      "live_sha256": "9c9d36ef02f5274bd7cdf11a673331821f2dc40bb9c810beb18e51f6b87e1342",
+      "source_sha256": "6d5bd21c10affb6c86638624cf987ed0869c3fca6611a5e0bb2e9fe3ac758a84",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_tool_picker_ui.py",
+      "presence": "source_only",
+      "classification": "test_only_not_runtime"
+    },
+    {
+      "file": "tests/unit_tests/rpent/dashboard/test_workbench.py",
+      "ast_equivalent": true,
+      "live_sha256": "f1db71100914b684ed22c1e20fa94254a6388c65bf1ce1a1cb8904125db377e2",
+      "source_sha256": "576501d6c32ba9c06ae53fb170c1d996dd325bc79a9a1f6c4472e6b2296543e3",
+      "classification": "formatting_only"
+    }
+  ],
+  "non_equivalent_diffs": {
+    "robots/libero/eef_control.py": "--- live/robots/libero/eef_control.py\n+++ isolated/robots/libero/eef_control.py\n@@ -94,6 +94,28 @@\n         self.primitives = primitives\n \n     @tool\n+    def translate_to(\n+        self,\n+        xyz: Annotated[list[float], Field(min_length=3, max_length=3)],\n+    ) -> ToolResult:\n+        \"\"\"Move toward world XYZ metres, preserving orientation and the gripper target.\n+\n+        Uses unchanged move_to servo defaults. Split XY travel over 0.30 m into\n+        intermediate targets. Change fingers with set_gripper or release.\n+        Inspect returned images; preserved gripper target does not prove holding.\n+        \"\"\"\n+        target = np.asarray(xyz, dtype=float)\n+        if target.shape != (3,) or not np.isfinite(target).all():\n+            raise ValueError(\"Supply three finite world XYZ coordinates\")\n+        if self.primitives.env.terminated or self.primitives.env.truncated:\n+            return ToolResult(data={\"error\": \"Environment episode ended\"})\n+        result = self.primitives.move_to(target.tolist(), gripper=0.0)\n+        result.data[\"name\"] = \"translate_to\"\n+        if not result.is_error:\n+            result.data[\"gripper_command\"] = 0.0\n+        return result\n+\n+    @tool\n     def move_eef(\n         self,\n         xyz: Annotated[list[float], Field(min_length=3, max_length=3)],\n",
+    "robots/libero/research/codex_sdk.py": "--- live/robots/libero/research/codex_sdk.py\n+++ isolated/robots/libero/research/codex_sdk.py\n@@ -164,15 +164,17 @@\n         prompt = request_prompt(system, payload)\n \n         async def bounded():\n-            async with asyncio.timeout(timeout_s):\n-                return await _complete(\n+            return await asyncio.wait_for(\n+                _complete(\n                     config,\n                     model,\n                     prompt,\n                     images,\n                     output_schema=output_schema,\n                     on_event=on_event,\n-                )\n+                ),\n+                timeout=timeout_s,\n+            )\n \n         return asyncio.run(bounded())\n \n",
+    "robots/libero/research/manual.py": "--- live/robots/libero/research/manual.py\n+++ isolated/robots/libero/research/manual.py\n@@ -39,18 +39,22 @@\n         super().__init__(**kwargs)\n         self.sensors = SensorInterface(self, [], None)\n         self.add_tool(self.read_image)\n-        if any(t[\"name\"] == \"move_eef\" for t in selected):\n+        optional_moves = {t[\"name\"] for t in selected} & {\"move_eef\", \"translate_to\"}\n+        if optional_moves:\n             from robots.libero.eef_control import EefControl\n \n-            controller = self.primitives.env.get_eef_controller_state()\n-            if \"error\" in controller:\n-                raise ValueError(controller[\"error\"])\n-            definition = EefControl(self.primitives).move_eef\n-            self.add_tool(\n-                definition.with_handler(\n-                    partial(self._execute_primitive, \"move_eef\", definition)\n+            if \"move_eef\" in optional_moves:\n+                controller = self.primitives.env.get_eef_controller_state()\n+                if \"error\" in controller:\n+                    raise ValueError(controller[\"error\"])\n+            control = EefControl(self.primitives)\n+            for name in sorted(optional_moves):\n+                definition = getattr(control, name)\n+                self.add_tool(\n+                    definition.with_handler(\n+                        partial(self._execute_primitive, name, definition)\n+                    )\n                 )\n-            )\n         originals = self._tools\n         self._tools = {}\n         generated = [t for t in selected if t[\"origin\"] == \"generated\"]\n@@ -144,7 +148,9 @@\n                 \"resampling\": \"nearest pixel centres\",\n             }\n             self.state.save(\n-                \"mask_alignment_\" + result.data[\"segment_artifact\"], alignment, step=step\n+                \"mask_alignment_\" + result.data[\"segment_artifact\"],\n+                alignment,\n+                step=step,\n             )\n             with self.mask_lock:\n                 self.sensors.masks.setdefault(step, {})[name] = {\n@@ -216,7 +222,10 @@\n def availability_prompt(selected):\n     names = \", \".join(t[\"name\"] for t in selected)\n     eef_guidance = (\n-        \"Use the latest images and EEF pose to choose the next short move_eef target. \"\n+        \"Use translate_to for position-only moves while retaining the gripper target. \"\n+        \"Inspect returned images and pose; use an enabled gripper tool when the fingers must change.\\n\\n\"\n+        if any(t[\"name\"] == \"translate_to\" for t in selected)\n+        else \"Use the latest images and EEF pose to choose the next short move_eef target. \"\n         \"Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\\n\\n\"\n         if any(t[\"name\"] == \"move_eef\" for t in selected)\n         else \"\"\n",
+    "rpent/dashboard/workbench.py": "--- live/rpent/dashboard/workbench.py\n+++ isolated/rpent/dashboard/workbench.py\n@@ -229,9 +229,7 @@\n \n         summary = self.pilot.summary()\n         used = {row[\"id\"] for row in summary[\"rows\"]}\n-        finished = {\n-            row[\"id\"] for row in summary[\"rows\"] if \"termination_reason\" in row\n-        }\n+        finished = {row[\"id\"] for row in summary[\"rows\"] if \"termination_reason\" in row}\n         active = summary[\"episodes_reserved\"] > summary[\"finished\"]\n         freeze_error = None\n         try:\n@@ -279,9 +277,14 @@\n             **{\n                 key: summary[key]\n                 for key in (\n-                    \"episodes_reserved\", \"episode_limit\", \"finished\",\n-                    \"offline_requests\", \"offline_limit\",\n-                    \"schema_version\", \"development_limit\", \"holdout_limits\",\n+                    \"episodes_reserved\",\n+                    \"episode_limit\",\n+                    \"finished\",\n+                    \"offline_requests\",\n+                    \"offline_limit\",\n+                    \"schema_version\",\n+                    \"development_limit\",\n+                    \"holdout_limits\",\n                 )\n             },\n             \"cells\": cells,\n@@ -290,7 +293,9 @@\n     def _pilot_frozen_bundle(self):\n         frozen = self.pilot._transaction(\n             lambda events: (\n-                next((event[\"id\"] for event in events if event[\"kind\"] == \"frozen\"), None),\n+                next(\n+                    (event[\"id\"] for event in events if event[\"kind\"] == \"frozen\"), None\n+                ),\n                 None,\n             )\n         )\n@@ -336,7 +341,9 @@\n             request.get(key) != BUDGET[key]\n             for key in (\"max_turns\", \"planner_timeout_s\")\n         ):\n-            raise ValueError(\"Pilot requires 60 responses and a 3600-second planner budget\")\n+            raise ValueError(\n+                \"Pilot requires 60 responses and a 3600-second planner budget\"\n+            )\n         if cell[\"stage\"] == \"provisional\":\n             generated = [\n                 tool\n@@ -350,9 +357,13 @@\n             ):\n                 raise ValueError(\"Select replay-validated generated perception tools\")\n         elif cell[\"stage\"] == \"validate\":\n-            expected = self._pilot_frozen_bundle()[\"conditions\"][cell[\"condition\"]][\"tools\"]\n+            expected = self._pilot_frozen_bundle()[\"conditions\"][cell[\"condition\"]][\n+                \"tools\"\n+            ]\n             if not tools_match_for_execution(request[\"frozen_tools\"], expected):\n-                raise ValueError(\"Selected tools differ from the frozen validation condition\")\n+                raise ValueError(\n+                    \"Selected tools differ from the frozen validation condition\"\n+                )\n \n     def recover_interrupted(self):\n         for path in self.root.glob(\"*/tasks/*/manifest.json\"):\n@@ -369,7 +380,9 @@\n             if (path.parent / \"pilot-attempt.json\").exists():\n                 from robots.univtac.pilot.execution import restore_from_output\n \n-                restore_from_output(path.parent).after_finish(json.loads(final.read_text()))\n+                restore_from_output(path.parent).after_finish(\n+                    json.loads(final.read_text())\n+                )\n \n     @classmethod\n     def from_env(cls, *, robot=\"libero\"):\n@@ -406,7 +419,9 @@\n                 for i, t in catalog.items()\n                 if t[\"origin\"] == \"native\"\n                 and t[\"selectable\"]\n-                and not (self.robot == \"libero\" and t[\"name\"] == \"move_eef\")\n+                and not (\n+                    self.robot == \"libero\" and t[\"name\"] in {\"move_eef\", \"translate_to\"}\n+                )\n             ]\n         if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids):\n             raise ValueError(\"tools must be a list of catalog IDs\")\n@@ -461,7 +476,10 @@\n             \"frozen_tools\": selected,\n         }\n         self.validate_pilot_request(prepared)\n-        if self.pilot and self.pilot._cell(prepared[\"pilot_cell\"])[\"stage\"] == \"validate\":\n+        if (\n+            self.pilot\n+            and self.pilot._cell(prepared[\"pilot_cell\"])[\"stage\"] == \"validate\"\n+        ):\n             prepared[\"frozen_tools\"] = copy.deepcopy(\n                 self._pilot_frozen_bundle()[\"conditions\"][\"E\"][\"tools\"]\n             )\n@@ -497,8 +515,7 @@\n         if profile_id not in self.profiles:\n             raise ValueError(\"Unknown model profile\")\n         request_id = (\n-            self.pilot.reserve_offline(\"connectivity\", None, [])\n-            if self.pilot else None\n+            self.pilot.reserve_offline(\"connectivity\", None, []) if self.pilot else None\n         )\n         try:\n             with self.environment(profile_id) as p:\n@@ -512,12 +529,14 @@\n                 ).as_dict()\n         except BaseException as exc:\n             if request_id is not None:\n-                failure = clean({\n-                    \"ok\": False,\n-                    \"status\": \"error\",\n-                    \"detail\": f\"{type(exc).__name__}: {exc}\",\n-                    \"checked_at\": stamp(),\n-                })\n+                failure = clean(\n+                    {\n+                        \"ok\": False,\n+                        \"status\": \"error\",\n+                        \"detail\": f\"{type(exc).__name__}: {exc}\",\n+                        \"checked_at\": stamp(),\n+                    }\n+                )\n                 self.checks[profile_id] = failure\n                 self.pilot.finish_offline(\n                     request_id, {\"model_profile\": profile_id, **failure}\n@@ -564,8 +583,10 @@\n                 item[\"files\"] = sorted(\n                     str(p.relative_to(root))\n                     for p in root.rglob(\"*\")\n-                    if p.is_file() and (\n-                        not p.is_symlink() or (\n+                    if p.is_file()\n+                    and (\n+                        not p.is_symlink()\n+                        or (\n                             p == root / \"episode.mp4\"\n                             and p.resolve().is_relative_to(root.resolve())\n                         )\n"
+  },
+  "installed_versions": {
+    "anthropic": "1.13.0",
+    "pydantic-ai-slim": "2.53.0",
+    "pydantic-ai-harness": "0.53.0"
+  },
+  "installed_environment_changed": false,
+  "full_diffs_remote": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract/source-differences-full.json"
+}

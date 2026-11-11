@@ -1,0 +1,240 @@
+{
+  "suite": "libero_10_task",
+  "config": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ],
+    "reasoning_effort": "low"
+  },
+  "trials": [
+    {
+      "task": 0,
+      "seed": 0
+    },
+    {
+      "task": 0,
+      "seed": 1
+    },
+    {
+      "task": 0,
+      "seed": 2
+    },
+    {
+      "task": 0,
+      "seed": 3
+    },
+    {
+      "task": 0,
+      "seed": 4
+    },
+    {
+      "task": 1,
+      "seed": 0
+    },
+    {
+      "task": 1,
+      "seed": 1
+    },
+    {
+      "task": 1,
+      "seed": 2
+    },
+    {
+      "task": 1,
+      "seed": 3
+    },
+    {
+      "task": 1,
+      "seed": 4
+    },
+    {
+      "task": 2,
+      "seed": 0
+    },
+    {
+      "task": 2,
+      "seed": 1
+    },
+    {
+      "task": 2,
+      "seed": 2
+    },
+    {
+      "task": 2,
+      "seed": 3
+    },
+    {
+      "task": 2,
+      "seed": 4
+    },
+    {
+      "task": 3,
+      "seed": 0
+    },
+    {
+      "task": 3,
+      "seed": 1
+    },
+    {
+      "task": 3,
+      "seed": 2
+    },
+    {
+      "task": 3,
+      "seed": 3
+    },
+    {
+      "task": 3,
+      "seed": 4
+    },
+    {
+      "task": 4,
+      "seed": 0
+    },
+    {
+      "task": 4,
+      "seed": 1
+    },
+    {
+      "task": 4,
+      "seed": 2
+    },
+    {
+      "task": 4,
+      "seed": 3
+    },
+    {
+      "task": 4,
+      "seed": 4
+    },
+    {
+      "task": 5,
+      "seed": 0
+    },
+    {
+      "task": 5,
+      "seed": 1
+    },
+    {
+      "task": 5,
+      "seed": 2
+    },
+    {
+      "task": 5,
+      "seed": 3
+    },
+    {
+      "task": 5,
+      "seed": 4
+    },
+    {
+      "task": 6,
+      "seed": 0
+    },
+    {
+      "task": 6,
+      "seed": 1
+    },
+    {
+      "task": 6,
+      "seed": 2
+    },
+    {
+      "task": 6,
+      "seed": 3
+    },
+    {
+      "task": 6,
+      "seed": 4
+    },
+    {
+      "task": 7,
+      "seed": 0
+    },
+    {
+      "task": 7,
+      "seed": 1
+    },
+    {
+      "task": 7,
+      "seed": 2
+    },
+    {
+      "task": 7,
+      "seed": 3
+    },
+    {
+      "task": 7,
+      "seed": 4
+    },
+    {
+      "task": 8,
+      "seed": 0
+    },
+    {
+      "task": 8,
+      "seed": 1
+    },
+    {
+      "task": 8,
+      "seed": 2
+    },
+    {
+      "task": 8,
+      "seed": 3
+    },
+    {
+      "task": 8,
+      "seed": 4
+    },
+    {
+      "task": 9,
+      "seed": 0
+    },
+    {
+      "task": 9,
+      "seed": 1
+    },
+    {
+      "task": 9,
+      "seed": 2
+    },
+    {
+      "task": 9,
+      "seed": 3
+    },
+    {
+      "task": 9,
+      "seed": 4
+    }
+  ],
+  "retries": 0,
+  "prior_manual_runs_included": false,
+  "memory_version": "language-c592f23a3a324c08",
+  "success": "outcome.environment_success is True; unknown is not success",
+  "limits": "Current workbench evaluation, not an exact paper reproduction. Stop on configuration/source changes or infrastructure errors.",
+  "source_hash_count": 279,
+  "full_protocol_remote": "/home/zwy/work/embodied_harness/experiments/libero10-task-astra-50-20261105/protocol.json"
+}

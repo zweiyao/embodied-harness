@@ -1,0 +1,365 @@
+{
+  "observed_at": "2026-11-10T06:36:00.624439+00:00",
+  "source": "saved model-request binary metadata; base64 estimate excludes JSON/text overhead and transport compression",
+  "lanes": [
+    {
+      "lane": "a",
+      "requests": [
+        {
+          "request": 1,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "binary_metadata": []
+        },
+        {
+          "request": 2,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            }
+          ]
+        },
+        {
+          "request": 3,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            }
+          ]
+        },
+        {
+          "request": 4,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            }
+          ]
+        },
+        {
+          "request": 5,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            }
+          ]
+        },
+        {
+          "request": 6,
+          "binary_count": 3,
+          "binary_bytes": 1350615,
+          "base64_binary_bytes_estimate": 1800824,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            }
+          ]
+        },
+        {
+          "request": 7,
+          "binary_count": 6,
+          "binary_bytes": 2686027,
+          "base64_binary_bytes_estimate": 3581376,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 70947
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 726079
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 538386
+            }
+          ]
+        },
+        {
+          "request": 8,
+          "binary_count": 9,
+          "binary_bytes": 4021439,
+          "base64_binary_bytes_estimate": 5361928,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 66481
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 703562
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 580572
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 70947
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 726079
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 538386
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 70947
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 726079
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 538386
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "lane": "b",
+      "requests": [
+        {
+          "request": 1,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "binary_metadata": []
+        },
+        {
+          "request": 2,
+          "binary_count": 0,
+          "binary_bytes": 0,
+          "base64_binary_bytes_estimate": 0,
+          "binary_metadata": []
+        },
+        {
+          "request": 3,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            }
+          ]
+        },
+        {
+          "request": 4,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            }
+          ]
+        },
+        {
+          "request": 5,
+          "binary_count": 3,
+          "binary_bytes": 1503347,
+          "base64_binary_bytes_estimate": 2004464,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            }
+          ]
+        },
+        {
+          "request": 6,
+          "binary_count": 4,
+          "binary_bytes": 2281152,
+          "base64_binary_bytes_estimate": 3041540,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 777805
+            }
+          ]
+        },
+        {
+          "request": 7,
+          "binary_count": 5,
+          "binary_bytes": 3058797,
+          "base64_binary_bytes_estimate": 4078400,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 777805
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 777645
+            }
+          ]
+        },
+        {
+          "request": 8,
+          "binary_count": 8,
+          "binary_bytes": 4202453,
+          "base64_binary_bytes_estimate": 5603280,
+          "binary_metadata": [
+            {
+              "media_type": "image/png",
+              "bytes": 72950
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 780471
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 649926
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 777805
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 777645
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 71875
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 721882
+            },
+            {
+              "media_type": "image/png",
+              "bytes": 349899
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

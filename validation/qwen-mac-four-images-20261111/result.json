@@ -1,0 +1,32 @@
+{
+  "route": "direct",
+  "stream": true,
+  "exit_code": 0,
+  "status": 200,
+  "dns_s": 0.05815,
+  "connect_s": 0.212369,
+  "tls_s": 0.548877,
+  "first_byte_s": 14.372315,
+  "total_s": 15.13067,
+  "first_content_s": 14.385642875000485,
+  "first_reasoning_s": null,
+  "usage": {
+    "prompt_tokens": 4139,
+    "total_tokens": 4179,
+    "completion_tokens": 40,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "image_tokens": 4104,
+      "text_tokens": 35
+    },
+    "completion_tokens_details": {
+      "text_tokens": 40
+    }
+  },
+  "finish_reason": "stop",
+  "returned_model": "qwen3.8-flash",
+  "content_chars": 70,
+  "error_code": null,
+  "request_bytes": 3619985,
+  "mac_proxy_settings_unchanged": true
+}

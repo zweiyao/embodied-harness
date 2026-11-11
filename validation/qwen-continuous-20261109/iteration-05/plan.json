@@ -1,0 +1,201 @@
+{
+  "suite": "libero_10_task",
+  "config": {
+    "max_turns": 30,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "native:translate_to",
+      "native:preview_placement",
+      "native:align_placement"
+    ],
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none"
+  },
+  "tool_names": [
+    "finish",
+    "list_dir",
+    "read_text_file",
+    "write_text_file",
+    "pi0_doubled",
+    "pi0_pick",
+    "release",
+    "rotate_pitch",
+    "rotate_wrist",
+    "set_gripper",
+    "back_project",
+    "read_image",
+    "segment",
+    "view_camera_meta",
+    "view_env_state",
+    "sensor_patch_batch",
+    "translate_to",
+    "preview_placement",
+    "align_placement"
+  ],
+  "tool_versions": [
+    "553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf"
+  ],
+  "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+  "route": "remote direct; all proxy variables unset",
+  "incident_policy": "Preserve and exclude unexpected incidents; diagnose before retrying same cell. Full configured-budget timeout is failure.",
+  "approved": true,
+  "approval": "Root reviewed the isolated placement-preview candidate. Startup requires validated source/probe handoff and a separate coordinating READY gate.",
+  "total": 2,
+  "benchmark": {
+    "cohort": "libero_10_task-language-right-v1",
+    "source": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/bddl_files",
+    "private_bddl": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/benchmark/bddl_files",
+    "changed_file": "libero_10_task/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl",
+    "before_sha256": "8193749b068293ae3f118f5cf2711c30b42c28657eae15de8a3d21f2293a6caa",
+    "after_sha256": "8d2d6cd8673e826ddef3183d67a79b75431a5b293e97649af9040b2dd9a47c7c",
+    "goal_and_init_unchanged": true,
+    "benchmark_root_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro",
+    "init_states_unchanged": "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/liberopro/liberopro/./init_files"
+  },
+  "comparison": "Development P versus preserved iteration-04 restricted18; iteration-01 C retained as incumbent. Replace old container helper with preview/align and the reviewed conditional guidance; preserve C material, old patch, M and budgets. No overall success-rate claim.",
+  "runtime_source": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "native_placement_versions": {
+    "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+    "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+  },
+  "selection_difference": {
+    "status": "prepared proposal; no READY or experiments",
+    "reference": "iteration-04 C+M-restricted18",
+    "reference_plan_sha256": "df699c30093285f38c7a840fe4b433aa83e58844faab1b27fa2c9d8f6ab72815",
+    "before": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829",
+      "native:translate_to"
+    ],
+    "removed": [
+      "generated:2e120f1952a10536ded83dc85a9a78506db0f6e4c80efc741b8cfa28680b0829"
+    ],
+    "added": [
+      "native:preview_placement",
+      "native:align_placement"
+    ],
+    "after": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "generated:553831b20799170badced4a5ea5dde8ef75d8e38a50527ca7debe01cb7fdf5bf",
+      "native:translate_to",
+      "native:preview_placement",
+      "native:align_placement"
+    ],
+    "preserved": {
+      "max_turns": 30,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600,
+      "model_profile": "qwen3.8-flash",
+      "planner": "api",
+      "model": "openai-chat:qwen3.8-flash",
+      "reasoning_effort": "none"
+    },
+    "condition": "C+M+P",
+    "candidate_library": "/home/zwy/work/embodied_harness/tool-library/qwen-evidence-v3",
+    "C_material_version": "qwen-evidence-v3-c6c7f677d400",
+    "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "new_native_versions": "Freeze from validated isolated P source-handoff and actual catalog before setup"
+  },
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "process_working_directory": "/home/zwy/work/embodied_harness",
+  "memory_path_base": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+  "source_handoff": {
+    "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout",
+    "source_head": "7ab895c8287d6114b2ba1ebb8414a8af7b8839d0",
+    "uncommitted_verified_working_tree": true,
+    "validation_passed": true,
+    "simulator_probe_passed": true,
+    "probe_summary_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/sim-probe-20261110-attempt01/summary.json",
+    "probe_cleanup_path": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview/sim-probe-20261110-attempt01/cleanup.json",
+    "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+    "placement_tool_versions": {
+      "preview_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac",
+      "align_placement": "3542ec64f42640baf1288aa36f3386a29475f659bd118bf3cc44cf623b71e3ac"
+    },
+    "parent_source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout",
+    "scope": "P adds only placement.py and selected-only manual/catalog wiring over frozen M source. Inherited non-live differences remain documented in motion-contract/source-differences.md.",
+    "validation": {
+      "unit": "2086 passed /15 skipped; then one additional ManualToolkit routing test, focused49 passed",
+      "precommit": "owned production/test files passed",
+      "replay": "four independently annotated historical cases; semantic roles remain conditional",
+      "probe": "one env,0models,3actualcontrolsteps;ownedcleanup/563protectedfilespassed"
+    }
+  },
+  "source_handoff_sha256": "e46b48a36dc905f39371851358bd1cc8b9090e0717b6bbdad56a51421b1b653b",
+  "lanes": {
+    "a": {
+      "port": 54469,
+      "unit": "rpent-qwen-continuous-20261109-i05-a.service",
+      "condition": "C+M+P",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "trials": [
+        {
+          "task": 4,
+          "seed": 0
+        }
+      ]
+    },
+    "b": {
+      "port": 51507,
+      "unit": "rpent-qwen-continuous-20261109-i05-b.service",
+      "condition": "C+M+P",
+      "materials": "/home/zwy/work/embodied_harness/language-materials/qwen-evidence-v3-readable",
+      "material_version": "qwen-evidence-v3-c6c7f677d400",
+      "trials": [
+        {
+          "task": 0,
+          "seed": 0
+        }
+      ]
+    }
+  }
+}

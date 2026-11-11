@@ -1,0 +1,241 @@
+{
+  "baseline": "cc6d8d77b6fcb3b493874d6b9c8a160c636fff88",
+  "changed_files": 32,
+  "all_changes_under_validation": true,
+  "exact_ast_unchanged": 5,
+  "executable_body_unchanged_except_unused_placeholder": true,
+  "files": [
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/cleanup.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/metrics.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [
+        "import hashlib as None"
+      ],
+      "added_imports": []
+    },
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/run_batch.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [
+        "import subprocess as None"
+      ],
+      "added_imports": []
+    },
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/setup.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [
+        "import os as None"
+      ],
+      "added_imports": []
+    },
+    {
+      "path": "validation/libero10-task-no-memory-dual-20-20261107/validate_transition.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-05/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-05/verify_classification.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-06/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-07/audit_results.before-metadata-fix.py",
+      "exact_ast_unchanged": true,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-07/audit_results.py",
+      "exact_ast_unchanged": true,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-07/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-08/audit_results.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-08/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-08/verify_classification.py",
+      "exact_ast_unchanged": true,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-09/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/iteration-10/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/orientation-feedback/verify_contract.py",
+      "exact_ast_unchanged": true,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-continuous-20261109/placement-preview/replay.py",
+      "exact_ast_unchanged": true,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-flash-eef-screen3-20261109/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-max-v3-screen3-20261107/preflight.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-minimal-v1-candidate8-20261107/run_screening.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-minimal-v1-screening-20261107/restore.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-minimal-v1-screening-20261107/run_cell.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwen-minimal-v1-screening-20261107/run_screening.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-1500s-transition-20261106/restore.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-1500s-transition-20261106/run_batch.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-1500s-transition-20261106/transition.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-3000s-20261106/run_batch.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-diagnosis-20261107/analyze.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [
+        "import datetime as None"
+      ],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-direct-recovery-20261106/restore.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    },
+    {
+      "path": "validation/qwenflash-direct-recovery-20261106/run_batch.py",
+      "exact_ast_unchanged": false,
+      "executable_body_unchanged_except_unused_placeholder": true,
+      "removed_imports": [],
+      "added_imports": []
+    }
+  ]
+}

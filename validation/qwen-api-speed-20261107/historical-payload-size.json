@@ -1,0 +1,17 @@
+{
+  "qwen_original": {
+    "requests_including_unreturned": 1426,
+    "image_base64_bytes_median": 4896592.666666666,
+    "image_base64_bytes_max": 40457916.0
+  },
+  "qwen_short": {
+    "requests_including_unreturned": 190,
+    "image_base64_bytes_median": 7309466.0,
+    "image_base64_bytes_max": 33695977.333333336
+  },
+  "qwen_empty": {
+    "requests_including_unreturned": 147,
+    "image_base64_bytes_median": 3152366.6666666665,
+    "image_base64_bytes_max": 16725485.333333334
+  }
+}

@@ -1,0 +1,9 @@
+# Qwen Max repeat of the latest three tasks
+
+The user requested switching to Qwen Max and testing the just-completed tasks. Prepare a fresh experiment root; do not edit previous results or running code.
+
+The user subsequently requested thinking enabled. Configuration changes: model_profile qwen3.8-flash → qwen3.8-max and model openai-chat:qwen3.8-flash → openai-chat:qwen3.8-max. The isolated Max profile changes reasoning_effort from none to medium, which the existing Qwen adapter maps to enable_thinking=true. This is a boolean switch, not an independently calibrated medium intensity. The original workbench profile remains unchanged; both use the same provider endpoint. Keep tasks 0/4/8, seed 0, 600 seconds, 30 model requests, 16384 output-token cap, two isolated environments (A: 0 then 8; B: 4), the identical qwen-evidence-v3-c6c7f677d400 material package and the same 19 hash-pinned tools. All six proxy environment variables are cleared after activation.
+
+Reuse the tested external runner, metrics and cleanup. Preflight verifies frozen material and actual file-tool reads/write denial, published tools in Docker, five outcome-classification cases, model connectivity, live config and no-proxy process environment. Verify frozen model/config and actual provider response during execution. Unexpected incidents are retained/excluded and diagnosed before retry; full-budget timeouts count as failures.
+
+The previous Flash screen was 0/3 at 600 seconds. One thinking-enabled Max run per task is a development comparison that changes both model and thinking mode with limited seeds; success, adoption or fewer calls alone does not establish method effectiveness. No new experience, prompt, tool, harness-core behavior, hardware action, proxy restoration or 50-run expansion is authorized here.

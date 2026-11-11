@@ -1,0 +1,8 @@
+{
+  "status": "draft only; current P source is patch context, not the selected R parent",
+  "base_files_sha256": {
+    "robots/libero/research/manual.py": "065ddfe60f90bf1844b7e5bdb5c433f01fb9b0c4c0e3156fbea82893d2841d36",
+    "robots/libero/robot_spec.py": "ee8b7be29e480b8974f9bfddacc8c03faf1deecbfba156266df19bcb9cd1623a",
+    "rpent/dashboard/workbench.py": "2df811ef9c9cf789fe22712f7d462fad6f94a637cabe7e82b365649a18526983"
+  }
+}

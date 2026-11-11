@@ -1,0 +1,183 @@
+[
+  {
+    "lane": "a",
+    "task": 0,
+    "seed": 0,
+    "run_id": "4aeed560761dad4f7217",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 300s",
+    "elapsed_s": 310.4,
+    "stats": {
+      "total_input_tokens": 796938,
+      "total_output_tokens": 3030,
+      "total_cached_input_tokens": 728832,
+      "turns_used": 23,
+      "tool_calls": 27
+    },
+    "actions": 0,
+    "material_version": "qwen-evidence-v2-56708d55045b",
+    "planner_timeout_s": 300,
+    "metrics": {
+      "tool_calls": {
+        "list_dir": 1,
+        "read_text_file": 5,
+        "view_env_state": 1,
+        "view_camera_meta": 1,
+        "sensor_patch_batch": 14,
+        "sensor_container_geometry": 2,
+        "segment": 3
+      },
+      "all_calls": 27,
+      "action_calls": 0,
+      "has_action_call": false,
+      "first_action_confirmed_executed": false,
+      "first_action_tool": null,
+      "before_action_calls": null,
+      "before_action_observations": null,
+      "before_action_perception": null,
+      "before_action_file_reads": null,
+      "prefix_or_no_action_calls": {
+        "list_dir": 1,
+        "read_text_file": 5,
+        "view_env_state": 1,
+        "view_camera_meta": 1,
+        "sensor_patch_batch": 14,
+        "sensor_container_geometry": 2,
+        "segment": 3
+      },
+      "first_action_seconds_since_first_event": null,
+      "first_action_model_request": null,
+      "tool_error_responses": 0,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 14,
+        "sensor_container_geometry": 2
+      }
+    }
+  },
+  {
+    "lane": "a",
+    "task": 8,
+    "seed": 0,
+    "run_id": "a4ad5d50d4b873066dd3",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 300s",
+    "elapsed_s": 308.7,
+    "stats": {
+      "total_input_tokens": 1560766,
+      "total_output_tokens": 3839,
+      "total_cached_input_tokens": 1441280,
+      "turns_used": 27,
+      "tool_calls": 30
+    },
+    "actions": 0,
+    "material_version": "qwen-evidence-v2-56708d55045b",
+    "planner_timeout_s": 300,
+    "metrics": {
+      "tool_calls": {
+        "list_dir": 1,
+        "read_text_file": 5,
+        "view_env_state": 1,
+        "sensor_patch_batch": 22,
+        "read_image": 1
+      },
+      "all_calls": 30,
+      "action_calls": 0,
+      "has_action_call": false,
+      "first_action_confirmed_executed": false,
+      "first_action_tool": null,
+      "before_action_calls": null,
+      "before_action_observations": null,
+      "before_action_perception": null,
+      "before_action_file_reads": null,
+      "prefix_or_no_action_calls": {
+        "list_dir": 1,
+        "read_text_file": 5,
+        "view_env_state": 1,
+        "sensor_patch_batch": 22,
+        "read_image": 1
+      },
+      "first_action_seconds_since_first_event": null,
+      "first_action_model_request": null,
+      "tool_error_responses": 0,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 22,
+        "sensor_container_geometry": 0
+      }
+    }
+  },
+  {
+    "lane": "b",
+    "task": 4,
+    "seed": 0,
+    "run_id": "9cbe14f94f25bc734075",
+    "path": "/home/zwy/work/embodied_harness/experiments/qwen-evidence-v2-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+    "classification": "budget_timeout",
+    "evaluation_success": false,
+    "official_success": false,
+    "status": "timeout",
+    "error": "planner timed out after 300s",
+    "elapsed_s": 311.7,
+    "stats": {
+      "total_input_tokens": 396387,
+      "total_output_tokens": 2058,
+      "total_cached_input_tokens": 342272,
+      "turns_used": 14,
+      "tool_calls": 22
+    },
+    "actions": 4,
+    "material_version": "qwen-evidence-v2-56708d55045b",
+    "planner_timeout_s": 300,
+    "metrics": {
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 6,
+        "list_dir": 1,
+        "back_project": 4,
+        "sensor_patch_batch": 4,
+        "segment": 1,
+        "move_to": 4
+      },
+      "all_calls": 22,
+      "action_calls": 4,
+      "has_action_call": true,
+      "first_action_confirmed_executed": true,
+      "first_action_tool": "move_to",
+      "before_action_calls": 15,
+      "before_action_observations": 1,
+      "before_action_perception": 7,
+      "before_action_file_reads": 6,
+      "prefix_or_no_action_calls": {
+        "view_env_state": 1,
+        "read_text_file": 6,
+        "list_dir": 1,
+        "back_project": 4,
+        "sensor_patch_batch": 2,
+        "segment": 1
+      },
+      "first_action_seconds_since_first_event": 90.031646,
+      "first_action_model_request": 8,
+      "tool_error_responses": 0,
+      "memory_audit_passed": true,
+      "outside_run_reads": [],
+      "new_experience_reads": [],
+      "generated_tool_calls": {
+        "sensor_patch_batch": 4,
+        "sensor_container_geometry": 0
+      }
+    }
+  }
+]

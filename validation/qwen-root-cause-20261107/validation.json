@@ -1,0 +1,22 @@
+{
+  "validated_at": "2026-11-07T12:16:28.764869+00:00",
+  "runtime_changes": false,
+  "new_environment_actions": 0,
+  "checks": {
+    "remote_ruff_check_preview": "passed after formatting and copyright headers; pinned replay exec explicitly scoped",
+    "remote_ruff_format": "passed",
+    "census_reexecuted": true,
+    "aggregate_exactly_reproduced": true,
+    "episodes": 128,
+    "published_tool_replay_reexecuted": true,
+    "replay_exactly_reproduced": true,
+    "json_and_report_links": "passed",
+    "all_episode_tool_declarations": "128 native-only, 17 tools each"
+  },
+  "not_run": {
+    "full_unit_tests": "Only standalone historical-analysis scripts and reports changed; no harness code or runtime behavior change. Existing full-suite results are not claimed as re-run.",
+    "sphinx": "No Sphinx sources changed.",
+    "new_benchmark": "Approval required for proposed memory and tool selection changes.",
+    "container_tool_task_gain": "Not established."
+  }
+}

@@ -1,0 +1,133 @@
+--- a/rpent/dashboard/workbench.py
++++ b/rpent/dashboard/workbench.py
+@@ -215,6 +215,11 @@
+ 
+         self.config = config
+         self.robot = robot
++        self.api_require_finish = config.get("api_require_finish", False)
++        if type(self.api_require_finish) is not bool:
++            raise ValueError("api_require_finish must be a boolean")
++        if self.api_require_finish and robot != "libero":
++            raise ValueError("api_require_finish is available only for LIBERO workbenches")
+         if config.get("robot", "libero") != robot:
+             raise ValueError("Workbench configuration belongs to another robot")
+         self.root = Path(config["runs_root"]).resolve()
+@@ -494,6 +499,8 @@
+         return payload
+ 
+     def prepare(self, request):
++        if "api_require_finish" in request:
++            raise ValueError("api_require_finish is a server-owned setting")
+         if {"pilot_root", "pilot_freeze"} & request.keys():
+             raise ValueError("Pilot root and frozen bundle are server-owned settings")
+         if self.pilot is not None:
+@@ -501,6 +508,8 @@
+         profile_id = request.get("model_profile", next(iter(self.profiles)))
+         if not self.checks.get(profile_id, {}).get("ok"):
+             raise ValueError("请先在开始页检查所选模型连接")
++        if self.api_require_finish and self.profiles[profile_id]["planner"] != "api":
++            raise ValueError("api_require_finish requires the API planner")
+         selected = self.selection(request.get("tools"))
+         prepared = {
+             **request,
+@@ -508,6 +517,8 @@
+             "tools": [t["id"] for t in selected],
+             "frozen_tools": selected,
+         }
++        if self.api_require_finish:
++            prepared["api_require_finish"] = True
+         self.validate_pilot_request(prepared)
+         if (
+             self.pilot
+--- a/rpent/cli/dashboard.py
++++ b/rpent/cli/dashboard.py
+@@ -485,6 +485,7 @@
+                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
+                         dashboard_events=state,
+                         no_images=args.no_images,
++                        api_require_finish=claimed.request.get("api_require_finish", False),
+                     )
+                     result = planner.solve(
+                         system_prompt=system_prompt,
+--- a/rpent/planner/base.py
++++ b/rpent/planner/base.py
+@@ -227,8 +227,11 @@
+     dashboard_events: DashboardEventSink,
+     no_images: bool = False,
+     interactive: bool = False,
++    api_require_finish: bool = False,
+ ) -> Planner:
+     """Build a planner for the given backend, resolving credentials from env vars."""
++    if api_require_finish and planner_type != "api":
++        raise ValueError("api_require_finish requires the API planner")
+     # Imports are deferred to avoid a circular import: api_loop / claude_code /
+     # codex all import from this module (PlannerResult).
+ 
+@@ -247,6 +250,7 @@
+             no_images=no_images,
+             timeout_s=api_timeout_s,
+             interactive=interactive,
++            require_finish=api_require_finish,
+         )
+     if planner_type == "claude_code":
+         from rpent.planner.claude_code import ClaudeCodePlanner
+--- a/rpent/planner/api_loop.py
++++ b/rpent/planner/api_loop.py
+@@ -102,7 +102,10 @@
+         no_images: bool = False,
+         timeout_s: float = 1200,
+         interactive: bool = False,
++        require_finish: bool = False,
+     ) -> None:
++        if type(require_finish) is not bool:
++            raise ValueError("require_finish must be a boolean")
+         if reasoning_effort not in REASONING_EFFORTS:
+             raise ValueError(f"unsupported reasoning effort: {reasoning_effort}")
+         if max_tokens < 1 or timeout_s <= 0:
+@@ -114,6 +117,7 @@
+         self.no_images = no_images
+         self.timeout_s = timeout_s
+         self.interactive = interactive
++        self.require_finish = require_finish
+ 
+     def solve(
+         self,
+@@ -152,7 +156,10 @@
+     ) -> PlannerResult:
+         conversation_id = uuid4().hex
+         adapter = _HarnessToolkit(
+-            toolkit, dashboard_events=self.dashboard_events, no_images=self.no_images
++            toolkit,
++            dashboard_events=self.dashboard_events,
++            no_images=self.no_images,
++            require_finish=self.require_finish,
+         )
+         session = _Session(
+             adapter, conversation_id, max_turns, interactive=self.interactive
+@@ -327,6 +334,7 @@
+         *,
+         dashboard_events: DashboardEventSink,
+         no_images: bool,
++        require_finish: bool = False,
+     ) -> None:
+         super().__init__(id="rpent")
+         self.toolkit = toolkit
+@@ -337,7 +345,7 @@
+         self.messages: list[dict[str, Any]] = []
+         self.stopping = threading.Event()
+         self.validators: dict[str, Draft202012Validator] = {}
+-        self.output_types: list[Any] = [str]
++        self.output_types: list[Any] = [] if require_finish else [str]
+         if not getattr(toolkit, "planner_tools_only", False):
+             self.add_tool(Tool(self.read_image, takes_ctx=True, sequential=True))
+         for declaration in toolkit.list_tools():
+@@ -379,6 +387,9 @@
+                         takes_ctx=True,
+                     )
+                 )
++
++        if require_finish and not self.output_types:
++            raise ValueError("require_finish needs an enabled finish tool")
+ 
+     async def read_image(
+         self, ctx: RunContext, name: str, step: int = -1

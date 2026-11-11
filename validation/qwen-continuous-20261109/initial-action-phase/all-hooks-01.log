@@ -1,0 +1,70 @@
+ruff (legacy alias)......................................................Failed
+- hook id: ruff
+- exit code: 1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/cleanup.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/metrics.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/preflight.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/run_batch.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/setup.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/libero10-task-no-memory-dual-20-20261107/validate_transition.py:1:1
+
+unused-variable: Local variable `nonlocal_placeholder` is assigned to but never used
+  --> validation/libero10-task-no-memory-dual-20-20261107/validate_transition.py:87:13
+   |
+86 |         def api(port, path, data=None, timeout=30):
+87 |             nonlocal_placeholder = None
+   |             ^^^^^^^^^^^^^^^^^^^^
+88 |             global state_reads, cfg, runs
+89 |             calls.append((path, data))
+   |
+help: Remove assignment to unused variable `nonlocal_placeholder`
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwen-minimal-v1-candidate8-20261107/run_screening.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwen-minimal-v1-screening-20261107/restore.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwen-minimal-v1-screening-20261107/run_cell.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwen-minimal-v1-screening-20261107/run_screening.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-1500s-transition-20261106/restore.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-1500s-transition-20261106/run_batch.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-1500s-transition-20261106/transition.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-3000s-20261106/run_batch.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-diagnosis-20261107/analyze.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-direct-recovery-20261106/restore.py:1:1
+
+missing-copyright-notice: Missing copyright notice at top of file
+--> validation/qwenflash-direct-recovery-20261106/run_batch.py:1:1
+
+Found 18 errors.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).
+
+ruff format..............................................................Passed

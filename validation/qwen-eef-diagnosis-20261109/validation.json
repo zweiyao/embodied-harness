@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "synced_files": 28,
+  "board_sha256": "5ea9b1d5015c63c956602771f4f0ce3ba2a1d595f4f0a5fad9601981f6eb8c87",
+  "previous_screen_archive_synced": true,
+  "raw_images_videos_excluded_from_git": true,
+  "environment_actions": 0,
+  "model_requests": 0,
+  "scope": "Standalone report and bounded evidence; no core changes. Markdown links and JSON checked; no full unit rerun required for report-only change."
+}

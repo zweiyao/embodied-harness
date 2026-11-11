@@ -1,0 +1,109 @@
+{
+  "passed": true,
+  "completed": 3,
+  "planned": 3,
+  "successes": 0,
+  "success_rate_percent": 0.0,
+  "unexpected_incidents": 0,
+  "source_hashes_unchanged": true,
+  "conditional_first_action_metrics_recomputed": true,
+  "cleanup_passed": true,
+  "details": [
+    {
+      "task": 0,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0001_libero_10_task_t0_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 610.3,
+      "all_tool_calls": 16,
+      "action_calls": 6,
+      "before_action_calls": 6,
+      "new_experience_bodies_read": [
+        "object-relative-transfer.md",
+        "next-action-evidence.md"
+      ],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 2
+      },
+      "batch_point_count": 0,
+      "container_statuses": {
+        "inconsistent_rim": 2
+      },
+      "returned_model_requests": 10,
+      "returned_request_wait_mean_s": 50.72084608078003,
+      "returned_request_wait_median_s": 50.548606514930725,
+      "model_wait_sum_returned_s": 507.2084608078003,
+      "unfinished_request_at_end": true,
+      "tool_error_responses": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "grasp_attempt_calls": 1
+    },
+    {
+      "task": 8,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/a/runs/session/tasks/0002_libero_10_task_t8_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 608.6,
+      "all_tool_calls": 12,
+      "action_calls": 3,
+      "before_action_calls": 7,
+      "new_experience_bodies_read": [
+        "next-action-evidence.md"
+      ],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 0
+      },
+      "batch_point_count": 0,
+      "container_statuses": {},
+      "returned_model_requests": 6,
+      "returned_request_wait_mean_s": 82.09309033552806,
+      "returned_request_wait_median_s": 74.6099020242691,
+      "model_wait_sum_returned_s": 492.55854201316833,
+      "unfinished_request_at_end": true,
+      "tool_error_responses": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "grasp_attempt_calls": 2
+    },
+    {
+      "task": 4,
+      "seed": 0,
+      "path": "/home/zwy/work/embodied_harness/experiments/qwen-max-v3-screen3-20261107/b/runs/session/tasks/0001_libero_10_task_t4_s0",
+      "evaluation_success": false,
+      "status": "timeout",
+      "elapsed_s": 610.5,
+      "all_tool_calls": 12,
+      "action_calls": 3,
+      "before_action_calls": 4,
+      "new_experience_bodies_read": [
+        "next-action-evidence.md"
+      ],
+      "new_entries_visible_in_read_index": true,
+      "generated_tool_calls": {
+        "sensor_patch_batch": 0,
+        "sensor_container_geometry": 1
+      },
+      "batch_point_count": 0,
+      "container_statuses": {
+        "measured": 1
+      },
+      "returned_model_requests": 8,
+      "returned_request_wait_mean_s": 71.07344999909401,
+      "returned_request_wait_median_s": 62.974488377571106,
+      "model_wait_sum_returned_s": 568.5875999927521,
+      "unfinished_request_at_end": true,
+      "tool_error_responses": 0,
+      "patch_failed_points": 0,
+      "patch_calls_with_failed_points": 0,
+      "grasp_attempt_calls": 1
+    }
+  ],
+  "limitations": "Approved repair/candidate cells, direct-network only. Timing is request/response elapsed, not pure network. No causal baseline or task-gain proof."
+}

@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-11-10T07:26:39.037120+00:00",
+  "units": {
+    "rpent-qwen-continuous-20261109-i06-a.service": {
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "rpent-qwen-continuous-20261109-i06-b.service": {
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "rpent-qwen-continuous-20261109-i06-batch.service": {
+      "ExecMainStatus": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    }
+  },
+  "cleanup_passed": true
+}

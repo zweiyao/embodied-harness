@@ -1,0 +1,107 @@
+{
+  "passed": true,
+  "conditions": {
+    "C_reference": {
+      "valid": 2,
+      "successes": 1,
+      "success_rate_percent": 50.0,
+      "before_action_calls": [
+        7,
+        8
+      ],
+      "translate_to_calls": 0
+    },
+    "C+M_21_reference": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        16,
+        15
+      ],
+      "translate_to_calls": 0
+    },
+    "C+M-restricted18": {
+      "valid": 2,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "before_action_calls": [
+        null,
+        6
+      ],
+      "translate_to_calls": 6
+    }
+  },
+  "paired_initial_images": [
+    {
+      "task": 4,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "C+M-restricted18": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "C": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+            "C+M": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "C+M-restricted18": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "C": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+            "C+M": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d"
+          },
+          "identical": true
+        }
+      },
+      "eligible_for_strict_pair": true
+    },
+    {
+      "task": 0,
+      "seed": 0,
+      "cameras": {
+        "agentview_high.png": {
+          "hashes": {
+            "C+M-restricted18": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "C": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729",
+            "C+M": "a6184169c5027f2cfab3ec9bbff02f4671b0f6d8524412807bbd615f08eec729"
+          },
+          "identical": true
+        },
+        "wrist_high.png": {
+          "hashes": {
+            "C+M-restricted18": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "C": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8",
+            "C+M": "34641520eb6fd9c1e2ce596aeb2af161a5f307da567dc1a034550c6754dac8b8"
+          },
+          "identical": true
+        }
+      },
+      "eligible_for_strict_pair": true
+    }
+  ],
+  "motion_returns": [
+    {
+      "task": 4,
+      "requests": 0,
+      "responses": 0,
+      "responses_without_error": 0,
+      "actual_movement": "Requires pose/frame review; not inferred from response count or steps_used."
+    },
+    {
+      "task": 0,
+      "requests": 6,
+      "responses": 6,
+      "responses_without_error": 6,
+      "actual_movement": "Requires pose/frame review; not inferred from response count or steps_used."
+    }
+  ],
+  "initial_incident_entries_preserved": 1,
+  "corrected_model_argument_failures": 1,
+  "runtime_incidents": 0,
+  "live_environment_child_audit": "not captured; exited before retrospective audit",
+  "runtime_guard_coverage": "partial; actual workbench process checks, frozen source/preflight/run logs; no direct child command/environment snapshot",
+  "task_results_valid": true,
+  "protected_files_verified": 4944,
+  "limitation": "Development only, two tasks and one initial state; prior C and 21-tool C+M references retained. Selection restriction is an intervention; absence of the EEF feedback wrapper is supported by frozen setup/preflight but actual child command lines were not captured. Temporal and lane confounding remain; no overall ten-task success-rate or causal generalization claim."
+}

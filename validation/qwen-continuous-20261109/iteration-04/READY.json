@@ -1,0 +1,7 @@
+{
+  "approved": true,
+  "coordinator": "root",
+  "scope": "Reviewed restricted18 C+M: only remove native move_to/move_pose/move_eef from iteration03; no mapping sentence or source behavior changes; two tasks4/0seed0 after clean preflight; C material, old generated tools, M version and 600s/30req/Flash API thinking-off retained",
+  "native_motion_version": "6711255f161f2c32649b31f6c2ff8055f5c8544bfbdca507ce66fa4daac280af",
+  "source_handoff_sha256": "4b4b2d82ce69bdb8c44392e95ead9db4a4e30582bcb6df024b58f469b0ae0225"
+}

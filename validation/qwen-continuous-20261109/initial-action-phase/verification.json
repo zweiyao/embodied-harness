@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "recorded_at": "2026-11-10T11:17:43.315346+00:00",
+  "source_root": "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/initial-action-phase-test-checkout",
+  "parent_source_files_verified": 303,
+  "production_changes": [
+    "robots/libero/research/manual.py",
+    "robots/libero/robot_spec.py",
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/workbench.py",
+    "rpent/planner/api_loop.py"
+  ],
+  "full_unit": {
+    "passed": 2168,
+    "skipped": 15,
+    "seconds": 75.83
+  },
+  "focused": {
+    "passed": 145,
+    "seconds": 5.53
+  },
+  "scoped_precommit_passed": true,
+  "full_precommit_passed": false,
+  "full_precommit_limit": "18 existing historical validation-script diagnostics; scoped hooks passed before final full unit run",
+  "native_catalog_records_identical": 22,
+  "native_and_calibrated_default_prompts_identical": true,
+  "W2_material_files_unchanged": 7,
+  "external_model_requests": 0,
+  "simulator_actions": 0,
+  "task_benefit_verified": false,
+  "initial_validation_failures": [
+    "Initial lint import order corrected before tests",
+    "Two fixture failures: TestModel treated output finish as function tool; Workbench test lacked connection check. Corrected fixtures, unchanged assertions and production behavior.",
+    "First scoped hook sorted an import; rerun passed."
+  ]
+}

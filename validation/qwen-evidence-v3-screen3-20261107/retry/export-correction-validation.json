@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "identical_contents": {
+    "next-action-evidence.md": true,
+    "object-relative-transfer.md": true,
+    "grasp-feature-evidence.md": true,
+    "system.md": true,
+    "user.md": true,
+    "guide.md": true
+  },
+  "index_only_relative_path_changes": true,
+  "new_material_version": "qwen-evidence-v3-c6c7f677d400",
+  "full_remote_unit_tests": {
+    "passed": 2009,
+    "skipped": 15,
+    "elapsed_s": 71.74
+  },
+  "focused_memory_tests": 18,
+  "scoped_precommit": "passed",
+  "no_memory_authorization_code_change": true,
+  "runtime_core_modified": false
+}

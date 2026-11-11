@@ -1,0 +1,161 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "kind": "translation",
+      "axis": 0,
+      "before_error": 0.006,
+      "after_error": 0.00014042753167007826,
+      "actual_delta": [
+        0.005872689014254022,
+        1.1396066293205542e-10,
+        -5.9260480586353914e-05
+      ],
+      "steps": 10,
+      "passed": true
+    },
+    {
+      "kind": "translation",
+      "axis": 1,
+      "before_error": 0.006,
+      "after_error": 0.0003233723526208239,
+      "actual_delta": [
+        0.00020191634099827466,
+        0.005788647214734614,
+        0.00013830932664848916
+      ],
+      "steps": 10,
+      "passed": true
+    },
+    {
+      "kind": "translation",
+      "axis": 2,
+      "before_error": 0.006,
+      "after_error": 0.00040984430513431975,
+      "actual_delta": [
+        -0.00019339173845987073,
+        7.356591316860089e-06,
+        0.005638727429064017
+      ],
+      "steps": 10,
+      "passed": true
+    },
+    {
+      "kind": "rotation",
+      "axis": 0,
+      "before_error": 0.08,
+      "after_error": 0.001629637741431986,
+      "actual_delta": [
+        0.07911490391121416,
+        -0.0011270666686479804,
+        0.0007765588845731888
+      ],
+      "steps": 10,
+      "passed": true
+    },
+    {
+      "kind": "rotation",
+      "axis": 1,
+      "before_error": 0.08,
+      "after_error": 0.0007158706001188708,
+      "actual_delta": [
+        0.00037968703311413684,
+        0.08017407742078649,
+        0.0005816036132180061
+      ],
+      "steps": 10,
+      "passed": true
+    },
+    {
+      "kind": "rotation",
+      "axis": 2,
+      "before_error": 0.08,
+      "after_error": 0.004668936845346572,
+      "actual_delta": [
+        0.000748499953605037,
+        0.004010970200869828,
+        0.07772849954855442
+      ],
+      "steps": 10,
+      "passed": true
+    }
+  ],
+  "native_success": false,
+  "controller": {
+    "frame": "base",
+    "origin_ori": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "input_min": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+    ],
+    "input_max": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "output_min": [
+      -0.05,
+      -0.05,
+      -0.05,
+      -0.5,
+      -0.5,
+      -0.5
+    ],
+    "output_max": [
+      0.05,
+      0.05,
+      0.05,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "action_low": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0
+    ],
+    "action_high": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "gripper": {
+    "before": 0.07986172091445656,
+    "after": 0.014214420834392564,
+    "steps": 10
+  },
+  "recorded_frames": 70,
+  "environment_closed": true
+}

@@ -1,0 +1,36 @@
+{
+  "source_run": "/home/zwy/work/embodied_harness/experiments/qwen-continuous-20261109/iteration-05/a/runs/session/tasks/0001_libero_10_task_t4_s0",
+  "source_model_request": 2,
+  "images": [
+    {
+      "sha256": "29144ae88fd5be9f187d505247c7971109895429818882de694e1c32ea9d3b35",
+      "bytes": 66481,
+      "media_type": "image/png"
+    },
+    {
+      "sha256": "3a146f6d825a8c9f50df82b88e5cf1e318afc7e94d4d96b0c52adf9ed6a40b61",
+      "bytes": 703562,
+      "media_type": "image/png"
+    },
+    {
+      "sha256": "612248989e4ac7c83e5ccc99114682c044e4b50824fedae357b3bd1b76fda60d",
+      "bytes": 580572,
+      "media_type": "image/png"
+    }
+  ],
+  "body_sha256": "ab1c81b8f0ffd5303f0c6ec5dfbfdb6a66bade94af5003de7916214200b3f01c",
+  "body_bytes": 1801183,
+  "model": "qwen3.8-flash",
+  "max_tokens": 16,
+  "thinking_enabled": false,
+  "TLS_verified": true,
+  "transport_retries": 0,
+  "overall_timeout_s": 180,
+  "trust_env": false,
+  "family_order": [
+    "IPv6",
+    "IPv4"
+  ],
+  "source_batch_terminal_audit_cleanup_passed": true,
+  "six_proxy_variables_absent": true
+}

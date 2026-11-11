@@ -1,0 +1,285 @@
+{
+  "runs": [
+    {
+      "iteration": "03",
+      "lane": "a",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.0072,
+          "horizontal": 26.9351,
+          "vertical": 45.5415,
+          "both": 44.3955
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.5361,
+          "horizontal": 13.4417,
+          "vertical": 22.6974,
+          "both": 22.3684
+        }
+      },
+      "mirrored_recorded_frames": 13,
+      "first_images_request": 2,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    },
+    {
+      "iteration": "03",
+      "lane": "b",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.4274,
+          "horizontal": 37.4806,
+          "vertical": 48.3727,
+          "both": 50.7892
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.9629,
+          "horizontal": 12.6662,
+          "vertical": 19.5582,
+          "both": 19.6431
+        }
+      },
+      "mirrored_recorded_frames": 14,
+      "first_images_request": 2,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    },
+    {
+      "iteration": "04",
+      "lane": "a",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.0072,
+          "horizontal": 26.9351,
+          "vertical": 45.5415,
+          "both": 44.3955
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.5361,
+          "horizontal": 13.4417,
+          "vertical": 22.6974,
+          "both": 22.3684
+        }
+      },
+      "mirrored_recorded_frames": 1,
+      "first_images_request": 2,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    },
+    {
+      "iteration": "04",
+      "lane": "b",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.4274,
+          "horizontal": 37.4806,
+          "vertical": 48.3727,
+          "both": 50.7892
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.9629,
+          "horizontal": 12.6662,
+          "vertical": 19.5582,
+          "both": 19.6431
+        }
+      },
+      "mirrored_recorded_frames": 14,
+      "first_images_request": 2,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    },
+    {
+      "iteration": "05",
+      "lane": "a",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.0072,
+          "horizontal": 26.9351,
+          "vertical": 45.5415,
+          "both": 44.3955
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.5361,
+          "horizontal": 13.4417,
+          "vertical": 22.6974,
+          "both": 22.3684
+        }
+      },
+      "mirrored_recorded_frames": 2,
+      "first_images_request": 2,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    },
+    {
+      "iteration": "05",
+      "lane": "b",
+      "orientation": {
+        "agentview_high_to_low_MAE": {
+          "same": 1.4274,
+          "horizontal": 37.4806,
+          "vertical": 48.3727,
+          "both": 50.7892
+        },
+        "wrist_high_to_low_MAE": {
+          "same": 0.9629,
+          "horizontal": 12.6662,
+          "vertical": 19.5582,
+          "both": 19.6431
+        }
+      },
+      "mirrored_recorded_frames": 3,
+      "first_images_request": 3,
+      "supplied_images": [
+        {
+          "artifact": "agentview_policy.png",
+          "size_wh": [
+            256,
+            256
+          ]
+        },
+        {
+          "artifact": "agentview_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "artifact": "wrist_high.png",
+          "size_wh": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "binary_identifiers_absent": true
+    }
+  ],
+  "patch_calls": 19,
+  "patch_points": 98,
+  "recorded_frames": 47,
+  "all_checked_patch_conversions_match": true,
+  "all_recorded_policy_images_exact_horizontal_mirrors": true,
+  "model_requests_issued_by_audit": 0,
+  "simulator_actions": 0,
+  "source_hashes": {
+    "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/rlinf/envs/sim/libero/libero_env.py": "03d8b098d3f9bb51c03cd1a2daf1ecdc2bf5a921017497f7d1c349fe777e61eb",
+    "/home/zwy/work/harnessvla/.venv/lib/python3.11/site-packages/rlinf/envs/sim/libero/utils.py": "1904525b3d890f542510b15403f610a4f7326eebd94eea56ab826de0f048f795",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/tools.py": "99f051d57f84c4627c781e94a1ee0905187cef342de64d54d04014a31f2a4a62",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/robots/libero/toolkit.py": "809f73a976fc7786f53f31f5b3d25f7ded4a2f5973077507de84b558388c2efe",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/motion-contract-test-checkout/rpent/planner/api_loop.py": "3430ca01b2da8af97f4d934dfd280308dc088d686e4ecf97f080fb0e7e4cd957",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/robots/libero/tools.py": "99f051d57f84c4627c781e94a1ee0905187cef342de64d54d04014a31f2a4a62",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/robots/libero/toolkit.py": "809f73a976fc7786f53f31f5b3d25f7ded4a2f5973077507de84b558388c2efe",
+    "/home/zwy/work/embodied_harness/validation/qwen-continuous-20261109/placement-preview-test-checkout/rpent/planner/api_loop.py": "3430ca01b2da8af97f4d934dfd280308dc088d686e4ecf97f080fb0e7e4cd957"
+  }
+}

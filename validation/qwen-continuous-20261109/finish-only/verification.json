@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "full_unit": "2135 passed / 15 skipped",
+  "targeted": "101 passed",
+  "scoped_precommit": "passed",
+  "parent_verified_files": 303,
+  "changed_source_files": [
+    "rpent/cli/dashboard.py",
+    "rpent/dashboard/workbench.py",
+    "rpent/planner/api_loop.py",
+    "rpent/planner/base.py"
+  ],
+  "native_catalog_records_identical": 22,
+  "material_version": "qwen-decision-w2-381e10402bd1",
+  "material_files_unchanged": 7,
+  "factory_propagation_checked": true,
+  "external_model_requests": 0,
+  "simulator_actions": 0,
+  "limitations": [
+    "No policy efficacy claim; full multi-Python CI matrix not run; full-repository historical hook issues not repaired.",
+    "Journal probe initially omitted required event sink; fixture-only correction, prior script retained."
+  ]
+}

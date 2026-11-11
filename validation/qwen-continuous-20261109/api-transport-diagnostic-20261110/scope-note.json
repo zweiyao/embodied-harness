@@ -1,0 +1,7 @@
+{
+  "recorded_at": "2026-11-10T06:41:07.621775+00:00",
+  "diagnostic_client": "raw httpx0.28.1/httpcore1.0.9",
+  "planner_client_reported_by_placement_impl": "httpx2 2.13.1",
+  "limitation": "This same-payload family comparison does not prove planner integration or verify its client path. Planner-specific validation remains separate.",
+  "harness_changed": false
+}

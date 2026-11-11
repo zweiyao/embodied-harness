@@ -1,0 +1,9 @@
+{
+  "actual_control_steps": 1,
+  "evidence": "one frame in native recording; failure after inner_step returned and before trace append",
+  "trace_entries": 0,
+  "executed_probe_sha256": "21e3b233d03fc7ecd8f5be8b1a7484c91c639e32d4e0fd7a0b8e28b90d532dd0",
+  "failure_stage": "cached observation versus live site simultaneity assertion",
+  "max_position_discrepancy_m": 6.05031728e-05,
+  "cleanup_passed": true
+}

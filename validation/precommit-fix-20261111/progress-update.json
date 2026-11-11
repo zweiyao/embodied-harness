@@ -1,0 +1,10 @@
+{
+  "updated_at": "2026-11-11T12:22:07.572902+00:00",
+  "entry": {
+    "title": "PR #4 Pre-commit 修复",
+    "status": "远程全仓检查与单测通过，待 GitHub CI",
+    "change": "仅整理32个validation脚本的格式/导入，补17处版权声明，删除4个未使用标准库导入及1处无用None占位赋值。harness、工具、经验、配置与实验结果未改。",
+    "evidence": "validation/precommit-fix-20261111：全仓Ruff与format通过；2035 passed/15 skipped，72.85秒。AST确认除无用占位赋值外执行语句一致；原始远程归档保留，无实验或部署。"
+  },
+  "local_remote_equal": true
+}

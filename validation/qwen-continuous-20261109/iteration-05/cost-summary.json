@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-11-10T06:41:07.612952+00:00",
+  "model_requests": 18,
+  "completed_model_responses": 16,
+  "requests_without_completed_response": 2,
+  "input_tokens_including_cached": 180218,
+  "cached_input_tokens_subset": 130048,
+  "output_tokens": 1955,
+  "summed_outcome_elapsed_s": 1220.7,
+  "summed_completed_model_wait_s": 1145.563758,
+  "preflight_connectivity_requests_excluded": 2,
+  "notes": [
+    "Reported token usage includes completed responses only; canceled requests have no usage report. Cached input is a subset of input, not additive.",
+    "Two normal600s planner budget failures retained. Outcome elapsed includes environment setup/finalization and may exceed planner budget.",
+    "Separate API transport diagnostic costs excluded."
+  ]
+}

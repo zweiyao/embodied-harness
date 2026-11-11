@@ -11,7 +11,9 @@ import pytest
 
 from robots.libero.prompt_bundle import system_prompt, user_prompt
 from robots.libero.research.language_materials import freeze_materials
+from rpent.memory import MemoryManager
 from rpent.prompt.utils import format_prompt
+from rpent.tools.common import CommonTools
 
 
 def builder():
@@ -93,3 +95,41 @@ def test_frozen_package_does_not_copy_adjacent_raw_recipes(tmp_path):
     variables = {}
     freeze_materials(source, tmp_path / "run", variables)
     assert not (Path(variables["language_materials"]) / "old_recipe.jsonl").exists()
+
+
+def test_frozen_root_notes_are_readable_through_actual_file_tool(tmp_path):
+    source = tmp_path / "package"
+    (source / "memory/libero").mkdir(parents=True)
+    contents = {
+        "system.md": "system",
+        "user.md": "user",
+        "guide.md": "guide",
+        "memory/MEMORY.md": "[note](note.md)",
+        "memory/note.md": "conditional evidence",
+        "memory/libero/note.md": "unsupported nested layout",
+    }
+    for name, text in contents.items():
+        (source / name).write_text(text)
+    (source / "manifest.json").write_text(
+        json.dumps(
+            {
+                "version": "read-policy-test",
+                "files": {
+                    name: hashlib.sha256(text.encode()).hexdigest()
+                    for name, text in contents.items()
+                },
+            }
+        )
+    )
+    variables = {}
+    freeze_materials(source, tmp_path / "run", variables)
+    root = Path(variables["memory_dir"])
+    file_tools = CommonTools(memory=MemoryManager(root))
+    assert (
+        file_tools.read_text_file(path=str(root / "note.md")).data["content"]
+        == "conditional evidence"
+    )
+    with pytest.raises(PermissionError, match="reading this memory path is denied"):
+        file_tools.read_text_file(path=str(root / "libero/note.md"))
+    with pytest.raises(PermissionError, match="writing to memory is denied"):
+        file_tools.write_text_file(path=str(root / "note.md"), content="changed")

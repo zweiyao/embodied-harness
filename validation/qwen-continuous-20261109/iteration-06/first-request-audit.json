@@ -1,0 +1,46 @@
+{
+  "observed_at": "2026-11-10T07:15:33.865400+00:00",
+  "phase": "running",
+  "lanes": [
+    {
+      "lane": "a",
+      "first_event_at": "2026-11-10T07:14:56.476889+00:00",
+      "first_model_request_at": "2026-11-10T07:15:05.785212+00:00",
+      "actual_tool_count": 18,
+      "R_M_P_patch_schemas_match_manifest": true,
+      "retained_actual_schemas_equal_05_after_output_path_substitution": true,
+      "thinking_enabled": false,
+      "rotate_axis_version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+      "actual_env_children": [
+        {
+          "pid": 2978140,
+          "observed_at": "2026-11-10T07:14:56.606418+00:00",
+          "eef_control_flag_present": true,
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": []
+        }
+      ]
+    },
+    {
+      "lane": "b",
+      "first_event_at": "2026-11-10T07:14:56.476043+00:00",
+      "first_model_request_at": "2026-11-10T07:15:05.738462+00:00",
+      "actual_tool_count": 18,
+      "R_M_P_patch_schemas_match_manifest": true,
+      "retained_actual_schemas_equal_05_after_output_path_substitution": true,
+      "thinking_enabled": false,
+      "rotate_axis_version": "7d5767d84f4eb55ca2d38ae0d96fbaf4ac1a08ab256ac8694136347c0cfb15f1",
+      "actual_env_children": [
+        {
+          "pid": 2978139,
+          "observed_at": "2026-11-10T07:14:56.607201+00:00",
+          "eef_control_flag_present": true,
+          "source_roots_match": true,
+          "private_config_matches": true,
+          "proxy_variables_present": []
+        }
+      ]
+    }
+  ]
+}

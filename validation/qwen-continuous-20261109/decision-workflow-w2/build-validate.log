@@ -1,0 +1,32 @@
+{
+  "package_path": "/home/zwy/work/embodied_harness/language-materials/qwen-decision-w2-381e10402bd1",
+  "validation": {
+    "passed": true,
+    "checked_at": "2026-11-10T07:35:26.430902+00:00",
+    "changed_package_files": [
+      "manifest.json",
+      "user.md"
+    ],
+    "changed_manifest_fields": [
+      "version",
+      "files.user.md"
+    ],
+    "parent_files_unchanged": 8,
+    "source_files_unchanged": 303,
+    "real_freeze_and_render_cases": [
+      "parent-t4",
+      "w2-t4",
+      "parent-t0",
+      "w2-t0"
+    ],
+    "normalized_system_equal_per_task": true,
+    "default_prompt_cases_unchanged": 6,
+    "native_catalog_unchanged": true,
+    "read_only_package": true,
+    "before_user_words": 132,
+    "after_user_words": 96,
+    "model_requests": 0,
+    "vla_requests": 0,
+    "simulator_actions": 0
+  }
+}
