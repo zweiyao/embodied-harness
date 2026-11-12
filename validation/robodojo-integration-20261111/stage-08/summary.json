@@ -1,0 +1,132 @@
+{
+  "updated_at": "2026-11-12T02:21:10.097154+00:00",
+  "status": "approved_diagnostic_assertions_passed_contract_gaps_found",
+  "baseline_commit": "4467cacf21911e2ca23918fbd8b5930e9071d0c3",
+  "task": "put_bottles_into_dustbin",
+  "layout": 0,
+  "runtime_profile_sha256": "98bbb4abd536cd5fdd252242f552c294f076bd54114b33f946aba5dc860f402e",
+  "conditions": {
+    "placement_settle_steps": 1000,
+    "max_episode_steps_argument": 96,
+    "diagnostic_pre_dispatch_action_limit": 96,
+    "max_control_tool_calls": 8,
+    "move_delta_from_each_live_start_m": [
+      0,
+      0,
+      0.02
+    ],
+    "move_tolerance_m": 0.01,
+    "other_arm_drift_tolerance_m": 0.005
+  },
+  "results": {
+    "control_tool_calls": 8,
+    "valid_native_actions": 8,
+    "native_counter": 8,
+    "invalid_actions_rejected_without_counter_advance": 2,
+    "move_target_errors_m": [
+      0.002095795119767095,
+      0.0017422320866923278,
+      0.0020957923960626835,
+      0.0017422916815411655
+    ],
+    "all_moves_reported_reached": true,
+    "max_unselected_arm_drift_m": 2.6017769414465874e-05,
+    "state_record_steps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "returned_image_counts": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "gripper_feedback": {
+      "left": {
+        "after_close": 0.6524847085829134,
+        "after_open": 1.0
+      },
+      "right": {
+        "after_close": 0.6524753263703099,
+        "after_open": 1.0
+      }
+    },
+    "owned_exit_before_cleanup": 0,
+    "child_exit_after_cleanup": [
+      0
+    ],
+    "camera_videos_readable": 3
+  },
+  "findings": [
+    {
+      "id": "native_rpc_budget",
+      "observed": "CLI max_episode_steps argument 96; native tool status step_limit remained 700. Test was constrained by the diagnostic client guard and submitted only eight valid actions.",
+      "cause": "RoboDojoAgentEnv.step_native bypasses RLinf RoboDojoEnv.step (which enforces cfg.max_episode_steps); it checks only native env.step_lim and only in eval-fair. The bottles task initializes step_lim=700.",
+      "status": "Unfixed; exact robot-adapter draft prepared outside runtime."
+    },
+    {
+      "id": "gripper_command_feedback",
+      "observed": "set_gripper returned gripper=closed after one step while measured normalized opening was approximately 0.65248 on both arms; open returned 1.0.",
+      "cause": "set_gripper submits one native control interval and labels the requested direction as closed/open without reading the returned gripper state. Direction was verified; full closing completion was not.",
+      "status": "Unfixed; proposed change separates command from measured opening without extra actions or new thresholds."
+    }
+  ],
+  "preservation": {
+    "videos": [
+      {
+        "camera_file": "episode_2026-11-12_10-11-45_cam_head.mp4",
+        "readable": true,
+        "bytes": 204704
+      },
+      {
+        "camera_file": "episode_2026-11-12_10-11-45_cam_left_wrist.mp4",
+        "readable": true,
+        "bytes": 184216
+      },
+      {
+        "camera_file": "episode_2026-11-12_10-11-45_cam_right_wrist.mp4",
+        "readable": true,
+        "bytes": 211875
+      }
+    ],
+    "protected_files": {
+      "checked": 608,
+      "changed": []
+    },
+    "remaining_gpu_processes": [
+      "782158, 8748 MiB",
+      "782157, 7398 MiB"
+    ]
+  },
+  "scope": {
+    "production_source_changes": false,
+    "planner_requests": 0,
+    "vla_requests": 0,
+    "physical_hardware_actions": 0,
+    "collector_services_modified": false,
+    "mac_network_modified": false
+  },
+  "checks": {
+    "remote_syntax": "passed",
+    "source_preconditions": "42 source hashes matched before run",
+    "full_unit_suite": "Not repeated; production Python unchanged from the previously validated baseline"
+  },
+  "remote_raw_artifact_root": "/home/zwy/work/embodied_harness/validation/robodojo-integration-20261111/stage-08/run-01",
+  "limitations": [
+    "Only eight calls in one task/layout; not task success or broad action coverage",
+    "Gripper closing direction passed; full closing completion was not verified",
+    "Native action budget mismatch remains until a separately approved repair",
+    "No predicted VLA actions, CLI policy chain, planner or unified workbench run was executed",
+    "Independent camera geometry and nine dependency metadata conflicts remain unresolved"
+  ]
+}
