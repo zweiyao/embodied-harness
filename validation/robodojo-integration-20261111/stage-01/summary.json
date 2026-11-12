@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-11-12T01:15:36.538875+00:00",
+  "updated_at": "2026-11-12T01:34:41.746860+00:00",
   "status": "in_progress",
   "stage": "01_dependency_and_resource_preparation",
   "branch": "feat/robodojo-integration",
   "source_commit": "5c57ad069f854a554dd5f4938aca726a8a441874",
   "isolated_checkout": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111",
   "python_created": "CPython 3.11.16",
-  "runtime_installation": "Installed; separately approved owner-chain correction passed real dev/eval-fair lifecycle checks in stage-06. Checkpoint conversion and actual CPU model loading passed in stage-05. Default launcher and GPU policy inference remain unverified.",
+  "runtime_installation": "Installed; approved owner-chain correction passed real dev/eval-fair lifecycle checks (stage-06). Converted policy loaded on CPU (stage-05). Approved independent profile, two dev resets and one real Pi0.5/SAM3 GPU request passed (stage-07); actions and unified workbench remain unverified.",
   "source_refs": {
     "rlinf": [
       "https://github.com/littleZ05/RLinf.git",
@@ -211,9 +211,9 @@
   },
   "not_yet_verified": [
     "Full asset/policy checksums beyond baseline assets; complete external NVIDIA reference closure",
-    "Real explicit-reset stability, geometry and action validation",
-    "GPU policy inference and SAM3 component requests",
-    "Default runtime compatibility profile and unified workbench/end-to-end workflow"
+    "Cross-task/layout reset stability; independent geometry and action validation",
+    "Bounded CLI policy chain and real planner workflow",
+    "Unified simulator workbench integration"
   ],
   "changes_to_harness": "Separately approved ENV ownership, connection without implicit reset, and owned SimulationContext teardown; see stage-02, stage-03 and stage-06.",
   "experiments_started": 0,
@@ -261,5 +261,6 @@
     "resource_configuration": "Official update_embodiment_config_path.py generated two missing curobo.yml files by substituting only ASSETS_PATH; original templates unchanged",
     "vulkan_compatibility": "Existing private layer enabled only in diagnostic processes; seven provenance hashes matched. No default launcher change."
   },
-  "followup_policy_preparation": "../stage-05/conversion.json and ../stage-05/cpu-policy-load.json"
+  "followup_policy_preparation": "../stage-05/conversion.json and ../stage-05/cpu-policy-load.json",
+  "followup_component_preparation": "../stage-07/summary.json"
 }

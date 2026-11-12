@@ -132,10 +132,9 @@
     "explicit_dev_reset": "Dispatch preserved by CPU regression; real repeated-reset stability is not verified and a previous implicit reset failed."
   },
   "remaining": [
-    "Default launcher compatibility profile not deployed",
-    "Explicit repeated dev reset stability, action/control and camera geometry validation",
-    "GPU policy inference and bounded workflow; conversion and CPU load passed in stage-05",
-    "CLI, Dashboard and unified workbench integration"
+    "Cross-task/layout reset stability and independent camera geometry",
+    "Action/control and bounded CLI/workflow validation",
+    "Unified workbench integration; approved independent profile/components passed in stage-07"
   ],
   "preservation": {
     "existing_source_guards": {
@@ -159,5 +158,9 @@
     "artifact": "../stage-06/summary.json",
     "owned_exit": "passed dev/eval-fair after separately approved owner-chain correction",
     "historical_failures_retained": true
+  },
+  "later_components": {
+    "artifact": "../stage-07/summary.json",
+    "scope": "Two explicit dev resets, one unexecuted Pi0.5 prediction and one SAM3 request; one task/layout"
   }
 }
