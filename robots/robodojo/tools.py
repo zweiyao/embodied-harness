@@ -214,6 +214,11 @@ def _refresh_obs(primitives) -> dict:
     return primitives._last_obs
 
 
+def _action_budget_exhausted(status: dict) -> bool:
+    limit = status.get("step_limit", 0)
+    return limit is not None and int(status.get("step", 0)) >= int(limit)
+
+
 @tool(readonly=False, exclude=("primitives", "state", "tol", "max_steps"))
 def move_to(
     primitives: Any,
@@ -305,7 +310,7 @@ def move_to(
         dist_to_target = float(
             np.linalg.norm(np.asarray(target) - np.asarray(final_xyz))
         )
-        if info["status"].get("step", 0) >= info["status"].get("step_limit", 1):
+        if _action_budget_exhausted(info["status"]):
             break
     payload = {
         "arm": arm,
@@ -453,7 +458,7 @@ def pi0_pick(
                 # for an ungrasped state and would reopen the gripper, dropping
                 # the object while ``success`` stays true.
                 break
-            if info["status"]["step"] >= info["status"]["step_limit"]:
+            if _action_budget_exhausted(info["status"]):
                 terminated = True
                 break
         if success or terminated:
@@ -611,7 +616,7 @@ def dump_state(primitives, state, *, log: dict | None = None, perception=None):
         # Official success is read by the runner after planner execution,
         # not written into planner-readable state artifacts.
         terminated=False,
-        truncated=int(status.get("step", 0)) >= int(status.get("step_limit", 0) or 0),
+        truncated=_action_budget_exhausted(status),
         command=log.get("command"),
         result=log.get("result"),
         elapsed_s=log.get("elapsed_s"),

@@ -164,6 +164,11 @@ def finalize_run(context: RunFinalizationContext) -> Path:
             "max_turns": context.max_turns,
         },
         "planner_timeout_s": context.planner_timeout_s,
+        **(
+            {"diagnostic_unlimited_actions": True, "benchmark_comparable": False}
+            if context.task_desc.get("diagnostic_unlimited_actions")
+            else {}
+        ),
     }
     return write_json_atomic(context.output_dir / "result.json", record)
 
@@ -244,7 +249,12 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool) -> None:
         default="joint",
         help="Policy action representation for VLA primitives",
     )
-    parser.add_argument("--max-episode-steps", type=int, default=700)
+    parser.add_argument(
+        "--max-episode-steps",
+        type=int,
+        default=700,
+        help="Native action cap; 0 disables action limits for dev diagnostics only",
+    )
     parser.add_argument(
         "--cuda-device",
         type=int,
@@ -281,6 +291,10 @@ def _parse_config(args: argparse.Namespace) -> RunConfig:
     if err:
         raise ValueError(err)
     eval_fair = getattr(args, "planner", None) == "flash"
+    if args.max_episode_steps < 0:
+        raise ValueError("max_episode_steps must be nonnegative")
+    if args.max_episode_steps == 0 and eval_fair:
+        raise ValueError("Unlimited actions are for dev diagnostics only")
     summary = {} if eval_fair else robodojo_tasks.task_summary(args.task, source_root)
     recipe_tag = f"{args.task}_l{args.layout}"
     if getattr(args, "random", False):
@@ -314,6 +328,11 @@ def _parse_config(args: argparse.Namespace) -> RunConfig:
             "task": args.task,
             "layout": args.layout,
             **({"mode": "eval-fair"} if eval_fair else {}),
+            **(
+                {"diagnostic_unlimited_actions": True}
+                if args.max_episode_steps == 0
+                else {}
+            ),
         },
     )
 

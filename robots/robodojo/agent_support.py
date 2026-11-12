@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import time
 from typing import Any
@@ -256,7 +257,7 @@ def _obs_dict(env, recorder) -> dict[str, Any]:
 def _status(env, bottle_mon) -> dict[str, Any]:
     status = {
         "step": int(env.take_action_cnt[0]),
-        "step_limit": int(env.step_lim),
+        "step_limit": int(env.step_lim) if math.isfinite(env.step_lim) else None,
         "success": bool(env.is_success(env_idx=0)),
     }
     status["safety"] = bottle_mon.status()

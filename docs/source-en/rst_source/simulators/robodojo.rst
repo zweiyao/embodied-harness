@@ -512,3 +512,16 @@ status. Between ``[robodojo-env] shutdown begin`` and process exit, require no
 expected noise, not a reason to ignore shutdown errors. The environment
 releases writers, camera annotators/render products, and syntheticdata graph
 handles before stopping Replicator and closing the stage/app on the main thread.
+
+
+Unlimited action diagnostics
+----------------------------
+
+``--max-episode-steps 0`` disables both the configured and native task action
+budgets for an isolated ``dev`` diagnosis. Counters keep increasing and status
+reports ``step_limit: null``. This changes only the running environment instance,
+not the task definition, scoring predicates, joint constraints or action mapping.
+Normal positive budgets retain the stricter native/configured cap; ``eval-fair``
+rejects zero. Results are tagged ``diagnostic_unlimited_actions`` and
+``benchmark_comparable: false``. Keep a finite planner time/request budget and
+retain cancellation. Such results cannot be compared with official-cap scores.

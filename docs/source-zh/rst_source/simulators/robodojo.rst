@@ -429,3 +429,14 @@ dev 与 Flash 都应检查这些工件；退出码为零不代表官方任务成
 traceback 或 ``Fatal Python error``。Headless GLFW warning 是预期噪音，不\
 能据此忽略关闭错误。环境在主线程依次释放录像 writer、相机 annotator/render
 product、syntheticdata 图句柄，停止 Replicator，最后关闭 stage/app。
+
+
+无动作步数限制的诊断
+------------------------
+
+``--max-episode-steps 0`` 仅供独立的 ``dev`` 诊断使用，同时关闭配置和任务原生动作
+步数配额。计数仍持续增加，状态以 ``step_limit: null`` 表示无限额。它只改变本轮环境
+实例，不改任务定义、评分条件、关节限制或动作映射。普通正数配置仍取原生上限与配置
+上限中的较小值；``eval-fair`` 拒绝零值。结果标记为 ``diagnostic_unlimited_actions``
+及 ``benchmark_comparable: false``。保留有限的模型时间／请求预算和取消能力，不能将
+这种结果与官方动作配额下的成绩直接比较。

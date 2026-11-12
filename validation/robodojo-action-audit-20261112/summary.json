@@ -1,0 +1,124 @@
+{
+  "status": "diagnostic_completed_mapping_contract_defect_confirmed",
+  "base_commit": "bbd43996176efbcf8b4cb4894e8da7c4066dc952",
+  "scope": "One align_blocks/layout0 Astra run without native/configured action-count limits; controlled simulator probes and passive motor traces. Existing checkpoint mapping retained. No physical robot access.",
+  "configuration": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "low",
+    "max_model_responses": 120,
+    "response_tokens": 16384,
+    "planner_timeout_s": 600,
+    "max_episode_steps": 0,
+    "native_limit_public_json": null,
+    "benchmark_comparable": false,
+    "memory": "Existing isolated empty corpus",
+    "network": "Inherited remote own proxy; launchers/probes do not override networking"
+  },
+  "experiment": {
+    "run_id": "8657ec5f49f3aa2dbfd4",
+    "official_task_predicate": false,
+    "official_result_available": true,
+    "stop_reason": "Configured 600s planner time budget exhausted",
+    "model_finish": null,
+    "model_responses": 25,
+    "tool_calls": 12,
+    "action_tool_calls": 3,
+    "native_actions": 2520,
+    "policy_chunk_actions": [
+      1000,
+      1500
+    ],
+    "manual_actions": 20,
+    "elapsed_with_startup_and_cleanup_s": 649.1,
+    "planner_elapsed_s": 600.2,
+    "no_action_count_truncation": true,
+    "trace_action_errors": 0,
+    "classification": "Completed diagnostic; expected time-budget failure, not a success-rate evaluation"
+  },
+  "controlled_probe": {
+    "native_actions": 349,
+    "step_limit": null,
+    "joint_channels_tested": 12,
+    "joint_motor_targets_passed": true,
+    "all_joint_response_directions_followed": true,
+    "max_joint_motor_target_error_rad": 1.7826438450385673e-09,
+    "gripper_target_cases_tested": 4,
+    "all_gripper_target_cases_passed": true,
+    "owned_environment_closed": true
+  },
+  "trace": {
+    "actions": 2520,
+    "vector_actions": 2500,
+    "native_dict_actions": 20,
+    "arm_motor_target_comparisons": 5039,
+    "max_arm_controller_to_motor_error_rad": 0.0,
+    "max_achieved_arm_tracking_error_rad": 8.9748515188694,
+    "missing_arm_control_targets": 1,
+    "nonfinite_rows": 0,
+    "raw_left_gripper_outside_0_1_fraction": 0.6688,
+    "gripper_target_difference": "Raw gripper target versus motor-buffer target differs up to 0.035137m; native MetaControl.process_gripper_val limits each substep target to current opening +/-20% of configured range. This comparison is before that limiter and must not be presented as a motor-mapping failure."
+  },
+  "confirmed_contract_gap": {
+    "published_checkpoint_state_action_order": "left_arm(6), left_gripper(1), right_arm(6), right_gripper(1)",
+    "current_rpent_rlinf_wire_order": "left_arm(6), right_arm(6), left_gripper(1), right_gripper(1)",
+    "published_absolute_gripper_mask_zero_based": [
+      6,
+      13
+    ],
+    "current_absolute_gripper_mask_zero_based": [
+      12,
+      13
+    ],
+    "affected_points": [
+      "Observation packing before normalization/tokenization",
+      "Joint-delta to absolute-action inverse transform",
+      "Checkpoint action decoding to native joint/gripper keys"
+    ],
+    "mechanism": "The checkpoint left-gripper channel is currently treated as right arm joint1 and included in the joint-delta inverse. The checkpoint right wrist joint channel is currently treated as left gripper, bypasses absolute-joint reconstruction and is clipped as an opening command.",
+    "mapping_repair_implemented": false,
+    "evidence": [
+      "Installed checkpoint norm_stats.json gripper ranges at channels 6/13",
+      "Installed RLinf pi05_robodojo_arx_x5 config explicitly enables extra_delta_transform with make_bool_mask(12,-2)",
+      "Actual control/motor traces and controlled joint/gripper responses",
+      "https://github.com/XPolicyLab/XPolicyLab/blob/main/policy/Pi_05/openpi/src/openpi/policies/aloha_policy.py",
+      "https://github.com/XPolicyLab/XPolicyLab/blob/main/policy/Pi_05/openpi/src/openpi/training/config.py"
+    ]
+  },
+  "validation": {
+    "unit_tests": {
+      "passed": 2087,
+      "skipped": 11
+    },
+    "robodojo_targeted": {
+      "passed": 192
+    },
+    "pre_commit": "all-files passed",
+    "sphinx": "EN and ZH -W --keep-going passed",
+    "public_history_contains_run": true,
+    "head_video_http": "206 video/mp4 bytes 0-1023 verified from Mac",
+    "original_tracked_source_files_unchanged": 1776,
+    "original_service_pids_preserved": {
+      "robodojo": 341086,
+      "libero": 3593034,
+      "univtac": 1218486
+    },
+    "diagnostic_dashboard_stopped": true,
+    "final_source_note": "Final source removes unused native-limit bookkeeping; diagnostic action/control semantics remain unchanged. Full unit and all-files checks repeated on final source."
+  },
+  "preparation_incident": {
+    "kind": "Strict metadata rejected an added native_step_limit field; public metadata restored before retrial, and unused private bookkeeping subsequently removed. Action semantics unchanged.",
+    "planning_calls": 0,
+    "actions": 0,
+    "counted_as_experiment": false
+  },
+  "artifact_policy": "Raw observations, 2520-row action/motor trace and three videos stay remote; only this small derived summary is committed.",
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/robodojo-action-audit-20261112",
+  "run_path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/diagnostic-unlimited-20261112-074039-426145/tasks/0001_align_blocks_l0",
+  "video": "http://10.162.250.228:8094/api/runs/8657ec5f49f3aa2dbfd4/artifact/videos/episode_2026-11-12_15-41-35_cam_head.mp4",
+  "limits": [
+    "No claim that an unlimited diagnostic is benchmark comparable.",
+    "This establishes a checkpoint interface defect and specific lower-layer control checks, not an exclusive causal percentage for task failure.",
+    "Mapping repair and post-repair task performance are not implemented or validated.",
+    "Passive tracing adds synchronization/logging overhead; this run is not a throughput or latency comparison."
+  ]
+}

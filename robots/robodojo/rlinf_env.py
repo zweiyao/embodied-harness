@@ -68,11 +68,14 @@ class RoboDojoAgentEnv(RoboDojoEnv):
     def __init__(self, cfg, *, meta: dict, video_dir: str = "") -> None:
         self.meta = meta
         self.eval_fair = meta.get("mode", "dev") == "eval-fair"
+        if self.eval_fair and meta.get("max_episode_steps") == 0:
+            raise ValueError("Unlimited actions are for dev diagnostics only")
         self.recorder = _VideoRecorder(video_dir)
         self.bottle_mon = _SafetyMonitor(self.meta.get("task", ""))
         super().__init__(cfg, 1, 0, 1, None, record_metrics=False)
         try:
             self.venv.reset(env_seeds=[meta["layout"]])
+            self._configure_action_limit()
         except BaseException:
             self.close()
             raise
@@ -98,6 +101,7 @@ class RoboDojoAgentEnv(RoboDojoEnv):
     def reset(self, env_idx=None, env_seeds=None):
         """Reset through RLinf and reinitialize agent episode diagnostics."""
         result = super().reset(env_idx=env_idx, env_seeds=env_seeds)
+        self._configure_action_limit()
         self.bottle_mon = _SafetyMonitor(self.meta.get("task", ""))
         return result
 
@@ -162,10 +166,18 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         if self.eval_fair:
             raise RuntimeError("eval-fair does not allow episode reset")
         self.venv.reset(env_seeds=[self.meta["layout"]])
+        self._configure_action_limit()
         self.bottle_mon = _SafetyMonitor(self.meta.get("task", ""))
         return self.get_native_obs()
 
-    def _step_limit(self) -> int:
+    def _configure_action_limit(self) -> None:
+        if self.meta.get("max_episode_steps") == 0:
+            # Only this diagnostic instance changes; the task source stays intact.
+            self.env.step_lim = float("inf")
+
+    def _step_limit(self) -> int | None:
+        if self.meta.get("max_episode_steps") == 0:
+            return None
         return min(
             int(self.env.step_lim),
             int(self.meta.get("max_episode_steps", self.env.step_lim)),
@@ -180,7 +192,8 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         """
         flat_action = _policy_action(flat_action)
         action_type = _infer_action_type(flat_action)
-        if int(self.env.take_action_cnt[0]) >= self._step_limit():
+        limit = self._step_limit()
+        if limit is not None and int(self.env.take_action_cnt[0]) >= limit:
             raise RuntimeError("Episode step budget exhausted")
         self._sub_env(0).apply_action(
             flat_action, action_type, eval_fair=self.eval_fair
