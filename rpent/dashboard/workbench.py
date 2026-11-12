@@ -442,6 +442,11 @@ class Workbench:
             missing = set(t.get("dependencies", [])) - set(names)
             if missing:
                 raise ValueError(f"{t['name']} requires: {', '.join(sorted(missing))}")
+        from rpent.robots.base import _resolve_robot
+
+        validate = getattr(_resolve_robot(self.robot), "validate_selection", None)
+        if validate is not None:
+            validate(selected)
         return selected
 
     def normalize(self, payload):
@@ -472,6 +477,26 @@ class Workbench:
         profile_id = request.get("model_profile", next(iter(self.profiles)))
         if not self.checks.get(profile_id, {}).get("ok"):
             raise ValueError("请先在开始页检查所选模型连接")
+        profile = next(
+            (
+                p
+                for p in self.config.get("setup", {}).get("profiles", [])
+                if p.get("robot") == self.robot
+            ),
+            {},
+        )
+        for field in profile.get("task_fields", []):
+            values = (
+                field["options_by"].get(str(request.get(field["depends_on"])), [])
+                if "depends_on" in field
+                else field["options"]
+            )
+            if str(request.get(field["name"])) not in {
+                str(value) for value, _ in values
+            }:
+                raise ValueError(
+                    f"Unsupported task field {field['name']}: {request.get(field['name'])}"
+                )
         selected = self.selection(request.get("tools"))
         prepared = {
             **request,

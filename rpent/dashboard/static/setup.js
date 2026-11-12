@@ -1,7 +1,9 @@
 import {renderTools} from './tool-picker.js?v=all-tools-20261030';
 import {resetControl} from './flexiv-reset.js?v=open-after-home-20261031';
+import {renderTaskFields} from './task-picker.js?v=native-tasks-20261112';
 const $ = (id) => document.getElementById(id);
-let setup, profile, config, picker;
+let setup, profile, config, picker, taskPicker;
+const isSimulation = () => Boolean(profile.suites || profile.task_fields);
 let checksPassed = false;
 const physicalReset = resetControl($('resetPhysical'), $('resetPhysicalStatus'), physicalStatus, () => $('physicalMode').value === 'supervised');
 async function request(path, options) {
@@ -20,7 +22,7 @@ function tasks() {
   command();
 }
 function command() {
-  $('command').textContent = profile.suites
+  $('command').textContent = taskPicker ? taskPicker.command() : profile.suites
     ? `/rpent-task ${$('suite').value} ${$('task').value} ${$('seed').value}`
     : `/rpent-task ${JSON.stringify($('physicalInstruction').value.trim())}`;
 }
@@ -78,7 +80,7 @@ $('setupForm').addEventListener('submit', async event => {
   try {
     const state = await request('/api/session/state');
     if (state.session_state !== 'ready') throw new Error('当前服务尚未空闲，请先查看控制台。');
-    if (!profile.suites) {
+    if (!isSimulation()) {
       if (!$('physicalInstruction').value.trim()) throw new Error('请输入实验指令');
       const hardware = await physicalStatus();
       if ($('physicalMode').value === 'supervised' && !hardware.armed) throw new Error(`请先点击“${$('armPhysical').textContent}”，核对状态后再进入控制台`);
@@ -104,7 +106,8 @@ try {
   options('robot', setup.profiles.map(p => [p.robot, p.label]), setup.robot);
   $('environmentNote').textContent = profile.note;
   $('simulation').hidden = !profile.suites;
-  $('physical').hidden = !!profile.suites;
+  $('physical').hidden = isSimulation();
+  $('nativeTaskFields').hidden = !profile.task_fields;
   if (profile.suites) {
     const suites = Object.keys(profile.suites);
     options('suite', suites.map(s => [s,s]), suites.includes('libero_object') ? 'libero_object' : suites[0]);
@@ -112,6 +115,8 @@ try {
     if (setup.robot === 'univtac') seeds.push(100, 101, 102);
     options('seed', seeds.map(i => [i, i]), 0);
     tasks();
+  } else if (profile.task_fields) {
+    taskPicker = renderTaskFields($('nativeTaskFields'), profile.task_fields, setup.task_spec, command);
   } else {
     options('inspection', profile.inspections.map(s => [s,s]));
     $('physicalInstruction').value = $('inspection').value;
@@ -147,9 +152,12 @@ try {
       if (missing.length) throw new Error(`历史工具版本不存在或不兼容当前环境：${missing.join(', ')}`);
       if (prior.model_profile) $('model').value = prior.model_profile;
       for (const id of ['max_turns', 'max_tokens', 'planner_timeout_s']) if (prior[id] != null) config[id] = prior[id];
-      if (prior.suite) { $('suite').value = prior.suite; tasks(); }
-      if (prior.task != null) $('task').value = prior.task;
-      if (prior.seed != null) $('seed').value = prior.seed;
+      if (taskPicker) taskPicker.restore(prior);
+      else if (profile.suites) {
+        if (prior.suite) { $('suite').value = prior.suite; tasks(); }
+        if (prior.task != null) $('task').value = prior.task;
+        if (prior.seed != null) $('seed').value = prior.seed;
+      }
       sessionStorage.removeItem('rpent.copyRun');
     }
     picker = renderTools($('toolPicker'), catalog, selection, canSelect);

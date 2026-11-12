@@ -352,13 +352,30 @@ GPU、真实策略服务与仿真端到端。
 应指明目标身份；未解析标记会在策略推理前被拒绝。多物体官方任务不一定指定抓取顺序，描\
 述性覆盖也不保证 checkpoint 能选择任意实例，必须检查实际抓住的目标。
 
+研究工作台
+----------
+
+可选的 ``RPENT_WORKBENCH`` JSON 配置复用开始页、控制台、工具目录与实验记录页。
+RoboDojo 提供原生 ``task`` 和 ``layout`` 字段，不使用 LIBERO 的任务集／任务编号／seed。
+使用 ``robots.robodojo.catalog.task_fields``，传入实际安装的源码目录、资产目录和环境配置，
+生成 profile 的 ``task_fields``。layout ID 遵循原生 SeedManager 在配置布局组中的枚举顺序。
+任务名是标识符；官方指令在场景的 description manager 初始化后读取，随观测保存。
+
+dev 工作台逐轮冻结原生工具名单。未选择的工具不能由 planner 调用；过期声明和未接入的
+生成工具在任务环境启动前被拒绝。``finish`` 必须保留。未提供工作台名单时，原 CLI 和
+Flash 路径保留现有注册方式。工具调用沿用运行日志，实验记录展示保存的各路 episode
+录像，包括 RoboDojo 的三路相机视频。
+
+该配置不会部署服务或启动任务。模型配置与凭据由服务端管理；显式检查所选模型后，
+在控制台发送准备好的命令才开始实验。
+
 能力范围与限制
 --------------
 
 RoboDojo 提供双臂运动与夹爪原语、三相机 RGB-D、SAM3 感知、RLinf Pi0.5（或可选 XPolicyLab）及\
 冻结 Flash 重放。任务名称来自配置的源码目录，例如
 ``put_bottles_into_dustbin``、``fill_pen_holder`` 和 ``stack_bowls_random``，并\
-非已验证成功的任务套件。``place_in_bin`` 仅为 ``put_bottles_into_dustbin`` 注册。尚\
+非已验证成功的任务套件。``place_in_bin`` 在 dev 模式注册，但面向垃圾桶放置，不能作为所有任务的通用放置策略。尚\
 未实现 handover。低 Z 桌面级与侧向脚本 IK 存在可达性限制，应检查
 ``reached`` 和 ``dist_to_target``，不要假设指令位姿已到达。共\
 享的仅评测 planner 见 :doc:`../guides/flash`；重放会执行动作，并非对机器人只读。

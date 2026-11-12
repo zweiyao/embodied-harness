@@ -416,6 +416,29 @@ object; unresolved markers are rejected before inference. Official multi-object
 tasks do not specify a grasp order, and descriptive overrides do not guarantee
 that a checkpoint can select arbitrary instances. Verify the actual held target.
 
+Research workbench
+------------------
+
+The optional ``RPENT_WORKBENCH`` JSON configuration uses the shared setup,
+console, tool catalog and run-history pages. RoboDojo supplies native ``task``
+and ``layout`` fields instead of LIBERO suite/task/seed indices. Build the
+profile's ``task_fields`` using ``robots.robodojo.catalog.task_fields`` with the
+installed source root, asset root and environment config. Layout IDs follow the
+native SeedManager's enumeration in the configured layout group. The task name
+is an identifier; the official instruction becomes available after the scene's
+description manager is initialized and is saved with the observations.
+
+The dev workbench freezes a native tool allowlist for each run. Unselected tools
+are unavailable to the planner; stale declarations and unsupported generated
+tools are rejected before starting the task environment. ``finish`` is required.
+The existing CLI and Flash paths retain their tool registration when no workbench
+selection is supplied. Tool calls use the existing run journal, and run history
+shows each saved episode video, including the three RoboDojo camera streams.
+
+This configuration does not deploy a service or start a task. Prepare model
+profiles and credentials on the server, check the selected model explicitly,
+and submit the prepared command in the console to start an experiment.
+
 Capability scope and limitations
 --------------------------------
 
@@ -423,7 +446,8 @@ RoboDojo provides dual-arm motion and gripper primitives, three-camera RGB-D,
 SAM3 perception, RLinf Pi0.5 (or optional XPolicyLab) and frozen Flash replay. Task names come from
 the configured checkout; examples include ``put_bottles_into_dustbin``,
 ``fill_pen_holder`` and ``stack_bowls_random``, not a validated success suite.
-``place_in_bin`` is registered only for ``put_bottles_into_dustbin``.
+``place_in_bin`` is registered in dev mode but designed for dustbin placement;
+it is not a general placement strategy for every task.
 Handover is not implemented. Low-Z tabletop and lateral scripted IK motions
 have reachability limits: inspect ``reached`` and ``dist_to_target`` rather
 than assuming the commanded pose was achieved. See :doc:`../guides/flash` for the

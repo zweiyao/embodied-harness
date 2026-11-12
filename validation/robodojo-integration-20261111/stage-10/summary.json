@@ -1,0 +1,150 @@
+{
+  "updated_at": "2026-11-12T03:27:30.781056+00:00",
+  "status": "approved_workbench_contracts_implemented_and_verified_not_deployed",
+  "baseline_commit": "50892e62010a707464024eebb1c04439a1540961",
+  "approved_patch_sha256": "6f9e03e43579e8e287163b5eee1fe3899941df9028cd3a50f9dfb3cf8c0b14b1",
+  "source_sha256": {
+    "docs/source-en/rst_source/simulators/robodojo.rst": "4a43d5fc7332d9d7190796ecabfe90c545ba5418f059d0dc03c82baac81c2426",
+    "docs/source-zh/rst_source/simulators/robodojo.rst": "4d5b5125e4b0bb8ccb987504c77be8e5e2c58beef237593610ee70e697afefea",
+    "robots/robodojo/__init__.py": "336f7b39d2ff136690d4b286818aa9b7de9745c4417aa90bab02c2f207f34579",
+    "robots/robodojo/catalog.py": "cb72163f452c02a3ac522176fb31e75b570e238493a93c0f3faec18e289ba549",
+    "robots/robodojo/robot_spec.py": "9a41d5eb5c7a6e5b8ba3248c8797aa61b48188e6ccc912b33903806d312cbf1a",
+    "robots/robodojo/toolkit.py": "2b8dec3393078eb4ea14c9dd1edd533d1c9644f3a1e4e1808862aab13c014b07",
+    "rpent/cli/dashboard.py": "e87e1f8f936b5c407c86bdf4031957059ce65b077099809accf7ddd8de32991a",
+    "rpent/dashboard/server.py": "399814dd9f4e365e86d26e59edf5717713bc7d10a0da9dd51f5fd0ebe2f8551b",
+    "rpent/dashboard/setup.html": "45f89b9c1785d4d099383cdc7557531d94bcd8e70bb7790b9065e70199a1a98e",
+    "rpent/dashboard/static/setup.js": "e5f0e6bf4f77824142e0fff5196846fc0f7f3294d1ab2e1286c4bdcbe48708b8",
+    "rpent/dashboard/static/task-picker.js": "d4dde181a690e5e4bcffb536bbba159036cca4e83268de6d9d6ea1506c395b65",
+    "rpent/dashboard/static/workbench.js": "74a2eb779f5b3979211796f88735c20623eb72ad28decdd0d2ad4d3768789f20",
+    "rpent/dashboard/workbench.py": "73d4da6bd32202bcdad4c571f1127ed7237696e0cd0aeb75389fd9b206c628bf",
+    "tests/unit_tests/robots/robodojo/test_workbench_contracts.py": "cf22ed3be7d628dbdaabf475fd1a935555a5f5541bc59ec698ba1b8ebb0e6c98",
+    "tests/unit_tests/rpent/dashboard/test_task_picker_ui.py": "d28cb77d9a81f3bd5c54dc8e4ffd55e659199f2da3f04e52ffbfa9c01818f5c3"
+  },
+  "approval": "approval.json",
+  "scope": "RoboDojo dev workbench with shared optional native task fields and legacy profile compatibility",
+  "implemented": {
+    "native_tasks": "robot-owned native task/layout metadata from installed source and assets; command order from RobotSpec",
+    "tools": "current native declarations only; mandatory finish; actual toolkit allowlist; stale/generated selection rejected before ENV startup",
+    "journal": "existing RunJournal logs actual requests/responses/errors and content-addressed images",
+    "history": "copy task/layout/tools and display saved episode videos from all cameras",
+    "unchanged": "No tool descriptions/schemas/control algorithms/budgets/models/experience/prompt source edits; no automatic experiment, environment or physical action"
+  },
+  "checks": {
+    "new_contract_tests": {
+      "passed": 11,
+      "seconds": 0.33
+    },
+    "related_regressions": {
+      "passed": 1075,
+      "skipped": 4,
+      "seconds": 35.67
+    },
+    "full_unit": {
+      "passed": 2065,
+      "skipped": 11,
+      "failed": 0,
+      "seconds": 72.25,
+      "warnings": 2,
+      "python": "3.11.16",
+      "note": "Node v24.19.0 explicitly available on validation PATH; four existing Node cases run instead of skipping; no network variables changed"
+    },
+    "pre_commit": "passed, all files including newly added files",
+    "docs": {
+      "en": "sphinx-build -W --keep-going passed",
+      "zh": "sphinx-build -W --keep-going passed"
+    },
+    "inventory": {
+      "status": "passed",
+      "tasks": 54,
+      "layout_count_distribution": {
+        "55": 32,
+        "30": 14,
+        "60": 1,
+        "65": 4,
+        "70": 1,
+        "45": 1,
+        "75": 1
+      },
+      "native_seed_manager_sha256": "ec8845513140c9d8d9fac218f16b33a9a5f6a96c43180ed2ed956e58df5a2c69",
+      "native_class_only": true,
+      "simulator_initialized": false
+    },
+    "browser": {
+      "status": "passed",
+      "browser": "153.0.8010.12",
+      "fixtures_only": true,
+      "results": {
+        "robodojo": {
+          "tasks": 54,
+          "dustbin_layouts": 55,
+          "native_command": true,
+          "saved_tools": true,
+          "copy_restores_task_layout_tools": true,
+          "three_synthetic_videos_loaded": true
+        },
+        "libero": {
+          "legacy_command": "/rpent-task libero_10 1 9",
+          "seed_options": 10
+        },
+        "univtac": {
+          "legacy_command": "/rpent-task univtac 1 102",
+          "seed_options": 13
+        },
+        "flexiv": {
+          "readonly_default": true,
+          "physical_template_command": true
+        }
+      },
+      "page_errors": [],
+      "external_requests": [],
+      "post_requests": [
+        {
+          "mode": "robodojo",
+          "method": "POST",
+          "path": "/api/session/config",
+          "payload": {
+            "model_profile": "fixture",
+            "tools": [
+              "native:move_to",
+              "native:view_env_state",
+              "native:finish"
+            ],
+            "max_turns": 30,
+            "max_tokens": 4096,
+            "planner_timeout_s": 600
+          }
+        }
+      ]
+    },
+    "shared_source_protection": {
+      "files": 312,
+      "changed": []
+    }
+  },
+  "service_snapshot": {
+    "embodied-manual-workbench.service": 3593034,
+    "rpent-univtac-workbench.service": 1218486,
+    "flexiv-collector.service": 4149141,
+    "active_before_and_after": true,
+    "gpu_pids_unchanged": [
+      782158,
+      782157
+    ]
+  },
+  "formatting": "Reviewed hooks changed only six approved files; all nine Python ASTs are identical to approved drafts. No behavior or assertion changes.",
+  "intermediate_checks_retained": [
+    "pre-commit-initial.log",
+    "pre-commit-with-new-files.log",
+    "web-smoke-initial.log (ffmpeg missing from default PATH; used existing cached binary)",
+    "web-smoke-driver-error.log (test driver used ElementHandle method on Locator; corrected to Locator.wait_for)"
+  ],
+  "validation_environment": "Separate web-docs-venv under validation; isolated RoboDojo runtime dependencies unchanged",
+  "raw_artifacts_remote": "/home/zwy/work/embodied_harness/validation/robodojo-integration-20261111/stage-10",
+  "remaining": [
+    "RoboDojo workbench service, deployment configuration and LAN access are not deployed",
+    "No live model connectivity check, simulator start/reset, VLA action or full task chain executed this stage",
+    "Browser video playback used synthetic H.264 fixtures, not native task recordings",
+    "Five-environment unified acceptance, camera geometry, cross-task coverage and complete GPU runner remain incomplete",
+    "Only Python 3.11 runtime tested; full CI Python matrix not run; existing nine dependency metadata disagreements not resolved"
+  ]
+}

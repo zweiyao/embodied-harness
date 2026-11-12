@@ -195,6 +195,8 @@ def get_toolkit(
         dashboard_events=dashboard_events,
         memory=memory,
         eval_fair=config.prompt_vars.get("mode") == "eval-fair",
+        selected=config.prompt_vars.get("manual_tools"),
+        journal=config.prompt_vars.get("run_journal"),
     )
 
 
