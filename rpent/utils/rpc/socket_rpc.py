@@ -108,8 +108,15 @@ class SocketRpcClient(RpcClient):
         request_timeout_s = (
             DEFAULT_REQUEST_TIMEOUT_S if timeout_s is None else timeout_s
         )
+        connect_timeout_s = self.connect_timeout_s
+        if self.request_timeouts_disabled and method not in {
+            "healthz",
+            "session.register",
+            "session.close",
+        }:
+            request_timeout_s = connect_timeout_s = None
         with socket.create_connection(
-            (self.host, self.port), timeout=self.connect_timeout_s
+            (self.host, self.port), timeout=connect_timeout_s
         ) as sock:
             sock.settimeout(request_timeout_s)
             with sock.makefile("rwb") as f:

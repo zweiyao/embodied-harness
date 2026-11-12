@@ -70,6 +70,16 @@ def _ready_state(tmp_path: Path) -> DashboardState:
     return state
 
 
+def test_dashboard_accepts_zero_planner_budget_without_widening_positive_range(
+    tmp_path: Path,
+) -> None:
+    state = _ready_state(tmp_path)
+    state.set_next_config({"planner_timeout_s": 0, "max_turns": 50})
+    for value in (-1, 1, 9, 7201):
+        with pytest.raises(ValueError):
+            state.set_next_config({"planner_timeout_s": value})
+
+
 def _claim_started_task(
     state: DashboardState,
     command: str = "/rpent-task pick 1",

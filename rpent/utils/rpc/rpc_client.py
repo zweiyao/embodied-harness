@@ -47,6 +47,7 @@ class RpcClient:
         self._session_id: str | None = (
             f"rpc_{uuid.uuid4().hex}" if enable_sessions else None
         )
+        self.request_timeouts_disabled = False
         self._closed = False
         if self._session_id is not None:
             atexit.register(self.close)

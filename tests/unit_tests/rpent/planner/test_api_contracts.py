@@ -211,6 +211,25 @@ def test_opt_in_model_timeout_covers_stalled_response_stream(
         assert toolkit.calls == []
 
 
+def test_zero_time_budget_preserves_fifty_request_limit(tmp_path):
+    settings = []
+
+    async def stream(messages, info):
+        settings.append(info.model_settings)
+        await asyncio.sleep(0.002)
+        yield tool("observe")
+
+    result, toolkit, _ = solve(
+        tmp_path,
+        FunctionModel(stream_function=stream),
+        timeout_s=0,
+        max_turns=50,
+    )
+    assert result.error is None and result.finish_result is None
+    assert len(settings) == len(toolkit.calls) == 50
+    assert all(setting["timeout"] is None for setting in settings)
+
+
 def test_model_response_timeout_excludes_tool_execution(tmp_path):
     events = Events()
     toolkit = RobotToolkit(events)

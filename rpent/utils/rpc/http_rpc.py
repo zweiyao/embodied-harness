@@ -114,6 +114,12 @@ class HttpRpcClient(RpcClient):
         body = json.dumps(payload, cls=_NumpyEncoder).encode("utf-8")
         url = f"{self._base_url}/call"
         request_timeout = timeout_s if timeout_s is not None else DEFAULT_TIMEOUT_S
+        if self.request_timeouts_disabled and method not in {
+            "healthz",
+            "session.register",
+            "session.close",
+        }:
+            request_timeout = None
 
         req = urllib.request.Request(
             url,

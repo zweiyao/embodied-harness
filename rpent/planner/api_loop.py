@@ -105,8 +105,8 @@ class ApiAgentLoop(Planner):
     ) -> None:
         if reasoning_effort not in REASONING_EFFORTS:
             raise ValueError(f"unsupported reasoning effort: {reasoning_effort}")
-        if max_tokens < 1 or timeout_s <= 0:
-            raise ValueError("max_tokens and timeout_s must be positive")
+        if max_tokens < 1 or timeout_s < 0:
+            raise ValueError("max_tokens must be positive and timeout_s nonnegative")
         self.model = model
         self.dashboard_events = dashboard_events
         self.max_tokens = max_tokens
@@ -157,6 +157,11 @@ class ApiAgentLoop(Planner):
         session = _Session(
             adapter, conversation_id, max_turns, interactive=self.interactive
         )
+        settings = _build_model_settings(
+            self.model, self.max_tokens, self.reasoning_effort
+        )
+        if self.timeout_s == 0:
+            settings["timeout"] = None
         agent = Agent(
             self.model,
             name="rpent_api",
@@ -167,9 +172,7 @@ class ApiAgentLoop(Planner):
             end_strategy="early",
             # Finish refusals may span attempts; the request budget still applies.
             retries={"output": max_turns},
-            model_settings=_build_model_settings(
-                self.model, self.max_tokens, self.reasoning_effort
-            ),
+            model_settings=settings,
             capabilities=[
                 SlidingWindowCompaction(
                     max_messages=80, max_fraction=0.8, keep_messages=40
@@ -194,7 +197,8 @@ class ApiAgentLoop(Planner):
             await asyncio.wait_for(
                 session.run(_ConversationAgent(agent), user_message),
                 timeout=None
-                if self.interactive and not getattr(toolkit, "journal", None)
+                if self.timeout_s == 0
+                or (self.interactive and not getattr(toolkit, "journal", None))
                 else self.timeout_s,
             )
         except asyncio.TimeoutError:

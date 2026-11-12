@@ -355,3 +355,12 @@ def test_transport_timeout_does_not_wedge_the_server(transport: Transport) -> No
 
         assert running.client.call("healthz", timeout_s=1.0) == {"status": "ok"}
         assert running.facade.delay_finished.wait(timeout=1.0)
+
+
+def test_explicit_unlimited_runtime_request_waits_for_delayed_result(
+    transport: Transport,
+) -> None:
+    with _running_facade(transport) as running:
+        running.client.request_timeouts_disabled = True
+        assert running.client.call("delay", args=(0.1,), timeout_s=0.01) == "finished"
+        assert running.client.call("healthz", timeout_s=1.0) == {"status": "ok"}

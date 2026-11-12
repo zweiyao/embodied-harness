@@ -298,3 +298,12 @@ CLI 或 Dashboard 运行冻结的感知工具库。空 JSON 列表表示基线�
 每局在原生转录和视频旁保存 ``sensor-trace.json`` 与 ``research-report.json``。
 任务是否成功以报告中的 ``native_success`` 为准，模型的 finish 声明和 Dashboard
 运行完成状态均不作为任务成功指标。
+
+
+不限时的 API 实验
+-------------------
+
+``--planner-timeout-s 0`` 关闭 API 规划器总时限和模型 HTTP 请求超时。在 LIBERO 中，
+它还关闭该进程运行期 ENV/VLA/SAM3 的 RPC 请求超时；启动健康检查和退出请求仍保留
+超时。应保留有限的 ``--max-turns`` 请求预算和取消能力。请求无响应时会持续等待，
+直到取消；不会自动加入空闲重试。正数规划预算及仿真器原生动作步数上限保持原样。

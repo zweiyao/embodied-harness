@@ -1,0 +1,24 @@
+{
+  "user_instruction": "在liberopro时间上限制去掉，50轮交互上限的条件下，测试qwen-3.8flash在object-t的表现，使用rpent原来的harness配置，每个任务5次，先测下qwen调用时间，如不正常，将远程代理关闭实验，将与时间相关的限制的都关闭",
+  "scope": "One independent LIBERO-Pro Object-T batch, original 17 tools/v1 materials, 50 requests, no task/model/runtime RPC timeouts; two isolated environments after concurrency validation. No prompt/memory/control changes.",
+  "files": [
+    "rpent/planner/api_loop.py",
+    "rpent/dashboard/state.py",
+    "rpent/cli/main.py",
+    "rpent/utils/rpc/rpc_client.py",
+    "rpent/utils/rpc/http_rpc.py",
+    "rpent/utils/rpc/socket_rpc.py",
+    "robots/libero/robot_spec.py",
+    "docs/source-en/rst_source/simulators/libero.rst",
+    "docs/source-zh/rst_source/simulators/libero.rst"
+  ],
+  "validation": [
+    "Transport default and timeout-free delayed-request regressions",
+    "API zero-timeout/request-limit and finite-timeout regressions",
+    "Full remote unit suite and pre-commit",
+    "Paired strict documentation build",
+    "Frozen original material/tool hashes and real dual-env checks",
+    "Qwen text plus representative four-image latency before task launch"
+  ],
+  "original_workbench": "Preserved; public history may index completed new runs only"
+}

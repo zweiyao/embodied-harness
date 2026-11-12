@@ -172,7 +172,8 @@ def _build_argparser() -> argparse.ArgumentParser:
         "--planner-timeout-s",
         type=int,
         default=None,
-        help="Wall-clock cap for api/claude_code/codex planner runs. "
+        help="Wall-clock cap for api/claude_code/codex planner runs; "
+        "0 disables API planner and model HTTP timeouts. "
         "Terminal interactive API/Claude sessions are exempt. "
         "Defaults to CODEX_TIMEOUT_S (codex only), "
         "CELL_TIMEOUT_S, or 1200.",

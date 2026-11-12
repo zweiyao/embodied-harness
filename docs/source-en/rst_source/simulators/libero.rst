@@ -352,3 +352,14 @@ Do not combine this mode with ``--explore`` or ``--enable-direct-action``.
 Each run saves ``sensor-trace.json`` and ``research-report.json`` alongside the
 native transcript and video. Evaluate task success using ``native_success`` in
 the report, not the model's finish claim or Dashboard run-completion status.
+
+
+Unlimited-time API experiments
+------------------------------
+
+``--planner-timeout-s 0`` disables the API planner wall-clock budget and model
+HTTP request deadlines. With LIBERO it also disables runtime ENV/VLA/SAM3 RPC
+request deadlines for that process; startup health and shutdown requests retain
+their limits. Keep a finite ``--max-turns`` request budget and cancellation.
+A stalled request can wait until cancellation; no idle retry watchdog is added.
+Positive planner budgets and the native simulator action limits are unchanged.

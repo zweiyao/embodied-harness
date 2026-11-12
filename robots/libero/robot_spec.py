@@ -618,6 +618,12 @@ def _init_runtime(
                 starter,
             )
 
+    def connect(component, rpc):
+        # Unbounded experiments opt out of runtime request deadlines only.
+        if getattr(args, "planner_timeout_s", None) == 0:
+            rpc.request_timeouts_disabled = True
+        return connectors[component](rpc)
+
     runtime_kwargs: dict[str, Any] = {}
     wait_order = ("env", "sam3", "molmo", "vla")
     for component in (name for name in wait_order if name in pending):
@@ -629,7 +635,7 @@ def _init_runtime(
             rpc,
             daemon,
             300.0,
-            post_fn=partial(connectors[component], rpc),
+            post_fn=partial(connect, component, rpc),
         )
         runtime_kwargs.update(component_kwargs)
 

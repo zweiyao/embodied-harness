@@ -1,0 +1,81 @@
+{
+  "status": "software_and_parallel_preflight_passed; fixed_50_episode_batch_prepared_not_started",
+  "base_revision": "c8029f02aa6577c7ae04e0bd854b56edd6ee4ab2",
+  "suite": "libero_object_task",
+  "tasks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "planned_episodes": 50,
+  "parallel_environments": 2,
+  "configuration": {
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none",
+    "max_model_requests": 50,
+    "max_tokens": 16384,
+    "planner_timeout_s": 0,
+    "model_http_timeouts": null,
+    "runtime_rpc_timeouts": null,
+    "native_action_limit": 10000,
+    "native_tool_count": 17,
+    "material_version": "language-c592f23a3a324c08"
+  },
+  "validation": {
+    "full_unit_passed": 2043,
+    "skipped": 11,
+    "new_regressions_passed": 4,
+    "pre_commit": "all-files passed after formatting review",
+    "docs": "English and Chinese strict Sphinx passed",
+    "parallel_probe": "Two Object-T environments: isolation/action/render/reset/cleanup passed; GPU peak 31871MiB / 49140MiB; no planner task requests in this probe"
+  },
+  "latency": {
+    "existing_direct_short_text_s": [
+      1.72,
+      1.368,
+      1.585
+    ],
+    "inherited_proxy_short_text_s": 2.231,
+    "proxy_four_image_wait_lower_bound_s": 136.9,
+    "direct_short_text_s": 0.764,
+    "direct_four_png_image_bytes": 1574626,
+    "direct_serialized_request_bytes": 2100006,
+    "direct_four_png_total_s": 162.309,
+    "direct_four_png_upload_s": 159.333,
+    "direct_after_upload_to_headers_s": 2.961,
+    "scope": "One completed direct four-image sample; transport send completion is not provider ingestion time. Subsequent diagnostic request cancelled before task launch."
+  },
+  "network": "Selected direct with standalone remote-network.sh and stopped remote proxy service. No Mac changes; experiment/probe/launch scripts inherit networking.",
+  "vla": {
+    "official_repo": "RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT",
+    "pid": 782157,
+    "endpoint": "http://127.0.0.1:49337",
+    "model_bytes": 7473091464,
+    "sha256": "4d9089c941793f170b625c2ed0ac7a3aa09b6f103e52dbbc82e67301529d6683",
+    "matches_official_release": true,
+    "published_file": "https://huggingface.co/RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT/blob/main/model.safetensors"
+  },
+  "preservation": "Original workbench and installed LIBERO-Pro task files unchanged. Original prompts/guide/memory frozen byte-for-byte per manifest; no generated tools, move_eef or workflow optimization selected.",
+  "preparation_incidents": [
+    "First latency probe completed its text request then hit a usage-property reporting error; preserved and corrected, zero task actions.",
+    "An isolated test-file selection had four pre-existing logging-initialization dependencies; full required unit suite passed without changing these tests."
+  ],
+  "remaining": "Actual task performance and 50-episode results are not yet available. Parallel shared inference can affect timing/RNG; no speedup claim.",
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/libero-object-t-qwenflash-original-50-20261112",
+  "remote_batch_root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-original-50-20261112",
+  "artifact_policy": "No credentials, model weights, videos, raw model inputs or observations committed."
+}
