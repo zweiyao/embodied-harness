@@ -97,11 +97,13 @@ def test_toolkit_falls_back_to_memory_root(
 
 
 @pytest.mark.parametrize("mode", ["evaluation", "exploration"])
+@pytest.mark.parametrize("workbench", [False, True])
 def test_toolkit_constructs_and_classifies_tools_with_a_fake(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     fake_single_arm_primitives: type[Any],
     mode: str,
+    workbench: bool,
 ) -> None:
     monkeypatch.delenv("RLDX_MAX_CHUNKS", raising=False)
     monkeypatch.delenv("RLDX_SETTLE_PATIENCE", raising=False)
@@ -126,19 +128,51 @@ def test_toolkit_constructs_and_classifies_tools_with_a_fake(
         lambda primitives, state, log: dumped.append(primitives) or _record(),
     )
 
+    from robots.robocasa.catalog import native_catalog
+    from rpent.dashboard.workbench import RunJournal
+
+    selected = (
+        [t for t in native_catalog() if t["name"] in {"finish", "view_env_state"}]
+        if workbench
+        else None
+    )
     robot_toolkit = toolkit.RoboCasaToolkit(
+        selected=selected,
+        journal=RunJournal(tmp_path) if workbench else None,
         runtime_kwargs={"env_client": object(), "vla_client": object()},
         dashboard_events=NullDashboardEventSink(),
         memory=MemoryManager(tmp_path / "memory"),
         mode=mode,
     )
 
-    assert _tool_names(robot_toolkit) == EXPECTED_TOOLS
-    assert _readonly_names(robot_toolkit) == COMMON_TOOLS | {
-        "view_env_state",
-        "back_project_batch",
-        "query_world_map",
-    }
+    assert _tool_names(robot_toolkit) == (
+        {"finish", "view_env_state"} if workbench else EXPECTED_TOOLS
+    )
+    assert _readonly_names(robot_toolkit) == (
+        {"finish", "view_env_state"}
+        if workbench
+        else COMMON_TOOLS
+        | {
+            "view_env_state",
+            "back_project_batch",
+            "query_world_map",
+        }
+    )
+    if workbench:
+        import json
+
+        assert "unknown tool" in robot_toolkit.execute_tool("move_to", {}).data["error"]
+        result = robot_toolkit.execute_tool(
+            "finish", {"status": "stuck", "summary": "fixture"}
+        )
+        assert result.data["_finish"] is True
+        events = [
+            json.loads(line)
+            for line in (tmp_path / "events.jsonl").read_text().splitlines()
+        ]
+        assert [
+            e["payload"]["name"] for e in events if e["kind"] == "tool_request"
+        ] == ["move_to", "finish"]
     assert dumped == fake_single_arm_primitives.instances
     primitive = fake_single_arm_primitives.instances[0]
     assert primitive.reset_calls == (1 if mode == "evaluation" else 0)

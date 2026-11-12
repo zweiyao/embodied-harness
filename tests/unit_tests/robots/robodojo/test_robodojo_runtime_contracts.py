@@ -290,6 +290,7 @@ def test_pi0_pick_monitors_both_arms_and_preserves_policy_input(lifting_arm):
     result = tools.pi0_pick(primitives, None, "pick bottle", arm="right").data
     assert result["success"] is True
     assert result["chunks_used"] == 1
+    assert result["simulator_steps"] == 2
     assert set(result["arms"]) == {"left", "right"}
     assert result["arms"][lifting_arm]["peak_lift_m"] == 0.06
     np.testing.assert_array_equal(executed, actions)
@@ -328,6 +329,7 @@ def test_pi0_pick_stops_the_chunk_when_the_grasp_is_held():
     assert result["success"] is True
     # Three actions were predicted and the grasp is held after the second.
     assert len(executed) == 2
+    assert result["simulator_steps"] == 2
 
 
 def test_gripper_result_does_not_expose_environment_feedback():
@@ -610,3 +612,31 @@ def test_gripper_does_not_invent_missing_feedback():
     result = tools.set_gripper(primitives, None, "left", 1.0).data
     assert result["gripper"] == "close_commanded"
     assert result["measured_opening"] is None
+
+
+def test_pi0_pick_checks_cancel_between_native_actions():
+    obs = {
+        "state": {
+            f"{arm}_{key}": value
+            for arm in ("left", "right")
+            for key, value in [("ee_pose", [0, 0, 1]), ("ee_joint_state", [1])]
+        }
+    }
+    executed = []
+
+    def check():
+        if executed:
+            raise RuntimeError("cancelled")
+
+    def step(action):
+        executed.append(action)
+        return obs, 0, False, {"status": {"step": len(executed), "step_limit": 99}}
+
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(get_obs=lambda: obs, step=step),
+        vla_client=SimpleNamespace(predict=lambda _: np.zeros((50, 14))),
+        _check_cancelled=check,
+    )
+    with pytest.raises(RuntimeError, match="cancelled"):
+        tools.pi0_pick(primitives, None, "Pick the bottle.", max_chunks=1)
+    assert len(executed) == 1

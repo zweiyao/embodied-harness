@@ -612,7 +612,9 @@ def _run_dashboard_task_inner(
                     )
                     if observed_steps
                     else None,
-                    "video_recorded": (Path(output_dir) / "episode.mp4").is_file(),
+                    "video_recorded": any(
+                        path.is_file() for path in Path(output_dir).rglob("*.mp4")
+                    ),
                     "stable_placement": "未独立验证",
                 },
             )

@@ -439,6 +439,42 @@ This configuration does not deploy a service or start a task. Prepare model
 profiles and credentials on the server, check the selected model explicitly,
 and submit the prepared command in the console to start an experiment.
 
+
+The three episode streams are encoded as H.264 with RGB input and a fast-start
+MP4 index for browser playback. ``pi0_pick`` reports ``chunks_used`` separately
+from ``simulator_steps`` and checks cancellation before each native action.
+The latter is a submitted native control-action count, not a physics-substep
+count or a task-success signal.
+
+Use ``deploy/start-robodojo-workbench.sh runtime.env workbench.json`` with the
+independent runtime's ``RPENT_REPO_ROOT``, ``RPENT_RUNS_ROOT`` and
+``RPENT_MEMORY_DIR`` configured. It binds loopback port 8094 by default; an
+external access proxy needs a separately configured source-IP allowlist. The
+launcher inherits network settings; select them outside the launcher with the
+remote network script. See ``deploy/ROBODOJO_WORKBENCH.md`` in the source tree.
+
+Prepared-runtime GPU checks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The existing GPU runner has a separate ``robodojo-prepared`` target:
+
+.. code-block:: bash
+
+   bash tests/e2e_tests/run_gpu_suite.sh robodojo-prepared \
+     /path/to/new-output /path/to/prepared-venv
+
+Load the independent runtime profile and select one GPU before invoking it.
+The third argument is an existing environment and is never removed. The five
+checks cover RGB-D/state and a hold action, Pi0.5, SAM3, cancellation within an
+action chunk, and a scripted public-CLI policy chain. Task success is separate.
+
+This target records the actual dependency-check exit code and report. It does
+not validate a clean installation. The tested prepared stack still has nine
+upstream metadata disagreements, including Isaac Sim's ``packaging==23.0``
+versus the planner SDK requirement in addition to the documented overrides.
+The other three runner targets retain their clean-install dependency gates.
+Do not edit third-party package metadata to make the check appear clean.
+
 Capability scope and limitations
 --------------------------------
 

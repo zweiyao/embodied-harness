@@ -26,6 +26,7 @@ from robots.robotwin import tools
 from robots.robotwin.primitives import RoboTwinPrimitives
 from robots.robotwin.robot_spec import ROBOTWIN_CAMERA_NAMES
 from rpent.dashboard.events import DashboardEventSink
+from rpent.dashboard.native_tools import NativeToolSelectionMixin
 from rpent.session import EnvState
 from rpent.tools import ToolResult, iter_tools, tool
 from rpent.tools.direct_action import direct_action_tool
@@ -87,7 +88,7 @@ def _world_from_depth(
     return world.astype(np.float32)
 
 
-class RoboTwinToolkit(Toolkit):
+class RoboTwinToolkit(NativeToolSelectionMixin, Toolkit):
     """Common RPent tools plus RoboTwin primitives."""
 
     def __init__(
@@ -100,7 +101,13 @@ class RoboTwinToolkit(Toolkit):
         mode: str = "evaluation",
         attempts_per_session: int = 0,
         state_output_dir: Path | str | None = None,
+        selected: list[dict] | None = None,
+        journal: Any = None,
     ):
+        if selected is not None:
+            from robots.robotwin.catalog import validate_selection
+
+            validate_selection(selected)
         if mode not in {"evaluation", "exploration"}:
             raise ValueError(f"unsupported RoboTwin toolkit mode: {mode!r}")
         state = EnvState(Path(state_output_dir or get_output_dir()))
@@ -147,6 +154,8 @@ class RoboTwinToolkit(Toolkit):
             self._latest_status = initial_state.get(
                 "episode_status", self._latest_status
             )
+
+        self.configure_workbench_tools(selected, journal)
 
     def _register_robotwin_tools(self) -> None:
         for definition in iter_tools(tools):

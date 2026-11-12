@@ -369,6 +369,36 @@ Flash 路径保留现有注册方式。工具调用沿用运行日志，实验�
 该配置不会部署服务或启动任务。模型配置与凭据由服务端管理；显式检查所选模型后，
 在控制台发送准备好的命令才开始实验。
 
+
+三路 episode 视频使用 RGB 输入编码为 H.264，并提前写入 MP4 索引以便浏览器播放。
+``pi0_pick`` 分别报告 ``chunks_used`` 和 ``simulator_steps``，且在每个原生动作前
+检查取消。后者统计已提交的原生控制动作，不是物理子步数，也不是任务成功信号。
+
+使用 ``deploy/start-robodojo-workbench.sh runtime.env workbench.json``，在独立配置中
+指定 ``RPENT_REPO_ROOT``、``RPENT_RUNS_ROOT`` 和 ``RPENT_MEMORY_DIR``。
+默认仅监听回环端口 8094；外部访问代理需单独配置来源 IP 白名单。启动脚本继承网络环境，
+在脚本之外使用远程网络脚本选择网络。源码中的 ``deploy/ROBODOJO_WORKBENCH.md``
+说明部署方法。
+
+已准备环境的 GPU 检查
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+现有 GPU runner 提供独立的 ``robodojo-prepared`` 目标：
+
+.. code-block:: bash
+
+   bash tests/e2e_tests/run_gpu_suite.sh robodojo-prepared \
+     /path/to/new-output /path/to/prepared-venv
+
+先加载独立运行配置并选择一张 GPU。第三参数为已有环境，不会被删除。五项检查覆盖
+RGB-D／状态与保持动作、Pi0.5、SAM3、chunk 内取消，以及脚本规划器经公开 CLI 执行
+策略的闭环。任务成功另行评价。
+
+该目标保存真实依赖检查的退出码和报告，不代表清洁安装已通过。实测准备环境仍有九项
+上游元数据分歧：除已列出的 override 外，还包括 Isaac Sim 的 ``packaging==23.0``
+与 planner SDK 要求冲突。其他三个 runner 目标保留原清洁安装门禁；不要修改第三方包
+元数据以制造检查通过。
+
 能力范围与限制
 --------------
 

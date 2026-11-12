@@ -406,6 +406,7 @@ def pi0_pick(
         for a in arms
     }
     chunks_used = 0
+    simulator_steps = 0
     success = False
     terminated = False
     for c in range(max_chunks):
@@ -426,7 +427,9 @@ def pi0_pick(
         actions = vla.predict(obs)
         chunks_used = c + 1
         for action in actions:
+            primitives._check_cancelled()
             obs_step, _reward, _done, info = primitives.env.step(action)
+            simulator_steps += 1
             st = obs_step["state"]
             for a in arms:
                 t = track[a]
@@ -471,6 +474,7 @@ def pi0_pick(
         "instruction": prompt,
         "success": success,
         "chunks_used": chunks_used,
+        "simulator_steps": simulator_steps,
         "arms": per_arm,
         "terminated": terminated,
     }

@@ -164,3 +164,43 @@ def test_native_rpc_honors_the_stricter_step_limit(
     assert calls == [{}]
     assert native.take_action_cnt == [limit]
     assert native.step_lim == 5
+
+
+def test_video_recorder_keeps_rgb_and_closes_every_camera(monkeypatch, tmp_path):
+    import imageio.v2 as imageio
+
+    from robots.robodojo.agent_support import _VideoRecorder
+
+    writers = []
+
+    def create(path, **kwargs):
+        assert kwargs["codec"] == "libx264"
+        assert kwargs["pixelformat"] == "yuv420p"
+        assert kwargs["ffmpeg_params"] == ["-movflags", "+faststart"]
+        writer = SimpleNamespace(frames=[], closed=False)
+        writer.append_data = lambda frame: writer.frames.append(frame.copy())
+
+        def close():
+            writer.closed = True
+
+        writer.close = close
+        writers.append(writer)
+        return writer
+
+    monkeypatch.setattr(imageio, "get_writer", create)
+    recorder = _VideoRecorder(str(tmp_path))
+    rgb = np.zeros((4, 4, 3), dtype=np.uint8)
+    rgb[:, :, 0] = 255
+    recorder.record(
+        {
+            "vision": {
+                name: {"color": rgb}
+                for name in ("cam_head", "cam_left_wrist", "cam_right_wrist")
+            }
+        }
+    )
+    paths = recorder.close()
+    assert len(paths) == len(writers) == 3
+    assert all(writer.closed for writer in writers)
+    for writer in writers:
+        np.testing.assert_array_equal(writer.frames[0], rgb)
