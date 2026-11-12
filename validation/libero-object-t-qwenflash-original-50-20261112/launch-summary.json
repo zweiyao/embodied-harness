@@ -1,0 +1,32 @@
+{
+  "phase": "running",
+  "completed_at_audit": 0,
+  "planned": 50,
+  "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+  "source_and_material_hashes_preserved": 460,
+  "original_server_and_config_preserved": true,
+  "lanes": {
+    "a": {
+      "run_id": "3ae4b264a1d959829440",
+      "task": 0,
+      "seed": 0,
+      "model_requests_at_audit": 2,
+      "all_model_http_timeouts_none": true,
+      "thinking_disabled": true,
+      "native_tool_count": 17
+    },
+    "b": {
+      "run_id": "126d3bedd4da3d563d12",
+      "task": 0,
+      "seed": 1,
+      "model_requests_at_audit": 3,
+      "all_model_http_timeouts_none": true,
+      "thinking_disabled": true,
+      "native_tool_count": 17
+    }
+  },
+  "batch_service": "RuntimeMaxUSec=infinity\nMainPID=886237\nActiveState=active",
+  "task_success_results_available": false,
+  "public_history": "Completed immutable runs are hard-linked into existing research-runs history; no workbench configuration change or restart.",
+  "ci": "Draft PR #7: Python matrix and pre-commit skipped by workflow draft condition; stable unittest aggregate SUCCESS is not a substitute for the skipped matrix. Remote full suite and pre-commit passed."
+}
