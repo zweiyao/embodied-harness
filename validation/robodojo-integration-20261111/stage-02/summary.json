@@ -132,10 +132,9 @@
     "explicit_dev_reset": "Dispatch preserved by CPU regression; real repeated-reset stability is not verified and a previous implicit reset failed."
   },
   "remaining": [
-    "Complete real dev connection verification and resolve owned ENV graceful-shutdown failure",
-    "Default launcher compatibility setup is not deployed",
-    "Action/control and camera geometry validation",
-    "Policy conversion/inference and bounded workflow",
+    "Default launcher compatibility profile not deployed",
+    "Explicit repeated dev reset stability, action/control and camera geometry validation",
+    "GPU policy inference and bounded workflow; conversion and CPU load passed in stage-05",
     "CLI, Dashboard and unified workbench integration"
   ],
   "preservation": {
@@ -155,5 +154,10 @@
     "benchmark_experiments": 0,
     "real_hardware_actions": 0
   },
-  "git_workflow": "Stage commits only; one PR after complete adaptation; no automatic merge."
+  "git_workflow": "Stage commits only; one PR after complete adaptation; no automatic merge.",
+  "later_resolution": {
+    "artifact": "../stage-06/summary.json",
+    "owned_exit": "passed dev/eval-fair after separately approved owner-chain correction",
+    "historical_failures_retained": true
+  }
 }

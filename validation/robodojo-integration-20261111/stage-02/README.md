@@ -10,4 +10,4 @@ CPU 验证：RoboDojo 163 passed，全仓 2041 passed / 15 skipped，pre-commit�
 
 详见 [summary.json](summary.json)。原工作台和实际运行源码保持；不包含模型请求、任务动作或真机动作。日志、录像、观测和资产均留在远程验证目录，不进入 Git。
 
-已用诊断堆栈定位拥有者退出阻塞：IsaacLab 的 STOP 回调持续 render，阻塞 SimulationApp.close。清理回调的具体补丁已在工作区 proposals/robodojo-stop-callback-20261112/ 准备，尚未获得批准或应用。
+已用诊断堆栈定位拥有者退出阻塞：IsaacLab 的 STOP 回调持续 render，阻塞 SimulationApp.close。该关闭问题经单独批准修正后，已通过 dev/eval-fair 真实生命周期检查；见 [stage-06](../stage-06/summary.json)。本文保留当时失败证据。

@@ -232,5 +232,8 @@ class RoboDojoAgentEnv(RoboDojoEnv):
             paths = self.recorder.close()
             logger.info("[robodojo-env] videos written: %s", paths)
         finally:
-            super().close(clear_cache)
-            logger.info("[robodojo-env] shutdown complete")
+            try:
+                self.env.sim.sim.clear_instance()
+            finally:
+                super().close(clear_cache)
+                logger.info("[robodojo-env] shutdown complete")

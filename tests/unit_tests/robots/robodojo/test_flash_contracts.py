@@ -316,7 +316,11 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
 def test_agent_close_flushes_video_before_runtime(make_agent):
     events = []
     agent = make_agent(
-        SimpleNamespace(),
+        SimpleNamespace(
+            sim=SimpleNamespace(
+                sim=SimpleNamespace(clear_instance=lambda: events.append("context"))
+            )
+        ),
         recorder=SimpleNamespace(close=lambda: events.append("writer")),
     )
     agent.venv.close = lambda clear_cache: events.append(("runtime", clear_cache))
@@ -326,7 +330,7 @@ def test_agent_close_flushes_video_before_runtime(make_agent):
     assert events == []
     facade.close()
     facade.close()
-    assert events == ["writer", ("runtime", True)]
+    assert events == ["writer", "context", ("runtime", True)]
 
 
 def test_eval_client_rejects_dev_service_and_does_not_reset():
@@ -503,3 +507,26 @@ def test_connect_validates_metadata_without_resetting_scene(mode):
     if mode == "dev":
         assert client.reset() == {"instruction": "new episode"}
         assert calls == ["env.get_env_meta", "env.reset"]
+
+
+@pytest.mark.parametrize("failure", ["writer", "context"])
+def test_agent_close_keeps_runtime_cleanup_after_flush_error(make_agent, failure):
+    events = []
+
+    def phase(name):
+        events.append(name)
+        if name == failure:
+            raise RuntimeError(failure)
+
+    agent = make_agent(
+        SimpleNamespace(
+            sim=SimpleNamespace(
+                sim=SimpleNamespace(clear_instance=lambda: phase("context"))
+            )
+        ),
+        recorder=SimpleNamespace(close=lambda: phase("writer")),
+    )
+    agent.venv.close = lambda clear_cache: events.append(("runtime", clear_cache))
+    with pytest.raises(RuntimeError, match=failure):
+        agent.close()
+    assert events == ["writer", "context", ("runtime", True)]
