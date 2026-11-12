@@ -129,3 +129,38 @@ def test_camera_and_language_preserve_rpc_contract(make_agent):
         agent._sub_env(1)
     with pytest.raises(ValueError, match="unknown camera"):
         facade.get_camera_meta("missing")
+
+
+@pytest.mark.parametrize("mode", ["dev", "eval-fair"])
+@pytest.mark.parametrize("configured_limit", [2, 8])
+def test_native_rpc_honors_the_stricter_step_limit(
+    monkeypatch, agent_module, make_agent, mode, configured_limit
+):
+    limit = min(configured_limit, 5)
+    calls = []
+    native = SimpleNamespace(
+        take_action_cnt=[limit - 1], step_lim=5, is_success=lambda env_idx: False
+    )
+
+    def apply(action, action_type, *, eval_fair):
+        calls.append(action)
+        native.take_action_cnt[0] += 1
+
+    agent = make_agent(
+        native,
+        meta={"mode": mode, "max_episode_steps": configured_limit},
+        slot=SimpleNamespace(env=native, apply_action=apply),
+    )
+    monkeypatch.setattr(agent_module, "_obs_dict", lambda *args: {"state": {}})
+    monkeypatch.setattr(
+        agent_module, "_reward_details", lambda *args: {"reward": 0, "step_limit": 5}
+    )
+    _, _, _, info = agent.step_native({})
+    assert info["status"]["step_limit"] == limit
+    assert agent.get_status()["step_limit"] == limit
+    assert agent.get_reward_details()["step_limit"] == limit
+    with pytest.raises(RuntimeError, match="budget"):
+        agent.step_native({})
+    assert calls == [{}]
+    assert native.take_action_cnt == [limit]
+    assert native.step_lim == 5

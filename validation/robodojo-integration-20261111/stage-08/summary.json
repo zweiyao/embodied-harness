@@ -128,5 +128,10 @@
     "Native action budget mismatch remains until a separately approved repair",
     "No predicted VLA actions, CLI policy chain, planner or unified workbench run was executed",
     "Independent camera geometry and nine dependency metadata conflicts remain unresolved"
-  ]
+  ],
+  "later_resolution": {
+    "artifact": "../stage-09/summary.json",
+    "native_rpc_budget": "implemented and verified in both modes",
+    "gripper_feedback": "implemented command/target/measured separation; no claim of completed physical close"
+  }
 }

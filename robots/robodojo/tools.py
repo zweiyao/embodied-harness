@@ -324,7 +324,9 @@ def move_to(
 def set_gripper(
     primitives: Any, state: Any, arm: Literal["left", "right"], gripper: float
 ) -> ToolResult:
-    """Open or close an arm gripper. 1=close, -1=open.
+    """Command a gripper and report measured opening (1=open, 0=closed).
+
+    Submits one native step without waiting for completion. gripper: 1=close, -1=open.
 
     Args:
         gripper: 1=close, -1=open"""
@@ -343,10 +345,15 @@ def set_gripper(
             if a != arm:
                 val = float(np.asarray(joint).reshape(-1)[0])
             action[_arm_ee_joint_key(a)] = [val]
-    _obs_step, _reward, _done, info = primitives.env.step(action)
+    obs_step, _reward, _done, info = primitives.env.step(action)
+    observed = obs_step.get("state", {}).get(_arm_ee_joint_key(arm))
     payload = {
         "arm": arm,
-        "gripper": "closed" if gripper > 0 else "open",
+        "gripper": "close_commanded" if gripper > 0 else "open_commanded",
+        "target_opening": 0.0 if gripper > 0 else 1.0,
+        "measured_opening": (
+            float(np.asarray(observed).reshape(-1)[0]) if observed is not None else None
+        ),
         "status": {
             key: info["status"][key]
             for key in ("step", "step_limit")

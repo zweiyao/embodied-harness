@@ -289,7 +289,7 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
     from robots.robodojo import tools
 
     agent = make_agent(
-        SimpleNamespace(is_success=lambda **kw: True), meta={"mode": "dev"}
+        SimpleNamespace(is_success=lambda **kw: True, step_lim=5), meta={"mode": "dev"}
     )
     facade = env_server.RoboDojoEnvFacade(agent)
     monkeypatch.setattr(agent_module, "_reward_details", lambda *a: {"score": 100})
@@ -303,9 +303,9 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
         SimpleNamespace(call=call), expected_meta={"mode": "dev"}
     )
     primitives = SimpleNamespace(env=client)
-    assert client.get_reward_details() == {"score": 100}
+    assert client.get_reward_details() == {"score": 100, "step_limit": 5}
     assert client.get_safety_status() == {"rolling": []}
-    assert tools.get_reward_details(primitives, None) == {"score": 100}
+    assert tools.get_reward_details(primitives, None) == {"score": 100, "step_limit": 5}
     assert tools.get_safety_status(primitives, None) == {"rolling": []}
     toolkit = object.__new__(RoboDojoToolkit)
     toolkit.eval_fair = False

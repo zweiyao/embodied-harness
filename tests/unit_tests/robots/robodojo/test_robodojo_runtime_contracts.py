@@ -559,3 +559,54 @@ def test_toolkit_close_preserves_borrowed_env(monkeypatch, tmp_path, owned):
     )
     toolkit.close()
     assert closes == ([True] if owned else [])
+
+
+@pytest.mark.parametrize(
+    ("command", "measured", "label", "target"),
+    [(1.0, 0.65, "close_commanded", 0.0), (-1.0, 0.9, "open_commanded", 1.0)],
+)
+def test_gripper_reports_command_separately_from_feedback(
+    command, measured, label, target
+):
+    state = {
+        "left_ee_joint_state": [1.0],
+        "right_ee_joint_state": [0.3],
+    }
+    calls = []
+
+    def step(action):
+        calls.append(action)
+        return (
+            {"state": {"left_ee_joint_state": [measured]}},
+            0,
+            False,
+            {"status": {"step": 1, "step_limit": 10}},
+        )
+
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(get_obs=lambda: {"state": state}, step=step)
+    )
+    result = tools.set_gripper(primitives, None, "left", command).data
+    assert result["gripper"] == label
+    assert result["target_opening"] == target
+    assert result["measured_opening"] == measured
+    assert len(calls) == 1
+    assert calls[0]["left_ee_joint_state"] == [target]
+    assert calls[0]["right_ee_joint_state"] == [0.3]
+
+
+def test_gripper_does_not_invent_missing_feedback():
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(
+            get_obs=lambda: {"state": {}},
+            step=lambda action: (
+                {},
+                0,
+                False,
+                {"status": {"step": 1, "step_limit": 10}},
+            ),
+        )
+    )
+    result = tools.set_gripper(primitives, None, "left", 1.0).data
+    assert result["gripper"] == "close_commanded"
+    assert result["measured_opening"] is None

@@ -1,0 +1,238 @@
+{
+  "updated_at": "2026-11-12T02:54:38.829743+00:00",
+  "status": "approved_repairs_implemented_and_verified",
+  "baseline_commit": "856d81abeaef0d25404c2d213a91cd6f6139281b",
+  "approved_patch_sha256": "93ffff656c5cf0c73f8260a58accb2d1d365c99592c031a1f6c1b0e5917ab098",
+  "source_sha256": {
+    "robots/robodojo/rlinf_env.py": "aeecb3c3a083078c66ee07a183cdcd1e4fc1c1660b921af518c64dbe14f5b2db",
+    "robots/robodojo/tools.py": "d30a75ba50cc300fd31f295534a68d92f128522e2139902d530fa8ffbb43c032",
+    "tests/unit_tests/robots/robodojo/test_rlinf_env_contracts.py": "ee113dd813254bca2fb4958c78af84055cc249820cce9d72b01b190431fe98fc",
+    "tests/unit_tests/robots/robodojo/test_robodojo_runtime_contracts.py": "a5c12ef37375904552fd298be1e7ac707274eae0a2081c7c21b4cd8dd97b0fc3",
+    "tests/unit_tests/robots/robodojo/test_flash_contracts.py": "89ca5e24715b09b637afe943481cd6c77b9dd0c3dd2cf58b431ae4836aadfe76",
+    "tests/unit_tests/robots/fixtures/tool_schemas.json": "03e316dc5f135bbd5fe2c0a7a8c40ae6ac8d1ce190c07fcd2c8c726c3da5b620"
+  },
+  "changes": {
+    "effective_step_limit": "min(configured max_episode_steps, official native step_lim), checked before native dispatch in dev and eval-fair; status/info/dev diagnostics report the same limit",
+    "gripper_feedback": "One native action retained. gripper reports close_commanded/open_commanded; target_opening and measured_opening are distinct; missing feedback is null",
+    "unchanged": "No new waiting/retries/actions, completion thresholds, control parameters, official goal, experience, system prompt or other robot behavior",
+    "test_only_maintenance": "test-maintenance.json"
+  },
+  "regression_before_fix": {
+    "failed": 6,
+    "passed": 1,
+    "deselected": 132,
+    "seconds": 0.77,
+    "log": "regression-before-fix.log"
+  },
+  "cpu_checks": {
+    "python": "3.11.16",
+    "robodojo_passed": 172,
+    "robodojo_seconds": 0.95,
+    "unit_passed": 2050,
+    "unit_skipped": 15,
+    "unit_failed": 0,
+    "unit_seconds": 72.47,
+    "warnings": 2,
+    "pre_commit": "passed",
+    "full_ci_matrix": "not run"
+  },
+  "intermediate_checks_retained": [
+    {
+      "log": "targeted-initial.log",
+      "result": "171 passed / 1 failed: old diagnostic fake omitted native step_lim; fixture corrected, permission assertions retained"
+    },
+    {
+      "log": "unit-tests.log",
+      "result": "2049 passed / 1 failed / 15 skipped: approved tool description differed from old snapshot; only this description updated, no schema/assertion removed"
+    }
+  ],
+  "real_checks": {
+    "task": "put_bottles_into_dustbin",
+    "layout": 0,
+    "runtime_profile_sha256": "98bbb4abd536cd5fdd252242f552c294f076bd54114b33f946aba5dc860f402e",
+    "placement_settle_steps": 1000,
+    "eight_call_replay": {
+      "status": "passed",
+      "valid_native_actions": 8,
+      "native_step_count": 8,
+      "move_target_errors_m": [
+        0.002095795119767095,
+        0.0017422320866923278,
+        0.0020957923960626835,
+        0.0017422916815411655
+      ],
+      "max_unselected_arm_drift_m": 2.6017769414465874e-05,
+      "all_state_records_have_three_images": true,
+      "owned_exit_before_cleanup": 0
+    },
+    "gripper_feedback": {
+      "status": "passed",
+      "checks": [
+        {
+          "arm": "left",
+          "command": "close_commanded",
+          "target_opening": 0.0,
+          "measured_opening": 0.6524847085829134,
+          "step_limit": 96
+        },
+        {
+          "arm": "left",
+          "command": "open_commanded",
+          "target_opening": 1.0,
+          "measured_opening": 1.0,
+          "step_limit": 96
+        },
+        {
+          "arm": "right",
+          "command": "close_commanded",
+          "target_opening": 0.0,
+          "measured_opening": 0.6524753263703099,
+          "step_limit": 96
+        },
+        {
+          "arm": "right",
+          "command": "open_commanded",
+          "target_opening": 1.0,
+          "measured_opening": 1.0,
+          "step_limit": 96
+        }
+      ],
+      "valid_native_actions": 8
+    },
+    "budget_dev": {
+      "status": "passed",
+      "mode": "dev",
+      "accepted_steps": [
+        1,
+        2
+      ],
+      "owned_pid": 82616,
+      "launch_meta": {
+        "task": "put_bottles_into_dustbin",
+        "layout": 0,
+        "env_cfg_type": "arx_x5",
+        "device_id": 0,
+        "num_envs": 1,
+        "max_episode_steps": 2,
+        "random": false
+      },
+      "third_request_rejected": true,
+      "rejection": "Episode step budget exhausted",
+      "counter_after_rejection": 2,
+      "diagnostic_limit_consistent": true,
+      "owned_exit_before_cleanup": 0,
+      "valid_native_actions": 2,
+      "planner_requests": 0,
+      "policy_requests": 0,
+      "child_exit_after_cleanup": [
+        0
+      ]
+    },
+    "budget_eval_fair": {
+      "status": "passed",
+      "mode": "eval-fair",
+      "accepted_steps": [
+        1,
+        2
+      ],
+      "owned_pid": 83971,
+      "launch_meta": {
+        "task": "put_bottles_into_dustbin",
+        "layout": 0,
+        "env_cfg_type": "arx_x5",
+        "device_id": 0,
+        "num_envs": 1,
+        "max_episode_steps": 2,
+        "random": false,
+        "mode": "eval-fair"
+      },
+      "third_request_rejected": true,
+      "rejection": "Episode step budget exhausted",
+      "counter_after_rejection": 2,
+      "owned_exit_before_cleanup": 0,
+      "valid_native_actions": 2,
+      "planner_requests": 0,
+      "policy_requests": 0,
+      "child_exit_after_cleanup": [
+        0
+      ]
+    },
+    "total_valid_native_actions": 12,
+    "planner_requests": 0,
+    "vla_requests": 0,
+    "hardware_actions": 0
+  },
+  "preservation": {
+    "camera_videos": [
+      {
+        "check": "actions-replay",
+        "camera_file": "episode_2026-11-12_10-48-42_cam_head.mp4",
+        "readable": true,
+        "bytes": 205538
+      },
+      {
+        "check": "actions-replay",
+        "camera_file": "episode_2026-11-12_10-48-42_cam_left_wrist.mp4",
+        "readable": true,
+        "bytes": 184356
+      },
+      {
+        "check": "actions-replay",
+        "camera_file": "episode_2026-11-12_10-48-42_cam_right_wrist.mp4",
+        "readable": true,
+        "bytes": 212118
+      },
+      {
+        "check": "budget-dev",
+        "camera_file": "episode_2026-11-12_10-49-34_cam_head.mp4",
+        "readable": true,
+        "bytes": 37879
+      },
+      {
+        "check": "budget-dev",
+        "camera_file": "episode_2026-11-12_10-49-34_cam_left_wrist.mp4",
+        "readable": true,
+        "bytes": 28173
+      },
+      {
+        "check": "budget-dev",
+        "camera_file": "episode_2026-11-12_10-49-34_cam_right_wrist.mp4",
+        "readable": true,
+        "bytes": 31706
+      },
+      {
+        "check": "budget-eval-fair",
+        "camera_file": "episode_2026-11-12_10-50-16_cam_head.mp4",
+        "readable": true,
+        "bytes": 37894
+      },
+      {
+        "check": "budget-eval-fair",
+        "camera_file": "episode_2026-11-12_10-50-16_cam_left_wrist.mp4",
+        "readable": true,
+        "bytes": 28335
+      },
+      {
+        "check": "budget-eval-fair",
+        "camera_file": "episode_2026-11-12_10-50-16_cam_right_wrist.mp4",
+        "readable": true,
+        "bytes": 31919
+      }
+    ],
+    "protected_files": {
+      "checked": 608,
+      "changed": []
+    },
+    "remaining_gpu_processes": [
+      "782158, 8748 MiB",
+      "782157, 7398 MiB"
+    ]
+  },
+  "limitations": [
+    "Gripper feedback is truthful after one control interval; full close completion was not added or demonstrated",
+    "One task/layout and small bounded actions; not task success or broad coverage",
+    "VLA-predicted action execution, CLI chain, GPU test runner and unified workbench remain pending",
+    "Independent camera geometry and nine documented dependency metadata conflicts remain unresolved"
+  ],
+  "raw_artifacts_remote": "/home/zwy/work/embodied_harness/validation/robodojo-integration-20261111/stage-09"
+}

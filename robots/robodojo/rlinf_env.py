@@ -165,6 +165,12 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         self.bottle_mon = _SafetyMonitor(self.meta.get("task", ""))
         return self.get_native_obs()
 
+    def _step_limit(self) -> int:
+        return min(
+            int(self.env.step_lim),
+            int(self.meta.get("max_episode_steps", self.env.step_lim)),
+        )
+
     def step_native(self, flat_action):
         """Apply one RoboDojo action and return ``(obs, reward, done, info)``.
 
@@ -174,9 +180,7 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         """
         flat_action = _policy_action(flat_action)
         action_type = _infer_action_type(flat_action)
-        if self.eval_fair and int(self.env.take_action_cnt[0]) >= int(
-            self.env.step_lim
-        ):
+        if int(self.env.take_action_cnt[0]) >= self._step_limit():
             raise RuntimeError("Episode step budget exhausted")
         self._sub_env(0).apply_action(
             flat_action, action_type, eval_fair=self.eval_fair
@@ -191,8 +195,8 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         reward = float(reward_details.get("reward", 0.0) or 0.0)
         done = bool(self.env.is_success(env_idx=0))
         info: dict[str, Any] = {
-            "status": _status(self.env, self.bottle_mon),
-            "step_limit": int(self.env.step_lim),
+            "status": self.get_status(),
+            "step_limit": self._step_limit(),
             "safety": alarms,
         }
         return obs, reward, done, info
@@ -205,12 +209,16 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         if self.eval_fair:
             return {
                 "step": int(self.env.take_action_cnt[0]),
-                "step_limit": int(self.env.step_lim),
+                "step_limit": self._step_limit(),
             }
-        return _status(self.env, self.bottle_mon)
+        status = _status(self.env, self.bottle_mon)
+        status["step_limit"] = self._step_limit()
+        return status
 
     def get_reward_details(self) -> dict[str, Any]:
-        return _reward_details(self.env, self.bottle_mon)
+        details = _reward_details(self.env, self.bottle_mon)
+        details["step_limit"] = self._step_limit()
+        return details
 
     def solve_ik_position(self, arm: str, xyz: list) -> dict[str, Any]:
         return _solve_ik_position(self.env, arm, xyz)
