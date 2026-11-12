@@ -1,0 +1,77 @@
+{
+  "at": "2026-11-12T17:00:46.780243+00:00",
+  "scope": "Remote standalone IPv4 direct networking; no harness or experiment restart",
+  "files_sha256": {
+    "deploy/remote-network.sh": "63517fbe129754fb224aea4fc77f4f3c4f521a49361fcdaad1369ab937f9c64d",
+    "deploy/rpent-ipv4-direct.yaml": "c8bb80380471175666d8863e1ce0ed5d65fdc1a6fbc2ecf117b44d91bf598d80",
+    "deploy/rpent-ipv4-direct.service": "08302bb3c793ba7e7d3eec9ede1b009eb57a836339e86b6187c39e419351c9bb"
+  },
+  "mode": "direct-ipv4",
+  "local_endpoint": "http://127.0.0.1:47040",
+  "service": "MainPID=1036892\nActiveState=active\nUnitFileState=enabled\n",
+  "api_validation": [
+    {
+      "label": "installed-single",
+      "request_bytes": 2100006,
+      "images": 4,
+      "elapsed_s": 2.348,
+      "http_status": 200,
+      "observed_outbound_family": "IPv4",
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "max_output_tokens": 128
+    },
+    {
+      "label": "installed-large",
+      "request_bytes": 25197454,
+      "images": 48,
+      "elapsed_s": 10.859,
+      "http_status": 200,
+      "observed_outbound_family": "IPv4",
+      "model": "qwen3.8-flash",
+      "thinking": false,
+      "max_output_tokens": 128
+    }
+  ],
+  "checks": {
+    "bash_syntax": "passed",
+    "mihomo_configuration": "passed",
+    "systemd_unit_verify": "passed",
+    "direct_then_direct_ipv4_selection": "passed",
+    "pre_commit_all_files": "passed",
+    "unit_suite": {
+      "passed": 2039,
+      "skipped": 15,
+      "log": "unit-tests.log"
+    },
+    "additional_node_ui_checks": {
+      "passed": 4,
+      "skipped": 0,
+      "reason": "Node.js absent from initial test PATH; used existing Playwright-bundled Node for the four skipped UI tests",
+      "log": "ui-with-node.log"
+    }
+  },
+  "preservation": {
+    "existing_workbench_services_unchanged": {
+      "embodied-manual-workbench.service": "MainPID=3593034\nActiveState=active\n",
+      "rpent-robodojo-workbench.service": "MainPID=341086\nActiveState=active\n",
+      "rpent-object-t-qwenflash-a-20261112.service": "MainPID=884975\nActiveState=active\n",
+      "rpent-object-t-qwenflash-b-20261112.service": "MainPID=884982\nActiveState=active\n"
+    },
+    "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+    "runtime_tracked_diff_empty": true,
+    "batch_phase": "stopped",
+    "valid_completed": 5,
+    "experiments_started": 0,
+    "robot_actions": 0,
+    "mac_network_changed": false
+  },
+  "limitations": [
+    "Network selection updates the current shell and user systemd manager, not existing processes or arbitrary new SSH shells.",
+    "Existing workbenches retain their prior environment; an idle restart is required before their API requests inherit IPv4 routing.",
+    "Clients must honor HTTP(S) proxy environment variables; this does not disable system IPv6 or change routes.",
+    "Two successful latency samples are connectivity checks, not a stable SLA or task-success result.",
+    "The earlier provider-side multimodal download timeout has not been reproduced or resolved by this deployment.",
+    "No Sphinx source/build inputs changed; standalone Markdown paths and semantics reviewed."
+  ]
+}

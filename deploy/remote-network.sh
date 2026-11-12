@@ -18,7 +18,11 @@ rpent_network() {
             export no_proxy=$NO_PROXY
             systemctl --user import-environment NO_PROXY no_proxy || return
             ;;
-        proxy)
+        direct-ipv4|proxy)
+            if [[ $mode == direct-ipv4 ]]; then
+                systemctl --user start rpent-ipv4-direct.service || return
+                endpoint=http://127.0.0.1:47040
+            fi
             if [[ ! $endpoint =~ ^http://127\.0\.0\.1:[0-9]+$ ]]; then
                 echo 'Supply the existing remote loopback HTTP proxy endpoint.' >&2
                 return 1
@@ -32,7 +36,7 @@ rpent_network() {
             systemctl --user import-environment HTTP_PROXY HTTPS_PROXY http_proxy https_proxy NO_PROXY no_proxy || return
             ;;
         status) ;;
-        *) echo 'Usage: source remote-network.sh direct|proxy URL|status' >&2; return 2 ;;
+        *) echo 'Usage: source remote-network.sh direct|direct-ipv4|proxy URL|status' >&2; return 2 ;;
     esac
     echo "Shell proxy variable names (values withheld):"
     for key in "${keys[@]}"; do

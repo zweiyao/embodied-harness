@@ -1,0 +1,17 @@
+mixed-port: 47040
+allow-lan: false
+bind-address: 127.0.0.1
+mode: rule
+log-level: warning
+ipv6: false
+tun:
+  enable: false
+dns:
+  enable: false
+proxies:
+  - name: ipv4-direct
+    type: direct
+    ip-version: ipv4
+rules:
+  - IP-CIDR6,::/0,REJECT,no-resolve
+  - MATCH,ipv4-direct
