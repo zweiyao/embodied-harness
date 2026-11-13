@@ -656,7 +656,9 @@ class DashboardState:
                 normalized[name] = value.strip()
             else:
                 low, high = limits[name]
-                if type(value) is not int or not low <= value <= high:
+                if type(value) is not int or not (
+                    low <= value <= high or (name == "planner_timeout_s" and value == 0)
+                ):
                     raise ValueError(f"{name} must be an integer from {low} to {high}")
         with self._condition:
             self._next_config.update(normalized)

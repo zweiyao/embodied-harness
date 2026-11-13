@@ -1,0 +1,212 @@
+{
+  "at": "2026-11-12T16:43:07.010916+00:00",
+  "scope": "Remote fixed-PNG API network diagnostics; no robot actions or harness changes",
+  "model": "qwen3.8-flash",
+  "thinking": false,
+  "max_output_tokens": 128,
+  "model_calls": 17,
+  "model_errors": 0,
+  "fixture_hashes_identical": true,
+  "metrics": [
+    {
+      "family": "direct",
+      "concurrency": 1,
+      "images": 4,
+      "request_bytes": [
+        2100006
+      ],
+      "n": 1,
+      "errors": 0,
+      "mean_total_s": 4.517,
+      "median_total_s": 4.517,
+      "range_total_s": [
+        4.517,
+        4.517
+      ]
+    },
+    {
+      "family": "ipv4",
+      "concurrency": 1,
+      "images": 4,
+      "request_bytes": [
+        2100006
+      ],
+      "n": 2,
+      "errors": 0,
+      "mean_total_s": 2.9265,
+      "median_total_s": 2.9265,
+      "range_total_s": [
+        2.363,
+        3.49
+      ]
+    },
+    {
+      "family": "ipv4",
+      "concurrency": 1,
+      "images": 48,
+      "request_bytes": [
+        25197454
+      ],
+      "n": 2,
+      "errors": 0,
+      "mean_total_s": 14.9715,
+      "median_total_s": 14.9715,
+      "range_total_s": [
+        12.119,
+        17.824
+      ]
+    },
+    {
+      "family": "ipv4",
+      "concurrency": 2,
+      "images": 4,
+      "request_bytes": [
+        2100006
+      ],
+      "n": 4,
+      "errors": 0,
+      "mean_total_s": 5.24,
+      "median_total_s": 5.417999999999999,
+      "range_total_s": [
+        4.095,
+        6.029
+      ]
+    },
+    {
+      "family": "ipv6",
+      "concurrency": 1,
+      "images": 4,
+      "request_bytes": [
+        2100006
+      ],
+      "n": 2,
+      "errors": 0,
+      "mean_total_s": 7.8004999999999995,
+      "median_total_s": 7.8004999999999995,
+      "range_total_s": [
+        3.824,
+        11.777
+      ]
+    },
+    {
+      "family": "ipv6",
+      "concurrency": 1,
+      "images": 48,
+      "request_bytes": [
+        25197454
+      ],
+      "n": 2,
+      "errors": 0,
+      "mean_total_s": 76.713,
+      "median_total_s": 76.713,
+      "range_total_s": [
+        65.704,
+        87.722
+      ]
+    },
+    {
+      "family": "ipv6",
+      "concurrency": 2,
+      "images": 4,
+      "request_bytes": [
+        2100006
+      ],
+      "n": 4,
+      "errors": 0,
+      "mean_total_s": 12.0885,
+      "median_total_s": 13.0445,
+      "range_total_s": [
+        3.714,
+        18.551
+      ]
+    }
+  ],
+  "large_body_tcp_counters": {
+    "ipv4-large-1": [
+      {
+        "bytes_sent": "25237688",
+        "bytes_retrans": "4062",
+        "bytes_acked": "25233627",
+        "retrans": "0/3",
+        "cwnd": "101"
+      }
+    ],
+    "ipv4-large-2": [
+      {
+        "bytes_sent": "25239042",
+        "bytes_retrans": "5416",
+        "bytes_acked": "25233627",
+        "retrans": "0/4",
+        "cwnd": "154"
+      }
+    ],
+    "ipv6-large-1": [
+      {
+        "bytes_sent": "25949186",
+        "bytes_retrans": "715560",
+        "bytes_acked": "25233627",
+        "retrans": "0/534",
+        "cwnd": "45"
+      }
+    ],
+    "ipv6-large-2": [
+      {
+        "bytes_sent": "26052308",
+        "bytes_retrans": "818682",
+        "bytes_acked": "25233627",
+        "retrans": "0/611",
+        "cwnd": "36"
+      }
+    ]
+  },
+  "limitations": [
+    "Small sample during one measurement window; not a stable SLA or task-success estimate.",
+    "IPv4/IPv6 comparison uses identical local CONNECT forwarders, DIRECT outbounds, no external proxy nodes or TLS interception.",
+    "Client send time through a local forwarder includes buffering and is not final provider ingestion time; total API elapsed is the comparison metric.",
+    "25 MB probes repeat four images twelve times; matched body volume, not replay of the failed task context.",
+    "Two-request phases compare concurrent independent connections; no persistent single-connection load or large-body concurrency test.",
+    "Different address families can use different provider frontends; results do not identify a specific faulty hop or an IPv6 protocol defect."
+  ],
+  "conclusion": "During this fixed-input measurement window IPv4 DIRECT outbounds were faster and showed substantially fewer observed retransmissions than IPv6 DIRECT outbounds. The 25.197 MB single-request means were 14.9715 versus 76.713 seconds (5.12x). This supports testing an IPv4 direct network profile, not a universal latency guarantee, a proven faulty hop, or an experimental success-rate improvement. All temporary forwarders stopped and manager restored to direct; harness and active service identities unchanged. The earlier batch incident additionally returned a provider-side multimodal-file download timeout after client-body completion; local upload-path results alone do not explain or resolve that provider error.",
+  "preservation": {
+    "probe.py_environment_writes": [
+      "OPENAI_API_KEY"
+    ],
+    "probe-large.py_environment_writes": [
+      "OPENAI_API_KEY"
+    ],
+    "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+    "runtime_tracked_diff": "",
+    "embodied-manual-workbench.service": "MainPID=3593034\nActiveState=active",
+    "rpent-robodojo-workbench.service": "MainPID=341086\nActiveState=active",
+    "rpent-object-t-qwenflash-a-20261112.service": "MainPID=884975\nActiveState=active",
+    "rpent-object-t-qwenflash-b-20261112.service": "MainPID=884982\nActiveState=active",
+    "rpent-remote-proxy.service": "MainPID=0\nActiveState=inactive",
+    "manager_proxy_names": [
+      "NO_PROXY",
+      "no_proxy"
+    ],
+    "temporary_ports_released": {
+      "47040": true,
+      "47044": true,
+      "47060": true,
+      "47066": true
+    },
+    "network_script_hash_unchanged": true
+  },
+  "batch": {
+    "phase": "stopped",
+    "valid_completed": 5,
+    "planned": 50,
+    "successes": 5,
+    "incident_task": 0,
+    "incident_seed": 1,
+    "incident_counted_as_task_failure": false,
+    "incident_error": "HTTP 400 Download multimodal file timed out",
+    "incident_request_bytes": 25293818,
+    "incident_client_body_send_s": 158.17009329795837,
+    "incident_after_send_headers_s": 61.0593147277832,
+    "automatically_restarted": false
+  },
+  "full_remote_evidence_directory": "/home/zwy/work/embodied_harness/validation/qwen-network-diagnosis-20261113"
+}

@@ -1,0 +1,104 @@
+{
+  "at": "2026-11-13T02:48:31.500222+00:00",
+  "root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-pre-ipv4-retest-5-20261113",
+  "requested_retests": [
+    {
+      "task": 0,
+      "seed": 0
+    },
+    {
+      "task": 0,
+      "seed": 2
+    },
+    {
+      "task": 0,
+      "seed": 4
+    },
+    {
+      "task": 1,
+      "seed": 1
+    },
+    {
+      "task": 1,
+      "seed": 3
+    }
+  ],
+  "configuration": {
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none",
+    "max_turns": 50,
+    "max_tokens": 16384,
+    "planner_timeout_s": 0,
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ]
+  },
+  "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+  "materials": "language-c592f23a3a324c08",
+  "protected_hashes_preserved": 460,
+  "workbench_pid": 1884060,
+  "inherited_ipv4_endpoint_verified": true,
+  "actual_request_contract_verified": true,
+  "actual_counts": {
+    "requests": 15,
+    "responses": 15
+  },
+  "preflight": {
+    "passed": true,
+    "lanes": [
+      {
+        "name": "a",
+        "pid": 1884060,
+        "server_id": "a63ad57ceb434502835f5d9696db22a1",
+        "connection_latency_s": 1.88,
+        "config_matches": true,
+        "ipv4_network_selected": true
+      }
+    ],
+    "no_tasks_dispatched": true,
+    "same_source_and_materials": true
+  },
+  "status_at_audit": {
+    "phase": "running",
+    "completed": 0,
+    "planned": 5,
+    "lanes": {
+      "a": {
+        "phase": "running",
+        "task": 0,
+        "seed": 0,
+        "completed": 0,
+        "run_id": "3ae4b264a1d959829440",
+        "elapsed_s": 471.1,
+        "usage": {
+          "in": 356033,
+          "out": 1864,
+          "tool_calls": 21
+        }
+      }
+    }
+  },
+  "controller": "RuntimeMaxUSec=infinity\nMainPID=1884865\nActiveState=active\n",
+  "old_records_preserved": true,
+  "old_task8_waiting_episode_not_modified": true,
+  "network_policy": "Selected externally with remote-network.sh direct-ipv4; all experiment scripts only inherit networking",
+  "reporting_policy": "Replace five old pre-switch cells in a derived table; do not append them as five additional unique task/seed results. Pending task 8/9 cells remain pending."
+}

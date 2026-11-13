@@ -1,0 +1,239 @@
+{
+  "at": "2026-11-13T02:25:50.684737+00:00",
+  "batch_root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-original-50-ipv4-resume-20261113",
+  "status": {
+    "phase": "running",
+    "completed": 45,
+    "planned": 50,
+    "lanes": {
+      "a": {
+        "phase": "completed",
+        "completed": 25
+      },
+      "b": {
+        "phase": "running",
+        "task": 8,
+        "seed": 1,
+        "completed": 20,
+        "run_id": "44a9285aad9f3674f17e",
+        "elapsed_s": 29588.3,
+        "usage": {
+          "in": 214503,
+          "out": 1597,
+          "tool_calls": 17
+        }
+      }
+    }
+  },
+  "tasks": [
+    {
+      "task": 0,
+      "instruction": "Pick the cream cheese and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 15.2,
+      "mean_episode_elapsed_s": 833.16,
+      "mean_success_elapsed_s": 833.16,
+      "mean_total_tokens": 400744.6,
+      "sum_total_tokens": 2003723,
+      "sum_input_tokens": 1993558,
+      "sum_output_tokens": 10165,
+      "sum_cached_input_tokens": 1753344,
+      "network_segments": {
+        "direct-auto-before-resume": 3,
+        "ipv4-direct": 2
+      }
+    },
+    {
+      "task": 1,
+      "instruction": "Pick the alphabet soup and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 14.6,
+      "mean_episode_elapsed_s": 318.48,
+      "mean_success_elapsed_s": 318.48,
+      "mean_total_tokens": 369518.8,
+      "sum_total_tokens": 1847594,
+      "sum_input_tokens": 1838022,
+      "sum_output_tokens": 9572,
+      "sum_cached_input_tokens": 1636352,
+      "network_segments": {
+        "direct-auto-before-resume": 2,
+        "ipv4-direct": 3
+      }
+    },
+    {
+      "task": 2,
+      "instruction": "Pick the tomato sauce and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 12.6,
+      "mean_episode_elapsed_s": 80.72,
+      "mean_success_elapsed_s": 80.72,
+      "mean_total_tokens": 297265.6,
+      "sum_total_tokens": 1486328,
+      "sum_input_tokens": 1477337,
+      "sum_output_tokens": 8991,
+      "sum_cached_input_tokens": 1229056,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 3,
+      "instruction": "Pick the ketchup and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 15.4,
+      "mean_episode_elapsed_s": 97.14,
+      "mean_success_elapsed_s": 97.14,
+      "mean_total_tokens": 404372.2,
+      "sum_total_tokens": 2021861,
+      "sum_input_tokens": 2012960,
+      "sum_output_tokens": 8901,
+      "sum_cached_input_tokens": 1668608,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 4,
+      "instruction": "Pick the milk and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 3,
+      "success_rate_percent": 60.0,
+      "mean_model_interactions": 39.4,
+      "mean_episode_elapsed_s": 371.74,
+      "mean_success_elapsed_s": 266.76666666666665,
+      "mean_total_tokens": 1557204,
+      "sum_total_tokens": 7786020,
+      "sum_input_tokens": 7764736,
+      "sum_output_tokens": 21284,
+      "sum_cached_input_tokens": 3934208,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 5,
+      "instruction": "Pick the bbq sauce and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 25.8,
+      "mean_episode_elapsed_s": 196.74,
+      "mean_success_elapsed_s": 196.74,
+      "mean_total_tokens": 830491,
+      "sum_total_tokens": 4152455,
+      "sum_input_tokens": 4137776,
+      "sum_output_tokens": 14679,
+      "sum_cached_input_tokens": 2931200,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 6,
+      "instruction": "Pick the orange juice and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 2,
+      "success_rate_percent": 40.0,
+      "mean_model_interactions": 43.8,
+      "mean_episode_elapsed_s": 433.68,
+      "mean_success_elapsed_s": 209.2,
+      "mean_total_tokens": 1840018.4,
+      "sum_total_tokens": 9200092,
+      "sum_input_tokens": 9175729,
+      "sum_output_tokens": 24363,
+      "sum_cached_input_tokens": 4034048,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 7,
+      "instruction": "Pick the butter and place it in the basket",
+      "completed": 5,
+      "planned": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 19,
+      "mean_episode_elapsed_s": 141.58,
+      "mean_success_elapsed_s": 141.58,
+      "mean_total_tokens": 584392.2,
+      "sum_total_tokens": 2921961,
+      "sum_input_tokens": 2910329,
+      "sum_output_tokens": 11632,
+      "sum_cached_input_tokens": 2586112,
+      "network_segments": {
+        "ipv4-direct": 5
+      }
+    },
+    {
+      "task": 8,
+      "instruction": "Pick the salad dressing and place it in the basket",
+      "completed": 3,
+      "planned": 5,
+      "successes": 3,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 14,
+      "mean_episode_elapsed_s": 82.76666666666667,
+      "mean_success_elapsed_s": 82.76666666666667,
+      "mean_total_tokens": 314115.6666666667,
+      "sum_total_tokens": 942347,
+      "sum_input_tokens": 936595,
+      "sum_output_tokens": 5752,
+      "sum_cached_input_tokens": 830464,
+      "network_segments": {
+        "ipv4-direct": 3
+      }
+    },
+    {
+      "task": 9,
+      "instruction": "Pick the chocolate pudding and place it in the basket",
+      "completed": 2,
+      "planned": 5,
+      "successes": 2,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 27.5,
+      "mean_episode_elapsed_s": 212.64999999999998,
+      "mean_success_elapsed_s": 212.64999999999998,
+      "mean_total_tokens": 917605.5,
+      "sum_total_tokens": 1835211,
+      "sum_input_tokens": 1827948,
+      "sum_output_tokens": 7263,
+      "sum_cached_input_tokens": 1439232,
+      "network_segments": {
+        "ipv4-direct": 2
+      }
+    }
+  ],
+  "overall": {
+    "completed": 45,
+    "successes": 40,
+    "success_rate_percent": 88.88888888888889,
+    "mean_model_interactions": 22.8,
+    "mean_episode_elapsed_s": 289.7733333333333,
+    "mean_success_elapsed_s": 255.785,
+    "mean_total_tokens": 759946.4888888889,
+    "sum_total_tokens": 34197592
+  },
+  "definitions": {
+    "model_interactions": "Recorded model_requests per settled episode, not robot action or tool-call count",
+    "episode_elapsed": "All valid settled episodes, including valid task failures; active/unsettled and infrastructure incidents excluded",
+    "success_elapsed": "Mean duration of environment_success=true settled episodes only",
+    "total_tokens": "total_input_tokens + total_output_tokens; cached input is a subset of total_input_tokens and is not added again",
+    "cohort": "Includes five pre-IPv4 episodes; timing is descriptive, not a pure IPv4 comparison"
+  }
+}

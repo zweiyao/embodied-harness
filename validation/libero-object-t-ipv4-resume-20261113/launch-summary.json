@@ -1,0 +1,188 @@
+{
+  "at": "2026-11-12T17:24:44.974855+00:00",
+  "phase": "running",
+  "batch_root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-original-50-ipv4-resume-20261113",
+  "parent_batch": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-original-50-20261112",
+  "planned_total": 50,
+  "retained_valid": 5,
+  "remaining_at_resume": 45,
+  "current_completed": 9,
+  "current_successes": 9,
+  "new_ipv4_completed": 4,
+  "new_ipv4_successes": 4,
+  "configuration": {
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none",
+    "max_turns": 50,
+    "max_tokens": 16384,
+    "planner_timeout_s": 0,
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ]
+  },
+  "suite": "libero_object_task",
+  "material_version": "language-c592f23a3a324c08",
+  "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+  "parent_preparation_revision": "c8029f02aa6577c7ae04e0bd854b56edd6ee4ab2",
+  "protected_files_unchanged": 460,
+  "parent_results_hash_unchanged": true,
+  "original_vla_sam_pids_preserved": [
+    782157,
+    782158
+  ],
+  "original_public_workbench_pid_preserved": 3593034,
+  "lanes": {
+    "a": {
+      "pid": 1065016,
+      "port": 44489,
+      "actual_model_requests": 37,
+      "actual_model_responses": 36,
+      "inherited_ipv4_endpoint_verified": true,
+      "actual_timeout_none": true,
+      "actual_thinking_false": true
+    },
+    "b": {
+      "pid": 1065020,
+      "port": 37391,
+      "actual_model_requests": 36,
+      "actual_model_responses": 35,
+      "inherited_ipv4_endpoint_verified": true,
+      "actual_timeout_none": true,
+      "actual_thinking_false": true
+    }
+  },
+  "lane_status": {
+    "a": {
+      "phase": "running",
+      "task": 2,
+      "seed": 4,
+      "completed": 7,
+      "run_id": "f59acad76fe458fd78d7",
+      "elapsed_s": 68.2,
+      "usage": {
+        "in": 218321,
+        "out": 1606,
+        "tool_calls": 20
+      }
+    },
+    "b": {
+      "phase": "running",
+      "task": 1,
+      "seed": 0,
+      "completed": 2,
+      "run_id": "dc369fd9f3cd26289981",
+      "elapsed_s": 20.1,
+      "usage": {
+        "in": 13570,
+        "out": 304,
+        "tool_calls": 4
+      }
+    }
+  },
+  "readiness": {
+    "passed": true,
+    "lanes": [
+      {
+        "name": "a",
+        "pid": 1065016,
+        "server_id": "7bb6006034ed4540b34e1df2801f6070",
+        "connection_latency_s": 0.761,
+        "config_matches": true,
+        "ipv4_network_selected": true
+      },
+      {
+        "name": "b",
+        "pid": 1065020,
+        "server_id": "894ebbdc5c734e728a76b9c42d308d92",
+        "connection_latency_s": 0.737,
+        "config_matches": true,
+        "ipv4_network_selected": true
+      }
+    ],
+    "no_tasks_dispatched": true,
+    "same_source_and_materials": true
+  },
+  "accounting_simulation": {
+    "passed": true,
+    "simulated_new_valid_results": 45,
+    "combined_unique_trials": 50,
+    "retained": 5,
+    "valid_task_failures_counted": true,
+    "infrastructure_incident_excluded": true,
+    "real_model_calls": 0,
+    "real_robot_actions": 0
+  },
+  "current_new_result_links": [
+    {
+      "task": 2,
+      "seed": 0,
+      "success": true,
+      "model_requests": 13,
+      "elapsed_s": 74.4,
+      "url": "http://10.162.250.228:8092/runs?id=4fd78df240b589e9d431"
+    },
+    {
+      "task": 2,
+      "seed": 2,
+      "success": true,
+      "model_requests": 11,
+      "elapsed_s": 80.1,
+      "url": "http://10.162.250.228:8092/runs?id=e1388a438b3c8d06647d"
+    },
+    {
+      "task": 0,
+      "seed": 1,
+      "success": true,
+      "model_requests": 14,
+      "elapsed_s": 94.1,
+      "url": "http://10.162.250.228:8092/runs?id=16696f5d74fc14c736e5"
+    },
+    {
+      "task": 0,
+      "seed": 3,
+      "success": true,
+      "model_requests": 18,
+      "elapsed_s": 108.8,
+      "url": "http://10.162.250.228:8092/runs?id=d11933d58bbcbd0736a2"
+    }
+  ],
+  "public_history_verified": true,
+  "pre_commit_all_files": "passed",
+  "runtime_time_policy": {
+    "episode_seconds": null,
+    "model_http_connect_read_write_pool": null,
+    "runtime_rpc_seconds": null,
+    "batch_deadline": null,
+    "startup_and_cleanup_checks": "Finite; not experiment performance budgets",
+    "idle_retry_watchdog": false,
+    "native_action_limit": 10000
+  },
+  "batch_service": "RuntimeMaxUSec=infinity\nMainPID=1065644\nActiveState=active\n",
+  "incident_policy": "Preserve unexpected incidents, exclude from denominator, pause before retry after diagnosis; no retries for valid model/task failures",
+  "limits": [
+    "Fixed evaluation only; no harness, memory or tools optimization.",
+    "The cohort retains five pre-switch results; report latency by network segment rather than claiming a pure IPv4 50-episode latency mean.",
+    "Current counts are interim, not the final 50-episode success rate.",
+    "Preparation and dry-check incidents are preserved separately and made no model requests or robot actions.",
+    "Original runtime code and borrowed VLA/SAM3 remain frozen; only idle private experiment workbenches were replaced.",
+    "No Mac networking or physical robot actions."
+  ]
+}

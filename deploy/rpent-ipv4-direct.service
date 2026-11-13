@@ -1,0 +1,14 @@
+[Unit]
+Description=RPent loopback forwarder with IPv4-only direct outbounds
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/verge-mihomo -d %h/.local/share/rpent/ipv4-direct -f %h/.config/rpent/network/ipv4-direct.yaml
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target
