@@ -81,7 +81,17 @@ class RoboDojoScenario:
                     "rgb": array_summary(rgb),
                     "depth": array_summary(depth),
                 }
-            env.step(encoded["states"][0])
+            env.step(
+                {
+                    key: obs["state"][key]
+                    for key in (
+                        "left_arm_joint_state",
+                        "right_arm_joint_state",
+                        "left_ee_joint_state",
+                        "right_ee_joint_state",
+                    )
+                }
+            )
             assert env.get_status()["step"] == 1
             return obs, {
                 "status": "passed",

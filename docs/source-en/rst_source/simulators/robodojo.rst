@@ -42,6 +42,15 @@ adapter and ``pi05_robodojo_arx_x5``. The RoboDojo preset selects the OpenPI
 and 14-dimensional environment actions. Real-weight RPC inference has returned
 finite actions of shape ``(1, 50, 14)``; this is not a task-success guarantee.
 
+For the released ARX-X5 checkpoint, state inputs and unnormalized policy outputs
+use ``[left arm(6), left gripper(1), right arm(6), right gripper(1)]``.
+The RoboDojo VLA boundary restores joint deltas with the raw state, leaves both
+grippers absolute, and converts to the native vector order
+``[left arm(6), right arm(6), left gripper(1), right gripper(1)]`` before control.
+The RLinf default delta transform is disabled for this preset to avoid applying
+its incompatible 12-joint mask. Unnormalization and removal of the 32-D padding
+remain owned by the RLinf loader. Manual native action dictionaries are unchanged.
+
 The simulation bridge requires runtime version 0.3.0 or later.
 The Git references are temporary until versioned releases are published.
 Fresh dependency installation and GPU rollout must be validated separately;

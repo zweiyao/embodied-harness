@@ -81,8 +81,8 @@ def _encode_obs_robodojo(env_obs: dict) -> dict:
     parts = []
     for key, size in (
         ("left_arm_joint_state", 6),
-        ("right_arm_joint_state", 6),
         ("left_ee_joint_state", 1),
+        ("right_arm_joint_state", 6),
         ("right_ee_joint_state", 1),
     ):
         try:
@@ -93,6 +93,7 @@ def _encode_obs_robodojo(env_obs: dict) -> dict:
         if part.shape != (size,):
             raise ValueError(f"state/{key}: expected shape ({size},), got {part.shape}")
         parts.append(part)
+    # Published checkpoint order is left arm/gripper, then right arm/gripper.
     # Keep observed gripper values: 1.0 is open and 0.0 is closed.
     states = np.concatenate(parts)
     assert states.shape == (14,)

@@ -51,6 +51,8 @@ PI05_EMBODIMENTS: dict[str, dict] = {
     # End-to-end policy-chain smoke only (real weights, one prediction);
     # simulation task success rates have not yet been established.
     "robodojo": {
+        # Restore joint deltas at the RoboDojo boundary using checkpoint order.
+        "openpi_data": {"extra_delta_transform": False},
         "num_action_chunks": 50,
         "action_dim": 14,
         "use_proprio": True,
@@ -213,7 +215,7 @@ class Pi05VLAFacade(BaseVLAFacade):
 
         cfg = build_model_cfg(model_path=model_path, emb_cfg=emb_cfg)
         if repo_id is not None or norm_stats_path is not None:
-            cfg.openpi_data = {}
+            cfg.openpi_data = cfg.get("openpi_data", {})
             if repo_id is not None:
                 cfg.openpi_data.repo_id = repo_id
             if norm_stats_path is not None:
@@ -257,7 +259,7 @@ class Pi05VLAFacade(BaseVLAFacade):
         mode = (options or {}).get("mode", "eval")
         with torch.no_grad():
             actions, _ = self._model.predict_action_batch(obs, mode=mode)
-        return (
+        actions = (
             actions.detach().cpu().numpy()
             if (
                 hasattr(actions, "detach")
@@ -266,6 +268,11 @@ class Pi05VLAFacade(BaseVLAFacade):
             )
             else np.asarray(actions)
         ).astype(np.float32)
+        if self._embodiment == "robodojo":
+            from robots.robodojo.policy import policy_actions_to_native
+
+            actions = policy_actions_to_native(actions, obs["states"])
+        return actions
 
 
 # ---------------------------------------------------------------------------
