@@ -5,7 +5,11 @@ The earlier request to unload LIBERO caused two operator-aborted attempts;
 those raw records and their stop reason remain preserved and are excluded.
 Previously settled results are unchanged: retain the 40 original IPv4 cells and
 four IPv4 replacement cells, then run only the six missing task/seed pairs.
-No valid failure is repeated.
+Previously settled task failures are not retried. The older task 8 / seed 1
+attempt was already idle after a complete model response before the operator stop;
+its record is retained, not retroactively reclassified. Its replacement is a new
+attempt under the newly approved settlement policy. This protocol change must
+remain visible when interpreting the final table.
 
 Missing pairs: (1,3), (8,1), (8,3), (9,0), (9,2), (9,4).
 Two independent workbenches share the restored original LIBERO Pi0.5/SAM3 pool.

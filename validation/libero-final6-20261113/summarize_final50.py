@@ -64,7 +64,7 @@ def main():
             "four_retests": str(RETEST),
             "six_completions": str(ROOT),
         },
-        "excluded": "All five pre-IPv4 cells; infrastructure incidents; two operator-interrupted attempts, retained separately. No valid task failure was retried.",
+        "excluded": "All five pre-IPv4 cells; infrastructure incidents; two operator-interrupted attempts, retained separately. Previously settled failures were not retried. The older unresolved idle attempt is retained separately; this six-cell continuation uses the newly approved early-stop rule.",
         "early_stop_policy": json.loads((ROOT / "plan.json").read_text())[
             "early_stop_policy"
         ],
