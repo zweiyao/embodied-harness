@@ -1,21 +1,21 @@
 {
-  "at": "2026-11-13T02:58:14.802294+00:00",
+  "at": "2026-11-13T03:41:30.773141+00:00",
   "status": {
     "phase": "running",
-    "completed": 1,
+    "completed": 3,
     "planned": 5,
     "lanes": {
       "a": {
         "phase": "running",
-        "task": 0,
-        "seed": 2,
-        "completed": 1,
-        "run_id": "7c101eaa19b8ec97020d",
-        "elapsed_s": 473.4,
+        "task": 1,
+        "seed": 1,
+        "completed": 3,
+        "run_id": "b3d4f3ea3716624acc26",
+        "elapsed_s": 829.6,
         "usage": {
-          "in": 410731,
-          "out": 1749,
-          "tool_calls": 20
+          "in": 668502,
+          "out": 1845,
+          "tool_calls": 22
         }
       }
     }
@@ -28,24 +28,45 @@
       "status": "completed",
       "model_requests": 16,
       "elapsed_s": 579.6,
-      "url": "http://10.162.250.228:8092/runs?id=7531a410ccf91cc83b48"
+      "url": "http://10.162.250.228:8092/runs?id=7531a410ccf91cc83b48",
+      "total_tokens": 400697
+    },
+    {
+      "task": 0,
+      "seed": 2,
+      "success": true,
+      "status": "completed",
+      "model_requests": 30,
+      "elapsed_s": 1238.1,
+      "url": "http://10.162.250.228:8092/runs?id=e8a7961baf545056120f",
+      "total_tokens": 658469
+    },
+    {
+      "task": 0,
+      "seed": 4,
+      "success": true,
+      "status": "completed",
+      "model_requests": 13,
+      "elapsed_s": 998.7,
+      "url": "http://10.162.250.228:8092/runs?id=47252309a1c13f05c873",
+      "total_tokens": 298750
     }
   ],
   "postprocessor": {
-    "at_unix": 1794538692.9163074,
+    "at_unix": 1794541283.460531,
     "phase": "waiting",
-    "completed": 1,
+    "completed": 3,
     "active": {
       "phase": "running",
-      "task": 0,
-      "seed": 2,
-      "completed": 1,
-      "run_id": "7c101eaa19b8ec97020d",
-      "elapsed_s": 471.4,
+      "task": 1,
+      "seed": 1,
+      "completed": 3,
+      "run_id": "b3d4f3ea3716624acc26",
+      "elapsed_s": 821.6,
       "usage": {
-        "in": 410731,
-        "out": 1749,
-        "tool_calls": 20
+        "in": 668502,
+        "out": 1845,
+        "tool_calls": 22
       }
     }
   },
@@ -53,5 +74,6 @@
   "report_service": "RuntimeMaxUSec=infinity\nMainPID=1905183\nActiveState=active\n",
   "completion_artifact": "/home/zwy/work/embodied_harness/validation/libero-pre-ipv4-retest-20261113/ipv4-only-summary.json",
   "no_followup_prompts_sent": true,
-  "parent_task8_episode_untouched": true
+  "parent_task8_episode_untouched": true,
+  "new_incidents": 0
 }
