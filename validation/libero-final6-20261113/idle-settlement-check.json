@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "synthetic_checks": 15,
+  "historical_checks": 2,
+  "pending_network_and_tools_never_settled_as_early_stop": true,
+  "historical_idle": {
+    "classification": "model_stopped_without_finish",
+    "environment_success": false,
+    "official_signal_source": "latest environment-step terminated flag",
+    "model_requests": 11,
+    "model_responses": 11,
+    "tool_requests": 17,
+    "tool_responses": 17,
+    "finish_reason": "stop",
+    "response_state": "complete",
+    "last_model_response_time": "2026-11-12T18:13:39.177044+00:00",
+    "followup_prompt_sent": false,
+    "raw_outcome_preserved": true
+  }
+}
