@@ -1,225 +1,89 @@
-# Embodied Harness
+# holmes_RUA
 
-本研究代码库基于 [RLinf/RPent](https://github.com/RLinf/RPent) 的 `ef70215` 版本，保留已有的 Flexiv 接入、控制台配置与模型工具参数兼容改动，以整理后的源码快照作为起点，并保留上游许可证与署名。
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-部署依赖与限制见 [Flexiv 接入说明](robots/flexiv/README.md)。外部硬件采集器、凭据、模型、标定数据和本机实验记录不包含在仓库中。自动感知工具发现是后续研究方向，尚未在此快照中实现。
+`holmes_RUA` 是基于 [RPent](https://github.com/RLinf/RPent) 的具身智能体研究项目。研究目标是从多模态交互中的反复失败中提炼可复用经验，将重复的感知处理与判断流程封装为工具，并验证它们对任务成功率、执行时间和 token 消耗的影响。
 
----
+仓库以 RPent 上游 `ef70215` 的整理快照为起点，包含仿真与 Flexiv 接入、研究工作台及实验分析记录。可执行工具或单轮成功本身不代表方法有效；改进需通过明确条件下的对照实验验证。
 
-<div align="center">
-  <img src="https://github.com/RLinf/misc/raw/main/pic/rpent_logo.png" alt="RPent-logo" width="520"/>
-</div>
+## RPent 实测结果
 
-<div align="center">
-<a href="https://arxiv.org/abs/2607.08448"><img src="https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv"></a>
-<a href="https://huggingface.co/RLinf"><img src="https://img.shields.io/badge/HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Hugging Face"></a>
-<a href="https://rpent.readthedocs.io/en/latest/"><img src="https://img.shields.io/badge/Documentation-Purple?color=8A2BE2&logo=readthedocs"></a>
-<a href="https://rpent.readthedocs.io/zh-cn/latest/"><img src="https://img.shields.io/badge/中文文档-red?logo=readthedocs"></a>
-<a href="https://github.com/RLinf/misc/blob/main/pic/wechat.jpg?raw=true"><img src="https://img.shields.io/badge/微信-green?logo=wechat&amp"></a>
-</div>
+**以下为本项目使用 RPent harness 测得的结果，不是 RPent 论文成绩，也不是 holmes_RUA 优化后的提升结果。** 原始结果按环境官方成功信号统计，模型口头宣告完成不计作成功。不同任务集、预算和网络条件的批次分别列出，不能直接用它们推断某项优化的因果收益。
 
-<div align="center">
+### GPT / Astra：LIBERO-Pro `libero_10_task`
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
-[![简体中文](https://img.shields.io/badge/语言-简体中文-red.svg)](README.zh-CN.md)
+模型 `gpt-6-astra`，Codex planner，`reasoning_effort=low`；任务 0–9 各 5 次，共 50 次。每次最多 30 次已完成模型响应、600 秒；使用 RPent 原生 17 个工具及冻结经验 `language-c592f23a3a324c08`。基础设施意外保留归档并排除，补跑对应任务；超时与预算耗尽计失败。
 
-</div>
+| 任务 | 成功 / 有效次数 | 成功率 | 平均交互次数 | 平均用时（秒） | 平均 token | 总 token |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 5/5 | 100.0% | 14.0 | 163.4 | 565,809 | 2,829,046 |
+| 1 | 5/5 | 100.0% | 17.4 | 207.8 | 808,469 | 4,042,344 |
+| 2 | 4/5 | 80.0% | 22.2 | 216.5 | 1,296,358 | 6,481,792 |
+| 3 | 2/5 | 40.0% | 23.8 | 334.8 | 1,386,704 | 6,933,519 |
+| 4 | 1/5 | 20.0% | 29.4 | 274.9 | 1,841,347 | 9,206,737 |
+| 5 | 5/5 | 100.0% | 11.4 | 107.1 | 418,977 | 2,094,886 |
+| 6 | 4/5 | 80.0% | 22.4 | 217.8 | 1,158,476 | 5,792,379 |
+| 7 | 5/5 | 100.0% | 17.2 | 154.2 | 766,096 | 3,830,481 |
+| 8 | 4/5 | 80.0% | 17.6 | 181.4 | 817,257 | 4,086,287 |
+| 9 | 0/5 | 0.0% | 30.0 | 282.3 | 2,060,328 | 10,301,639 |
+| **合计** | 35/50 | 70.0% | 20.5 | 214.0 | 1,111,982 | 55,599,110 |
 
-<h1 align="center">
-  <sub>RPent: 面向物理世界的智能体基础设施</sub>
-</h1>
+### Qwen Flash：LIBERO-Pro `libero_10_task`
 
-**RPent (Recursive Physical Agent)** 是一个用于构建具身智能体的开放框架，使智能体能够通过与物理世界的递归交互持续演化。RPent 并不预设单一基础模型，而是提供一个递归智能体框架，将感知、推理、记忆、执行与自我演化等异构智能统一到一个物理智能体中。通过持续交互、反思与适应，RPent 使物理智能体能够获得新的能力，并超越其初始设计不断演进。我们将 RPent 构建于**服务化**、**标准化**和**可组合**的设计原则之上，确保框架具备高度的可扩展性。
+模型 `qwen3.8-flash`，API planner，关闭思考；任务 0–9 各 5 次，共 50 次，最多 30 次模型请求，原生工具及冻结经验与上述批次相同。**本批是混合时间预算：3000 秒组 2/8 成功，1500 秒组 1/42 成功。** 早期 600 秒尝试不混入。这里的合计仅作历史描述，不是统一预算基准。
 
-<div align="center">
-  <img src="https://github.com/RLinf/misc/raw/main/pic/rpent_framework.png" alt="RPent framework"/>
-</div>
+| 任务 | 成功 / 有效次数 | 成功率 | 平均交互次数 | 平均用时（秒） | 平均 token | 总 token |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 2/5 | 40.0% | 27.6 | 2333.1 | 833,850 | 4,169,248 |
+| 1 | 0/5 | 0.0% | 27.8 | 2180.5 | 1,051,854 | 5,259,268 |
+| 2 | 0/5 | 0.0% | 30.0 | 282.8 | 1,357,440 | 6,787,199 |
+| 3 | 0/5 | 0.0% | 30.0 | 235.7 | 1,228,947 | 6,144,737 |
+| 4 | 0/5 | 0.0% | 30.0 | 194.7 | 1,113,165 | 5,565,823 |
+| 5 | 1/5 | 20.0% | 28.2 | 199.7 | 1,049,023 | 5,245,115 |
+| 6 | 0/5 | 0.0% | 27.2 | 480.3 | 1,035,975 | 5,179,877 |
+| 7 | 0/5 | 0.0% | 24.4 | 466.9 | 803,826 | 4,019,129 |
+| 8 | 0/5 | 0.0% | 30.0 | 167.2 | 924,672 | 4,623,361 |
+| 9 | 0/5 | 0.0% | 30.0 | 168.2 | 1,026,412 | 5,132,061 |
+| **合计** | 3/50 | 6.0% | 28.5 | 670.9 | 1,042,516 | 52,125,818 |
 
-## 排行榜
+### Qwen Flash：Object-T 阶段结果
 
-对比 RPent 与参考方法在 LIBERO、LIBERO-PRO、RoboCasa365 Target50 和 RoboTwin C2R 上的成功率。排名仅限图中方法及评测范围；套件成绩和模型配置见 [排行榜](https://rpent.readthedocs.io/zh-cn/latest/rst_source/leaderboard/index.html)。
+LIBERO-Pro `libero_object_task`，模型 `qwen3.8-flash`，关闭思考，RPent 原版提示词、冻结经验及 17 个原生工具。每次最多 **50 次模型请求，无任务总时限**，模型 HTTP 与环境 / VLA / SAM3 RPC 无超时限制；原生仿真动作预算保留。网络为远程 IPv4 直连。
 
-Codex / GPT-6 Astra / low / reasoning 已完成全部八套 LIBERO-PRO，**Overall 92.63%（741/800）**。详见 [套件汇总与 memory 批次说明](https://rpent.readthedocs.io/zh-cn/latest/rst_source/leaderboard/index.html#libero-pro-astra-memory)，其中 Long 与 Spatial/Object/Goal 分别使用各自冻结的 memory 批次。
+截至 **2026-11-13 13:32（北京时间）的数据核查**，仅计已结算的 **44/50** 个唯一任务 / seed，39 次成功。5 个切换前样本已排除，其中 4 个已用 IPv4 复测替换。任务 1、8、9 尚未齐全，待完成项不计为失败；**88.6% 是已完成样本的阶段成功率，不是完整 50 次成绩。**
 
-[![RPent 排行榜](https://cdn.jsdelivr.net/gh/RLinf/misc@705bd44bfc8ad7586b76239de13167db35abcce7/rpent/benchmarks/leaderboard-zh-light.png)](https://rpent.readthedocs.io/zh-cn/latest/rst_source/leaderboard/index.html)
+| 任务 | 成功 / 有效次数 | 成功率 | 平均交互次数 | 平均用时（秒） | 平均 token | 总 token |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 5/5 | 100.0% | 18.2 | 603.9 | 452,810 | 2,264,051 |
+| 1 | 4/4 | 100.0% | 20.0 | 1107.7 | 550,527 | 2,202,109 |
+| 2 | 5/5 | 100.0% | 12.6 | 80.7 | 297,266 | 1,486,328 |
+| 3 | 5/5 | 100.0% | 15.4 | 97.1 | 404,372 | 2,021,861 |
+| 4 | 3/5 | 60.0% | 39.4 | 371.7 | 1,557,204 | 7,786,020 |
+| 5 | 5/5 | 100.0% | 25.8 | 196.7 | 830,491 | 4,152,455 |
+| 6 | 2/5 | 40.0% | 43.8 | 433.7 | 1,840,018 | 9,200,092 |
+| 7 | 5/5 | 100.0% | 19.0 | 141.6 | 584,392 | 2,921,961 |
+| 8 | 3/3 | 100.0% | 14.0 | 82.8 | 314,116 | 942,347 |
+| 9 | 2/2 | 100.0% | 27.5 | 212.6 | 917,606 | 1,835,211 |
+| **合计** | 39/44 | 88.6% | 23.8 | 334.8 | 791,192 | 34,812,435 |
 
+交互次数按各适配器归档口径统计：Codex/Astra 为已完成模型响应数，Qwen API planner 为模型请求数，均包含有效失败。两者计数定义不同，也不等于物理动作数。平均用时包含成功与有效失败；token 为 API 返回的输入加输出，缓存输入已包含在输入中，不重复相加。完整条件、逐次小型结果及原始文件摘要见 [结果快照](validation/holmes-rua-homepage-20261113/results.json)。统计快照时间以该文件的 `checked_at` 为准。
 
-## 适用用户
+## 使用与开发
 
-RPent 面向以下四类用户：
+| 入口 | 内容 |
+| --- | --- |
+| [快速开始](docs/source-zh/rst_source/get_started/quickstart.rst) | 环境安装、资产、权重与首次任务 |
+| [研究工作台](docs/manual-workbench/README.md) | 模型配置、工具选择、实验记录与回放 |
+| [LIBERO 指南](docs/source-zh/rst_source/simulators/libero.rst) | 安装、仿真资产、任务与评测 |
+| [UniVTAC](robots/univtac/README.md) / [Flexiv](robots/flexiv/README.md) | 各环境部署要求与限制 |
+| [RoboDojo](docs/source-zh/rst_source/simulators/robodojo.rst) / [RoboCasa](docs/source-zh/rst_source/simulators/robocasa.rst) / [RoboTwin](docs/source-zh/rst_source/simulators/robotwin.rst) | 仿真接入说明；支持状态以各指南为准 |
+| [开发说明](CONTRIBUTING_zh.md) / [测试](tests/README.md) | 贡献约定、接口与验证方法 |
 
-- **具身智能研究者**：希望在具身任务与基准上取得更高成功率，尤其是长程操作任务。RPent 基于记忆引导的智能体组合方案，能够显著提升任务成功率，超越单纯依赖冻结 VLA 的效果。
-- **在线学习 / 强化学习研究者**：致力于研究可自我演化的具身智能体。RPent 提供的递归交互、反思与记忆蒸馏闭环，可作为在物理世界中开展持续学习与强化学习研究的现成基础。
-- **机器人应用开发者**：希望将具身方案部署到真实机器人硬件上。RPent 的服务化、标准化架构以及可定制的智能体控制逻辑，能够提升真实场景下的任务成功率，并缩短从原型到生产部署的周期。
-- **具身智能体的最终用户**：即上一类开发者所服务的用户。只需安装 RPent 及相应的真实机器人扩展，即可开箱即用地运行预定义任务，无需具备机器学习专业知识。
+项目展示名称为 `holmes_RUA`。Python 包、CLI 命令及配置兼容名称仍为 `rpent`；GitHub 仓库地址仍为 `zweiyao/embodied-harness`。外部硬件采集器、凭据、录像、原始观测、标定数据与模型权重不随源码发布。
 
-## 最新动态
+## 上游与许可
 
-- [2026/09] 🔥 新增交互式 RPent 排行榜，覆盖 LIBERO、LIBERO-PRO、RoboCasa365 与 RoboTwin，提供模型对比及套件汇总。查看 [排行榜](https://rpent.readthedocs.io/zh-cn/latest/rst_source/leaderboard/index.html)。
-- [2026/09] 🔥 RPent 支持 Franka 单臂与双臂真机扩展。文档：[Franka](https://rpent.readthedocs.io/zh-cn/latest/rst_source/real_world_robots/franka.html) · [Dual Franka](https://rpent.readthedocs.io/zh-cn/latest/rst_source/real_world_robots/dual_franka.html)。
-- [2026/08] 🔥 支持 RoboCasa，使用 RLDX-1 作为操作模型。参见 [RoboCasa 安装与 Target50 指南](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robocasa.html)。
-- [2026/08] 🔥 新增非推理（non-reasoning）模式，平均执行时间降低约 40%。
-- [2026/08] 🔥 支持 LIBERO 探索模式。文档：[LIBERO 探索模式](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/libero.html#memory)。
-- [2026/08] 🔥 支持 RoboTwin，使用 LingBot-VLA 处理双臂操作任务。文档：[RoboTwin](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robotwin.html)。
-- [2026/07] 🔥 RPent 首篇论文 [Harness VLA: Steering Frozen VLAs into Reliable Manipulation Primitives via Memory-Guided Agents](https://arxiv.org/abs/2607.08448) 发布。
-
-## 功能矩阵
-
-<table width="100%" style="width: 100%; table-layout: auto; border-collapse: collapse;">
-  <thead align="center" valign="bottom">
-    <tr>
-      <th style="min-width: 300px;">智能体规划器</th>
-      <th style="min-width: 340px;">动作原语</th>
-      <th style="min-width: 300px; text-align: left;">仿真环境</th>
-      <th style="min-width: 260px;">真实世界</th>
-    </tr>
-  </thead>
-  <tbody valign="top">
-    <tr>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/guides/configure_planner.html#claude-code-planner">Claude Code</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/guides/configure_planner.html#codex-planner">Codex</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/development/add_planner.html">Custom Planner</a> ✅</li>
-        </ul>
-      </td>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><b>VLA</b></li>
-          <ul>
-            <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/libero.html">Pi0.5</a> ✅</li>
-            <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robocasa.html">RLDX-1</a> ✅</li>
-            <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robotwin.html">LingBot-VLA</a> ✅</li>
-          </ul>
-          <li><b>WAM</b></li>
-          <ul>
-            <li>DreamZero</li>
-            <li>Cosmos Policy</li>
-          </ul>
-        </ul>
-      </td>
-      <td style="text-align: left; padding-left: 8px;">
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/libero.html">LIBERO-PRO</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robocasa.html">RoboCasa</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robotwin.html">RoboTwin</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robodojo.html">RoboDojo</a> ✅</li>
-        </ul>
-      </td>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/real_world_robots/franka.html">Franka</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/zh-cn/latest/rst_source/real_world_robots/dual_franka.html">Dual Franka</a> ✅</li>
-          <li>SO-101</li>
-          <li>YAM</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-## 快速开始
-
-**1. 选择一个环境并安装 RPent。**
-
-```bash
-git clone https://github.com/RLinf/RPent rpent && cd rpent
-# 默认推荐（LIBERO-PRO）：
-pip install -e ".[libero-pro]"
-
-# 其他环境配置：
-pip install -e ".[robocasa]"    # RoboCasa
-pip install -e ".[robotwin]"    # RoboTwin
-pip install -e ".[franka]"      # Franka / 双臂 Franka
-```
-
-`.[libero-pro]` 是默认推荐配置。其他环境见
-[安装文档](https://rpent.readthedocs.io/zh-cn/latest/rst_source/get_started/quickstart.html)。
-
-RoboCasa 安装、任务 memory 与 Target50 协议参见
-[RoboCasa 指南](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robocasa.html)。
-
-RoboCasa 同时使用
-[RPent-memory](https://huggingface.co/datasets/RLinf/RPent-memory/tree/main/robocasa)
-中 `robocasa/task-specific/` 下的当前任务文件和 `robocasa/global/GLOBAL_MEMORY.md`。
-CLI 与 Dashboard 均提供这两层记忆供规划器按需读取，不要求动作前完整读取全部文件。
-HF memory 跟随当前分支，不锁定数据版本。
-
-下面的示例继续使用 LIBERO-PRO。
-
-**2. 下载 LIBERO-PRO 仿真资产。**
-
-```bash
-liberopro-download-assets --skip-existing
-```
-
-> 💡 访问 Hugging Face 较慢时，可走镜像加速：`HF_ENDPOINT=https://hf-mirror.com liberopro-download-assets --skip-existing`。
-
-其他仿真器见[安装文档](https://rpent.readthedocs.io/zh-cn/latest/rst_source/get_started/quickstart.html)。
-
-**3. 配置密钥与 checkpoint，然后运行。**
-
-```bash
-# Anthropic 密钥；使用官方端点时无需 export base url。
-export ANTHROPIC_API_KEY=sk-xxx
-
-# VLA checkpoint —— 从以下地址下载：
-# https://huggingface.co/RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT
-hf download RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT \
-  --exclude optimizer.pt \
-  --local-dir ./checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT
-
-export PI05_CHECKPOINT_PATH=$PWD/checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT
-
-# SAM 3.0 checkpoint —— 从以下地址下载：
-# https://modelscope.cn/models/facebook/sam3
-pip install -U modelscope
-
-modelscope download facebook/sam3 \
-  --local-dir ./checkpoints/sam3
-
-export SAM3_CHECKPOINT_PATH=$PWD/checkpoints/sam3/sam3.pt
-export LIBERO_TYPE=pro
-
-# 运行一个任务：libero_object_swap，task 2，seed 0，使用 Claude Code
-# 和 Claude Opus 4.8。
-rpent --robot libero --suite libero_object_swap --task 2 --seed 0 \
-  --cuda-device 0 --planner claude_code --model claude-opus-4-8
-```
-
-其他规划器（`api`、`codex`）与模型提供商的配置见[规划器文档](https://rpent.readthedocs.io/zh-cn/latest/rst_source/guides/configure_planner.html)。
-探索模式与本地 memory 评测详见 [LIBERO 文档](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/libero.html)。
-
-### 交互模式
-
-使用 `claude_code` 或 `codex` 时，加上 `--interactive`（`-i`）即可在终端里实时引导智能体。内置任务会预填在 `you>` 提示符处。直接按 Enter 即可提交该任务；如需修改或替换任务，请先编辑输入内容，再按 Enter 提交。任务运行期间，可以继续输入消息引导智能体（`/help` 查看命令，`/quit` 或 Ctrl-D 结束）。需要真实终端（TTY）。`api` planner 使用原生 CLI，先运行预设任务，再在每轮运行完成后接收输入，使用 `/exit` 退出。
-
-```bash
-rpent --robot libero --suite libero_object_swap --task 2 --seed 0 \
-  --planner claude_code --model claude-opus-4-8 --interactive
-```
-
-### 实时 Dashboard
-
-加上 `--dashboard` 后，会启动本地 Dashboard，并在终端输出访问地址。Session 配置全部来自命令行，页面打开后直接进入实时监控；服务就绪后，通过 `/rpent-task <suite> <task> <seed>` 启动任务。页面会实时显示智能体的推理过程、相机画面和动作时间线，任务结束后可以继续提交下一任务。使用 `--dashboard-language zh-cn` 可切换到中文界面。
-
-```bash
-rpent --robot libero --dashboard --dashboard-language zh-cn \
-  --planner claude_code --model claude-opus-4-8
-```
-
-完整的命令行参数列表见 [命令行参考](https://rpent.readthedocs.io/zh-cn/latest/rst_source/guides/cli.html)。RoboCasa 与 RoboTwin 提供各自的任务参数，参见 [RoboCasa](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robocasa.html) 与 [RoboTwin](https://rpent.readthedocs.io/zh-cn/latest/rst_source/simulators/robotwin.html) 文档。
-
-更详细的文档请参见 [RPent 中文文档](https://rpent.readthedocs.io/zh-cn/latest/)。
-
-## 参与贡献
-
-欢迎社区贡献。开发环境、必需检查、测试规范和集成检查清单请参见
-[CONTRIBUTING_zh.md](CONTRIBUTING_zh.md)。
-
-## 引用与致谢
-
-如果 **RPent** 或 **Harness VLA** 对你的工作有帮助，请引用：
+本项目基于 [RLinf/RPent](https://github.com/RLinf/RPent)，遵循 [Apache-2.0 许可证](LICENSE)，保留上游署名。RPent 及其 Harness VLA 工作的引用如下：
 
 ```bibtex
 @article{zhang2026harnessvla,
@@ -230,5 +94,3 @@ rpent --robot libero --dashboard --dashboard-language zh-cn \
   url={https://arxiv.org/abs/2607.08448}
 }
 ```
-
-RPent 构建于 [RLinf](https://github.com/RLinf/RLinf) 的仿真器、VLA 模型与训练基础设施之上，也得益于更广泛开源社区的 agent SDK — [pydantic-ai](https://ai.pydantic.dev/)、[Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview) 与 OpenAI Codex SDK。感谢 LIBERO、RoboCasa、robosuite、MuJoCo、openpi 背后的团队。

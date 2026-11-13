@@ -1,224 +1,89 @@
-# Embodied Harness
+# holmes_RUA
 
-Private research codebase based on [RLinf/RPent](https://github.com/RLinf/RPent), upstream revision `ef70215`, with the existing Flexiv integration, dashboard configuration and model tool-argument compatibility changes. This repository starts from a curated source snapshot; upstream license and attribution are retained.
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-See the [Flexiv integration guide](robots/flexiv/README.md) for deployment dependencies and limits. The external hardware collector, credentials, models, calibration data and local experiment outputs are not included. Automatic perception-tool discovery is planned research, not an implemented feature of this snapshot.
+`holmes_RUA` is an embodied-agent research project built on [RPent](https://github.com/RLinf/RPent). It studies how repeated failures in multimodal interaction can become reusable experience and executable perception and decision tools, and evaluates their effects on task success, elapsed time, and token use.
 
----
+The repository starts from a curated snapshot of upstream RPent `ef70215` and includes simulator and Flexiv integrations, a research workbench, and experiment analysis. Executable tools and individual successful runs do not establish effectiveness; improvements require controlled evaluation.
 
-<div align="center">
-  <img src="https://github.com/RLinf/misc/raw/main/pic/rpent_logo.png" alt="RPent-logo" width="520"/>
-</div>
+## Measured RPent results
 
-<div align="center">
-<a href="https://arxiv.org/abs/2607.08448"><img src="https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv"></a>
-<a href="https://huggingface.co/RLinf"><img src="https://img.shields.io/badge/HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Hugging Face"></a>
-<a href="https://rpent.readthedocs.io/en/latest/"><img src="https://img.shields.io/badge/Documentation-Purple?color=8A2BE2&logo=readthedocs"></a>
-<a href="https://rpent.readthedocs.io/zh-cn/latest/"><img src="https://img.shields.io/badge/中文文档-red?logo=readthedocs"></a>
-<a href="https://github.com/RLinf/misc/blob/main/pic/wechat.jpg?raw=true"><img src="https://img.shields.io/badge/微信-green?logo=wechat&amp"></a>
-</div>
+**These are this project's evaluations using the RPent harness, not results from the RPent paper or demonstrated improvements from holmes_RUA.** Success follows the environment's official signal, rather than the model's completion claim. Batches with different suites, budgets, and network conditions are reported separately and do not establish a causal benefit from an optimization.
 
-<div align="center">
+### GPT / Astra: LIBERO-Pro `libero_10_task`
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
-[![简体中文](https://img.shields.io/badge/语言-简体中文-red.svg)](README.zh-CN.md)
+Model `gpt-6-astra`, Codex planner, `reasoning_effort=low`; tasks 0–9, five runs each, 50 runs total. Each run allows 30 completed model responses and 600 seconds, with 17 native RPent tools and frozen experience `language-c592f23a3a324c08`. Infrastructure incidents are archived, excluded, and replaced with the corresponding rerun; timeouts and budget exhaustion count as failures.
 
-</div>
+| Task | Successes / valid runs | Success rate | Mean interactions | Mean elapsed (s) | Mean tokens | Total tokens |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 5/5 | 100.0% | 14.0 | 163.4 | 565,809 | 2,829,046 |
+| 1 | 5/5 | 100.0% | 17.4 | 207.8 | 808,469 | 4,042,344 |
+| 2 | 4/5 | 80.0% | 22.2 | 216.5 | 1,296,358 | 6,481,792 |
+| 3 | 2/5 | 40.0% | 23.8 | 334.8 | 1,386,704 | 6,933,519 |
+| 4 | 1/5 | 20.0% | 29.4 | 274.9 | 1,841,347 | 9,206,737 |
+| 5 | 5/5 | 100.0% | 11.4 | 107.1 | 418,977 | 2,094,886 |
+| 6 | 4/5 | 80.0% | 22.4 | 217.8 | 1,158,476 | 5,792,379 |
+| 7 | 5/5 | 100.0% | 17.2 | 154.2 | 766,096 | 3,830,481 |
+| 8 | 4/5 | 80.0% | 17.6 | 181.4 | 817,257 | 4,086,287 |
+| 9 | 0/5 | 0.0% | 30.0 | 282.3 | 2,060,328 | 10,301,639 |
+| **Overall** | 35/50 | 70.0% | 20.5 | 214.0 | 1,111,982 | 55,599,110 |
 
-<h1 align="center">
-  <sub>RPent: Agentic Infrastructure for the Physical World</sub>
-</h1>
+### Qwen Flash: LIBERO-Pro `libero_10_task`
 
-**RPent (Recursive Physical Agent)** is an open framework for building embodied agents that continuously evolve through recursive interaction with the physical world. Rather than prescribing a single foundation model, RPent provides a recursive agent framework that harnesses heterogeneous intelligence, including perception, reasoning, memory, execution, and self-evolution, into a unified physical agent. Through continuous interaction, reflection, and adaptation, RPent enables physical agents to acquire new capabilities and evolve beyond their initial design. We build RPent upon a foundation of **service-oriented**, **standardized**, and **composable** design principles, ensuring the framework remains highly extensible.
+Model `qwen3.8-flash`, API planner, thinking disabled; tasks 0–9, five runs each, 50 runs total, with 30 model requests and the same native tools and frozen experience. **This batch mixes time budgets: 2/8 successes at 3000 seconds and 1/42 at 1500 seconds.** Earlier 600-second attempts are excluded. The combined result is a historical description, not a uniform-budget benchmark.
 
-<div align="center">
-  <img src="https://github.com/RLinf/misc/raw/main/pic/rpent_framework.png" alt="RPent framework"/>
-</div>
+| Task | Successes / valid runs | Success rate | Mean interactions | Mean elapsed (s) | Mean tokens | Total tokens |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 2/5 | 40.0% | 27.6 | 2333.1 | 833,850 | 4,169,248 |
+| 1 | 0/5 | 0.0% | 27.8 | 2180.5 | 1,051,854 | 5,259,268 |
+| 2 | 0/5 | 0.0% | 30.0 | 282.8 | 1,357,440 | 6,787,199 |
+| 3 | 0/5 | 0.0% | 30.0 | 235.7 | 1,228,947 | 6,144,737 |
+| 4 | 0/5 | 0.0% | 30.0 | 194.7 | 1,113,165 | 5,565,823 |
+| 5 | 1/5 | 20.0% | 28.2 | 199.7 | 1,049,023 | 5,245,115 |
+| 6 | 0/5 | 0.0% | 27.2 | 480.3 | 1,035,975 | 5,179,877 |
+| 7 | 0/5 | 0.0% | 24.4 | 466.9 | 803,826 | 4,019,129 |
+| 8 | 0/5 | 0.0% | 30.0 | 167.2 | 924,672 | 4,623,361 |
+| 9 | 0/5 | 0.0% | 30.0 | 168.2 | 1,026,412 | 5,132,061 |
+| **Overall** | 3/50 | 6.0% | 28.5 | 670.9 | 1,042,516 | 52,125,818 |
 
-## Leaderboard
+### Qwen Flash: interim Object-T results
 
-Compare RPent with reference methods on LIBERO, LIBERO-PRO, RoboCasa365 Target50, and RoboTwin C2R. Rankings apply to the methods and evaluation coverage shown; see the [Leaderboard](https://rpent.readthedocs.io/en/latest/rst_source/leaderboard/index.html) for suite results and model configurations.
+LIBERO-Pro `libero_object_task`, model `qwen3.8-flash`, thinking disabled, original RPent prompts, frozen experience, and 17 native tools. Each run allows **50 model requests with no episode deadline**; model HTTP and environment / VLA / SAM3 RPC timeouts are disabled. The native simulator action budget remains enabled. Networking uses remote IPv4 direct access.
 
-Codex / GPT-6 Astra / low / reasoning: **92.63% Overall (741/800)** across all eight LIBERO-PRO suites. See the [suite results and memory-batch explanation](https://rpent.readthedocs.io/en/latest/rst_source/leaderboard/index.html#libero-pro-astra-memory), including the separately frozen Long and Spatial/Object/Goal memory batches.
+The **2026-11-13 data audit** includes **44/50** settled, unique task / seed cells, with 39 successes. All five pre-switch samples are excluded; four have IPv4 replacements. Tasks 1, 8, and 9 remain incomplete, and pending runs are not failures. **88.6% is an interim rate among completed runs, not the final 50-run score.**
 
-[![RPent Leaderboard](https://cdn.jsdelivr.net/gh/RLinf/misc@705bd44bfc8ad7586b76239de13167db35abcce7/rpent/benchmarks/leaderboard-en-light.png)](https://rpent.readthedocs.io/en/latest/rst_source/leaderboard/index.html)
+| Task | Successes / valid runs | Success rate | Mean interactions | Mean elapsed (s) | Mean tokens | Total tokens |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | 5/5 | 100.0% | 18.2 | 603.9 | 452,810 | 2,264,051 |
+| 1 | 4/4 | 100.0% | 20.0 | 1107.7 | 550,527 | 2,202,109 |
+| 2 | 5/5 | 100.0% | 12.6 | 80.7 | 297,266 | 1,486,328 |
+| 3 | 5/5 | 100.0% | 15.4 | 97.1 | 404,372 | 2,021,861 |
+| 4 | 3/5 | 60.0% | 39.4 | 371.7 | 1,557,204 | 7,786,020 |
+| 5 | 5/5 | 100.0% | 25.8 | 196.7 | 830,491 | 4,152,455 |
+| 6 | 2/5 | 40.0% | 43.8 | 433.7 | 1,840,018 | 9,200,092 |
+| 7 | 5/5 | 100.0% | 19.0 | 141.6 | 584,392 | 2,921,961 |
+| 8 | 3/3 | 100.0% | 14.0 | 82.8 | 314,116 | 942,347 |
+| 9 | 2/2 | 100.0% | 27.5 | 212.6 | 917,606 | 1,835,211 |
+| **Overall** | 39/44 | 88.6% | 23.8 | 334.8 | 791,192 | 34,812,435 |
 
+Interactions follow each adapter’s archived counter: completed model responses for Codex/Astra, and model requests for the Qwen API planner, including valid failed runs. These counters have different definitions and are not physical action counts. Mean elapsed time includes successes and valid failures. Tokens are API-reported input plus output; cached input is already included in input and is not added again. See the [result snapshot](validation/holmes-rua-homepage-20261113/results.json) for conditions, compact per-run records, source hashes, and the exact `checked_at` timestamp.
 
-## Who Should Consider Using RPent?
+## Use and development
 
-RPent is built for four kinds of users:
+| Entry | Contents |
+| --- | --- |
+| [Quick start](docs/source-en/rst_source/get_started/quickstart.rst) | Environment setup, assets, checkpoints, and a first task |
+| [Research workbench](docs/manual-workbench/README.md) | Model configuration, tool selection, experiment history, and playback |
+| [LIBERO guide](docs/source-en/rst_source/simulators/libero.rst) | Installation, simulator assets, tasks, and evaluation |
+| [UniVTAC](robots/univtac/README.md) / [Flexiv](robots/flexiv/README.md) | Deployment requirements and limits for each environment |
+| [RoboDojo](docs/source-en/rst_source/simulators/robodojo.rst) / [RoboCasa](docs/source-en/rst_source/simulators/robocasa.rst) / [RoboTwin](docs/source-en/rst_source/simulators/robotwin.rst) | Simulator integration guides; consult each guide for its support status |
+| [Contributing](CONTRIBUTING.md) / [Tests](tests/README.md) | Development conventions, interfaces, and validation |
 
-- **Embodied intelligence researchers** targeting high success rates on embodied tasks and benchmarks — especially long-horizon manipulation. RPent's memory-guided, agentic composition consistently lifts task success beyond what a frozen VLA delivers alone.
-- **Online-learning and reinforcement-learning researchers** studying self-evolving embodied agents. RPent's recursive interaction, reflection, and memory-distillation loops provide a ready substrate for continual and reinforcement learning in the physical world.
-- **Robotics application developers** deploying embodied solutions on real robot hardware. RPent's service-oriented, standardized architecture and customizable agentic control logic improve real-world success rates and shorten the path from prototype to production.
-- **End users of deployed embodied agents** — the customers of the developers above. Install RPent together with the relevant real-robot extensions and run the predefined tasks out of the box, with no ML expertise required.
+The project display name is `holmes_RUA`. The Python package, CLI command, and compatible configuration names remain `rpent`; the GitHub repository remains `zweiyao/embodied-harness`. External hardware collectors, credentials, videos, raw observations, calibration data, and model weights are not distributed with the source.
 
-## What's NEW!
+## Upstream and license
 
-- [2026/09] 🔥 Added the interactive RPent Leaderboard for LIBERO, LIBERO-PRO, RoboCasa365, and RoboTwin, with model comparisons and suite-level results. Explore the [Leaderboard](https://rpent.readthedocs.io/en/latest/rst_source/leaderboard/index.html).
-- [2026/09] 🔥 RPent supports Franka single-arm and dual-arm real-robot extensions. Doc: [Franka](https://rpent.readthedocs.io/en/latest/rst_source/real_world_robots/franka.html) · [Dual Franka](https://rpent.readthedocs.io/en/latest/rst_source/real_world_robots/dual_franka.html).
-- [2026/08] 🔥 RPent supports RoboCasa with RLDX-1 as manipulation model. See the [RoboCasa setup and Target50 guide](https://rpent.readthedocs.io/en/latest/rst_source/simulators/robocasa.html).
-- [2026/08] 🔥 RPent supports the non-reasoning mode, which reduces average execution time by ~40%.
-- [2026/08] 🔥 RPent supports exploration mode for LIBERO. Doc: [LIBERO exploration mode](https://rpent.readthedocs.io/en/latest/rst_source/simulators/libero.html#exploration-and-local-memory-evaluation).
-- [2026/08] 🔥 RPent supports RoboTwin with LingBot-VLA for dual-arm manipulation tasks. Doc: [RoboTwin](https://rpent.readthedocs.io/en/latest/rst_source/simulators/robotwin.html).
-- [2026/07] 🔥 Our first RPent publication, [Harness VLA: Steering Frozen VLAs into Reliable Manipulation Primitives via Memory-Guided Agents](https://arxiv.org/abs/2607.08448), is released.
-
-## Feature Matrix
-
-<table width="100%" style="width: 100%; table-layout: auto; border-collapse: collapse;">
-  <thead align="center" valign="bottom">
-    <tr>
-      <th style="min-width: 300px;">Agentic Planner</th>
-      <th style="min-width: 340px;">Action Primitive</th>
-      <th style="min-width: 300px; text-align: left;">Simulator</th>
-      <th style="min-width: 260px;">Real World</th>
-    </tr>
-  </thead>
-  <tbody valign="top">
-    <tr>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/guides/configure_planner.html#the-claude-code-planner">Claude Code</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/guides/configure_planner.html#the-codex-planner">Codex</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/development/add_planner.html">Custom Planner</a> ✅</li>
-        </ul>
-      </td>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><b>VLA</b></li>
-          <ul>
-            <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/libero.html">Pi0.5</a> ✅</li>
-            <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/robocasa.html">RLDX-1</a> ✅</li>
-            <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/robotwin.html">LingBot-VLA</a> ✅</li>
-          </ul>
-          <li><b>WAM</b></li>
-          <ul>
-            <li>DreamZero</li>
-            <li>Cosmos Policy</li>
-          </ul>
-        </ul>
-      </td>
-      <td style="text-align: left; padding-left: 8px;">
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/libero.html">LIBERO-PRO</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/robocasa.html">RoboCasa</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/robotwin.html">RoboTwin</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/simulators/robodojo.html">RoboDojo</a> ✅</li>
-        </ul>
-      </td>
-      <td>
-        <ul style="margin-left: 0; padding-left: 16px;">
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/real_world_robots/franka.html">Franka</a> ✅</li>
-          <li><a href="https://rpent.readthedocs.io/en/latest/rst_source/real_world_robots/dual_franka.html">Dual Franka</a> ✅</li>
-          <li>SO-101</li>
-          <li>YAM</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-## Quick Start
-
-**1. Choose an environment and install RPent.**
-
-```bash
-git clone https://github.com/RLinf/RPent rpent && cd rpent
-pip install -e ".[libero-pro]"  # Recommended default (LIBERO-PRO)
-
-# Other environment configurations:
-pip install -e ".[robocasa]"    # RoboCasa
-pip install -e ".[robotwin]"    # RoboTwin
-pip install -e ".[franka]"      # Franka and dual Franka
-```
-
-`.[libero-pro]` is the recommended default. See the [installation docs](https://rpent.readthedocs.io/en/latest/rst_source/get_started/quickstart.html) for other environments.
-
-For RoboCasa setup, task memory, and the Target50 protocol, see the
-[RoboCasa guide](https://rpent.readthedocs.io/en/latest/rst_source/simulators/robocasa.html).
-
-RoboCasa uses current-task files in `robocasa/task-specific/` together with
-`robocasa/global/GLOBAL_MEMORY.md` from
-[RPent-memory](https://huggingface.co/datasets/RLinf/RPent-memory/tree/main/robocasa).
-The CLI and Dashboard provide both layers for on-demand reading, with no
-full-read requirement before actions. HF memory follows the current branch
-without a fixed data revision.
-
-The example below continues with LIBERO-PRO.
-
-**2. Download the LIBERO-PRO simulator assets.**
-
-```bash
-liberopro-download-assets --skip-existing
-```
-
-> 💡 Slow connection to Hugging Face? Download through the mirror: `HF_ENDPOINT=https://hf-mirror.com liberopro-download-assets --skip-existing`.
-
-See the [installation docs](https://rpent.readthedocs.io/en/latest/rst_source/get_started/quickstart.html) for other simulators.
-
-**3. Configure keys and checkpoints, then run.**
-
-```bash
-# Anthropic key; no need to export the base url if you use the official endpoint.
-export ANTHROPIC_API_KEY=sk-xxx
-
-# VLA checkpoint — download from
-# https://huggingface.co/RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT
-hf download RLinf/RLinf-Pi05-LIBERO-130-fullshot-SFT \
-  --exclude optimizer.pt \
-  --local-dir ./checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT
-
-export PI05_CHECKPOINT_PATH=$PWD/checkpoints/RLinf-Pi05-LIBERO-130-fullshot-SFT
-
-# SAM 3.0 checkpoint — download from
-# https://modelscope.cn/models/facebook/sam3
-pip install -U modelscope
-
-modelscope download facebook/sam3 \
-  --local-dir ./checkpoints/sam3
-
-export SAM3_CHECKPOINT_PATH=$PWD/checkpoints/sam3/sam3.pt
-export LIBERO_TYPE=pro
-
-# Run one task: libero_object_swap, task 2, seed 0, using Claude Code
-# with Claude Opus 4.8.
-rpent --robot libero --suite libero_object_swap --task 2 --seed 0 \
-  --cuda-device 0 --planner claude_code --model claude-opus-4-8
-```
-
-See the [planner docs](https://rpent.readthedocs.io/en/latest/rst_source/guides/configure_planner.html) to configure other planners (`api`, `codex`) and model providers.
-For the exploration workflow and local-memory evaluation, see [LIBERO exploration mode](https://rpent.readthedocs.io/en/latest/rst_source/simulators/libero.html#exploration-and-local-memory-evaluation).
-
-### Interactive CLI mode
-
-With `claude_code` or `codex`, add `--interactive` (`-i`) to steer the agent live from your terminal. The built-in task is pre-filled at the `you>` prompt. Press Enter to submit it as-is. To change or replace the task, edit the input before pressing Enter. While the agent runs, type follow-up messages to steer it (`/help` lists commands; `/quit` or Ctrl-D ends). Requires a TTY. The `api` planner uses a native CLI that runs the preset task first and accepts follow-ups between runs; use `/exit` to close it.
-
-```bash
-rpent --robot libero --suite libero_object_swap --task 2 --seed 0 \
-  --planner claude_code --model claude-opus-4-8 --interactive
-```
-
-### Live Dashboard
-
-Add `--dashboard` to start a local Dashboard and print its URL in the terminal. Session settings come from the CLI, and the page opens directly in the live monitor. Once the services are ready, start a task with `/rpent-task <suite> <task> <seed>`. The page streams agent reasoning, camera views, and the action timeline, and you can submit another task after the current one finishes. Use `--dashboard-language zh-cn` for the Chinese UI.
-
-```bash
-rpent --robot libero --dashboard --dashboard-language zh-cn \
-  --planner claude_code --model claude-opus-4-8
-```
-
-For a complete list of CLI options, see the [Command-Line Reference](https://rpent.readthedocs.io/en/latest/rst_source/guides/cli.html). RoboCasa and RoboTwin provide their own task parameters — see the [RoboCasa](https://rpent.readthedocs.io/en/latest/rst_source/simulators/robocasa.html) and [RoboTwin](https://rpent.readthedocs.io/en/latest/rst_source/simulators/robotwin.html) docs.
-
-For more detailed documentation, see the [RPent documentation](https://rpent.readthedocs.io/en/latest/).
-
-## Contributing
-
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
-development setup, required checks, testing policy, and integration checklists.
-
-## Citation and Acknowledgement
-
-If you find **RPent** or **Harness VLA** helpful, please cite the paper:
+This project builds on [RLinf/RPent](https://github.com/RLinf/RPent) under the [Apache-2.0 license](LICENSE), retaining upstream attribution. Cite RPent and its Harness VLA work as follows:
 
 ```bibtex
 @article{zhang2026harnessvla,
@@ -229,5 +94,3 @@ If you find **RPent** or **Harness VLA** helpful, please cite the paper:
   url={https://arxiv.org/abs/2607.08448}
 }
 ```
-
-RPent builds on the simulators, VLA models, and training infrastructure of [RLinf](https://github.com/RLinf/RLinf), and on the agent SDKs of the broader open-source community — [pydantic-ai](https://ai.pydantic.dev/), the [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview), and the OpenAI Codex SDK. Thanks to the teams behind LIBERO, RoboCasa, robosuite, MuJoCo, and openpi.

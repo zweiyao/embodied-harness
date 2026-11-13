@@ -1,0 +1,41 @@
+{
+  "result": "passed",
+  "source_hashes_checked": 8,
+  "unique_valid_runs": 144,
+  "numeric_table_rows_per_language": 33,
+  "relative_links_checked": 28,
+  "tables_match_saved_results": true,
+  "adapter_counter_definitions": "Astra completed responses; Qwen requests",
+  "pending_object_t_cells_excluded": 6,
+  "runtime_changes": false,
+  "sphinx": "not run: only standalone Markdown and result metadata changed",
+  "base_revision": "c8029f02aa6577c7ae04e0bd854b56edd6ee4ab2",
+  "pre_commit_all_files": "passed",
+  "unit_tests": {
+    "passed": 2035,
+    "skipped": 15,
+    "duration_s": 71.21
+  },
+  "github_rendering": {
+    "en": {
+      "github_markdown_render": "passed",
+      "numeric_table_body_rows": [
+        11,
+        11,
+        11
+      ],
+      "heading": "holmes_RUA",
+      "inherited_promo_images": 0
+    },
+    "zh": {
+      "github_markdown_render": "passed",
+      "numeric_table_body_rows": [
+        11,
+        11,
+        11
+      ],
+      "heading": "holmes_RUA",
+      "inherited_promo_images": 0
+    }
+  }
+}
