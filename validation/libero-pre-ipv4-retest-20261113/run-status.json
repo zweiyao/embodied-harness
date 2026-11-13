@@ -1,0 +1,57 @@
+{
+  "at": "2026-11-13T02:58:14.802294+00:00",
+  "status": {
+    "phase": "running",
+    "completed": 1,
+    "planned": 5,
+    "lanes": {
+      "a": {
+        "phase": "running",
+        "task": 0,
+        "seed": 2,
+        "completed": 1,
+        "run_id": "7c101eaa19b8ec97020d",
+        "elapsed_s": 473.4,
+        "usage": {
+          "in": 410731,
+          "out": 1749,
+          "tool_calls": 20
+        }
+      }
+    }
+  },
+  "valid_retests": [
+    {
+      "task": 0,
+      "seed": 0,
+      "success": true,
+      "status": "completed",
+      "model_requests": 16,
+      "elapsed_s": 579.6,
+      "url": "http://10.162.250.228:8092/runs?id=7531a410ccf91cc83b48"
+    }
+  ],
+  "postprocessor": {
+    "at_unix": 1794538692.9163074,
+    "phase": "waiting",
+    "completed": 1,
+    "active": {
+      "phase": "running",
+      "task": 0,
+      "seed": 2,
+      "completed": 1,
+      "run_id": "7c101eaa19b8ec97020d",
+      "elapsed_s": 471.4,
+      "usage": {
+        "in": 410731,
+        "out": 1749,
+        "tool_calls": 20
+      }
+    }
+  },
+  "batch_service": "RuntimeMaxUSec=infinity\nMainPID=1884865\nActiveState=active\n",
+  "report_service": "RuntimeMaxUSec=infinity\nMainPID=1905183\nActiveState=active\n",
+  "completion_artifact": "/home/zwy/work/embodied_harness/validation/libero-pre-ipv4-retest-20261113/ipv4-only-summary.json",
+  "no_followup_prompts_sent": true,
+  "parent_task8_episode_untouched": true
+}

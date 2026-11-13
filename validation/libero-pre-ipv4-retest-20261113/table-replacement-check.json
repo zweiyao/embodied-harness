@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "simulated_unique_cells": 45,
+  "replaced_old_cells": 5,
+  "no_duplicate_trials": true,
+  "token_totals_preserved_for_identity_fixture": true,
+  "real_model_calls": 0,
+  "real_robot_actions": 0,
+  "fixture_is_not_a_retest_result": true
+}
