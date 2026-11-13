@@ -6,9 +6,47 @@
 
 The repository starts from a curated snapshot of upstream RPent `ef70215` and includes simulator and Flexiv integrations, a research workbench, and experiment analysis. Executable tools and individual successful runs do not establish effectiveness; improvements require controlled evaluation.
 
-## Measured RPent results
+## Real-robot results: holmes_RUA and RPent
 
-**These are this project's evaluations using the RPent harness, not results from the RPent paper or demonstrated improvements from holmes_RUA.** Success follows the environment's official signal, rather than the model's completion claim. Batches with different suites, budgets, and network conditions are reported separately and do not establish a causal benefit from an optimization.
+Each task/method has five runs. `holmes_RUA` denotes three rounds of tool optimization on the same task. “Initial simulation modality” preserves the supplied method label. Tokens and elapsed time are **per-run means**.
+
+| Task | Method | Successes / runs | Success rate | Mean tokens | Mean elapsed (s) |
+| --- | --- | --- | --- | --- | --- |
+| Insert a USB drive | Initial simulation modality | 0/5 | 0% | 3,273,821 | 1,200.00 |
+| Insert a USB drive | RPent | 0/5 | 0% | 1,893,213 | 943.80 |
+| Insert a USB drive | holmes_RUA | 4/5 | 80% | 2,638,278 | 493.50 |
+| Pick the lemon and place it in the drawer | Initial simulation modality | 4/5 | 80% | 2,031,283 | 1,507.30 |
+| Pick the lemon and place it in the drawer | RPent | 5/5 | 100% | 1,872,327 | 1,406.20 |
+| Pick the lemon and place it in the drawer | holmes_RUA | 5/5 | 100% | 1,444,817 | 1,246.80 |
+| Prepare breakfast | Initial simulation modality | 2/5 | 40% | 1,892,430 | 1,872.80 |
+| Prepare breakfast | RPent | 3/5 | 60% | 1,723,034 | 1,649.20 |
+| Prepare breakfast | holmes_RUA | 5/5 | 100% | 1,263,439 | 1,137.30 |
+
+Source: [maintainer-provided real-robot summary](validation/holmes-rua-robot-results-20261113/real-robot.json). This documentation update transcribes the supplied table; individual hardware logs were not independently re-audited.
+
+## UniVTAC: frozen-tool comparison
+
+The policy model is `gpt-6-astra`, reasoning high. Insert tube and pull out key each use seeds 0–4: 10 runs per condition, with 60 model responses, a 10000 output-token setting, a 300-second request limit, and a 3600-second episode limit. `holmes_RUA` uses the geometry tool frozen after development at `d6c13e92`, with no tool changes during testing. This condition is recorded separately from the three optimization rounds in the real-robot table.
+
+| Task | Method | Successes / runs | Success rate | Mean tokens | Mean elapsed (s) |
+| --- | --- | --- | --- | --- | --- |
+| Insert tube (task 1) | RPent (initial baseline) | 4/5 | 80% | 617,724.4 | 285.50 |
+| Insert tube (task 1) | RPent (native repeat) | 3/5 | 60% | 838,255.4 | 337.58 |
+| Insert tube (task 1) | holmes_RUA (frozen tool) | 4/5 | 80% | 672,493.8 | 362.32 |
+| Pull out key (task 2) | RPent (initial baseline) | 2/5 | 40% | 1,226,303.2 | 427.44 |
+| Pull out key (task 2) | RPent (native repeat) | 5/5 | 100% | 961,619.2 | 306.16 |
+| Pull out key (task 2) | holmes_RUA (frozen tool) | 4/5 | 80% | 679,407.4 | 258.10 |
+| **Overall** | RPent (initial baseline) | 6/10 | 60% | 922,013.8 | 356.47 |
+| **Overall** | RPent (native repeat) | 8/10 | 80% | 899,937.3 | 321.87 |
+| **Overall** | holmes_RUA (frozen tool) | 8/10 | 80% | 675,950.6 | 310.21 |
+
+In these records, both the frozen tool and the most recent RPent native repeat reach **80%** success; the tool uses **24.89%** fewer mean tokens and **3.62%** less mean elapsed time. Ten runs per condition do not establish a stable success-rate or causal benefit. The initial native baseline is also retained to show variation between batches.
+
+Tokens mean input plus output, without adding cached input again. Means include valid failures; tool-authoring costs are excluded. This small-sample frozen-tool test uses Astra and contains no Qwen transfer evaluation. See the [original comparison](validation/univtac-authored-geometry-test-20261103/README.md) and [per-run statistical snapshot](validation/holmes-rua-robot-results-20261113/univtac.json).
+
+## LIBERO: measured RPent results
+
+**This section reports this project's evaluations using the RPent harness, not results from the RPent paper or demonstrated improvements from holmes_RUA.** Success follows the environment's official signal, rather than the model's completion claim. Batches with different suites, budgets, and network conditions are reported separately and do not establish a causal benefit from an optimization.
 
 ### GPT / Astra: LIBERO-Pro `libero_10_task`
 
