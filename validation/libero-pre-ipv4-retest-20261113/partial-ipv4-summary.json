@@ -1,0 +1,208 @@
+{
+  "at": "2026-11-13T05:01:05.838657+00:00",
+  "is_final": false,
+  "old_pre_ipv4_excluded": true,
+  "completed_retests": 4,
+  "retests": [
+    {
+      "task": 0,
+      "seed": 0,
+      "success": true,
+      "status": "completed",
+      "model_requests": 16,
+      "elapsed_s": 579.6,
+      "total_tokens": 400697
+    },
+    {
+      "task": 0,
+      "seed": 2,
+      "success": true,
+      "status": "completed",
+      "model_requests": 30,
+      "elapsed_s": 1238.1,
+      "total_tokens": 658469
+    },
+    {
+      "task": 0,
+      "seed": 4,
+      "success": true,
+      "status": "completed",
+      "model_requests": 13,
+      "elapsed_s": 998.7,
+      "total_tokens": 298750
+    },
+    {
+      "task": 1,
+      "seed": 1,
+      "success": true,
+      "status": "completed",
+      "model_requests": 41,
+      "elapsed_s": 4175.2,
+      "total_tokens": 1311718
+    }
+  ],
+  "tasks": [
+    {
+      "task": 0,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 18.2,
+      "mean_episode_elapsed_s": 603.86,
+      "mean_success_elapsed_s": 603.86,
+      "mean_total_tokens": 452810.2,
+      "sum_total_tokens": 2264051
+    },
+    {
+      "task": 1,
+      "planned": 5,
+      "completed": 4,
+      "successes": 4,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 20,
+      "mean_episode_elapsed_s": 1107.725,
+      "mean_success_elapsed_s": 1107.725,
+      "mean_total_tokens": 550527.25,
+      "sum_total_tokens": 2202109
+    },
+    {
+      "task": 2,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 12.6,
+      "mean_episode_elapsed_s": 80.72,
+      "mean_success_elapsed_s": 80.72,
+      "mean_total_tokens": 297265.6,
+      "sum_total_tokens": 1486328
+    },
+    {
+      "task": 3,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 15.4,
+      "mean_episode_elapsed_s": 97.14,
+      "mean_success_elapsed_s": 97.14,
+      "mean_total_tokens": 404372.2,
+      "sum_total_tokens": 2021861
+    },
+    {
+      "task": 4,
+      "planned": 5,
+      "completed": 5,
+      "successes": 3,
+      "success_rate_percent": 60.0,
+      "mean_model_interactions": 39.4,
+      "mean_episode_elapsed_s": 371.74,
+      "mean_success_elapsed_s": 266.76666666666665,
+      "mean_total_tokens": 1557204,
+      "sum_total_tokens": 7786020
+    },
+    {
+      "task": 5,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 25.8,
+      "mean_episode_elapsed_s": 196.74,
+      "mean_success_elapsed_s": 196.74,
+      "mean_total_tokens": 830491,
+      "sum_total_tokens": 4152455
+    },
+    {
+      "task": 6,
+      "planned": 5,
+      "completed": 5,
+      "successes": 2,
+      "success_rate_percent": 40.0,
+      "mean_model_interactions": 43.8,
+      "mean_episode_elapsed_s": 433.68,
+      "mean_success_elapsed_s": 209.2,
+      "mean_total_tokens": 1840018.4,
+      "sum_total_tokens": 9200092
+    },
+    {
+      "task": 7,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 19,
+      "mean_episode_elapsed_s": 141.58,
+      "mean_success_elapsed_s": 141.58,
+      "mean_total_tokens": 584392.2,
+      "sum_total_tokens": 2921961
+    },
+    {
+      "task": 8,
+      "planned": 5,
+      "completed": 3,
+      "successes": 3,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 14,
+      "mean_episode_elapsed_s": 82.76666666666667,
+      "mean_success_elapsed_s": 82.76666666666667,
+      "mean_total_tokens": 314115.6666666667,
+      "sum_total_tokens": 942347
+    },
+    {
+      "task": 9,
+      "planned": 5,
+      "completed": 2,
+      "successes": 2,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 27.5,
+      "mean_episode_elapsed_s": 212.64999999999998,
+      "mean_success_elapsed_s": 212.64999999999998,
+      "mean_total_tokens": 917605.5,
+      "sum_total_tokens": 1835211
+    }
+  ],
+  "overall": {
+    "completed": 44,
+    "successes": 39,
+    "success_rate_percent": 88.63636363636364,
+    "mean_model_interactions": 23.818181818181817,
+    "mean_episode_elapsed_s": 334.81363636363636,
+    "mean_success_elapsed_s": 305.7282051282051,
+    "mean_total_tokens": 791191.7045454546,
+    "sum_total_tokens": 34812435
+  },
+  "missing_unique_cells": [
+    {
+      "task": 1,
+      "seed": 3
+    },
+    {
+      "task": 8,
+      "seed": 1
+    },
+    {
+      "task": 8,
+      "seed": 3
+    },
+    {
+      "task": 9,
+      "seed": 0
+    },
+    {
+      "task": 9,
+      "seed": 2
+    },
+    {
+      "task": 9,
+      "seed": 4
+    }
+  ],
+  "definitions": {
+    "interaction": "Model requests, not tool calls",
+    "elapsed": "All settled valid attempts including task failures",
+    "tokens": "Input + output; cached input not added a second time",
+    "excluded": "Pre-IPv4 rows, unresolved attempts, and infrastructure incidents"
+  }
+}
