@@ -1,0 +1,7 @@
+{
+  "priority": "先把libero测完吧",
+  "approved_terminal_rule": "按提前结束失败结算，继续后续任务",
+  "scope": "Batch settlement and six missing IPv4 task/seed cells only; no harness or prompt/tool changes",
+  "operator_stop": "Two attempts interrupted for the prior weight-unload request are retained and excluded, then restarted in this new batch",
+  "queued_task": "RoboDojo/Astra task0 remains deferred; remote external proxy was not started"
+}
