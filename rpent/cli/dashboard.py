@@ -119,27 +119,26 @@ def run_dashboard_session(
         output_dir=session_root,
         dashboard_spec=dashboard_spec,
     )
-    if robot_spec.name in {"libero", "univtac", "flexiv"}:
-        from rpent.dashboard.workbench import Workbench
+    from rpent.dashboard.workbench import Workbench
 
-        state.workbench = Workbench.from_env(robot=robot_spec.name)
-        if state.workbench is not None:
-            if robot_spec.name == "flexiv":
-                state.workbench.config["control_mode"] = getattr(
-                    args, "control_mode", "native"
-                )
-            state.workbench.recover_interrupted()
-            if getattr(args, "pilot_root", None):
-                state.workbench.bind_pilot(
-                    args.pilot_root,
-                    args.pilot_cell,
-                    freeze_id=args.pilot_freeze,
-                    run_options={
-                        "max_turns": args.max_turns,
-                        "max_tokens": args.max_tokens,
-                        "planner_timeout_s": args.planner_timeout_s,
-                    },
-                )
+    state.workbench = Workbench.from_env(robot=robot_spec.name)
+    if state.workbench is not None:
+        if robot_spec.name == "flexiv":
+            state.workbench.config["control_mode"] = getattr(
+                args, "control_mode", "native"
+            )
+        state.workbench.recover_interrupted()
+        if getattr(args, "pilot_root", None):
+            state.workbench.bind_pilot(
+                args.pilot_root,
+                args.pilot_cell,
+                freeze_id=args.pilot_freeze,
+                run_options={
+                    "max_turns": args.max_turns,
+                    "max_tokens": args.max_tokens,
+                    "planner_timeout_s": args.planner_timeout_s,
+                },
+            )
     dashboard_server = DashboardServer(
         host=args.dashboard_host,
         port=args.dashboard_port,
@@ -613,7 +612,9 @@ def _run_dashboard_task_inner(
                     )
                     if observed_steps
                     else None,
-                    "video_recorded": (Path(output_dir) / "episode.mp4").is_file(),
+                    "video_recorded": any(
+                        path.is_file() for path in Path(output_dir).rglob("*.mp4")
+                    ),
                     "stable_placement": "未独立验证",
                 },
             )

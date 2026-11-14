@@ -1,0 +1,16 @@
+{
+  "approved_at": "2026-11-12T03:19:48.402609+00:00",
+  "user_reply": "批准",
+  "proposal": "workspace/proposals/robodojo-workbench-20261112/proposal.md",
+  "approved_patch_sha256": "6f9e03e43579e8e287163b5eee1fe3899941df9028cd3a50f9dfb3cf8c0b14b1",
+  "baseline": "50892e62010a707464024eebb1c04439a1540961",
+  "scope": "15 approved files; isolated checkout; offline/unit/pre-commit/docs/mock web/read-only inventory checks only",
+  "exclusions": [
+    "no deployment",
+    "no planner/model request",
+    "no simulator startup or reset",
+    "no physical robot operations",
+    "no network changes",
+    "one PR only after whole adaptation"
+  ]
+}

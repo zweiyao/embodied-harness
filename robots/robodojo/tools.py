@@ -214,6 +214,11 @@ def _refresh_obs(primitives) -> dict:
     return primitives._last_obs
 
 
+def _action_budget_exhausted(status: dict) -> bool:
+    limit = status.get("step_limit", 0)
+    return limit is not None and int(status.get("step", 0)) >= int(limit)
+
+
 @tool(readonly=False, exclude=("primitives", "state", "tol", "max_steps"))
 def move_to(
     primitives: Any,
@@ -305,7 +310,7 @@ def move_to(
         dist_to_target = float(
             np.linalg.norm(np.asarray(target) - np.asarray(final_xyz))
         )
-        if info["status"].get("step", 0) >= info["status"].get("step_limit", 1):
+        if _action_budget_exhausted(info["status"]):
             break
     payload = {
         "arm": arm,
@@ -324,7 +329,9 @@ def move_to(
 def set_gripper(
     primitives: Any, state: Any, arm: Literal["left", "right"], gripper: float
 ) -> ToolResult:
-    """Open or close an arm gripper. 1=close, -1=open.
+    """Command a gripper and report measured opening (1=open, 0=closed).
+
+    Submits one native step without waiting for completion. gripper: 1=close, -1=open.
 
     Args:
         gripper: 1=close, -1=open"""
@@ -343,10 +350,15 @@ def set_gripper(
             if a != arm:
                 val = float(np.asarray(joint).reshape(-1)[0])
             action[_arm_ee_joint_key(a)] = [val]
-    _obs_step, _reward, _done, info = primitives.env.step(action)
+    obs_step, _reward, _done, info = primitives.env.step(action)
+    observed = obs_step.get("state", {}).get(_arm_ee_joint_key(arm))
     payload = {
         "arm": arm,
-        "gripper": "closed" if gripper > 0 else "open",
+        "gripper": "close_commanded" if gripper > 0 else "open_commanded",
+        "target_opening": 0.0 if gripper > 0 else 1.0,
+        "measured_opening": (
+            float(np.asarray(observed).reshape(-1)[0]) if observed is not None else None
+        ),
         "status": {
             key: info["status"][key]
             for key in ("step", "step_limit")
@@ -399,6 +411,7 @@ def pi0_pick(
         for a in arms
     }
     chunks_used = 0
+    simulator_steps = 0
     success = False
     terminated = False
     for c in range(max_chunks):
@@ -419,7 +432,9 @@ def pi0_pick(
         actions = vla.predict(obs)
         chunks_used = c + 1
         for action in actions:
+            primitives._check_cancelled()
             obs_step, _reward, _done, info = primitives.env.step(action)
+            simulator_steps += 1
             st = obs_step["state"]
             for a in arms:
                 t = track[a]
@@ -443,7 +458,7 @@ def pi0_pick(
                 # for an ungrasped state and would reopen the gripper, dropping
                 # the object while ``success`` stays true.
                 break
-            if info["status"]["step"] >= info["status"]["step_limit"]:
+            if _action_budget_exhausted(info["status"]):
                 terminated = True
                 break
         if success or terminated:
@@ -464,6 +479,7 @@ def pi0_pick(
         "instruction": prompt,
         "success": success,
         "chunks_used": chunks_used,
+        "simulator_steps": simulator_steps,
         "arms": per_arm,
         "terminated": terminated,
     }
@@ -600,7 +616,7 @@ def dump_state(primitives, state, *, log: dict | None = None, perception=None):
         # Official success is read by the runner after planner execution,
         # not written into planner-readable state artifacts.
         terminated=False,
-        truncated=int(status.get("step", 0)) >= int(status.get("step_limit", 0) or 0),
+        truncated=_action_budget_exhausted(status),
         command=log.get("command"),
         result=log.get("result"),
         elapsed_s=log.get("elapsed_s"),

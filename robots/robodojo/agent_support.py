@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import time
 from typing import Any
@@ -43,20 +44,21 @@ class _VideoRecorder:
     def _ensure_writer(self, cam: str, frame) -> None:
         if cam in self.writers:
             return
-        h, w = frame.shape[:2]
         os.makedirs(self.video_dir, exist_ok=True)
         run_id = os.environ.get("ROBODOJO_RUN_ID", "run")
         path = os.path.join(self.video_dir, f"episode_{run_id}_{cam}.mp4")
-        import cv2
+        import imageio.v2 as imageio
 
-        writer = cv2.VideoWriter(
+        writer = imageio.get_writer(
             path,
-            cv2.VideoWriter_fourcc(*"mp4v"),
-            self.fps,
-            (int(w), int(h)),
+            format="FFMPEG",
+            mode="I",
+            fps=self.fps,
+            codec="libx264",
+            pixelformat="yuv420p",
+            macro_block_size=None,
+            ffmpeg_params=["-movflags", "+faststart"],
         )
-        if not writer.isOpened():
-            raise RuntimeError(f"cannot open video writer: {path}")
         self.writers[cam] = writer
         self.paths[cam] = path
 
@@ -64,8 +66,6 @@ class _VideoRecorder:
         if not self.enabled:
             return
         try:
-            import cv2
-
             vision = obs.get("vision", {})
             for cam in ("cam_head", "cam_left_wrist", "cam_right_wrist"):
                 color = vision.get(cam, {}).get("color")
@@ -77,7 +77,7 @@ class _VideoRecorder:
                 if frame.dtype != np.uint8:
                     frame = frame.astype(np.uint8)
                 self._ensure_writer(cam, frame)
-                self.writers[cam].write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+                self.writers[cam].append_data(frame)
         except Exception as exc:  # noqa: BLE001 - recording must never break env
             logger.warning("video record warning: %s", exc)
             self.video_dir = None  # disable after first failure
@@ -86,7 +86,7 @@ class _VideoRecorder:
         paths = list(self.paths.values())
         for writer in self.writers.values():
             try:
-                writer.release()
+                writer.close()
             except Exception:
                 pass
         self.writers.clear()
@@ -257,7 +257,7 @@ def _obs_dict(env, recorder) -> dict[str, Any]:
 def _status(env, bottle_mon) -> dict[str, Any]:
     status = {
         "step": int(env.take_action_cnt[0]),
-        "step_limit": int(env.step_lim),
+        "step_limit": int(env.step_lim) if math.isfinite(env.step_lim) else None,
         "success": bool(env.is_success(env_idx=0)),
     }
     status["safety"] = bottle_mon.status()

@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-11-11T23:42:04Z",
+  "status": "implemented_cpu_and_real_connection_verified",
+  "user_response": "批准",
+  "scope": [
+    "RoboDojo client connection validates metadata without implicitly resetting the scene",
+    "dev explicit reset remains available",
+    "Regression tests for dev and eval-fair connection behavior"
+  ],
+  "files": [
+    "robots/robodojo/env_client.py",
+    "tests/unit_tests/robots/robodojo/test_flash_contracts.py"
+  ],
+  "patch_sha256": "ed54582c6168203f40b7defd13ed91d1c7531719443fc3f106aef52d74d45c43",
+  "implementation_applied_local": true,
+  "implementation_applied_remote": true,
+  "candidate_tests_executed": true,
+  "verification_summary": "../stage-02/summary.json",
+  "verification_limit": "Explicit reset dispatch preserved by unit regression; real repeated-reset stability and owned shutdown remain incomplete."
+}

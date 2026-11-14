@@ -242,6 +242,7 @@ def test_runtime_connects_matching_policy_client(monkeypatch, tmp_path, backend)
         _args("--policy-backend", backend), tmp_path, NullDashboardEventSink(), {"vla"}
     )
     assert daemons == []
+    assert "owns_env" not in kwargs
     client = kwargs["vla_client"]
     assert isinstance(
         client, Pi05VLAClient if backend == "rlinf" else XPolicyLabVLAClient
@@ -289,6 +290,7 @@ def test_pi0_pick_monitors_both_arms_and_preserves_policy_input(lifting_arm):
     result = tools.pi0_pick(primitives, None, "pick bottle", arm="right").data
     assert result["success"] is True
     assert result["chunks_used"] == 1
+    assert result["simulator_steps"] == 2
     assert set(result["arms"]) == {"left", "right"}
     assert result["arms"][lifting_arm]["peak_lift_m"] == 0.06
     np.testing.assert_array_equal(executed, actions)
@@ -327,6 +329,7 @@ def test_pi0_pick_stops_the_chunk_when_the_grasp_is_held():
     assert result["success"] is True
     # Three actions were predicted and the grasp is held after the second.
     assert len(executed) == 2
+    assert result["simulator_steps"] == 2
 
 
 def test_gripper_result_does_not_expose_environment_feedback():
@@ -480,6 +483,7 @@ def test_task_guidance_is_scoped_and_tools_are_injected():
             "env_cfg_type": "arx_x5",
             "action_type": "joint",
             "task_summary": "scene",
+            "memory_dir": "/memory",
         }
         system = bundle.render("system", variables=variables)
         user = bundle.render("user", variables=variables)
@@ -513,3 +517,149 @@ def test_place_in_bin_keeps_backend_phase_sequence(monkeypatch):
     ]
     assert result["released"] is True
     assert result["phases"]["release"]["status"]["success"] is True
+
+
+@pytest.mark.parametrize("owned", [False, True])
+def test_runtime_reports_env_ownership(monkeypatch, tmp_path, owned):
+    from robots.robodojo import env_client
+    from rpent.dashboard.events import NullDashboardEventSink
+
+    rpc = object()
+    client = object()
+    daemon = SimpleNamespace() if owned else None
+    monkeypatch.setattr(robot_spec, "_spawn_env_server", lambda *a: (daemon, rpc))
+    monkeypatch.setattr(robot_spec, "try_wait_server", lambda *a, post_fn: post_fn())
+    monkeypatch.setattr(env_client, "RoboDojoEnvClient", lambda *a, **kw: client)
+    daemons, kwargs = robot_spec._init_runtime(
+        _args(), tmp_path, NullDashboardEventSink(), {"env"}
+    )
+    assert daemons == ([daemon] if owned else [])
+    assert kwargs["env"] is client
+    assert kwargs["owns_env"] is owned
+
+
+@pytest.mark.parametrize("owned", [False, True])
+def test_toolkit_close_preserves_borrowed_env(monkeypatch, tmp_path, owned):
+    from robots.robodojo import toolkit as module
+    from rpent.dashboard.events import NullDashboardEventSink
+    from rpent.memory import MemoryManager
+    from rpent.utils import logging
+
+    monkeypatch.setattr(logging, "_output_dir", tmp_path / "output")
+    monkeypatch.setattr(module, "get_output_dir", lambda: tmp_path / "output")
+    closes = []
+    env = SimpleNamespace(
+        get_obs=lambda: {"vision": {}, "state": {}},
+        get_status=lambda: {"step": 0, "step_limit": 10},
+        get_task_language=lambda: "instruction",
+        get_reward_details=lambda: {"score": 100},
+        close=lambda: closes.append(True),
+    )
+    toolkit = module.RoboDojoToolkit(
+        primitives_kwargs={"env": env, "owns_env": owned},
+        dashboard_events=NullDashboardEventSink(),
+        memory=MemoryManager(root=tmp_path / "memory"),
+    )
+    toolkit.close()
+    assert closes == ([True] if owned else [])
+
+
+@pytest.mark.parametrize(
+    ("command", "measured", "label", "target"),
+    [(1.0, 0.65, "close_commanded", 0.0), (-1.0, 0.9, "open_commanded", 1.0)],
+)
+def test_gripper_reports_command_separately_from_feedback(
+    command, measured, label, target
+):
+    state = {
+        "left_ee_joint_state": [1.0],
+        "right_ee_joint_state": [0.3],
+    }
+    calls = []
+
+    def step(action):
+        calls.append(action)
+        return (
+            {"state": {"left_ee_joint_state": [measured]}},
+            0,
+            False,
+            {"status": {"step": 1, "step_limit": 10}},
+        )
+
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(get_obs=lambda: {"state": state}, step=step)
+    )
+    result = tools.set_gripper(primitives, None, "left", command).data
+    assert result["gripper"] == label
+    assert result["target_opening"] == target
+    assert result["measured_opening"] == measured
+    assert len(calls) == 1
+    assert calls[0]["left_ee_joint_state"] == [target]
+    assert calls[0]["right_ee_joint_state"] == [0.3]
+
+
+def test_gripper_does_not_invent_missing_feedback():
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(
+            get_obs=lambda: {"state": {}},
+            step=lambda action: (
+                {},
+                0,
+                False,
+                {"status": {"step": 1, "step_limit": 10}},
+            ),
+        )
+    )
+    result = tools.set_gripper(primitives, None, "left", 1.0).data
+    assert result["gripper"] == "close_commanded"
+    assert result["measured_opening"] is None
+
+
+def test_pi0_pick_checks_cancel_between_native_actions():
+    obs = {
+        "state": {
+            f"{arm}_{key}": value
+            for arm in ("left", "right")
+            for key, value in [("ee_pose", [0, 0, 1]), ("ee_joint_state", [1])]
+        }
+    }
+    executed = []
+
+    def check():
+        if executed:
+            raise RuntimeError("cancelled")
+
+    def step(action):
+        executed.append(action)
+        return obs, 0, False, {"status": {"step": len(executed), "step_limit": 99}}
+
+    primitives = SimpleNamespace(
+        env=SimpleNamespace(get_obs=lambda: obs, step=step),
+        vla_client=SimpleNamespace(predict=lambda _: np.zeros((50, 14))),
+        _check_cancelled=check,
+    )
+    with pytest.raises(RuntimeError, match="cancelled"):
+        tools.pi0_pick(primitives, None, "Pick the bottle.", max_chunks=1)
+    assert len(executed) == 1
+
+
+def test_memory_discovery_is_scoped_to_dev_user_prompt():
+    bundle = robot_spec.get_robot_spec().prompts
+    variables = {
+        "task": "arrange_largest_number",
+        "layout": 0,
+        "env_cfg_type": "arx_x5",
+        "action_type": "joint",
+        "output_dir": "/output",
+        "task_summary": "scene",
+        "memory_dir": "/memory/reference",
+        "mode": "dev",
+    }
+    user = bundle.render("user", variables=variables)
+    assert "/memory/reference/MEMORY.md" in user
+    assert "read_text_file" in user
+    assert "/memory/reference" not in bundle.render("system", variables=variables)
+    replay = bundle.render("user", variables={**variables, "mode": "eval-fair"})
+    assert "arrange_largest_number / layout 0" in replay
+    assert "read_text_file" not in replay
+    assert "/memory/reference" not in replay

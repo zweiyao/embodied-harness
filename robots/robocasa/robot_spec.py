@@ -194,6 +194,14 @@ def get_toolkit(
         mode=mode,
         attempts_per_session=attempts_per_session,
         state_output_dir=state_output_dir,
+        **(
+            {
+                "selected": config.prompt_vars["manual_tools"],
+                "journal": config.prompt_vars.get("run_journal"),
+            }
+            if "manual_tools" in config.prompt_vars
+            else {}
+        ),
     )
 
 

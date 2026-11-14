@@ -1,0 +1,31 @@
+{
+  "environment": {
+    "RPENT_REPO_ROOT": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111",
+    "ROBODOJO_ASSETS_ROOT": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6",
+    "PI05_CHECKPOINT_PATH": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch",
+    "PI05_NORM_STATS_PATH": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch/assets/arx_x5_sim/norm_stats.json",
+    "OPENPI_DATA_HOME": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/openpi-cache",
+    "SAM3_CHECKPOINT_PATH": "/home/zwy/.cache/huggingface/hub/models--facebook--sam3/snapshots/3c879f39826c281e95690f02c7821c4de09afae7/sam3.pt",
+    "ROBODOJO_PLACEMENT_SETTLE_STEPS": "1000"
+  },
+  "hashes": {
+    "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch/model.safetensors": {
+      "sha256": "ab1214521d61f618ffd82874cc067b6af9077cac8a40a93cb824e7d05ca92e43",
+      "bytes": 7233650408
+    },
+    "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch/assets/arx_x5_sim/norm_stats.json": {
+      "sha256": "ad7dea3e3d2bcdb348945fe03422ab1adccd03baf67318b1a1d153dfe8694db5",
+      "bytes": 3407
+    },
+    "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/openpi-cache/big_vision/paligemma_tokenizer.model": {
+      "sha256": "8986bb4f423f07f8c7f70d0dbe3526fb2316056c17bae71b1ea975e77a168fc6",
+      "bytes": 4264023
+    },
+    "/home/zwy/.cache/huggingface/hub/models--facebook--sam3/snapshots/3c879f39826c281e95690f02c7821c4de09afae7/sam3.pt": {
+      "sha256": "9999e2341ceef5e136daa386eecb55cb414446a00ac2b55eb2dfd2f7c3cf8c9e",
+      "bytes": 3450062241
+    }
+  },
+  "scope": "Inherited network; independent RoboDojo shell only",
+  "status": "passed"
+}

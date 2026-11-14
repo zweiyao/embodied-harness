@@ -1,0 +1,301 @@
+{
+  "status": "approved_conversion_validated_in_isolated_runtime",
+  "checked_at": "2026-11-13T06:22:46.830090+00:00",
+  "base_revision": "0e5dbaabdcb2554e01130632f6aca504c667200e",
+  "scope": "RoboDojo ARX-X5 Pi0.5 state ordering and native-action conversion; existing RLinf normalization/unpadding retained; manual native action format unchanged",
+  "candidate_source_hashes": {
+    "robots/robodojo/policy.py": "c510659cfff0fee25a5343f94fb07e12906dc72d007fc5d5f08374fcf7a58456",
+    "rpent/robots/components/pi05_vla_client.py": "d056bbba328e37f6a4b1d21bc0e0efba5672596dd21741059e69270c31f64742",
+    "rpent/robots/components/pi05_vla_server.py": "799e94d92a5b94b462659056fa9cfe5056b906b35c89c8dc71154a972b45d6e2",
+    "tests/unit_tests/robots/robodojo/test_policy_mapping.py": "3e3977ea73c95732aaad8305a758535b8c6b704c4820c00c42d4ddbac977af69",
+    "tests/unit_tests/rpent/robots/components/test_pi05_vla_client_contracts.py": "d8bc9c014bfa2d4de05da25994db4c22c282d43621006491a2296b15c1062773",
+    "tests/unit_tests/rpent/robots/components/test_pi05_vla_server_contracts.py": "d8689eeebd5cf7e0863d1c5ce789f335e4433d08817a552f407fa0557660daa9",
+    "tests/e2e_tests/robodojo/scenario.py": "1d9580e3c8f043da1f70513e5a1a47bdd96be91dd96a4a93675092c827717be1",
+    "docs/source-en/rst_source/simulators/robodojo.rst": "bc2ca61f1f205111001fd0395f31b099def94caa39757ecbf0b39375fbb011c7",
+    "docs/source-zh/rst_source/simulators/robodojo.rst": "521bd9203c0a5eca80e9c81ba719fcba3a9fef91d2595b91110febbee45266b8"
+  },
+  "regression": {
+    "old_implementation": "2 selected regression tests failed as expected; source ordering and default delta-transform setting",
+    "targeted_passed": 242,
+    "unit_tests": {
+      "passed": 2090,
+      "skipped": 16,
+      "duration_s": 71.81
+    },
+    "pre_commit": "all files passed after formatting",
+    "sphinx": "EN/ZH -E -W --keep-going passed; both orders verified as inline code in rendered HTML"
+  },
+  "transforms": {
+    "status": "passed",
+    "reference": "Installed RLinf output transforms with only AbsoluteActions mask replaced by published make_bool_mask(6,-1,6,-1), then native permutation",
+    "independent_state_cases": 20,
+    "horizon": 50,
+    "model_dim_before_unpadding": 32,
+    "native_action_dim": 14,
+    "compared_native_values": 14000,
+    "max_absolute_error": 2.007094641598428e-07,
+    "legacy_max_absolute_error": 0.9348017357059722,
+    "grippers_remain_absolute": true,
+    "normalization_and_unpadding": "existing RLinf transforms used unchanged",
+    "norm_stats_sha256": "ad7dea3e3d2bcdb348945fe03422ab1adccd03baf67318b1a1d153dfe8694db5",
+    "runtime_network_overrides": false
+  },
+  "native_control": {
+    "status": "passed",
+    "task": "align_blocks",
+    "layout": 0,
+    "max_native_actions": 200,
+    "benchmark_comparable": false,
+    "real_pi05": {
+      "predicted_shape": [
+        50,
+        14
+      ],
+      "executed_native_actions": 10,
+      "max_native_arm_target_to_motor_error_rad": 0.0,
+      "max_policy_arm_target_to_controller_error_rad": 0.0
+    },
+    "controlled_joint_channels": [
+      {
+        "checkpoint_channel": 0,
+        "native_channel": 0,
+        "arm": "left_arm",
+        "joint_index": 0,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 1,
+        "native_channel": 1,
+        "arm": "left_arm",
+        "joint_index": 1,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 2,
+        "native_channel": 2,
+        "arm": "left_arm",
+        "joint_index": 2,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 3,
+        "native_channel": 3,
+        "arm": "left_arm",
+        "joint_index": 3,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 4,
+        "native_channel": 4,
+        "arm": "left_arm",
+        "joint_index": 4,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 5,
+        "native_channel": 5,
+        "arm": "left_arm",
+        "joint_index": 5,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 7,
+        "native_channel": 6,
+        "arm": "right_arm",
+        "joint_index": 0,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 8,
+        "native_channel": 7,
+        "arm": "right_arm",
+        "joint_index": 1,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 9,
+        "native_channel": 8,
+        "arm": "right_arm",
+        "joint_index": 2,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 10,
+        "native_channel": 9,
+        "arm": "right_arm",
+        "joint_index": 3,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 11,
+        "native_channel": 10,
+        "arm": "right_arm",
+        "joint_index": 4,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      },
+      {
+        "checkpoint_channel": 12,
+        "native_channel": 11,
+        "arm": "right_arm",
+        "joint_index": 5,
+        "target_error_rad": 0.0,
+        "response_direction_followed": true
+      }
+    ],
+    "controlled_grippers": [
+      {
+        "checkpoint_channel": 6,
+        "native_channel": 12,
+        "arm": "left_arm",
+        "absolute_gripper_value": 0.25,
+        "max_target_error_m": 1.0803341901621799e-10
+      },
+      {
+        "checkpoint_channel": 6,
+        "native_channel": 12,
+        "arm": "left_arm",
+        "absolute_gripper_value": 0.9,
+        "max_target_error_m": 2.2411346389805686e-09
+      },
+      {
+        "checkpoint_channel": 13,
+        "native_channel": 13,
+        "arm": "right_arm",
+        "absolute_gripper_value": 0.25,
+        "max_target_error_m": 1.0803341901621799e-10
+      },
+      {
+        "checkpoint_channel": 13,
+        "native_channel": 13,
+        "arm": "right_arm",
+        "absolute_gripper_value": 0.9,
+        "max_target_error_m": 2.2411346389805686e-09
+      }
+    ],
+    "final_native_status": {
+      "step": 184,
+      "step_limit": 200,
+      "success": false,
+      "safety": {
+        "alarms": {},
+        "alarm_count": 0
+      }
+    },
+    "official_success": false,
+    "owned_runtime_closed": true,
+    "elapsed_s": 69.373
+  },
+  "gpu_checks": {
+    "initial_suite": {
+      "passed": 4,
+      "failed": 1,
+      "failed_phase": "public CLI ENV startup; CUDA out-of-memory before ready; original logs retained",
+      "daemon_cleanup": "passed"
+    },
+    "cli_retry": {
+      "status": "passed",
+      "initial_gpu_suite": "4 passed, 1 failed during ENV startup with confirmed CUDA out-of-memory; original logs preserved",
+      "retest": "same scripted public CLI policy-chain helper; borrow existing SAM3 endpoint to avoid a duplicate model allocation",
+      "borrowed_sam3_pid_preserved": 341125,
+      "external_planner_calls": 0,
+      "result": {
+        "status": "passed",
+        "definition": "offline planner -> public CLI -> toolkit -> checkpoint-backed VLA -> simulator action -> finish",
+        "planner": "offline-scripted",
+        "action_tool": "pi0_pick",
+        "recorded_action_steps": 1,
+        "simulator_action_count": 50,
+        "simulator_action_count_field": "simulator_steps",
+        "finish_status": "stuck",
+        "transcript": "transcript_put_bottles_into_dustbin_l0.json",
+        "state_manifest": "states.json"
+      }
+    }
+  },
+  "preservation": {
+    "status": "passed",
+    "source_files": {
+      "robodojo": {
+        "checked": 1776,
+        "changed": 0
+      },
+      "harnessvla": {
+        "checked": 470,
+        "changed": 0
+      }
+    },
+    "services": {
+      "rpent-robodojo-workbench.service": "MainPID=341086\nActiveState=active",
+      "embodied-manual-workbench.service": "MainPID=3593034\nActiveState=active"
+    },
+    "owned_daemon_residuals": [],
+    "videos": [
+      {
+        "path": "validation/robodojo-pi05-native-actions-20261113/native-probe/videos/episode_2026-11-13_14-15-43_cam_head.mp4",
+        "codec": "h264",
+        "duration_s": 8.08,
+        "fps": 25.0,
+        "size": [
+          640,
+          480
+        ],
+        "first_frame_decoded": true
+      },
+      {
+        "path": "validation/robodojo-pi05-native-actions-20261113/native-probe/videos/episode_2026-11-13_14-15-43_cam_left_wrist.mp4",
+        "codec": "h264",
+        "duration_s": 8.08,
+        "fps": 25.0,
+        "size": [
+          640,
+          480
+        ],
+        "first_frame_decoded": true
+      },
+      {
+        "path": "validation/robodojo-pi05-native-actions-20261113/native-probe/videos/episode_2026-11-13_14-15-43_cam_right_wrist.mp4",
+        "codec": "h264",
+        "duration_s": 8.08,
+        "fps": 25.0,
+        "size": [
+          640,
+          480
+        ],
+        "first_frame_decoded": true
+      }
+    ],
+    "existing_vla_sam3_univtac_pids_alive": [
+      341124,
+      341125,
+      782157,
+      782158,
+      1218486
+    ]
+  },
+  "dependencies": {
+    "runtime": "isolated source and Python entry point; reuse the prepared dependency site-packages without changing them",
+    "underlying_prepared_environment_packages": 413,
+    "underlying_dependency_metadata_incompatibilities": 9,
+    "thin_venv_uv_check": "not a full dependency audit; audited the underlying prepared environment separately",
+    "clean_install_certified": false
+  },
+  "deployment": "public 8094 service remains at bbd4399; candidate source, model services and simulator tested independently and cleaned",
+  "limits": [
+    "No external Astra/Qwen planning calls or complete task-success trial in this validation.",
+    "Official success in the controlled align_blocks probe was false; the probe is not a benchmark rollout.",
+    "No full 54-task, parallel environment, XPolicyLab backend or policy-performance claim.",
+    "Initial CLI GPU allocation failure retained and retried with an existing SAM3 endpoint; this is not a single five-pass default-configuration run.",
+    "No physical robot action, Mac network change or experiment/probe proxy/IP override."
+  ]
+}

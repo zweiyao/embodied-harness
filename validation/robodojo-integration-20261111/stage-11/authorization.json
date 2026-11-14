@@ -1,0 +1,11 @@
+{
+  "instruction": "采集工作台关闭，继续适配直到全部完成，这次不用再完成一个停一下了",
+  "scope": "Complete remaining RoboDojo adaptation, independent deployment and bounded validation, recording concrete changes before implementation; preserve original harness and independent modifications.",
+  "excludes": [
+    "Physical robot experiments/reset/gripper commands",
+    "New Qwen tool/experience optimization loop",
+    "Automatic PR merge"
+  ],
+  "drafts": "Workspace proposals/robodojo-completion-20261112/continuation.md and batch-01, batch-02, batch-04 patches; prepared GPU target draft in continuation.md",
+  "delivery": "One PR after overall adaptation and validation; no merge."
+}

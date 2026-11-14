@@ -1,0 +1,184 @@
+{
+  "updated_at": "2026-11-12T01:34:41.746860+00:00",
+  "status": "approved_profile_and_serial_components_verified",
+  "baseline_commit": "bc167a24383bc4e857b1677fc6d281d10eb44871",
+  "runtime_env": {
+    "path": "/home/zwy/work/embodied_harness/local-setup/robodojo-integration-20261111/runtime.env",
+    "sha256": "98bbb4abd536cd5fdd252242f552c294f076bd54114b33f946aba5dc860f402e",
+    "loaded_only_in_independent_shell": true,
+    "placement_settle_steps": 1000,
+    "upstream_default_without_override": 20,
+    "default_login_or_systemd_environment_modified": false
+  },
+  "environment": {
+    "task": "put_bottles_into_dustbin",
+    "layout": 0,
+    "instruction": "Pick up the bottles and throw them into the dustbin, using handover when needed.",
+    "ready_seconds": 38.550292708911,
+    "explicit_resets": 2,
+    "reset_seconds": [
+      8.672878433018923,
+      10.868992855772376
+    ],
+    "task_step_counts": [
+      0,
+      0,
+      0
+    ],
+    "cameras": {
+      "cam_head": {
+        "rgb_shape": [
+          480,
+          640,
+          3
+        ],
+        "rgb_dtype": "uint8",
+        "depth_shape": [
+          480,
+          640
+        ],
+        "depth_dtype": "float32",
+        "valid_depth_fraction": 1.0,
+        "intrinsic_shape": [
+          3,
+          3
+        ],
+        "extrinsic_shape": [
+          4,
+          4
+        ]
+      },
+      "cam_left_wrist": {
+        "rgb_shape": [
+          480,
+          640,
+          3
+        ],
+        "rgb_dtype": "uint8",
+        "depth_shape": [
+          480,
+          640
+        ],
+        "depth_dtype": "float32",
+        "valid_depth_fraction": 1.0,
+        "intrinsic_shape": [
+          3,
+          3
+        ],
+        "extrinsic_shape": [
+          4,
+          4
+        ]
+      },
+      "cam_right_wrist": {
+        "rgb_shape": [
+          480,
+          640,
+          3
+        ],
+        "rgb_dtype": "uint8",
+        "depth_shape": [
+          480,
+          640
+        ],
+        "depth_dtype": "float32",
+        "valid_depth_fraction": 1.0,
+        "intrinsic_shape": [
+          3,
+          3
+        ],
+        "extrinsic_shape": [
+          4,
+          4
+        ]
+      }
+    },
+    "saved_snapshots": 3,
+    "owned_exit_before_cleanup": 0,
+    "camera_videos_readable": 3
+  },
+  "pi05": {
+    "ready_seconds": 18.538999273907393,
+    "server_status": {
+      "action_chunk": 50
+    },
+    "wire_shape": [
+      1,
+      50,
+      14
+    ],
+    "request_seconds": 0.45108275208622217,
+    "client_action_shape": [
+      50,
+      14
+    ],
+    "finite": true,
+    "prediction_requests": 1,
+    "owned_exit_before_cleanup": 0
+  },
+  "sam3": {
+    "ready_seconds": 7.014273711945862,
+    "request_seconds": 0.5553471799939871,
+    "found": true,
+    "score": 0.97265625,
+    "mask_shape": [
+      480,
+      640
+    ],
+    "mask_pixels": 3477,
+    "segmentation_requests": 1,
+    "owned_exit_before_cleanup": 0
+  },
+  "counts": {
+    "new_components_started_serially": 3,
+    "planner_requests": 0,
+    "submitted_task_actions": 0,
+    "physical_hardware_actions": 0
+  },
+  "profile_artifact_check": "profile-check.json",
+  "preservation": {
+    "protected_files": {
+      "checked": 608,
+      "changed": []
+    },
+    "new_owned_pids": {
+      "4189023": {
+        "component": "env",
+        "still_exists": false
+      },
+      "4190724": {
+        "component": "vla",
+        "still_exists": false
+      },
+      "4191375": {
+        "component": "sam3",
+        "still_exists": false
+      }
+    },
+    "existing_gpu_pids": [
+      "782158, 8748 MiB",
+      "782157, 7398 MiB"
+    ]
+  },
+  "checks": {
+    "diagnostic_syntax": "py_compile passed remotely",
+    "profile_syntax": "bash -n passed remotely",
+    "pre_commit": "passed",
+    "full_unit_suite": "Not rerun: no Python source changed; previous same-source result 2043 passed / 15 skipped is stage-06 evidence"
+  },
+  "diagnostic": {
+    "source_sha256": "f1220e32d8dd55f6db26fb725bdf09a4a150e90f1eef6a5c7856803df11d94c3",
+    "remote_path": "/home/zwy/work/embodied_harness/validation/robodojo-integration-20261111/stage-07/check_components.py",
+    "command": "source remote-network.sh direct; source <approved runtime.env>; python <check_components.py> env <stage-07> && python <check_components.py> vla <stage-07> && python <check_components.py> sam3 <stage-07>",
+    "raw_artifacts_remain_remote": true
+  },
+  "limitations": [
+    "Only put_bottles_into_dustbin/layout 0 was initialized/reset; not cross-layout or cross-task reset coverage",
+    "The 1000-step condition passed two resets; no paired comparison establishing general causal resolution of instability",
+    "Camera shape/finite calibration checks do not establish independent geometry, metric scale or RGB semantic alignment",
+    "Finite Pi0.5 output and a valid SAM3 mask do not establish action quality, object identity or task success",
+    "No actions, bounded CLI policy chain, planner or workbench experiment ran",
+    "Nine dependency metadata conflicts from stage-01 remain recorded",
+    "Unified simulator workbench and GPU test runner integration remain unfinished"
+  ]
+}

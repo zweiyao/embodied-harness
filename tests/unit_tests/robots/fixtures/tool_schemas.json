@@ -734,7 +734,7 @@
       },
       {
         "name": "set_gripper",
-        "description": "Open or close an arm gripper. 1=close, -1=open.",
+        "description": "Command a gripper and report measured opening (1=open, 0=closed).\n\nSubmits one native step without waiting for completion. gripper: 1=close, -1=open.",
         "input_schema": {
           "type": "object",
           "properties": {

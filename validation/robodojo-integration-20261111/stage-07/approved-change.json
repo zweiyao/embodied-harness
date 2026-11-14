@@ -1,0 +1,5 @@
+{
+  "new_remote_file": "/home/zwy/work/embodied_harness/local-setup/robodojo-integration-20261111/runtime.env",
+  "sha256": "98bbb4abd536cd5fdd252242f552c294f076bd54114b33f946aba5dc860f402e",
+  "content": "# Source only in an independent RoboDojo shell; this file starts no service.\nexport RPENT_REPO_ROOT=/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111\nexport ROBODOJO_ASSETS_ROOT=/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6\nexport PI05_CHECKPOINT_PATH=\"${ROBODOJO_ASSETS_ROOT}/pi05_robodojo_arx_x5_torch\"\nexport PI05_NORM_STATS_PATH=\"${PI05_CHECKPOINT_PATH}/assets/arx_x5_sim/norm_stats.json\"\nexport OPENPI_DATA_HOME=\"${ROBODOJO_ASSETS_ROOT}/openpi-cache\"\nexport SAM3_CHECKPOINT_PATH=/home/zwy/.cache/huggingface/hub/models--facebook--sam3/snapshots/3c879f39826c281e95690f02c7821c4de09afae7/sam3.pt\nexport ROBODOJO_PLACEMENT_SETTLE_STEPS=1000\nexport OMNI_KIT_ACCEPT_EULA=YES\n. /home/zwy/work/embodied_harness/external/isaac-rtx-compat/enable.env\n"
+}

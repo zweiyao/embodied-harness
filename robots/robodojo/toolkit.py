@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+import time
+import uuid
 from functools import partial
 from typing import TYPE_CHECKING, Any
 
@@ -31,7 +33,8 @@ if TYPE_CHECKING:
 class RoboDojoToolkit(Toolkit):
     """Toolkit for the RoboDojo (Isaac Sim) environment.
 
-    Every robot tool is registered for every task. ``eval_fair`` additionally
+    By default every robot tool is registered. The workbench can freeze a native
+    allowlist for a dev run. ``eval_fair`` additionally
     requires a mode-validated environment, removes file tools, and disables
     development perception recording. Scoring and safety diagnostics are never
     planner tools.
@@ -44,8 +47,20 @@ class RoboDojoToolkit(Toolkit):
         dashboard_events: DashboardEventSink,
         memory: MemoryManager,
         eval_fair: bool = False,
+        selected: list[dict] | None = None,
+        journal: Any = None,
     ) -> None:
+        if selected is not None:
+            from robots.robodojo.catalog import validate_selection
+
+            if eval_fair:
+                raise ValueError("Selectable RoboDojo workbench tools require dev mode")
+            validate_selection(selected)
+            self.planner_tools_only = True
+        if journal is not None:
+            self.journal = journal
         self.eval_fair = eval_fair
+        self._owns_env = primitives_kwargs.get("owns_env", False)
         self._task_name = primitives_kwargs.get("task", "")
         if eval_fair and not getattr(primitives_kwargs.get("env"), "eval_fair", False):
             raise ValueError("eval-fair requires a mode-validated environment client")
@@ -57,6 +72,11 @@ class RoboDojoToolkit(Toolkit):
         )
         self.init_primitives(primitives_kwargs=primitives_kwargs)
         self._register_robodojo_tools()
+        if selected is not None:
+            names = {item["name"] for item in selected}
+            self._tools = {
+                name: entry for name, entry in self._tools.items() if name in names
+            }
         if eval_fair:
             allowed = {
                 "view_env_state",
@@ -71,6 +91,33 @@ class RoboDojoToolkit(Toolkit):
             }
 
     def execute_tool(self, name, input_dict):
+        journal = getattr(self, "journal", None)
+        if journal is None:
+            return self._execute_recorded_tool(name, input_dict)
+        call_id, started = uuid.uuid4().hex, time.monotonic()
+        journal.append(
+            "tool_request", {"call_id": call_id, "name": name, "arguments": input_dict}
+        )
+        try:
+            result = self._execute_recorded_tool(name, input_dict)
+        except Exception as exc:
+            journal.append(
+                "tool_error", {"call_id": call_id, "name": name, "error": str(exc)}
+            )
+            raise
+        journal.append(
+            "tool_response",
+            {
+                "call_id": call_id,
+                "name": name,
+                "result": result.data,
+                "images": result.images,
+                "elapsed_s": time.monotonic() - started,
+            },
+        )
+        return result
+
+    def _execute_recorded_tool(self, name, input_dict):
         result = super().execute_tool(name, input_dict)
         if not self.eval_fair and name in {
             "segment",
@@ -125,9 +172,10 @@ class RoboDojoToolkit(Toolkit):
         )
 
     def close(self) -> None:
-        """Flush the env server's episode videos before the daemon is stopped."""
+        """Close an owned environment; leave a borrowed server running."""
         super().close()
-        self._primitives.env.close()
+        if self._owns_env:
+            self._primitives.env.close()
 
     def solved(self) -> bool:
         """Read official success for the runner after planner execution."""

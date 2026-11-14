@@ -166,6 +166,7 @@ robodojo = [
     "rpent-openpi @ git+https://github.com/RLinf/openpi.git@rpent",
 ]
 robodojo-sim = [
+    "imageio[ffmpeg]>=2.0",
     # Supplies both the simulator adapter and the OpenPI policy configuration.
     "rlinf @ git+https://github.com/littleZ05/RLinf.git@rpent/robodojo",
     # RLinf organization fork; use a versioned release once it is published.

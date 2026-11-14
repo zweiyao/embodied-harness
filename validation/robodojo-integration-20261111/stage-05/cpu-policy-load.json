@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "scope": "CPU checkpoint load only; no forward pass, planner request, inference server or robot/simulator action",
+  "phase": "complete",
+  "started_at": "2026-11-12T01:12:26.352293+00:00",
+  "tokenizer": {
+    "source": "https://storage.googleapis.com/big_vision/paligemma_tokenizer.model",
+    "bytes": 4264023,
+    "sha256": "8986bb4f423f07f8c7f70d0dbe3526fb2316056c17bae71b1ea975e77a168fc6",
+    "path": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/openpi-cache/big_vision/paligemma_tokenizer.model"
+  },
+  "load_seconds": 15.666640026960522,
+  "devices": [
+    "cpu"
+  ],
+  "parameter_count": 3353433872,
+  "norm_stats_path": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch/assets/arx_x5_sim/norm_stats.json",
+  "config_name": "pi05_robodojo_arx_x5",
+  "forward_calls": 0,
+  "finished_at": "2026-11-12T01:12:48.652730+00:00"
+}

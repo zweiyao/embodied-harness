@@ -15,7 +15,9 @@ async function showRun(id){
   if(outcome.error)h.append(el('pre',outcome.error));
   h.append(el('p',`远程目录：${run.path}`,'evidence-line'));
   const copy=el('button',run.config.task?.tools?'复制配置到下一次实验':'旧记录未保存工具名单，请从开始页配置');copy.disabled=!run.config.task?.tools;copy.onclick=()=>{sessionStorage.setItem('rpent.copyRun',JSON.stringify({...run.config,...run.config.task}));location.assign('/');};h.append(copy, jsonSection('本轮实际配置与工具版本',run.manifest.tools?run.manifest:run.config),jsonSection('结束状态与用量',run.outcome));root.append(h);
-  const video=el('video');video.controls=true;video.preload='metadata';if(run.files.includes('episode.mp4')){video.src=asset(id,'episode.mp4');root.append(video);}else{root.append(el('p','未记录动作录像；无动作的实验请查看初始观测。','note'));}
+  const videos=run.files.filter(path=>path.endsWith('.mp4')&&!path.includes('.mp4/'));
+  if(videos.length){for(const path of videos){const figure=el('figure'),video=el('video');video.controls=true;video.preload='metadata';video.src=asset(id,path);figure.append(video,el('figcaption',path));root.append(figure);}}
+  else{root.append(el('p','未记录动作录像；无动作的实验请查看初始观测。','note'));}
   if(run.files.includes('states.json')){
     const states=await request(asset(id,'states.json')),section=el('section');section.append(el('h2','动作与观测'));
     const buttons=el('div',null,'step-list'),body=el('div');section.append(buttons,body);root.append(section);

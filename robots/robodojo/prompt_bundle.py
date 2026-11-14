@@ -46,6 +46,7 @@ def user_prompt(
 ) -> PromptNode:
     sections = {
         "TASK": user_parts.TASK,
+        "MEMORY": user_parts.MEMORY,
         "BEGIN": user_parts.BEGIN,
     }
     if (variables or {}).get("mode") == "eval-fair":

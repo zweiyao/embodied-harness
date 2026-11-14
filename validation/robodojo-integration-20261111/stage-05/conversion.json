@@ -1,0 +1,104 @@
+{
+  "started_at": "2026-11-12T01:05:47.241715+00:00",
+  "scope": "Checkpoint preparation with unmodified pinned upstream converter; no model request, task action or hardware access",
+  "status": "converted_and_artifact_checks_passed",
+  "source": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999",
+  "alias": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5",
+  "output": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch",
+  "config_name": "pi05_aloha",
+  "precision": "bfloat16",
+  "compute": "JAX_PLATFORMS=cpu; OMP_NUM_THREADS=4; nice=10",
+  "norm_stats_source": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/ckpt/RoboDojo/Pi_05/RoboDojo-sim-arx_x5-joint-0/59999/assets/arx_x5_sim/norm_stats.json",
+  "norm_stats_sha256": "ad7dea3e3d2bcdb348945fe03422ab1adccd03baf67318b1a1d153dfe8694db5",
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111/.venv/bin/python",
+    "-m",
+    "rlinf.utils.ckpt_convertor.convert_openpi_jax_to_python",
+    "--checkpoint-dir",
+    "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5/59999",
+    "--config-name",
+    "pi05_aloha",
+    "--output-path",
+    "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch"
+  ],
+  "exit_code": 0,
+  "finished_at": "2026-11-12T01:06:24.985028+00:00",
+  "validated_at": "2026-11-12T01:07:29.463985+00:00",
+  "output_config": {
+    "action_dim": 32,
+    "action_horizon": 50,
+    "paligemma_variant": "gemma_2b",
+    "action_expert_variant": "gemma_300m",
+    "precision": "bfloat16"
+  },
+  "output_weight_bytes": 7233650408,
+  "output_weight_sha256": "ab1214521d61f618ffd82874cc067b6af9077cac8a40a93cb824e7d05ca92e43",
+  "tensor_count": 812,
+  "tensor_dtype_counts": {
+    "BF16": 812
+  },
+  "projection_tensor_contracts": {
+    "action_in_proj.bias": {
+      "shape": [
+        1024
+      ],
+      "dtype": "BF16"
+    },
+    "action_in_proj.weight": {
+      "shape": [
+        1024,
+        32
+      ],
+      "dtype": "BF16"
+    },
+    "action_out_proj.bias": {
+      "shape": [
+        32
+      ],
+      "dtype": "BF16"
+    },
+    "action_out_proj.weight": {
+      "shape": [
+        32,
+        1024
+      ],
+      "dtype": "BF16"
+    },
+    "time_mlp_in.bias": {
+      "shape": [
+        1024
+      ],
+      "dtype": "BF16"
+    },
+    "time_mlp_in.weight": {
+      "shape": [
+        1024,
+        1024
+      ],
+      "dtype": "BF16"
+    },
+    "time_mlp_out.bias": {
+      "shape": [
+        1024
+      ],
+      "dtype": "BF16"
+    },
+    "time_mlp_out.weight": {
+      "shape": [
+        1024,
+        1024
+      ],
+      "dtype": "BF16"
+    }
+  },
+  "tied_weight_metadata": {
+    "paligemma_with_expert.paligemma.model.language_model.embed_tokens.weight": "paligemma_with_expert.paligemma.lm_head.weight"
+  },
+  "norm_stats_destination": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch/assets/arx_x5_sim/norm_stats.json",
+  "norm_stats_copy_identical": true,
+  "inference_verified": false,
+  "task_actions": 0
+}
