@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "real_robot_rows_transcribed": 9,
+  "real_robot_aggregation": "per-run means, explicitly confirmed by user",
+  "real_robot_logs_reaudited": false,
+  "univtac_source_hashes_checked": 3,
+  "univtac_run_records_recomputed": 30,
+  "new_numeric_rows_per_language": 18,
+  "relative_links_checked": 34,
+  "unit_tests": "not rerun: documentation/data only",
+  "sphinx": "not run: standalone Markdown; no build inputs changed",
+  "new_experiments_or_runtime_changes": false,
+  "base_revision": "77419e2bd09b19d9a5f785ae444fdcafcdc6fcf9",
+  "preserved_libero_numeric_rows_per_language": 33,
+  "github_markdown_rendering": {
+    "en": {
+      "result": "passed",
+      "table_body_row_counts": [
+        9,
+        9,
+        11,
+        11,
+        11,
+        6
+      ],
+      "rendered_new_numeric_rows": 18
+    },
+    "zh": {
+      "result": "passed",
+      "table_body_row_counts": [
+        9,
+        9,
+        11,
+        11,
+        11,
+        6
+      ],
+      "rendered_new_numeric_rows": 18
+    }
+  },
+  "pre_commit_all_files": "passed",
+  "document_before_revision": "3142d7be61162cf8dfc01b56a8d706ff4048c4a8"
+}

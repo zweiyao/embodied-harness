@@ -1,0 +1,407 @@
+{
+  "scope": "Archived Astra-high UniVTAC policy evaluation; development task excluded; no Qwen transfer result",
+  "token_definition": "input plus output; cached input already included",
+  "tool_version": "d6c13e920f4464898de3ad511749968989ee8cea84c67bfb458ec0582182bfa5",
+  "cohorts": [
+    {
+      "condition": "rpent_initial",
+      "source": "experiments/univtac-raw-depth-baseline-20261102/results.json",
+      "sha256": "010e39babbb3a7535ac22f3b7045d9b4157e175f32f56db71253abdeb4017d75",
+      "overall": {
+        "trials": 10,
+        "successes": 6,
+        "success_rate_percent": 60.0,
+        "mean_total_tokens": 922013.8,
+        "mean_elapsed_s": 356.47
+      },
+      "tasks": [
+        {
+          "task": 1,
+          "trials": 5,
+          "successes": 4,
+          "success_rate_percent": 80.0,
+          "mean_total_tokens": 617724.4,
+          "mean_elapsed_s": 285.5
+        },
+        {
+          "task": 2,
+          "trials": 5,
+          "successes": 2,
+          "success_rate_percent": 40.0,
+          "mean_total_tokens": 1226303.2,
+          "mean_elapsed_s": 427.44
+        }
+      ],
+      "rows": [
+        {
+          "task": 1,
+          "seed": 0,
+          "run_id": "f4c67d3ca0e4ec5a3002",
+          "official_success": false,
+          "elapsed_s": 307.2,
+          "input_tokens": 510057,
+          "output_tokens": 3992,
+          "cached_input_tokens": 474880
+        },
+        {
+          "task": 1,
+          "seed": 1,
+          "run_id": "5c6a4296ba2c934ce283",
+          "official_success": true,
+          "elapsed_s": 401.7,
+          "input_tokens": 1134865,
+          "output_tokens": 5407,
+          "cached_input_tokens": 1029888
+        },
+        {
+          "task": 1,
+          "seed": 2,
+          "run_id": "790e8c1dadd1f1ee21a6",
+          "official_success": true,
+          "elapsed_s": 228.1,
+          "input_tokens": 327070,
+          "output_tokens": 2603,
+          "cached_input_tokens": 298240
+        },
+        {
+          "task": 1,
+          "seed": 3,
+          "run_id": "0442d32b6c74f629c7a0",
+          "official_success": true,
+          "elapsed_s": 253.6,
+          "input_tokens": 438687,
+          "output_tokens": 3744,
+          "cached_input_tokens": 400000
+        },
+        {
+          "task": 1,
+          "seed": 4,
+          "run_id": "26aeeca32e8a2c628b3a",
+          "official_success": true,
+          "elapsed_s": 236.9,
+          "input_tokens": 657408,
+          "output_tokens": 4789,
+          "cached_input_tokens": 619264
+        },
+        {
+          "task": 2,
+          "seed": 0,
+          "run_id": "fac480df7a372a255b3a",
+          "official_success": false,
+          "elapsed_s": 350.6,
+          "input_tokens": 876869,
+          "output_tokens": 5774,
+          "cached_input_tokens": 816640
+        },
+        {
+          "task": 2,
+          "seed": 1,
+          "run_id": "5ff823c9f386d735e75f",
+          "official_success": false,
+          "elapsed_s": 655.1,
+          "input_tokens": 1747387,
+          "output_tokens": 10070,
+          "cached_input_tokens": 1680128
+        },
+        {
+          "task": 2,
+          "seed": 2,
+          "run_id": "2275f2163801632f1919",
+          "official_success": true,
+          "elapsed_s": 253.2,
+          "input_tokens": 461489,
+          "output_tokens": 3948,
+          "cached_input_tokens": 421504
+        },
+        {
+          "task": 2,
+          "seed": 3,
+          "run_id": "6337f5b6e3da08805830",
+          "official_success": false,
+          "elapsed_s": 641.4,
+          "input_tokens": 2458493,
+          "output_tokens": 11405,
+          "cached_input_tokens": 2359936
+        },
+        {
+          "task": 2,
+          "seed": 4,
+          "run_id": "bc377f408a5177804462",
+          "official_success": true,
+          "elapsed_s": 236.9,
+          "input_tokens": 552353,
+          "output_tokens": 3728,
+          "cached_input_tokens": 468224
+        }
+      ]
+    },
+    {
+      "condition": "rpent_repeat",
+      "source": "experiments/univtac-tool-development-20261102/frozen-test/results.json",
+      "sha256": "09f1e91fa86380532608517de08ae7edc0b6dedaa905bce613e88409ef8adc99",
+      "overall": {
+        "trials": 10,
+        "successes": 8,
+        "success_rate_percent": 80.0,
+        "mean_total_tokens": 899937.3,
+        "mean_elapsed_s": 321.87
+      },
+      "tasks": [
+        {
+          "task": 1,
+          "trials": 5,
+          "successes": 3,
+          "success_rate_percent": 60.0,
+          "mean_total_tokens": 838255.4,
+          "mean_elapsed_s": 337.58
+        },
+        {
+          "task": 2,
+          "trials": 5,
+          "successes": 5,
+          "success_rate_percent": 100.0,
+          "mean_total_tokens": 961619.2,
+          "mean_elapsed_s": 306.16
+        }
+      ],
+      "rows": [
+        {
+          "task": 1,
+          "seed": 0,
+          "run_id": "9c855aba7e0c5df26efc",
+          "official_success": false,
+          "elapsed_s": 297.5,
+          "input_tokens": 607532,
+          "output_tokens": 4729,
+          "cached_input_tokens": 572544
+        },
+        {
+          "task": 1,
+          "seed": 1,
+          "run_id": "62a74894307feeb45656",
+          "official_success": false,
+          "elapsed_s": 705.0,
+          "input_tokens": 2414336,
+          "output_tokens": 11195,
+          "cached_input_tokens": 2345088
+        },
+        {
+          "task": 1,
+          "seed": 2,
+          "run_id": "7dcca14638b5fd3a795b",
+          "official_success": true,
+          "elapsed_s": 235.2,
+          "input_tokens": 338935,
+          "output_tokens": 2192,
+          "cached_input_tokens": 306048
+        },
+        {
+          "task": 1,
+          "seed": 3,
+          "run_id": "8838e3823f7ff971fe15",
+          "official_success": true,
+          "elapsed_s": 271.3,
+          "input_tokens": 514411,
+          "output_tokens": 3254,
+          "cached_input_tokens": 439808
+        },
+        {
+          "task": 1,
+          "seed": 4,
+          "run_id": "d9bea9a59c110332713c",
+          "official_success": true,
+          "elapsed_s": 178.9,
+          "input_tokens": 292221,
+          "output_tokens": 2472,
+          "cached_input_tokens": 263936
+        },
+        {
+          "task": 2,
+          "seed": 0,
+          "run_id": "347386ae566d734b43a5",
+          "official_success": true,
+          "elapsed_s": 213.6,
+          "input_tokens": 614371,
+          "output_tokens": 3750,
+          "cached_input_tokens": 564992
+        },
+        {
+          "task": 2,
+          "seed": 1,
+          "run_id": "9fd731b7477cfb99f28c",
+          "official_success": true,
+          "elapsed_s": 476.5,
+          "input_tokens": 1464329,
+          "output_tokens": 7958,
+          "cached_input_tokens": 1396480
+        },
+        {
+          "task": 2,
+          "seed": 2,
+          "run_id": "9155852744b696ecd778",
+          "official_success": true,
+          "elapsed_s": 217.7,
+          "input_tokens": 536308,
+          "output_tokens": 3426,
+          "cached_input_tokens": 507392
+        },
+        {
+          "task": 2,
+          "seed": 3,
+          "run_id": "d53b822eabdd45cdc3bb",
+          "official_success": true,
+          "elapsed_s": 198.9,
+          "input_tokens": 527893,
+          "output_tokens": 3908,
+          "cached_input_tokens": 453504
+        },
+        {
+          "task": 2,
+          "seed": 4,
+          "run_id": "d8a59e431e7e57d4b40c",
+          "official_success": true,
+          "elapsed_s": 424.1,
+          "input_tokens": 1636840,
+          "output_tokens": 9313,
+          "cached_input_tokens": 1583744
+        }
+      ]
+    },
+    {
+      "condition": "holmes_rua_frozen",
+      "source": "experiments/univtac-authored-geometry-test-20261103/frozen-test/results.json",
+      "sha256": "930d915483dda2008b2de04ed24e07e7dd5d7857eb0c1e34d27f07b37acceb54",
+      "overall": {
+        "trials": 10,
+        "successes": 8,
+        "success_rate_percent": 80.0,
+        "mean_total_tokens": 675950.6,
+        "mean_elapsed_s": 310.21
+      },
+      "tasks": [
+        {
+          "task": 1,
+          "trials": 5,
+          "successes": 4,
+          "success_rate_percent": 80.0,
+          "mean_total_tokens": 672493.8,
+          "mean_elapsed_s": 362.32
+        },
+        {
+          "task": 2,
+          "trials": 5,
+          "successes": 4,
+          "success_rate_percent": 80.0,
+          "mean_total_tokens": 679407.4,
+          "mean_elapsed_s": 258.1
+        }
+      ],
+      "rows": [
+        {
+          "task": 1,
+          "seed": 0,
+          "run_id": "76c883830bff577d8e13",
+          "official_success": false,
+          "elapsed_s": 380.4,
+          "input_tokens": 484535,
+          "output_tokens": 4945,
+          "cached_input_tokens": 452864
+        },
+        {
+          "task": 1,
+          "seed": 1,
+          "run_id": "269469324c192be861e6",
+          "official_success": true,
+          "elapsed_s": 483.0,
+          "input_tokens": 1283023,
+          "output_tokens": 9127,
+          "cached_input_tokens": 1220096
+        },
+        {
+          "task": 1,
+          "seed": 2,
+          "run_id": "ff0202289456736990dc",
+          "official_success": true,
+          "elapsed_s": 380.9,
+          "input_tokens": 440597,
+          "output_tokens": 5146,
+          "cached_input_tokens": 397312
+        },
+        {
+          "task": 1,
+          "seed": 3,
+          "run_id": "473bf53abdea5af2c4e2",
+          "official_success": true,
+          "elapsed_s": 203.8,
+          "input_tokens": 426476,
+          "output_tokens": 2819,
+          "cached_input_tokens": 392832
+        },
+        {
+          "task": 1,
+          "seed": 4,
+          "run_id": "64483ba5c9e50e14a4d0",
+          "official_success": true,
+          "elapsed_s": 363.5,
+          "input_tokens": 700731,
+          "output_tokens": 5070,
+          "cached_input_tokens": 656640
+        },
+        {
+          "task": 2,
+          "seed": 0,
+          "run_id": "4b3535bc7ec8521f46b9",
+          "official_success": true,
+          "elapsed_s": 154.7,
+          "input_tokens": 288561,
+          "output_tokens": 2471,
+          "cached_input_tokens": 265984
+        },
+        {
+          "task": 2,
+          "seed": 1,
+          "run_id": "9185f8496bc16f638a9b",
+          "official_success": false,
+          "elapsed_s": 426.1,
+          "input_tokens": 1231543,
+          "output_tokens": 7083,
+          "cached_input_tokens": 1179008
+        },
+        {
+          "task": 2,
+          "seed": 2,
+          "run_id": "8fc4c18a97959a9c0dcd",
+          "official_success": true,
+          "elapsed_s": 257.4,
+          "input_tokens": 587830,
+          "output_tokens": 4290,
+          "cached_input_tokens": 545152
+        },
+        {
+          "task": 2,
+          "seed": 3,
+          "run_id": "b3866b016c5c6afbdad8",
+          "official_success": true,
+          "elapsed_s": 232.3,
+          "input_tokens": 713026,
+          "output_tokens": 5090,
+          "cached_input_tokens": 668288
+        },
+        {
+          "task": 2,
+          "seed": 4,
+          "run_id": "fb180878741125d8038f",
+          "official_success": true,
+          "elapsed_s": 220.0,
+          "input_tokens": 553443,
+          "output_tokens": 3700,
+          "cached_input_tokens": 508032
+        }
+      ]
+    }
+  ],
+  "tool_vs_recent_repeat_percent": {
+    "mean_total_tokens": -24.889145054883276,
+    "mean_elapsed_s": -3.6225805449405124
+  }
+}

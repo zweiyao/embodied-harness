@@ -1,0 +1,113 @@
+{
+  "source": "User-provided real-robot summary image in this conversation, 2026-11-13",
+  "aggregation": "User explicitly confirmed Token and elapsed time are per-run means, not five-run totals",
+  "verification": "Numbers transcribed from user-provided summary; per-run hardware logs and success criteria were not independently re-audited in this documentation update",
+  "holmes_condition": "Three rounds of tool optimization for the same task",
+  "missing_metadata": [
+    "model and reasoning setting",
+    "budgets",
+    "per-run IDs and success criteria",
+    "meaning of the screenshot footnote marker on the lemon task"
+  ],
+  "rows": [
+    {
+      "task": "usb_insertion",
+      "task_zh": "插 U 盘",
+      "task_en": "Insert a USB drive",
+      "condition": "initial_simulation_modality",
+      "trials": 5,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "mean_tokens": 3273821,
+      "mean_elapsed_s": 1200.0
+    },
+    {
+      "task": "usb_insertion",
+      "task_zh": "插 U 盘",
+      "task_en": "Insert a USB drive",
+      "condition": "rpent",
+      "trials": 5,
+      "successes": 0,
+      "success_rate_percent": 0.0,
+      "mean_tokens": 1893213,
+      "mean_elapsed_s": 943.8
+    },
+    {
+      "task": "usb_insertion",
+      "task_zh": "插 U 盘",
+      "task_en": "Insert a USB drive",
+      "condition": "holmes_rua_three_iterations",
+      "trials": 5,
+      "successes": 4,
+      "success_rate_percent": 80.0,
+      "mean_tokens": 2638278,
+      "mean_elapsed_s": 493.5
+    },
+    {
+      "task": "lemon_to_drawer",
+      "task_zh": "夹柠檬放抽屉",
+      "task_en": "Pick the lemon and place it in the drawer",
+      "condition": "initial_simulation_modality",
+      "trials": 5,
+      "successes": 4,
+      "success_rate_percent": 80.0,
+      "mean_tokens": 2031283,
+      "mean_elapsed_s": 1507.3
+    },
+    {
+      "task": "lemon_to_drawer",
+      "task_zh": "夹柠檬放抽屉",
+      "task_en": "Pick the lemon and place it in the drawer",
+      "condition": "rpent",
+      "trials": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_tokens": 1872327,
+      "mean_elapsed_s": 1406.2
+    },
+    {
+      "task": "lemon_to_drawer",
+      "task_zh": "夹柠檬放抽屉",
+      "task_en": "Pick the lemon and place it in the drawer",
+      "condition": "holmes_rua_three_iterations",
+      "trials": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_tokens": 1444817,
+      "mean_elapsed_s": 1246.8
+    },
+    {
+      "task": "breakfast",
+      "task_zh": "做早餐",
+      "task_en": "Prepare breakfast",
+      "condition": "initial_simulation_modality",
+      "trials": 5,
+      "successes": 2,
+      "success_rate_percent": 40.0,
+      "mean_tokens": 1892430,
+      "mean_elapsed_s": 1872.8
+    },
+    {
+      "task": "breakfast",
+      "task_zh": "做早餐",
+      "task_en": "Prepare breakfast",
+      "condition": "rpent",
+      "trials": 5,
+      "successes": 3,
+      "success_rate_percent": 60.0,
+      "mean_tokens": 1723034,
+      "mean_elapsed_s": 1649.2
+    },
+    {
+      "task": "breakfast",
+      "task_zh": "做早餐",
+      "task_en": "Prepare breakfast",
+      "condition": "holmes_rua_three_iterations",
+      "trials": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_tokens": 1263439,
+      "mean_elapsed_s": 1137.3
+    }
+  ]
+}
