@@ -1,0 +1,29 @@
+{
+  "scope": "CPU offline toolkit with actual frozen library; no model/simulator/action request",
+  "reads": [
+    {
+      "file": "MEMORY.md",
+      "chars": 32249,
+      "sha256": "c41a5cebd95b5665d5da92869a2ec1848b6d5957b5b783378bf0a0d7920da43f"
+    },
+    {
+      "file": "global/visual-over-pick-heuristic.md",
+      "chars": 1711,
+      "sha256": "e0cd4851fecd66d24502ad12e296db3cf0c75b198415f7a84dc78b3336564e74"
+    }
+  ],
+  "published_write_denied": true,
+  "other_robot_repo_memory_denied": true,
+  "selected_tools_unchanged": true,
+  "dev_user_prompt_index_resolved": true,
+  "system_no_corpus_injection": true,
+  "eval_fair_no_memory_discovery": true,
+  "protected_material_files": 216,
+  "material_hashes_unchanged": true,
+  "other_robot_permission_check": {
+    "path": "/home/zwy/work/embodied_harness/checkouts/robodojo-rpent-memory-20261114/memory/flexiv/MEMORY.md",
+    "error_type": "PermissionError",
+    "error": "access to another robot's memory is denied: /home/zwy/work/embodied_harness/checkouts/robodojo-rpent-memory-20261114/memory/flexiv/MEMORY.md",
+    "file_exists": true
+  }
+}
