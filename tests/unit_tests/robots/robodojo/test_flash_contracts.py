@@ -383,6 +383,7 @@ def test_mode_tools_state_and_prompt_gate(monkeypatch, tmp_path, eval_fair):
         "env_cfg_type": "arx_x5",
         "action_type": "joint",
         "task_summary": "scene",
+        "memory_dir": str(tmp_path / "memory"),
     }
     prompt = bundle.render("system", variables=variables) + bundle.render(
         "user", variables=variables

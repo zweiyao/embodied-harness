@@ -462,6 +462,15 @@ external access proxy needs a separately configured source-IP allowlist. The
 launcher inherits network settings; select them outside the launcher with the
 remote network script. See ``deploy/ROBODOJO_WORKBENCH.md`` in the source tree.
 
+Dev language planners receive the configured ``memory_dir/MEMORY.md`` reference
+in the user prompt and read relevant leaves on demand with ``read_text_file``.
+Published memory remains read-only; experience bodies are not injected into the
+system prompt. An explicitly selected corpus from another environment is a
+historical reference: apply only lessons whose robot/tool and scene assumptions
+match, derive current geometry, and do not replay stored action values. Record
+consulted files in the audit. Flash eval-fair prompts do not include this
+language-planner discovery step.
+
 Prepared-runtime GPU checks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

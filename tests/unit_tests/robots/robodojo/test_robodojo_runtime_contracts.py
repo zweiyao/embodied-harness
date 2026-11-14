@@ -483,6 +483,7 @@ def test_task_guidance_is_scoped_and_tools_are_injected():
             "env_cfg_type": "arx_x5",
             "action_type": "joint",
             "task_summary": "scene",
+            "memory_dir": "/memory",
         }
         system = bundle.render("system", variables=variables)
         user = bundle.render("user", variables=variables)
@@ -640,3 +641,25 @@ def test_pi0_pick_checks_cancel_between_native_actions():
     with pytest.raises(RuntimeError, match="cancelled"):
         tools.pi0_pick(primitives, None, "Pick the bottle.", max_chunks=1)
     assert len(executed) == 1
+
+
+def test_memory_discovery_is_scoped_to_dev_user_prompt():
+    bundle = robot_spec.get_robot_spec().prompts
+    variables = {
+        "task": "arrange_largest_number",
+        "layout": 0,
+        "env_cfg_type": "arx_x5",
+        "action_type": "joint",
+        "output_dir": "/output",
+        "task_summary": "scene",
+        "memory_dir": "/memory/reference",
+        "mode": "dev",
+    }
+    user = bundle.render("user", variables=variables)
+    assert "/memory/reference/MEMORY.md" in user
+    assert "read_text_file" in user
+    assert "/memory/reference" not in bundle.render("system", variables=variables)
+    replay = bundle.render("user", variables={**variables, "mode": "eval-fair"})
+    assert "arrange_largest_number / layout 0" in replay
+    assert "read_text_file" not in replay
+    assert "/memory/reference" not in replay
