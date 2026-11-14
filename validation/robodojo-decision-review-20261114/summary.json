@@ -1,0 +1,139 @@
+{
+  "scope": "Independent post-task decision review; execution harness remains f09ce22. No planner feedback or memory writes.",
+  "authorization": "User approved the post-task reviewer design and continuing the existing evaluation while checking four-environment feasibility.",
+  "checks": {
+    "unit_tests": {
+      "passed": 2104,
+      "skipped": 16,
+      "warnings": 2,
+      "seconds": 76.54,
+      "python": "3.11.16"
+    },
+    "precommit": "passed --all-files",
+    "focused_cases": 13,
+    "source_hashes": {
+      "rpent/evaluation/decision_summary.py": "3e3303c728e0cb8d85e25cd6e1a8d53cf4b45d648879c3c8a99347797f4d8706",
+      "rpent/evaluation/decision_summary_codex.py": "1d64702ef4d4d5950d93cd6a99d40f94aec5814d4252feb545a6103ac9479786",
+      "tests/unit_tests/rpent/evaluation/test_decision_summary.py": "202f37a12376b8e061604f20408c8584bd2042210f3b0f0caca5e9a9de059e75",
+      "docs/manual-workbench/decision-summary.md": "4856774f17a621a2ec45e67b73293fcff309d2b4dc2acbe2f289bf6eb2003eb1",
+      "docs/manual-workbench/decision-summary.zh-CN.md": "fdb7661eee8e6ad98715b2db8ba9ab6d72f421ba236dc5c4cf28640637723ab0"
+    },
+    "execution_runtime_commit": "f09ce22352531a02ab2dff81b6f1bf401c72f87f",
+    "protected_execution_materials_unchanged": 568,
+    "review_first_complete": {
+      "run_id": "17cf60f5e6ccdc0367b6",
+      "status": "completed",
+      "task": "align_blocks",
+      "actions": 4,
+      "report": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0002_align_blocks_l0/analysis/decision-review-v1/decision-summary.json",
+      "url": "http://10.162.250.228:8094/runs?id=17cf60f5e6ccdc0367b6 (analysis/decision-review-v1/decision-summary.md)",
+      "review_input_tokens": 72921,
+      "review_output_tokens": 2163,
+      "review_model_elapsed_s": 80.976
+    },
+    "main_batch_at_check": {
+      "phase": "running",
+      "valid": 17,
+      "successes": 2,
+      "incidents": 1,
+      "current_task": {
+        "B": "insert_tubes"
+      }
+    },
+    "sphinx": "Not run: standalone Markdown only; no Sphinx inputs changed",
+    "ci_matrix": "Python3.10/3.12 pending CI",
+    "raw_reports_committed": false
+  },
+  "reviewer_smoke": {
+    "images": 3,
+    "elapsed_s": 15.957,
+    "input_tokens": 22089,
+    "output_tokens": 402,
+    "evidence_cutoff": "E369",
+    "citation_validation": "passed"
+  },
+  "capacity": {
+    "baseline": {
+      "used_mib": 14651,
+      "total_mib": 49140
+    },
+    "ready_environments": 3,
+    "measured_peak_increment_mib": 8864,
+    "records": [
+      {
+        "environments": 1,
+        "meta": {
+          "task": "fill_egg_holder",
+          "layout": 0,
+          "env_cfg_type": "arx_x5",
+          "device_id": 0,
+          "num_envs": 1,
+          "max_episode_steps": 0,
+          "random": false
+        },
+        "gpu": {
+          "used_mib": 23515,
+          "total_mib": 49140
+        },
+        "both_arm_ik": "passed",
+        "three_camera_observation": "passed"
+      },
+      {
+        "environments": 2,
+        "meta": {
+          "task": "fill_egg_holder",
+          "layout": 0,
+          "env_cfg_type": "arx_x5",
+          "device_id": 0,
+          "num_envs": 1,
+          "max_episode_steps": 0,
+          "random": false
+        },
+        "gpu": {
+          "used_mib": 31822,
+          "total_mib": 49140
+        },
+        "both_arm_ik": "passed",
+        "three_camera_observation": "passed"
+      },
+      {
+        "environments": 3,
+        "meta": {
+          "task": "fill_egg_holder",
+          "layout": 0,
+          "env_cfg_type": "arx_x5",
+          "device_id": 0,
+          "num_envs": 1,
+          "max_episode_steps": 0,
+          "random": false
+        },
+        "gpu": {
+          "used_mib": 40160,
+          "total_mib": 49140
+        },
+        "both_arm_ik": "passed",
+        "three_camera_observation": "passed"
+      }
+    ],
+    "stop_reason": "Next environment would exceed measured GPU capacity with 3 GiB headroom",
+    "after_cleanup": {
+      "used_mib": 14685,
+      "total_mib": 49140
+    },
+    "task_results": false,
+    "native_actions_executed": 0,
+    "four_environments_validated": false
+  },
+  "initial_validation_incidents": [
+    "Diagnostic RPC argument error preserved; no native actions or task result.",
+    "Initial standalone SSH reviewer probes lacked the already-selected user-service proxy. Reviewer uses an independent user service inheriting current networking; no proxy variables or Mac networking changed.",
+    "Initial reviewer SDK thread effort argument corrected; citation schema now constrains prior evidence and visible model attribution."
+  ],
+  "evaluation_limits": [
+    "Only two concurrent task environments are in evaluation; three verified for initialization/cameras/IK only. Four were not started because measured expansion violates the reserved 3 GiB headroom.",
+    "An imitate_sorting_sequence initialization incident is excluded and being diagnosed; full 54-task evaluation is incomplete.",
+    "Review explanations are interpretations of observable evidence, not hidden reasoning or causal proof.",
+    "Reviewer request elapsed time includes SDK startup and cleanup; reviewer usage is separate from main experiment metrics."
+  ],
+  "runtime_reports_in_git": false
+}

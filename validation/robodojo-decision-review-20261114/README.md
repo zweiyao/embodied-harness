@@ -1,0 +1,9 @@
+# Post-task decision review validation
+
+The reviewer reads finalized journals, uses only the action-before prefix and up to three recorded RGB inputs, and writes separate JSON/Markdown reports. It distinguishes visible planner statements, explicit tool-choice reasons, retrospective interpretations and unknowns. Tool feedback is attached separately by call ID. It executes no tools or actions and does not write memory.
+
+Remote Python 3.11.16: 2104 passed, 16 skipped; all-files pre-commit passed. Thirteen focused cases cover chronological separation, concurrent feedback pairing, image cutoff, API/Codex visible text, forbidden citations and attributions, model-request reuse, source integrity and SDK tool rejection. A real three-image review passed; the complete align_blocks report contains four action entries, with 72921 input tokens, 2163 output tokens and 80.976 seconds of SDK request time. These are additional reviewer costs.
+
+Independent environments use distinct Isaac processes and output directories. Pi prediction is serialized by its RPC write lock; SAM3 segmentation uses its image-cache lock. Three initial environments with cameras and both-arm IK reached 40160/49140 MiB. A fourth was not started: the measured increment violates the reserved 3 GiB margin. Two environments are in task evaluation; three are not certified for sustained task execution. A startup incident in imitate_sorting_sequence is excluded and under diagnosis. The 54-task evaluation remains incomplete.
+
+Raw reports, images, videos, credentials, private launch configuration and logs remain on the remote host under validation/robodojo-parallel-summary-20261114 and research-runs/robodojo-workbench. Snapshot details and source hashes are in [summary.json](summary.json). No Sphinx build was needed for standalone Markdown; Python 3.10/3.12 remain for CI.
