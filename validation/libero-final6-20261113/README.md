@@ -32,7 +32,8 @@ the 44+6 metadata-only fixture verifies all 50 unique cells and five per task
 without touching actual result files. Ruff/pre-commit checks pass for the helper
 and generated runner sources. The 460 protected source/material/config hashes
 remain unchanged. No harness unit suite is rerun because runtime source is frozen.
-Launch and current completion counts are recorded separately in launch-summary.json.
+Launch counts in launch-summary.json are historical; final results are recorded
+in final-summary.json.
 
 prepare_final6.py reuses archived preparers/runners and records the new model-pool
 ports without modifying historical scripts. summarize_final50.py runs after all
@@ -41,3 +42,22 @@ Cached input tokens remain a subset of input, not an additional token charge.
 Original incomplete cases and infrastructure incidents remain distinct from
 valid task failures. Raw observations, videos, credentials and model weights are
 not committed.
+
+## Final result
+
+Completed at 2026-11-13 16:59:06 Asia/Shanghai and rechecked on November 14:
+50 unique task/seed pairs, five per task, 45 native successes (90%). All six
+continuation episodes succeeded. Task 4 succeeded in 3/5 attempts and task 6 in
+2/5; every other task succeeded in 5/5. All five failures exhausted the 50-model-
+request budget; none was a wall-clock timeout. Controller and both private
+workbenches exited successfully, with no remaining cells to resume.
+
+Across all 50 settled episodes, mean model requests were 23.62, mean elapsed time
+was 584.56 seconds, and mean input plus output tokens were 767,299.14 (38,364,957
+total). These include valid failures. The source summary SHA256 is
+`a06d2b58602e6230053155706ce1238ebfa0eef76391d4dbc74310d4e4d60158`.
+Remote validation confirmed 50 unique pairs, exactly five per task, 45 successes
+and the five budget-exhausted failures. Only this small summary is archived here;
+raw run records and videos remain remote. No runtime, network or experiment
+configuration changed during this completion check. Unit tests and Sphinx builds
+were not repeated for standalone result documentation.
