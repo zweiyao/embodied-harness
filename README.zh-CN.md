@@ -106,6 +106,74 @@ LIBERO-Pro `libero_object_task`，模型 `qwen3.8-flash`，关闭思考，RPent 
 
 交互次数按各适配器归档口径统计：Codex/Astra 为已完成模型响应数，Qwen API planner 为模型请求数，均包含有效失败。两者计数定义不同，也不等于物理动作数。平均用时包含成功与有效失败；token 为 API 返回的输入加输出，缓存输入已包含在输入中，不重复相加。完整条件、逐次小型结果及原始文件摘要见 [结果快照](validation/holmes-rua-homepage-20261113/results.json)。统计快照时间以该文件的 `checked_at` 为准。
 
+## RoboDojo：RPent 单轮测试（53 个有效任务，1 个初始化异常）
+
+**有效结果为 4/53（7.55%），不是完整 54 个有效样本的成绩。** `imitate_sorting_sequence` 因原生 `CollectEnv` 缺少演示臂轨迹加载所需的 `eval_seed` 而未进入模型执行，单列为初始化异常。49 个有效失败中，3 个为超时、46 个为其他未通过环境判分的结束。逐一核对 53 份主实验 SDK 日志，未见额度或模型连接错误。独立复盘另完成 21 轮、2 轮因额度失败、30 轮未处理；复盘错误不改变主实验判分。
+
+本项目使用 RPent 当前开发配置，已尝试官方清单的 54 个任务，均为 layout 0，其中 53 个进入有效测试。前 9 个结果为串行；暂停后保留有效结果，剩余任务以两个独立环境并行，Pi/SAM3 共享服务串行处理请求；手动中断的尝试排除。执行拓扑不同，耗时不能视为统一负载下的性能。模型为 `gpt-6-astra`（Codex，reasoning low），使用 12 个原生工具和冻结只读经验库 `language-c592f23a3a324c08`；每任务最多 120 次模型响应、16384 输出 Token 设置、600 秒规划预算。规划预算包含工具执行，表中耗时另含环境启动与清理。Pi0.5 使用 RoboDojo 双 ARX-X5 权重。原生动作次数不限，属于 **dev 诊断配置，不是官方评测，也不是 RPent 论文成绩**。
+
+成功只认环境官方判分，超时算失败；基础设施异常单列并排除成功率分母。每任务仅一次，不能用该表证明稳定成功率、经验迁移效果或优化收益。交互为 Codex 报告的模型响应数，不等于工具调用或机器人动作；Token 为输入加输出，缓存不重复相加。表中指标仅计主实验，独立复盘 agent 的用量另记。
+
+| 任务 | 成功 / 有效次数 | 成功率 | 平均交互 | 平均耗时（秒） | 平均 Token | 结算 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `align_blocks` | 0/1 | 0% | 30 | 422.2 | 857,732 | 失败 (finish: stuck) |
+| `arrange_largest_number` | 0/1 | 0% | 59 | 632.9 | 2,299,349 | 失败 (finish: stuck) |
+| `arrange_largest_number_random` | 0/1 | 0% | 53 | 669.3 | 2,088,873 | 失败 (finish: stuck) |
+| `build_tower` | 0/1 | 0% | 18 | 235.1 | 454,094 | 失败 (finish: success) |
+| `classify_objects` | 0/1 | 0% | 41 | 450.1 | 1,552,169 | 失败 (finish: stuck) |
+| `classify_objects_by_language` | 0/1 | 0% | 43 | 560.2 | 1,648,843 | 失败 (finish: stuck) |
+| `cover_blocks` | 0/1 | 0% | 27 | 332.2 | 873,840 | 失败 (finish: stuck) |
+| `deposit_coin` | 0/1 | 0% | 23 | 256.2 | 616,672 | 失败 (finish: stuck) |
+| `fasten_screws` | 0/1 | 0% | 28 | 347.0 | 765,075 | 失败 (finish: stuck) |
+| `fill_egg_holder` | 0/1 | 0% | 33 | 408.9 | 1,182,051 | 失败 (finish: stuck) |
+| `fill_pen_holder` | 0/1 | 0% | 57 | 647.6 | 2,222,205 | timeout |
+| `fold_clothes` | 1/1 | 100% | 29 | 352.0 | 930,369 | 成功 |
+| `fold_clothes_random` | 0/1 | 0% | 44 | 686.3 | 1,511,519 | 失败 (finish: stuck) |
+| `general_pickup` | 1/1 | 100% | 37 | 389.2 | 1,211,170 | 成功 |
+| `hang_mugs` | 0/1 | 0% | 40 | 564.3 | 1,565,256 | 失败 (finish: stuck) |
+| `hang_mugs_random` | 0/1 | 0% | 30 | 410.3 | 888,631 | 失败 (finish: stuck) |
+| `imitate_sorting_sequence` | — | — | — | — | — | 异常（排除） |
+| `insert_key` | 0/1 | 0% | 22 | 287.2 | 680,947 | 失败 (finish: stuck) |
+| `insert_tubes` | 1/1 | 100% | 19 | 172.2 | 476,749 | 成功 |
+| `make_kong` | 0/1 | 0% | 26 | 318.1 | 836,334 | 失败 (finish: stuck) |
+| `make_toast` | 0/1 | 0% | 51 | 637.3 | 1,803,068 | 失败 (finish: stuck) |
+| `make_toast_random` | 0/1 | 0% | 46 | 565.3 | 1,674,933 | 失败 (finish: stuck) |
+| `match_and_pick_from_conveyor` | 0/1 | 0% | 24 | 593.1 | 1,198,794 | 失败 (finish: stuck) |
+| `organize_table` | 0/1 | 0% | 28 | 373.4 | 969,985 | 失败 (finish: stuck) |
+| `pack_objects_into_box` | 0/1 | 0% | 38 | 462.1 | 1,249,672 | 失败 (finish: completed_unverified) |
+| `pack_objects_into_box_random` | 0/1 | 0% | 38 | 530.2 | 1,075,155 | 失败 (finish: stuck) |
+| `pick_from_conveyor_by_image` | 0/1 | 0% | 16 | 190.2 | 400,618 | 失败 (finish: stuck) |
+| `play_Xylophone` | 0/1 | 0% | 26 | 304.0 | 858,568 | 失败 (finish: stuck) |
+| `play_stacking_toy` | 0/1 | 0% | 30 | 302.1 | 899,609 | 失败 (finish: stuck) |
+| `play_tic_tac_toe` | 0/1 | 0% | 41 | 471.1 | 1,393,427 | 失败 (finish: stuck) |
+| `plug_in_charger` | 0/1 | 0% | 22 | 273.1 | 673,020 | 失败 (finish: stuck) |
+| `pour_balls_into_vase` | 0/1 | 0% | 14 | 237.4 | 358,368 | 失败 (finish: failure) |
+| `pour_by_language` | 0/1 | 0% | 44 | 676.4 | 1,430,186 | timeout |
+| `pour_liquid_into_cup` | 0/1 | 0% | 26 | 335.3 | 764,041 | 失败 (finish: failure) |
+| `pour_liquid_into_cup_random` | 0/1 | 0% | 27 | 422.4 | 774,634 | 失败 (finish: unverified) |
+| `press_by_number` | 0/1 | 0% | 21 | 317.2 | 522,915 | 失败 (finish: unverified) |
+| `push_T` | 0/1 | 0% | 44 | 532.3 | 1,803,652 | 失败 (finish: stuck) |
+| `push_T_random` | 0/1 | 0% | 40 | 498.3 | 1,331,066 | 失败 (finish: stuck) |
+| `put_bottles_into_dustbin` | 0/1 | 0% | 44 | 467.3 | 1,832,154 | 失败 (finish: success) |
+| `solve_equation` | 0/1 | 0% | 42 | 395.3 | 1,565,192 | 失败 (finish: stuck) |
+| `sort_nesting_dolls_by_size` | 0/1 | 0% | 37 | 355.3 | 1,428,817 | 失败 (finish: stuck) |
+| `sort_nesting_dolls_by_size_random` | 0/1 | 0% | 25 | 347.4 | 842,681 | 失败 (finish: stuck) |
+| `stack_blocks` | 0/1 | 0% | 66 | 646.1 | 3,569,675 | timeout |
+| `stack_blocks_by_language` | 0/1 | 0% | 43 | 406.2 | 1,495,506 | 失败 (finish: stuck) |
+| `stack_blocks_random` | 0/1 | 0% | 27 | 329.5 | 736,678 | 失败 (finish: stuck) |
+| `stack_bowls` | 1/1 | 100% | 18 | 180.3 | 426,217 | 成功 |
+| `stack_bowls_random` | 0/1 | 0% | 15 | 225.5 | 380,106 | 失败 (finish: success) |
+| `store_laptop_and_headphones` | 0/1 | 0% | 45 | 501.4 | 1,830,554 | 失败 (finish: stuck) |
+| `store_laptop_and_headphones_random` | 0/1 | 0% | 31 | 379.6 | 1,124,614 | 失败 (finish: stuck) |
+| `store_tools_in_toolbox` | 0/1 | 0% | 39 | 499.3 | 1,326,800 | 失败 (finish: stuck) |
+| `swap_T` | 0/1 | 0% | 36 | 512.2 | 1,342,675 | 失败 (finish: stuck) |
+| `swap_blocks` | 0/1 | 0% | 30 | 347.3 | 965,089 | 失败 (finish: stuck) |
+| `sweep_blocks` | 0/1 | 0% | 39 | 569.2 | 1,393,208 | 失败 (finish: stuck) |
+| `sweep_blocks_random` | 0/1 | 0% | 31 | 403.5 | 868,818 | 失败 (finish: stuck) |
+| **合计** | 4/53 | 7.55% | 34.0 | 423.2 | 1,188,158 | 已尝试 54/54 |
+
+[完整条件、任务指令与逐次结果](validation/robodojo-alltasks-20261114/results.json).
+
 ## 使用与开发
 
 | 入口 | 内容 |

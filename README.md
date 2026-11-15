@@ -106,6 +106,74 @@ The **2026-11-13 data audit** includes **44/50** settled, unique task / seed cel
 
 Interactions follow each adapter’s archived counter: completed model responses for Codex/Astra, and model requests for the Qwen API planner, including valid failed runs. These counters have different definitions and are not physical action counts. Mean elapsed time includes successes and valid failures. Tokens are API-reported input plus output; cached input is already included in input and is not added again. See the [result snapshot](validation/holmes-rua-homepage-20261113/results.json) for conditions, compact per-run records, source hashes, and the exact `checked_at` timestamp.
 
+## RoboDojo: measured RPent results (53 valid tasks, one initialization incident)
+
+**The valid result is 4/53 (7.55%), with incomplete valid coverage of the 54-task inventory.** `imitate_sorting_sequence` never reached model execution: native `CollectEnv` lacks `eval_seed` required by its support-arm demonstration loader. Of 49 valid failures, three timed out and 46 ended without passing the environment goal. All 53 primary SDK journals were checked: none reported quota or model connection errors. Independent review completed 21 runs, failed on two quota-limited requests, and left 30 unprocessed. These review errors do not change primary verdicts.
+
+This project attempts all 54 officially listed tasks at layout 0, with 53 valid trials, using the current RPent development configuration. The first nine results are serial; after a pause, valid results are retained and the remaining tasks use two independent environments with serialized shared Pi/SAM3 services. The operator-interrupted attempt is excluded. Mixed execution topology means elapsed times are not measured under a uniform load. The planner is `gpt-6-astra` (Codex, reasoning low), with 12 native tools and frozen read-only experience `language-c592f23a3a324c08`. Each task allows 120 model responses, a 16384 output-token setting, and a 600-second planner budget. The planner budget includes tool execution; elapsed time also includes environment startup and cleanup. Pi0.5 uses the RoboDojo dual ARX-X5 checkpoint. Native actions are unlimited: this is a **dev diagnostic configuration, not an official benchmark or a score from the RPent paper**.
+
+Success follows the official environment signal. Timeouts count as failures; infrastructure incidents are listed separately and excluded from the success-rate denominator. One run per task does not establish stable success rates, experience transfer, or an optimization benefit. Interactions are Codex-reported model responses, not tool calls or robot actions. Tokens mean input plus output, without adding cached input again. These metrics cover the main experiment; independent review-agent costs are recorded separately.
+
+| Task | Successes / valid runs | Success rate | Mean interactions | Mean elapsed (s) | Mean tokens | Outcome |
+| --- | --- | --- | --- | --- | --- | --- |
+| `align_blocks` | 0/1 | 0% | 30 | 422.2 | 857,732 | Failed (finish: stuck) |
+| `arrange_largest_number` | 0/1 | 0% | 59 | 632.9 | 2,299,349 | Failed (finish: stuck) |
+| `arrange_largest_number_random` | 0/1 | 0% | 53 | 669.3 | 2,088,873 | Failed (finish: stuck) |
+| `build_tower` | 0/1 | 0% | 18 | 235.1 | 454,094 | Failed (finish: success) |
+| `classify_objects` | 0/1 | 0% | 41 | 450.1 | 1,552,169 | Failed (finish: stuck) |
+| `classify_objects_by_language` | 0/1 | 0% | 43 | 560.2 | 1,648,843 | Failed (finish: stuck) |
+| `cover_blocks` | 0/1 | 0% | 27 | 332.2 | 873,840 | Failed (finish: stuck) |
+| `deposit_coin` | 0/1 | 0% | 23 | 256.2 | 616,672 | Failed (finish: stuck) |
+| `fasten_screws` | 0/1 | 0% | 28 | 347.0 | 765,075 | Failed (finish: stuck) |
+| `fill_egg_holder` | 0/1 | 0% | 33 | 408.9 | 1,182,051 | Failed (finish: stuck) |
+| `fill_pen_holder` | 0/1 | 0% | 57 | 647.6 | 2,222,205 | timeout |
+| `fold_clothes` | 1/1 | 100% | 29 | 352.0 | 930,369 | Success |
+| `fold_clothes_random` | 0/1 | 0% | 44 | 686.3 | 1,511,519 | Failed (finish: stuck) |
+| `general_pickup` | 1/1 | 100% | 37 | 389.2 | 1,211,170 | Success |
+| `hang_mugs` | 0/1 | 0% | 40 | 564.3 | 1,565,256 | Failed (finish: stuck) |
+| `hang_mugs_random` | 0/1 | 0% | 30 | 410.3 | 888,631 | Failed (finish: stuck) |
+| `imitate_sorting_sequence` | — | — | — | — | — | Incident (excluded) |
+| `insert_key` | 0/1 | 0% | 22 | 287.2 | 680,947 | Failed (finish: stuck) |
+| `insert_tubes` | 1/1 | 100% | 19 | 172.2 | 476,749 | Success |
+| `make_kong` | 0/1 | 0% | 26 | 318.1 | 836,334 | Failed (finish: stuck) |
+| `make_toast` | 0/1 | 0% | 51 | 637.3 | 1,803,068 | Failed (finish: stuck) |
+| `make_toast_random` | 0/1 | 0% | 46 | 565.3 | 1,674,933 | Failed (finish: stuck) |
+| `match_and_pick_from_conveyor` | 0/1 | 0% | 24 | 593.1 | 1,198,794 | Failed (finish: stuck) |
+| `organize_table` | 0/1 | 0% | 28 | 373.4 | 969,985 | Failed (finish: stuck) |
+| `pack_objects_into_box` | 0/1 | 0% | 38 | 462.1 | 1,249,672 | Failed (finish: completed_unverified) |
+| `pack_objects_into_box_random` | 0/1 | 0% | 38 | 530.2 | 1,075,155 | Failed (finish: stuck) |
+| `pick_from_conveyor_by_image` | 0/1 | 0% | 16 | 190.2 | 400,618 | Failed (finish: stuck) |
+| `play_Xylophone` | 0/1 | 0% | 26 | 304.0 | 858,568 | Failed (finish: stuck) |
+| `play_stacking_toy` | 0/1 | 0% | 30 | 302.1 | 899,609 | Failed (finish: stuck) |
+| `play_tic_tac_toe` | 0/1 | 0% | 41 | 471.1 | 1,393,427 | Failed (finish: stuck) |
+| `plug_in_charger` | 0/1 | 0% | 22 | 273.1 | 673,020 | Failed (finish: stuck) |
+| `pour_balls_into_vase` | 0/1 | 0% | 14 | 237.4 | 358,368 | Failed (finish: failure) |
+| `pour_by_language` | 0/1 | 0% | 44 | 676.4 | 1,430,186 | timeout |
+| `pour_liquid_into_cup` | 0/1 | 0% | 26 | 335.3 | 764,041 | Failed (finish: failure) |
+| `pour_liquid_into_cup_random` | 0/1 | 0% | 27 | 422.4 | 774,634 | Failed (finish: unverified) |
+| `press_by_number` | 0/1 | 0% | 21 | 317.2 | 522,915 | Failed (finish: unverified) |
+| `push_T` | 0/1 | 0% | 44 | 532.3 | 1,803,652 | Failed (finish: stuck) |
+| `push_T_random` | 0/1 | 0% | 40 | 498.3 | 1,331,066 | Failed (finish: stuck) |
+| `put_bottles_into_dustbin` | 0/1 | 0% | 44 | 467.3 | 1,832,154 | Failed (finish: success) |
+| `solve_equation` | 0/1 | 0% | 42 | 395.3 | 1,565,192 | Failed (finish: stuck) |
+| `sort_nesting_dolls_by_size` | 0/1 | 0% | 37 | 355.3 | 1,428,817 | Failed (finish: stuck) |
+| `sort_nesting_dolls_by_size_random` | 0/1 | 0% | 25 | 347.4 | 842,681 | Failed (finish: stuck) |
+| `stack_blocks` | 0/1 | 0% | 66 | 646.1 | 3,569,675 | timeout |
+| `stack_blocks_by_language` | 0/1 | 0% | 43 | 406.2 | 1,495,506 | Failed (finish: stuck) |
+| `stack_blocks_random` | 0/1 | 0% | 27 | 329.5 | 736,678 | Failed (finish: stuck) |
+| `stack_bowls` | 1/1 | 100% | 18 | 180.3 | 426,217 | Success |
+| `stack_bowls_random` | 0/1 | 0% | 15 | 225.5 | 380,106 | Failed (finish: success) |
+| `store_laptop_and_headphones` | 0/1 | 0% | 45 | 501.4 | 1,830,554 | Failed (finish: stuck) |
+| `store_laptop_and_headphones_random` | 0/1 | 0% | 31 | 379.6 | 1,124,614 | Failed (finish: stuck) |
+| `store_tools_in_toolbox` | 0/1 | 0% | 39 | 499.3 | 1,326,800 | Failed (finish: stuck) |
+| `swap_T` | 0/1 | 0% | 36 | 512.2 | 1,342,675 | Failed (finish: stuck) |
+| `swap_blocks` | 0/1 | 0% | 30 | 347.3 | 965,089 | Failed (finish: stuck) |
+| `sweep_blocks` | 0/1 | 0% | 39 | 569.2 | 1,393,208 | Failed (finish: stuck) |
+| `sweep_blocks_random` | 0/1 | 0% | 31 | 403.5 | 868,818 | Failed (finish: stuck) |
+| **Overall** | 4/53 | 7.55% | 34.0 | 423.2 | 1,188,158 | Attempted 54/54 |
+
+[Conditions, task instructions, and per-run evidence](validation/robodojo-alltasks-20261114/results.json).
+
 ## Use and development
 
 | Entry | Contents |

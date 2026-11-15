@@ -1,0 +1,2590 @@
+{
+  "summary": {
+    "phase": "completed_with_incidents",
+    "updated_at": "2026-11-14T18:09:27.669513+00:00",
+    "planned": 54,
+    "attempted": 54,
+    "valid": 53,
+    "incidents": 1,
+    "successes": 4,
+    "success_rate_percent": 7.547169811320755,
+    "current_task": {},
+    "configuration": {
+      "planner": "codex",
+      "model": "gpt-6-astra",
+      "max_turns": 120,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600,
+      "model_profile": "gpt-6-astra",
+      "tools": [
+        "native:move_to",
+        "native:set_gripper",
+        "native:pi0_pick",
+        "native:stabilize",
+        "native:place_in_bin",
+        "native:view_env_state",
+        "native:back_project",
+        "native:segment",
+        "native:read_text_file",
+        "native:write_text_file",
+        "native:list_dir",
+        "native:finish"
+      ],
+      "reasoning_effort": "low"
+    },
+    "layout": 0,
+    "diagnostic_unlimited_actions": true,
+    "benchmark_comparable": false,
+    "execution_topology": "9 serial results retained; resumed with two isolated environments and serialized shared models"
+  },
+  "source_commit": "f09ce22352531a02ab2dff81b6f1bf401c72f87f",
+  "memory_version": "language-c592f23a3a324c08",
+  "protocol": {
+    "native_success_only": true,
+    "timeout_is_valid_failure": true,
+    "infrastructure_error_is_result": false,
+    "native_action_limit": null,
+    "mode": "dev",
+    "benchmark_comparable": false,
+    "repetitions_per_task": 1,
+    "include_previous_runs": false,
+    "execution_topology": "First 9 serial; remaining 45 resumed with two environment processes and shared serialized Pi/SAM3"
+  },
+  "runs": [
+    {
+      "task": "align_blocks",
+      "layout": 0,
+      "run_id": "17cf60f5e6ccdc0367b6",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0002_align_blocks_l0",
+      "url": "http://10.162.250.228:8094/runs?id=17cf60f5e6ccdc0367b6",
+      "instruction": "Use the set square to push the three blocks into a straight, aligned row, then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 422.2,
+      "planner_elapsed_s": 364.1,
+      "interactions": 30,
+      "input_tokens": 855651,
+      "output_tokens": 2081,
+      "total_tokens": 857732,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_21-41-23_cam_head.mp4",
+        "videos/episode_2026-11-14_21-41-23_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_21-41-23_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "84ec3e17c51c3f95b31f08b111aa6f29b3927a764d142fc8ff462ac02e6806ae",
+        "outcome.json": "2dda3647cbc5dea46b3aadf4a4571e5ad9b57eb66283124713f7aa4b60f0d9b7",
+        "dashboard_config.json": "4ec02969115dcdd1a055dbcf230c19d865ab67928eb0594565d99b22d68a83f0",
+        "manifest.json": "643a39ebc26bdbb91f5db5ee2bf76e8a37e1395b05d2e733b282e8393f450285"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "arrange_largest_number",
+      "layout": 0,
+      "run_id": "a01358b68b24ab97baf9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0003_arrange_largest_number_l0",
+      "url": "http://10.162.250.228:8094/runs?id=a01358b68b24ab97baf9",
+      "instruction": "Arrange the numbers from left to right to form the largest possible number, and place them on the pad.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 632.9,
+      "planner_elapsed_s": 575.4,
+      "interactions": 59,
+      "input_tokens": 2295678,
+      "output_tokens": 3671,
+      "total_tokens": 2299349,
+      "action_tool_calls": 6,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 18,
+        "back_project": 15,
+        "pi0_pick": 6,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_21-48-28_cam_head.mp4",
+        "videos/episode_2026-11-14_21-48-28_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_21-48-28_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "271e1ab4d90d586a1c78289579e4b821e04b8ca2cdd4c3390c3be3a359a419e8",
+        "outcome.json": "767311fd8d8f3173e6cb977fcdde7860bbc8f9e2410743bbcb27e7cc020e3c4b",
+        "dashboard_config.json": "c310cfb661d50192ccffdd3988192a771a72f84f244e347c31e589bd3d254a22",
+        "manifest.json": "1fef155f7ccf73b3c0ac1c9a487fb8c557d40eb4596078b5b584d9b218b6fd98"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "arrange_largest_number_random",
+      "layout": 0,
+      "run_id": "13dbcb06ba2c97a1f3c2",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0004_arrange_largest_number_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=13dbcb06ba2c97a1f3c2",
+      "instruction": "Arrange the numbers from left to right to form the largest possible number, and place them on the pad.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 669.3,
+      "planner_elapsed_s": 590.9,
+      "interactions": 53,
+      "input_tokens": 2085343,
+      "output_tokens": 3530,
+      "total_tokens": 2088873,
+      "action_tool_calls": 6,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 12,
+        "back_project": 10,
+        "pi0_pick": 5,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_21-59-02_cam_head.mp4",
+        "videos/episode_2026-11-14_21-59-02_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_21-59-02_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "b54155a3480c4257311b0fb8e5a6ed59a17ec2336c43297a516829034d037e2d",
+        "outcome.json": "b2e9030101ee4839d2774fb716dc5cca9db5e15952ff9a04da56dc41e69fde0d",
+        "dashboard_config.json": "03620fd8708c6b7a077cf4d47cd798fcb2de48ddef211eb7c222e17b4ad95baa",
+        "manifest.json": "c66da7a6b3173e87d49524d20e6f9f5ac6eb099b1a20488c69d4644f8d27dcbc"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "build_tower",
+      "layout": 0,
+      "run_id": "69df93285cd6c5e2450b",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0005_build_tower_l0",
+      "url": "http://10.162.250.228:8094/runs?id=69df93285cd6c5e2450b",
+      "instruction": "Build a tower using the wooden blocks and wooden boards.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "success",
+      "error": null,
+      "elapsed_s": 235.1,
+      "planner_elapsed_s": 178.6,
+      "interactions": 18,
+      "input_tokens": 452782,
+      "output_tokens": 1312,
+      "total_tokens": 454094,
+      "action_tool_calls": 2,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 2,
+        "back_project": 2,
+        "pi0_pick": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-10-14_cam_head.mp4",
+        "videos/episode_2026-11-14_22-10-14_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-10-14_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "28370ae1c9b5ea70523718349487a6b9cbe984a8cb4606f7a2f281f8ae55a38e",
+        "outcome.json": "cc5c6e9fdde1532990611a59e8966c0f90b76dcc1a5dd652f07768c73ddb2cbc",
+        "dashboard_config.json": "2db5aa8358f6f498550e36c28c990131062431e36a0026757dfb5c0db9ee6a86",
+        "manifest.json": "59a09393c313287e3e671a7875f99fd51cb3b11b140deb72f6c4b953607357a2"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "classify_objects",
+      "layout": 0,
+      "run_id": "e8d6fdf7c82f0ce24c76",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0006_classify_objects_l0",
+      "url": "http://10.162.250.228:8094/runs?id=e8d6fdf7c82f0ce24c76",
+      "instruction": "Sort the objects by category into the three baskets.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 450.1,
+      "planner_elapsed_s": 401.6,
+      "interactions": 41,
+      "input_tokens": 1549642,
+      "output_tokens": 2527,
+      "total_tokens": 1552169,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 9,
+        "back_project": 7,
+        "pi0_pick": 6,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-14-09_cam_head.mp4",
+        "videos/episode_2026-11-14_22-14-09_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-14-09_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "baeb60bf6b4b430a8e98c7d78f720df5b859498b99321e2e0e00229f1628f9fd",
+        "outcome.json": "5abb1502babc83ba751c48cd9378a9fe9e1904fea8ea4490fbc5854be082e6e9",
+        "dashboard_config.json": "fef3f349daeb33c6b1b336b2993754feb9ca6db918642b50517261d8b449a58d",
+        "manifest.json": "47553a285f494625bb8194a55eab7b31648ddd7d26a838de73efd0151c1f6592"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "classify_objects_by_language",
+      "layout": 0,
+      "run_id": "c5a040d59b179d852537",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0007_classify_objects_by_language_l0",
+      "url": "http://10.162.250.228:8094/runs?id=c5a040d59b179d852537",
+      "instruction": "Put car objects into the left basket, watch objects into the middle basket, and wooden_toy objects into the right basket, then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 560.2,
+      "planner_elapsed_s": 509.6,
+      "interactions": 43,
+      "input_tokens": 1645440,
+      "output_tokens": 3403,
+      "total_tokens": 1648843,
+      "action_tool_calls": 11,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 12,
+        "back_project": 11,
+        "pi0_pick": 8,
+        "move_to": 2,
+        "place_in_bin": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-21-41_cam_head.mp4",
+        "videos/episode_2026-11-14_22-21-41_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-21-41_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "68f31cbfffb3dbd58a5445c65c9021ad3d94d2439b9c76acbdfef9fd7dabb383",
+        "outcome.json": "b6ab37f7939d4a0909ce341daf3b350af092ca053d55b09d564c41df9ac3db4a",
+        "dashboard_config.json": "a4fc2866cd2a5314b10945886efaca77805f96a20b20c4f82abf7a340be8ba8d",
+        "manifest.json": "dca6c2c6e18bbed0339fe06ff64f5e58ac6ece2cd0175ddf77a7e22a829f62f4"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "cover_blocks",
+      "layout": 0,
+      "run_id": "4b707c8aba31512d7c71",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0008_cover_blocks_l0",
+      "url": "http://10.162.250.228:8094/runs?id=4b707c8aba31512d7c71",
+      "instruction": "Cover the blocks from left to right, remember their colors, then uncover them in the order: red, green, and blue.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 332.2,
+      "planner_elapsed_s": 283.1,
+      "interactions": 27,
+      "input_tokens": 871928,
+      "output_tokens": 1912,
+      "total_tokens": 873840,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-31-02_cam_head.mp4",
+        "videos/episode_2026-11-14_22-31-02_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-31-02_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "1322394da836fd0a4d76b3c52d858c2d3c813b4178ced47c9984397c6fb83de6",
+        "outcome.json": "a111d4ba4eeb109cf58731c5d2d8409cd362c85a21b04ac9e8aa1c0a65d080c3",
+        "dashboard_config.json": "b956a698026e31b359d5172d39db36d4437fd9e947303e472d1f5288cdebc068",
+        "manifest.json": "2b6106e171563c388468133c0a7cbeed4500e16f7375b2e9855c84e735276969"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "deposit_coin",
+      "layout": 0,
+      "run_id": "62470fdd3fe412a194c2",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0009_deposit_coin_l0",
+      "url": "http://10.162.250.228:8094/runs?id=62470fdd3fe412a194c2",
+      "instruction": "Pick up the coin from the holder and insert it precisely into the coin bank.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 256.2,
+      "planner_elapsed_s": 212.0,
+      "interactions": 23,
+      "input_tokens": 615023,
+      "output_tokens": 1649,
+      "total_tokens": 616672,
+      "action_tool_calls": 3,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 3,
+        "pi0_pick": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-36-39_cam_head.mp4",
+        "videos/episode_2026-11-14_22-36-39_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-36-39_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "60c25a9b93fc9f02e4683278ff54d5795562e30a98356bfb0e3370119d2dce0f",
+        "outcome.json": "bb7156f25fe18dddf1ab90c30fa4e8030b5fde2d36429add47af01e0d4dc5de1",
+        "dashboard_config.json": "22932ef2a2ce94be3a8e5bb8bfbc79820cabadc1ac6e6ad9f29b3ddc68fb2012",
+        "manifest.json": "d9ef9ce9c45f7267e075316c4e21029e885dcf0275ae9063bfa85230e62e4aa4"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "fasten_screws",
+      "layout": 0,
+      "run_id": "f745032ef7947940db36",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0010_fasten_screws_l0",
+      "url": "http://10.162.250.228:8094/runs?id=f745032ef7947940db36",
+      "instruction": "Insert and tighten each screw into the nut of the same color.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 347.0,
+      "planner_elapsed_s": 296.7,
+      "interactions": 28,
+      "input_tokens": 763341,
+      "output_tokens": 1734,
+      "total_tokens": 765075,
+      "action_tool_calls": 3,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_22-40-59_cam_head.mp4",
+        "videos/episode_2026-11-14_22-40-59_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_22-40-59_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "c3a68c0d26e2c96e31ac65b9971721044368481b190982ef67157120cd1f5f50",
+        "outcome.json": "828e533701d0be83f10376dc6b44032f79121d8abd3790faab6cacea1fba1c29",
+        "dashboard_config.json": "8fa56476cfc9fc044504306492663a19e780ef789f67abf7268b5bd9fd8ab452",
+        "manifest.json": "027bb41c62fc8a120beec3797e3788ccfbafb7e89bb963d3a9a31d374c271c25"
+      },
+      "lane": "serial-before-pause",
+      "parallel_lanes": 1
+    },
+    {
+      "task": "fill_egg_holder",
+      "layout": 0,
+      "run_id": "53318ff4adad7af258a1",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0012_fill_egg_holder_l0",
+      "url": "http://10.162.250.228:8094/runs?id=53318ff4adad7af258a1",
+      "instruction": "Place the four eggs from the basket into the egg holder, then close the lid.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 408.9,
+      "planner_elapsed_s": 363.3,
+      "interactions": 33,
+      "input_tokens": 1179390,
+      "output_tokens": 2661,
+      "total_tokens": 1182051,
+      "action_tool_calls": 8,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 11,
+        "back_project": 9,
+        "pi0_pick": 5,
+        "move_to": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-24-35_cam_head.mp4",
+        "videos/episode_2026-11-14_23-24-35_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-24-35_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "c38d0b880e17256a6080493cdb06aa82beb6f0e880cde6cabd2938d5e0fe5cba",
+        "outcome.json": "6cbc12ab9627d813cba3d2d120a3abdb27f95faf05b51121f69f514a4fd7a087",
+        "dashboard_config.json": "eb73b3797c1dbda6e98d6463ef429df4691e0b1f0d152bd2251514ccc677e2ac",
+        "manifest.json": "0f32dcc228a363560f124aebfbf42f80650bfad88ea7bb8eeb6ea384bac3b4d8"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "fill_pen_holder",
+      "layout": 0,
+      "run_id": "bc7e9c655051c2dbdff9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0001_fill_pen_holder_l0",
+      "url": "http://10.162.250.228:8094/runs?id=bc7e9c655051c2dbdff9",
+      "instruction": "Hold the pen holder with one hand, place all pens into it with the other hand, then put it back down.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "timeout",
+      "finish_status": null,
+      "error": "Codex SDK timed out after 600s",
+      "elapsed_s": 647.6,
+      "planner_elapsed_s": 600.2,
+      "interactions": 57,
+      "input_tokens": 2219258,
+      "output_tokens": 2947,
+      "total_tokens": 2222205,
+      "action_tool_calls": 10,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 13,
+        "back_project": 10,
+        "pi0_pick": 10
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-24-35_cam_head.mp4",
+        "videos/episode_2026-11-14_23-24-35_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-24-35_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8cb20cc8ca59a29522c9f8941cce9d1dace41c5558b6690e4c09560c56cf7c7e",
+        "outcome.json": "792674b5d274fdf4bac1fc600267b1b9b579075747802661e5e5622bd6210a2e",
+        "dashboard_config.json": "11069b1453788256f3499cbf4f0d599160c67ffd27341b440669cf02c3b46253",
+        "manifest.json": "8c76cc84e6347c624a223c95fc76042cdf1f67294876e3a33c38bc4731296f86"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "fold_clothes",
+      "layout": 0,
+      "run_id": "ddcfcce0e2d2ca813135",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0013_fold_clothes_l0",
+      "url": "http://10.162.250.228:8094/runs?id=ddcfcce0e2d2ca813135",
+      "instruction": "Fold the clothes neatly.",
+      "valid": true,
+      "incident": null,
+      "success": true,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 352.0,
+      "planner_elapsed_s": 300.2,
+      "interactions": 29,
+      "input_tokens": 928385,
+      "output_tokens": 1984,
+      "total_tokens": 930369,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "set_gripper": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-31-25_cam_head.mp4",
+        "videos/episode_2026-11-14_23-31-25_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-31-25_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "d9418297b9a2ac8274851cea6076b56ce42e8a16bbfac2d20f6eb7231981013a",
+        "outcome.json": "ed44f33c53292185500b6c2939f818497ff458c9016dcd4308a3ba00d53490ef",
+        "dashboard_config.json": "97f9b5086ea847e139387f4d9ff34674a849d5e256532b3e6fad189e42793535",
+        "manifest.json": "f19fbdce73431ee72c3c255347d8329d9924da32148686c501d6f3fcd8280606"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "fold_clothes_random",
+      "layout": 0,
+      "run_id": "b0f832e80d2c785eca84",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0002_fold_clothes_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=b0f832e80d2c785eca84",
+      "instruction": "Fold the clothes neatly.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 686.3,
+      "planner_elapsed_s": 552.6,
+      "interactions": 44,
+      "input_tokens": 1508746,
+      "output_tokens": 2773,
+      "total_tokens": 1511519,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-35-20_cam_head.mp4",
+        "videos/episode_2026-11-14_23-35-20_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-35-20_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "b54e5d088bd5cccd44662f2c50ed3f41482245a89e8dcb2145b20aa137d0a09f",
+        "outcome.json": "e73addd30d8299652e100724339903c51819ecbed215ba5063e256ca1573e906",
+        "dashboard_config.json": "cf5895272e1c968da0b38f3a234ee7cb4bad4eafeea9d98228d828a507ecda42",
+        "manifest.json": "5123ebacfc97e923fec915ac39d3db3340e5d4f2f87e1ad8895c9d344a28d6ec"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "general_pickup",
+      "layout": 0,
+      "run_id": "8c9a550e391d1d7b8cd7",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0014_general_pickup_l0",
+      "url": "http://10.162.250.228:8094/runs?id=8c9a550e391d1d7b8cd7",
+      "instruction": "Pick up the mint green scissors by 10 cm.",
+      "valid": true,
+      "incident": null,
+      "success": true,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 389.2,
+      "planner_elapsed_s": 333.9,
+      "interactions": 37,
+      "input_tokens": 1209010,
+      "output_tokens": 2160,
+      "total_tokens": 1211170,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 7,
+        "back_project": 7,
+        "pi0_pick": 5,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-37-21_cam_head.mp4",
+        "videos/episode_2026-11-14_23-37-21_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-37-21_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "3040cfe01af6a4e2baa5d2f488a9510ef1e74caf12cf201a1ba958fed3b4464d",
+        "outcome.json": "3b906ded9f74c8a574bdd5b74f1d3b9c331a0537049f85cef9f4b099036cb520",
+        "dashboard_config.json": "8fa476efecb8b342e68c430aa484dc1ddc424abfaefc3674db011f4ff2421de7",
+        "manifest.json": "2d5e9ff55bb3ab2dc730a1089f0fd91d7b42cc666469bfe45ff92c0fb3d51791"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "hang_mugs",
+      "layout": 0,
+      "run_id": "9d963c57c83a11c87dcc",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0015_hang_mugs_l0",
+      "url": "http://10.162.250.228:8094/runs?id=9d963c57c83a11c87dcc",
+      "instruction": "Hang all the mugs on the mug rack.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 564.3,
+      "planner_elapsed_s": 512.5,
+      "interactions": 40,
+      "input_tokens": 1562445,
+      "output_tokens": 2811,
+      "total_tokens": 1565256,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 8,
+        "back_project": 8,
+        "pi0_pick": 7,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/held-offset-rotation-reach.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-43-53_cam_head.mp4",
+        "videos/episode_2026-11-14_23-43-53_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-43-53_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "0017ef877cad415544d7da91eadf566248dca1fb6408f542e2686f6c4ea633ea",
+        "outcome.json": "80d6cf9a05a9dcaec3f8acac9ef1b43f3511e608e1656689e353aa20777c5712",
+        "dashboard_config.json": "7e415385bf01cba5be43671b39a229d63e831d1c9448fc30ff654f55ab19caa5",
+        "manifest.json": "062cbc4d3ada0969289383817e2e3b6e507d591eb04d8295c028228fbdc47f6a"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "hang_mugs_random",
+      "layout": 0,
+      "run_id": "59fff084e234f77300c7",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0003_hang_mugs_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=59fff084e234f77300c7",
+      "instruction": "Hang all the mugs on the mug rack.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 410.3,
+      "planner_elapsed_s": 272.6,
+      "interactions": 30,
+      "input_tokens": 886477,
+      "output_tokens": 2154,
+      "total_tokens": 888631,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 2,
+        "segment": 5,
+        "back_project": 5,
+        "pi0_pick": 3,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/held-offset-rotation-reach.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-46-50_cam_head.mp4",
+        "videos/episode_2026-11-14_23-46-50_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-46-50_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "cdbf70d3ed47fbf847459d6ce39fb179f7dadfd402bc4b24c5c0d7a13ea15978",
+        "outcome.json": "f675cac1757ceb35ad3d2db7cea7bb3d945d2d5a87b6722800bd08b6bfb0e994",
+        "dashboard_config.json": "b9bef9e809845fb71f4cd6c6d6a646f36494256e15dfaba1d615390e4b6ae3a1",
+        "manifest.json": "f0e6b9692fa5cc1cadf0647d7bf0a2f6002e28613733bd3ec2e87273e49aa942"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "imitate_sorting_sequence",
+      "layout": 0,
+      "run_id": "5b3809aee43cd91133c2",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0016_imitate_sorting_sequence_l0",
+      "url": "http://10.162.250.228:8094/runs?id=5b3809aee43cd91133c2",
+      "instruction": null,
+      "valid": false,
+      "success": null,
+      "incident": "Environment failed before tool/model initialization: [env] wait / client connect failed: robodojo_env_server exited with code 0 before becoming ready; check its log. last healthz error: healthz: HTTP request failed: <urlopen error [Errno 111] Connection refused>",
+      "status": "network_failure",
+      "finish_status": null,
+      "error": "[env] wait / client connect failed: robodojo_env_server exited with code 0 before becoming ready; check its log. last healthz error: healthz: HTTP request failed: <urlopen error [Errno 111] Connection refused>",
+      "elapsed_s": null,
+      "interactions": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "total_tokens": null,
+      "action_tool_calls": 0,
+      "tool_calls": {},
+      "memory_reads_requested": [],
+      "video_files": [],
+      "source_hashes": {
+        "outcome.json": "d9dda595446c8a5c7d4a1ffec83e8041ae74d613a2f8512a0700bf2aff80855c",
+        "result.json": "ae759fb78effde879b227cfe5967f4bb4536a83c87a930304ed792c476e094be",
+        "dashboard_config.json": "6fc83ea3ce07f1c57ea0498a24ff79e2e70956f3ee472eca04da963edd315885",
+        "manifest.json": "1e7fcf8875178f2b28aa2724e086d3f718a77e508d914a106304ec5a8fbd0d5c"
+      }
+    },
+    {
+      "task": "insert_key",
+      "layout": 0,
+      "run_id": "52c07570ba90c27712a9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0004_insert_key_l0",
+      "url": "http://10.162.250.228:8094/runs?id=52c07570ba90c27712a9",
+      "instruction": "Pick up the key, hand it over to the other hand, insert it into the keyhole, then turn it.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 287.2,
+      "planner_elapsed_s": 238.4,
+      "interactions": 22,
+      "input_tokens": 679169,
+      "output_tokens": 1778,
+      "total_tokens": 680947,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 7,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-14_23-53-42_cam_head.mp4",
+        "videos/episode_2026-11-14_23-53-42_cam_left_wrist.mp4",
+        "videos/episode_2026-11-14_23-53-42_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "97bf77560e65dcfe653a578033fd5ad03c743a75f2ee07f94d224a24db6aab5a",
+        "outcome.json": "d9123aae194722271f5a9cc33ff12903160177bfce76e6a27f476f36f42c7a11",
+        "dashboard_config.json": "0e67f7a56e59222ef313a7780460d628e0ee588704e19eb877e7f6c1e696b09f",
+        "manifest.json": "8cc739aee436f10986c5b4ac23cb350cde325a9b79bff188a9463cfeaa55cfe9"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "insert_tubes",
+      "layout": 0,
+      "run_id": "90ddf0aee7b7ea0631cb",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0005_insert_tubes_l0",
+      "url": "http://10.162.250.228:8094/runs?id=90ddf0aee7b7ea0631cb",
+      "instruction": "Insert the three tubes into the rack one by one.",
+      "valid": true,
+      "incident": null,
+      "success": true,
+      "status": "completed",
+      "finish_status": "success",
+      "error": null,
+      "elapsed_s": 172.2,
+      "planner_elapsed_s": 129.4,
+      "interactions": 19,
+      "input_tokens": 475457,
+      "output_tokens": 1292,
+      "total_tokens": 476749,
+      "action_tool_calls": 2,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 2,
+        "back_project": 2,
+        "pi0_pick": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-02-41_cam_head.mp4",
+        "videos/episode_2026-11-15_00-02-41_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-02-41_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "5452bca7470acded19d55797bdb42dcffecc9945d7bcdbf3aa6c5c620f25681a",
+        "outcome.json": "b54d4aca344b2dab096f7cff6eea7cc8b24f253c07949bac648ed338abb9297b",
+        "dashboard_config.json": "dc5eebf6935102c1033015dbe5d6cf1b8aa8c0f4410aafdf420299c2964d4ca4",
+        "manifest.json": "91b6c0e51c916a1417470d22a5d317367601a9be8936c63450e22e31c8f00560"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "make_kong",
+      "layout": 0,
+      "run_id": "0067294efba996a53bba",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0006_make_kong_l0",
+      "url": "http://10.162.250.228:8094/runs?id=0067294efba996a53bba",
+      "instruction": "Wait for the opponent to discard a tile, then declare a kong with the matching tiles.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 318.1,
+      "planner_elapsed_s": 272.9,
+      "interactions": 26,
+      "input_tokens": 834417,
+      "output_tokens": 1917,
+      "total_tokens": 836334,
+      "action_tool_calls": 3,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 3,
+        "pi0_pick": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-05-37_cam_head.mp4",
+        "videos/episode_2026-11-15_00-05-37_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-05-37_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "4ec2794d6a4b0b23fd1ceda4eb4d5b31fcb9d9d70a3ae3e8cd40b13a023d83f2",
+        "outcome.json": "0faf40ef0bcb1bae9e3a83196856ed131fbed03b4af334ca2a1833e659612172",
+        "dashboard_config.json": "7bc8295021d0a43d92aaaa6b586942c7bc063d4b56e34efcf31e177a4ad2d49a",
+        "manifest.json": "3b563cf6180a9335b5f1d3ecfb7116a8aa5565db284867c28554bf959c932b72"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "make_toast",
+      "layout": 0,
+      "run_id": "935ea90586c106425671",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0017_make_toast_l0",
+      "url": "http://10.162.250.228:8094/runs?id=935ea90586c106425671",
+      "instruction": "Pick up two slices of bread, place them into the toaster, and press the lever down.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 637.3,
+      "planner_elapsed_s": 578.2,
+      "interactions": 51,
+      "input_tokens": 1800029,
+      "output_tokens": 3039,
+      "total_tokens": 1803068,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 9,
+        "back_project": 5,
+        "pi0_pick": 5,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-07-47_cam_head.mp4",
+        "videos/episode_2026-11-15_00-07-47_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-07-47_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "e5a2829c1c966b59c99f315b5d53376ece666e56764fbe845d89b835e54d2563",
+        "outcome.json": "355d66c56f3220c46fab2cdbae65825dbfc9bd6712d4cc38d38a894770d6cc9d",
+        "dashboard_config.json": "a95306e631f5598dd95d470ee72af7315ae46e5b5204da52e564ece9f06ab153",
+        "manifest.json": "8bfe2ec97f3e7589b800a2b01c5273a3ff18dd24b3d54d04ca0445783cb66b21"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "make_toast_random",
+      "layout": 0,
+      "run_id": "64f83dff6ebf73512da1",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0007_make_toast_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=64f83dff6ebf73512da1",
+      "instruction": "Pick up two slices of bread, place them into the toaster, and press the lever down.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 565.3,
+      "planner_elapsed_s": 486.9,
+      "interactions": 46,
+      "input_tokens": 1672048,
+      "output_tokens": 2885,
+      "total_tokens": 1674933,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 7,
+        "back_project": 7,
+        "pi0_pick": 4,
+        "set_gripper": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-11-01_cam_head.mp4",
+        "videos/episode_2026-11-15_00-11-01_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-11-01_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "741291625027ff03942fe80a706564b500b527cec8b63f5d51193d99078248df",
+        "outcome.json": "8f3228b2ca03012854b014de94b36f289c2e3957e68a3bcf621779d5391bef2d",
+        "dashboard_config.json": "0408e1384d5d1e26d21e53791855ca3a0188429584e7fa2501287ea881008616",
+        "manifest.json": "94d74f5ec376a4a0ce656b38f9b66960800e0884d848273ee204f0dce89dc151"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "match_and_pick_from_conveyor",
+      "layout": 0,
+      "run_id": "3f490a020c5dc7e59beb",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0018_match_and_pick_from_conveyor_l0",
+      "url": "http://10.162.250.228:8094/runs?id=3f490a020c5dc7e59beb",
+      "instruction": "Remember the first object on the conveyor, then pick the matching object when it appears again.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 593.1,
+      "planner_elapsed_s": 531.7,
+      "interactions": 24,
+      "input_tokens": 1196041,
+      "output_tokens": 2753,
+      "total_tokens": 1198794,
+      "action_tool_calls": 711,
+      "tool_calls": {
+        "view_env_state": 16,
+        "read_text_file": 1,
+        "segment": 1,
+        "back_project": 1,
+        "set_gripper": 711,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-18-26_cam_head.mp4",
+        "videos/episode_2026-11-15_00-18-26_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-18-26_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "b222a172b1c7c392a228bcb88786bef5126967263fe2869fa09c6677e1403838",
+        "outcome.json": "6fab9e8b16a8a103ddc5054def647f4700f152b13e4d8531c9b5a24d0d5b1c68",
+        "dashboard_config.json": "c9143582a240aec955660caca2059d192b9e010a185227acc33f715b1dd465ee",
+        "manifest.json": "5dd307a20f9636229e851b7522caf58fa143f3ecc5ebc0476d92c6bcb2eed29c"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "organize_table",
+      "layout": 0,
+      "run_id": "ee7b152af7687b79c416",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0008_organize_table_l0",
+      "url": "http://10.162.250.228:8094/runs?id=ee7b152af7687b79c416",
+      "instruction": "Place the mouse on the mouse pad, push the keyboard into the frame, put the figurine on the stand, place the alarm clock on the drawer, then open the drawer and put all remaining miscellaneous items inside.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 373.4,
+      "planner_elapsed_s": 318.9,
+      "interactions": 28,
+      "input_tokens": 967501,
+      "output_tokens": 2484,
+      "total_tokens": 969985,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 10,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-20-29_cam_head.mp4",
+        "videos/episode_2026-11-15_00-20-29_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-20-29_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8d34c5eae881f0d4aa203a0095ce68694e711c90ac6dc28b9896ab20ae473434",
+        "outcome.json": "da0e5cb1f58f729d55841bb6a96e2d7c949caeddc4271aba82bd475d645dfe30",
+        "dashboard_config.json": "73b53069aa842c9c8450370744444c5cd5b28b687017b88eae41ec627ca25c98",
+        "manifest.json": "2c25c69592397361df2230ab414747195cb05d18f5beb68867bd2703634f0ffd"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pack_objects_into_box",
+      "layout": 0,
+      "run_id": "8ef1144d3f95b3f94059",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0009_pack_objects_into_box_l0",
+      "url": "http://10.162.250.228:8094/runs?id=8ef1144d3f95b3f94059",
+      "instruction": "Place all the objects into the box with their front sides facing left.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "completed_unverified",
+      "error": null,
+      "elapsed_s": 462.1,
+      "planner_elapsed_s": 415.0,
+      "interactions": 38,
+      "input_tokens": 1247296,
+      "output_tokens": 2376,
+      "total_tokens": 1249672,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 6,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-26-43_cam_head.mp4",
+        "videos/episode_2026-11-15_00-26-43_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-26-43_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "6b8b64cb2f09a7f7f68d2aee6b8e06ec5b4452716385305b4efefa8fdb26523a",
+        "outcome.json": "cc0eb441c454751ca9f73acc2e4cb3c5d4bbab98eacf8c32a6dc6c65d7185129",
+        "dashboard_config.json": "732f722db2b7d44d0a392fd224b065e60d8b5c3990777be1afbd0464994f24aa",
+        "manifest.json": "d4ee3670be7e4ac0319e73a8cdbdccf970d48492778bf5c6282df5ec510c6363"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pack_objects_into_box_random",
+      "layout": 0,
+      "run_id": "7b9f30fefbf60e432d18",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0019_pack_objects_into_box_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=7b9f30fefbf60e432d18",
+      "instruction": "Place all the objects into the box with their front sides facing left.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 530.2,
+      "planner_elapsed_s": 409.1,
+      "interactions": 38,
+      "input_tokens": 1072575,
+      "output_tokens": 2580,
+      "total_tokens": 1075155,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 6,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-28-26_cam_head.mp4",
+        "videos/episode_2026-11-15_00-28-26_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-28-26_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "68ac3b237256f0e61683b7e022d55fafc9162008bd4cfd4b47bcc9d8c8e756b0",
+        "outcome.json": "5482a6b64008d5e709d70d36849249c9ad4d2f34a15e1fbb1690e96ca0be702a",
+        "dashboard_config.json": "1be89ec0b61f35c42c0085e142285e07c2e7a8f5e24367d396ca929f989d5b93",
+        "manifest.json": "da92c15eddfb9356e9ae00dfb423589e8987581eadcf4c0980a0bed4e1cd0c40"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pick_from_conveyor_by_image",
+      "layout": 0,
+      "run_id": "6911f743e7edba68b5d5",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0010_pick_from_conveyor_by_image_l0",
+      "url": "http://10.162.250.228:8094/runs?id=6911f743e7edba68b5d5",
+      "instruction": "Lift the basket more than 8 cm, identify the target object on the conveyor according to the image on the board, pick it up, and place it into the basket.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 190.2,
+      "planner_elapsed_s": 131.2,
+      "interactions": 16,
+      "input_tokens": 399355,
+      "output_tokens": 1263,
+      "total_tokens": 400618,
+      "action_tool_calls": 1,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 1,
+        "back_project": 1,
+        "pi0_pick": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-34-26_cam_head.mp4",
+        "videos/episode_2026-11-15_00-34-26_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-34-26_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8136cb7c94e0f307b9cc0a7d2e6602af3ae5ffeba5784a2d11d3075282f7c377",
+        "outcome.json": "08a23cdf2d59865b6b757523c552ea726585baf02257bcbb6652e1b07440a870",
+        "dashboard_config.json": "294bd42714cb72ee401ca3e691c6970fd782be1b1aa61e4281d648cf2001b6aa",
+        "manifest.json": "7d9a85defc811a17cf669a6b1a185526eb3fa3e94c8c7c32e929f8e998eb09a8"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "play_Xylophone",
+      "layout": 0,
+      "run_id": "8f96aadd03a9f1511b5b",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0020_play_Xylophone_l0",
+      "url": "http://10.162.250.228:8094/runs?id=8f96aadd03a9f1511b5b",
+      "instruction": "Pick up the mallet and strike all xylophone keys from left to right.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 304.0,
+      "planner_elapsed_s": 256.5,
+      "interactions": 26,
+      "input_tokens": 856163,
+      "output_tokens": 2405,
+      "total_tokens": 858568,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 7,
+        "back_project": 5,
+        "pi0_pick": 2,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-37-20_cam_head.mp4",
+        "videos/episode_2026-11-15_00-37-20_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-37-20_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "9ff685daa47f995a495fa2f9181f138fa8f851b45fe9d49bc674fb934a59ddc6",
+        "outcome.json": "1e6aa864b21e9afaae6a29c9ba14886985a51e61e699da88df017976bc2f0094",
+        "dashboard_config.json": "610660e4d1c035983215ed84552f5c369c4a80e8d606bc0cddffa9b48635b7e4",
+        "manifest.json": "a5be543ccbbf9b3280e74bc029005da88832a73aecc0ac0ab759b91deabc0535"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "play_stacking_toy",
+      "layout": 0,
+      "run_id": "1595e8f5350e19d3e1df",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0011_play_stacking_toy_l0",
+      "url": "http://10.162.250.228:8094/runs?id=1595e8f5350e19d3e1df",
+      "instruction": "Place all stacking toy pieces onto the correct pegs.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 302.1,
+      "planner_elapsed_s": 256.9,
+      "interactions": 30,
+      "input_tokens": 897527,
+      "output_tokens": 2082,
+      "total_tokens": 899609,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-37-39_cam_head.mp4",
+        "videos/episode_2026-11-15_00-37-39_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-37-39_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "36da6c68888d5b774396a2b3f30fd6cc5f343018023ed3c6d68faf6b85bf9e8d",
+        "outcome.json": "229e775c8f3dd6f2c4b722489e682e6d3ea7beb2ff05906cbca5167b39fae317",
+        "dashboard_config.json": "c0a2a9e2d8abfb21b5067e5da491d7b0a6740284abb0877a26a22c762a881c6c",
+        "manifest.json": "06887cf57fed58473d285398f9c521b11e022d0fe07cea25f9b8b01478b25e94"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "play_tic_tac_toe",
+      "layout": 0,
+      "run_id": "03c99db9ad1dca8ed9db",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0021_play_tic_tac_toe_l0",
+      "url": "http://10.162.250.228:8094/runs?id=03c99db9ad1dca8ed9db",
+      "instruction": "Play tic-tac-toe as the first player and fill the board with the opponent.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 471.1,
+      "planner_elapsed_s": 421.5,
+      "interactions": 41,
+      "input_tokens": 1391037,
+      "output_tokens": 2390,
+      "total_tokens": 1393427,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 5,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-42-26_cam_head.mp4",
+        "videos/episode_2026-11-15_00-42-26_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-42-26_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8c48c871e402f48769073bbc79af0f0dc54254b5fff498e821ee1de5b5b95842",
+        "outcome.json": "9a1b1cadf5b8d578e550e0d6884067490d2234d7e8e4e89b12711c6d07abfef0",
+        "dashboard_config.json": "88acfabb6b4f74cc9805723f8608496c5d60a0c3f1665e51cd31a229860896ce",
+        "manifest.json": "1557d4548c7e8e91f4859dda1cc2b6a96a735136fc5dddfc376d745b09b7f252"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "plug_in_charger",
+      "layout": 0,
+      "run_id": "df575e8ff8f26b9ff017",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0012_plug_in_charger_l0",
+      "url": "http://10.162.250.228:8094/runs?id=df575e8ff8f26b9ff017",
+      "instruction": "Plug the charger into the power strip.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 273.1,
+      "planner_elapsed_s": 229.8,
+      "interactions": 22,
+      "input_tokens": 671282,
+      "output_tokens": 1738,
+      "total_tokens": 673020,
+      "action_tool_calls": 3,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 6,
+        "back_project": 3,
+        "pi0_pick": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-42-45_cam_head.mp4",
+        "videos/episode_2026-11-15_00-42-45_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-42-45_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "f1b3476c93f095ab5f003482c66227eeae4985a254e004a52469f9d29e5c3c55",
+        "outcome.json": "0862b380f35be38baae8b516b43c37979a43f38fb2e6e2b56dce4961a772cafa",
+        "dashboard_config.json": "08515f8cb0daa3e272ce1596abeaec4444d36e1db191c7164c02b2ca061288f2",
+        "manifest.json": "b7ce354aadc6b90bc417ce91604401a05917e8af17c3cd474fb9f9c75a2457cd"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pour_balls_into_vase",
+      "layout": 0,
+      "run_id": "3fdb47379727bf2deade",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0013_pour_balls_into_vase_l0",
+      "url": "http://10.162.250.228:8094/runs?id=3fdb47379727bf2deade",
+      "instruction": "Pour all the balls from the cup into the vase.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "failure",
+      "error": null,
+      "elapsed_s": 237.4,
+      "planner_elapsed_s": 124.5,
+      "interactions": 14,
+      "input_tokens": 357299,
+      "output_tokens": 1069,
+      "total_tokens": 358368,
+      "action_tool_calls": 1,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 1,
+        "back_project": 1,
+        "pi0_pick": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-47-20_cam_head.mp4",
+        "videos/episode_2026-11-15_00-47-20_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-47-20_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "ea2f7ae4939e1e202b2bde1807b11ce1a5af15be8736ed0ab59c96f581f409ed",
+        "outcome.json": "c52f41e265042e7faf07442dc61203f440d25e288cd594183c7e30539a0f4533",
+        "dashboard_config.json": "76ef73f566b50374f130e8866fa146b2137366c41d28df4e4fead48e23ede76d",
+        "manifest.json": "3e936b77233d13ebf8cf0294366c717ee7dbb87601a1b0d88310790845506529"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pour_by_language",
+      "layout": 0,
+      "run_id": "02dc7a5d6a24edf7c081",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0022_pour_by_language_l0",
+      "url": "http://10.162.250.228:8094/runs?id=02dc7a5d6a24edf7c081",
+      "instruction": "Pour the liquid from the first violet bottle into the first black bowl, from the second red bottle into the second white bowl, and from the third turquoise bottle into the third brown bowl. Then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "timeout",
+      "finish_status": null,
+      "error": "Codex SDK timed out after 600s",
+      "elapsed_s": 676.4,
+      "planner_elapsed_s": 600.5,
+      "interactions": 44,
+      "input_tokens": 1427815,
+      "output_tokens": 2371,
+      "total_tokens": 1430186,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 4,
+        "pi0_pick": 4
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-50-20_cam_head.mp4",
+        "videos/episode_2026-11-15_00-50-20_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-50-20_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "64cac453623d72000bdf135411571dc085d59e41b0bb72864f362bcd048ecf1d",
+        "outcome.json": "c9ddedd502bff999d53af5b4e76125f21ea5a04fb573a2ff921a0af3db9f1855",
+        "dashboard_config.json": "24baecdfbc15da88a0fa75c647071bc242d1022c9dc3debebb1a4b058978a6e9",
+        "manifest.json": "6eda5e094359047e7be55c94c3257429b60779c5486375a03c8ff363bb58f226"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pour_liquid_into_cup",
+      "layout": 0,
+      "run_id": "7e154ea3f277e16c4a1b",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0014_pour_liquid_into_cup_l0",
+      "url": "http://10.162.250.228:8094/runs?id=7e154ea3f277e16c4a1b",
+      "instruction": "Pour the liquid from the bottle into the cup.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "failure",
+      "error": null,
+      "elapsed_s": 335.3,
+      "planner_elapsed_s": 281.6,
+      "interactions": 26,
+      "input_tokens": 762193,
+      "output_tokens": 1848,
+      "total_tokens": 764041,
+      "action_tool_calls": 3,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 3,
+        "back_project": 3,
+        "pi0_pick": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-51-19_cam_head.mp4",
+        "videos/episode_2026-11-15_00-51-19_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-51-19_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8f9329acb9ed38d9e4ee55aa691206989004c87a1a55e91153eafd84773a17f4",
+        "outcome.json": "7b2e2fb74d855e7e092a56a54b25473c878a877d0bfe669fd8710cf8cc341417",
+        "dashboard_config.json": "d0f63b108f946b91d67c46f16e5a3d062eea5c2832ad71bd6c1cb2096a86465e",
+        "manifest.json": "4c793d6c8672a2c2380bba7b0998b9c4923c97188cf7cc3cb4cdd735da33e8ba"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "pour_liquid_into_cup_random",
+      "layout": 0,
+      "run_id": "68721eae52864acb7ff0",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0015_pour_liquid_into_cup_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=68721eae52864acb7ff0",
+      "instruction": "Pour the liquid from the bottle into the cup.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "unverified",
+      "error": null,
+      "elapsed_s": 422.4,
+      "planner_elapsed_s": 293.3,
+      "interactions": 27,
+      "input_tokens": 772947,
+      "output_tokens": 1687,
+      "total_tokens": 774634,
+      "action_tool_calls": 2,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 2,
+        "back_project": 2,
+        "pi0_pick": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_00-56-57_cam_head.mp4",
+        "videos/episode_2026-11-15_00-56-57_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_00-56-57_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "f9661a1777e3a270f8dca18e9c6d90ddb738f21349964f13df8afe034ae35411",
+        "outcome.json": "4718311d68d865468dfce8c76fdeeb06ca48d136cf41d69d9d261ca34b3576b2",
+        "dashboard_config.json": "9fcd021abf6e3f1becab7459ad0eff9daf7fb2a2016660d8f834e086bfd8b259",
+        "manifest.json": "994af632e8c6c081d0a9f25a7f3fb850664a1cbba83d84646dde4849d02a7a06"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "press_by_number",
+      "layout": 0,
+      "run_id": "0dd8b2f3270d99a79690",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0023_press_by_number_l0",
+      "url": "http://10.162.250.228:8094/runs?id=0dd8b2f3270d99a79690",
+      "instruction": "Press the two red buttons the required number of times according to the number cards, then press the blue button to confirm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "unverified",
+      "error": null,
+      "elapsed_s": 317.2,
+      "planner_elapsed_s": 268.8,
+      "interactions": 21,
+      "input_tokens": 521282,
+      "output_tokens": 1633,
+      "total_tokens": 522915,
+      "action_tool_calls": 1,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 2,
+        "segment": 1,
+        "back_project": 1,
+        "pi0_pick": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/contact-skill-state-change.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-01-36_cam_head.mp4",
+        "videos/episode_2026-11-15_01-01-36_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-01-36_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "ae3e03c99c45cd7928df623ac6bc53eab0c0d6816e5cb753514b82043908ae50",
+        "outcome.json": "bc91a6184f0cbeafa6349567e43876f4f46565f4f8155ee6f757cf9a4aef65b8",
+        "dashboard_config.json": "f009679491b7fe5a9dfbeaa3bc19b76d66e75eeafde2bc662b06eacfac73b0bf",
+        "manifest.json": "e279862b2f23f29ac391815fc7722828d3c32733ce403fcd0e67a0dba2befcb6"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "push_T",
+      "layout": 0,
+      "run_id": "fa8847e8e4a664453e27",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0016_push_T_l0",
+      "url": "http://10.162.250.228:8094/runs?id=fa8847e8e4a664453e27",
+      "instruction": "Push the T-shaped block to align it precisely with the gray T-shaped pad.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 532.3,
+      "planner_elapsed_s": 487.2,
+      "interactions": 44,
+      "input_tokens": 1800518,
+      "output_tokens": 3134,
+      "total_tokens": 1803652,
+      "action_tool_calls": 9,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 16,
+        "back_project": 10,
+        "pi0_pick": 7,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-03-59_cam_head.mp4",
+        "videos/episode_2026-11-15_01-03-59_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-03-59_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "0bcf4647857016dcf0c6f8af2aa9c918e774ef5c8037e88fcc03c087c81adf26",
+        "outcome.json": "3660166143c0b10f3cc21590fbd89c1250b885ccf6ef51fadc4d3e69e2b340bf",
+        "dashboard_config.json": "f4c740bff403600e18e0056c4c3ade65788e709282be933dc8a2ae8e3a18a021",
+        "manifest.json": "4c258a5b126b975c292ee805b54e4f4a00a20e8e888cd4fe70889baf2455ab95"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "push_T_random",
+      "layout": 0,
+      "run_id": "0884cc69727ecdc551b1",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0024_push_T_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=0884cc69727ecdc551b1",
+      "instruction": "Push the T-shaped block to align it precisely with the gray T-shaped pad.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 498.3,
+      "planner_elapsed_s": 444.8,
+      "interactions": 40,
+      "input_tokens": 1328656,
+      "output_tokens": 2410,
+      "total_tokens": 1331066,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 6,
+        "back_project": 6,
+        "pi0_pick": 5,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-06-58_cam_head.mp4",
+        "videos/episode_2026-11-15_01-06-58_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-06-58_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "a71e335d9816fa64d470313b0dac0fd1691f70a02340c18faea455fa91687f7d",
+        "outcome.json": "5e287f1d60add1ae7f7cc4c990cb424cd0bdc8f3e86d6d1468b19f607cab2470",
+        "dashboard_config.json": "17d977e6ab06456b55931d47743e80af32f20485db42f51b5abe53108495a89d",
+        "manifest.json": "2ab014723a1539278b7b81ee82d3a06d6973e1e56d966d71e70b1caefda99329"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "put_bottles_into_dustbin",
+      "layout": 0,
+      "run_id": "10e7674de7171090bf51",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0017_put_bottles_into_dustbin_l0",
+      "url": "http://10.162.250.228:8094/runs?id=10e7674de7171090bf51",
+      "instruction": "Pick up the bottles and throw them into the dustbin, using handover when needed.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "success",
+      "error": null,
+      "elapsed_s": 467.3,
+      "planner_elapsed_s": 422.9,
+      "interactions": 44,
+      "input_tokens": 1828636,
+      "output_tokens": 3518,
+      "total_tokens": 1832154,
+      "action_tool_calls": 11,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 17,
+        "back_project": 13,
+        "pi0_pick": 5,
+        "place_in_bin": 5,
+        "stabilize": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-12-54_cam_head.mp4",
+        "videos/episode_2026-11-15_01-12-54_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-12-54_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8d21840379d4453c2f5910ca12a36d79e0fb9652f8112ea0267b4664298a6687",
+        "outcome.json": "9bed286eff18d0beaf300641cd23d6e1d7df7158d46915ade1c7dc6be8ced26a",
+        "dashboard_config.json": "eaed09f2ab7e4abb3630ddc9818cb21ff997f4d270c646272a36212e94703b7a",
+        "manifest.json": "9bfa8a008be72475d0c358a8d94786c897b8fae5393445606eb9fe36f35428c4"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "solve_equation",
+      "layout": 0,
+      "run_id": "2f648c2221dde82e1d08",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0025_solve_equation_l0",
+      "url": "http://10.162.250.228:8094/runs?id=2f648c2221dde82e1d08",
+      "instruction": "Complete the equation by selecting the correct missing number or operator and placing it on the pad, then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 395.3,
+      "planner_elapsed_s": 339.4,
+      "interactions": 42,
+      "input_tokens": 1562171,
+      "output_tokens": 3021,
+      "total_tokens": 1565192,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 10,
+        "back_project": 9,
+        "pi0_pick": 4,
+        "move_to": 3,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-15-17_cam_head.mp4",
+        "videos/episode_2026-11-15_01-15-17_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-15-17_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "e97064f0e4312f9f2614f0859a2ca30189b0dc869cd89340a1d58b18945956b0",
+        "outcome.json": "58c2dddb4bc84f315cc7a6fc66abef2c5f279a6207cb0e7d7b51d230c83cd68e",
+        "dashboard_config.json": "054aff3f304c6b01294cf9b3faf914ae91a0534e2affb2e3637ed4c8881feba1",
+        "manifest.json": "f79ed48e73766bd6b3eabbdbca516208395d4090eb0039e3e9c54788741956d5"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "sort_nesting_dolls_by_size",
+      "layout": 0,
+      "run_id": "b9e0c5fbddbca0dba06b",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0018_sort_nesting_dolls_by_size_l0",
+      "url": "http://10.162.250.228:8094/runs?id=b9e0c5fbddbca0dba06b",
+      "instruction": "Arrange the five nesting dolls in a row from left to right, from smallest to largest.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 355.3,
+      "planner_elapsed_s": 297.8,
+      "interactions": 37,
+      "input_tokens": 1425859,
+      "output_tokens": 2958,
+      "total_tokens": 1428817,
+      "action_tool_calls": 9,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 13,
+        "back_project": 12,
+        "pi0_pick": 5,
+        "move_to": 3,
+        "set_gripper": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-20-43_cam_head.mp4",
+        "videos/episode_2026-11-15_01-20-43_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-20-43_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "0443eee9f22ec6ec997953ef4476da4182ccb34128802c45781665b43000300a",
+        "outcome.json": "a12642d59563f66848b8f0585e30a6358307463da06fcce4da458116c108f4da",
+        "dashboard_config.json": "5a976260447a9adc7e8f6e3f04977dd12c94ee31d75df575c129d78f2cb9a3bf",
+        "manifest.json": "4c8a3a010b1aef4ffa7a99066acb677bdfd31e8502cf34db58fdfef7689ca866"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "sort_nesting_dolls_by_size_random",
+      "layout": 0,
+      "run_id": "4d7a45c0aa4f3c450cc4",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0026_sort_nesting_dolls_by_size_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=4d7a45c0aa4f3c450cc4",
+      "instruction": "Arrange the five nesting dolls in a row from left to right, from smallest to largest.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 347.4,
+      "planner_elapsed_s": 275.1,
+      "interactions": 25,
+      "input_tokens": 840492,
+      "output_tokens": 2189,
+      "total_tokens": 842681,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 9,
+        "back_project": 8,
+        "pi0_pick": 4,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-21-56_cam_head.mp4",
+        "videos/episode_2026-11-15_01-21-56_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-21-56_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "9dd5672adfea77c77fb00fe0888ba36c37c758736532127f613c8a713bcc3a65",
+        "outcome.json": "595e00267261b61857d715003df79b2951ea262bfce502acd3a5af510ee0bcde",
+        "dashboard_config.json": "663cbe99d42161ea835c6895924b5d4812b1956dd7f1557a24e8a409691427ef",
+        "manifest.json": "e410dde9d95c2c92856e336c9626a771cf08f34c0a04749ba2cb888ba401baae"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "stack_blocks",
+      "layout": 0,
+      "run_id": "5609d7b51e65d245ca73",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0019_stack_blocks_l0",
+      "url": "http://10.162.250.228:8094/runs?id=5609d7b51e65d245ca73",
+      "instruction": "Stack the three blocks with different textures.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "timeout",
+      "finish_status": null,
+      "error": "Codex SDK timed out after 600s",
+      "elapsed_s": 646.1,
+      "planner_elapsed_s": 600.7,
+      "interactions": 66,
+      "input_tokens": 3564156,
+      "output_tokens": 5519,
+      "total_tokens": 3569675,
+      "action_tool_calls": 24,
+      "tool_calls": {
+        "view_env_state": 3,
+        "read_text_file": 2,
+        "segment": 29,
+        "back_project": 28,
+        "pi0_pick": 9,
+        "move_to": 11,
+        "set_gripper": 4
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-26-41_cam_head.mp4",
+        "videos/episode_2026-11-15_01-26-41_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-26-41_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "449a6eea53b51b28ebcf8ef447ef40f870749bba9d039d7b8f2e4d6558971f35",
+        "outcome.json": "7717a987eda5422574a99d085e19cd0734b2f098f3b9961fb78812fd09a32d89",
+        "dashboard_config.json": "86c5e8f92908714ac4dba33b0372476f7f14fd737121cb7c902ec5d8a0f40ab1",
+        "manifest.json": "2bf6787270c281cc1fbbe51c1183a37bb267dc9cc79cd8d3ceb9f0136a7ae48b"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "stack_blocks_by_language",
+      "layout": 0,
+      "run_id": "b51d5ef8c1cba363942c",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0027_stack_blocks_by_language_l0",
+      "url": "http://10.162.250.228:8094/runs?id=b51d5ef8c1cba363942c",
+      "instruction": "stack the blocks from bottom to top in the order ofblue, yellow, and orange, then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 406.2,
+      "planner_elapsed_s": 361.3,
+      "interactions": 43,
+      "input_tokens": 1492632,
+      "output_tokens": 2874,
+      "total_tokens": 1495506,
+      "action_tool_calls": 8,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 11,
+        "back_project": 11,
+        "pi0_pick": 6,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-27-48_cam_head.mp4",
+        "videos/episode_2026-11-15_01-27-48_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-27-48_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "f07d37972f2d03985fc5dcd4481732b67909f6cbffe743b85b63db8a56cf5907",
+        "outcome.json": "42d3c08ba100c018cf8ba3eb762fe82f9f0b2e838425533ca3b86e34d9c06249",
+        "dashboard_config.json": "ba07e9d03af3087266b53fc726f59e76453801e38cb8a7b775b2894af6aaa8ce",
+        "manifest.json": "83830ca4c42558ee30cb00fafc58d270802a9aed8d7219f2129e73562ee4f15a"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "stack_blocks_random",
+      "layout": 0,
+      "run_id": "2ea6ef0e2ded8a99a4bf",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0028_stack_blocks_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=2ea6ef0e2ded8a99a4bf",
+      "instruction": "Stack the three blocks with different textures.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 329.5,
+      "planner_elapsed_s": 222.2,
+      "interactions": 27,
+      "input_tokens": 734910,
+      "output_tokens": 1768,
+      "total_tokens": 736678,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 4,
+        "pi0_pick": 3,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-34-36_cam_head.mp4",
+        "videos/episode_2026-11-15_01-34-36_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-34-36_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "616d243c88032108d773bfb1c846b1ca2bd08113cfb22b1bac1f8627e6cacfee",
+        "outcome.json": "70f157f0bee029fb03a02be66ad623f998c3434eb29d13f000b3154fd9241564",
+        "dashboard_config.json": "3e7c5b733a61016962863d34a667b08c071733ae50e20043fda6acbd31c3e03d",
+        "manifest.json": "540844c326fc762715948c483babd62a48b14675dc12965d3fbbac8425f30387"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "stack_bowls",
+      "layout": 0,
+      "run_id": "099739e7a91c4feab3cb",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0020_stack_bowls_l0",
+      "url": "http://10.162.250.228:8094/runs?id=099739e7a91c4feab3cb",
+      "instruction": "Stack the three bowls together.",
+      "valid": true,
+      "incident": null,
+      "success": true,
+      "status": "completed",
+      "finish_status": "success",
+      "error": null,
+      "elapsed_s": 180.3,
+      "planner_elapsed_s": 132.1,
+      "interactions": 18,
+      "input_tokens": 424976,
+      "output_tokens": 1241,
+      "total_tokens": 426217,
+      "action_tool_calls": 1,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 1,
+        "back_project": 1,
+        "pi0_pick": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-37-29_cam_head.mp4",
+        "videos/episode_2026-11-15_01-37-29_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-37-29_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "31493a91d17b2c68bcd9465399a49f189796cd281dcbef4f432307255e451dff",
+        "outcome.json": "9ed8507ab7d42c17d37b4a9a5e191b18b7359da3de7de7aca8f13f8aa94242b7",
+        "dashboard_config.json": "cd3e91751e1fb442f4b550879783f25c474cddaa33d8e0a119ddccba8590e1de",
+        "manifest.json": "d59cd2d5db05a6823d135a9665c9fbef3909dad84ff2934efd9c4ce864965d41"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "stack_bowls_random",
+      "layout": 0,
+      "run_id": "efb703404cbca693725b",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0029_stack_bowls_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=efb703404cbca693725b",
+      "instruction": "Stack the three bowls together.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "success",
+      "error": null,
+      "elapsed_s": 225.5,
+      "planner_elapsed_s": 157.7,
+      "interactions": 15,
+      "input_tokens": 378810,
+      "output_tokens": 1296,
+      "total_tokens": 380106,
+      "action_tool_calls": 1,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 1,
+        "back_project": 1,
+        "pi0_pick": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/visual-over-pick-heuristic.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-40-07_cam_head.mp4",
+        "videos/episode_2026-11-15_01-40-07_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-40-07_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "c4d2e79ba4487719d657fcfc4bf3f68c08ea0427356e2aaa27ed02dc6f9bb1ac",
+        "outcome.json": "79ee8904185874f1ecc245fbb8e0a9f66f565e303e047d36f5299a07000f5cab",
+        "dashboard_config.json": "0c8c7940441425ebe40799d44d8ad72d343bc41eaefc6b096c5e3c5d1a548f21",
+        "manifest.json": "0b96dc2c9f58ca68c7e6277c98c74c657e15179e8bb54f2049610974d5b13771"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "store_laptop_and_headphones",
+      "layout": 0,
+      "run_id": "532b1cee429efcf9b0f9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0021_store_laptop_and_headphones_l0",
+      "url": "http://10.162.250.228:8094/runs?id=532b1cee429efcf9b0f9",
+      "instruction": "Hang the headphones on the headphone stand, close the laptop, then place it into the vertical laptop stand.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 501.4,
+      "planner_elapsed_s": 453.3,
+      "interactions": 45,
+      "input_tokens": 1827052,
+      "output_tokens": 3502,
+      "total_tokens": 1830554,
+      "action_tool_calls": 11,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 2,
+        "segment": 11,
+        "back_project": 11,
+        "pi0_pick": 6,
+        "move_to": 4,
+        "set_gripper": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md",
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/global/avoid-full-task-prompt-after-miss.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-40-32_cam_head.mp4",
+        "videos/episode_2026-11-15_01-40-32_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-40-32_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "787b0ff168d6812d22c67fd68769653fb4ca10a05d374a0ae8c6d89af65a3456",
+        "outcome.json": "d93245e1e1e0130650e5c65cf31e0e3de10ebee1c3fe1d338387a5e71babef9b",
+        "dashboard_config.json": "c7df50491d0deb8368dd550dcebf48f0758e9e4c7942b2d0d19b7028d1fc967a",
+        "manifest.json": "5bbbfeec0e4ca5bb62b3a1523db8bf72926cf6f73053e9e0d10d18d3df957cfa"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "store_laptop_and_headphones_random",
+      "layout": 0,
+      "run_id": "ca8d5b276b1e3b01c681",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0030_store_laptop_and_headphones_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=ca8d5b276b1e3b01c681",
+      "instruction": "Hang the headphones on the headphone stand, close the laptop, then place it into the vertical laptop stand.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 379.6,
+      "planner_elapsed_s": 327.0,
+      "interactions": 31,
+      "input_tokens": 1122174,
+      "output_tokens": 2440,
+      "total_tokens": 1124614,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 7,
+        "back_project": 7,
+        "pi0_pick": 5,
+        "move_to": 1,
+        "set_gripper": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-43-59_cam_head.mp4",
+        "videos/episode_2026-11-15_01-43-59_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-43-59_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "5d118917a444c279b577cce5704c946d1aef3bbf7613f1b4c4afde8605fca6bb",
+        "outcome.json": "f3671400791a32281fe006d26073b43ef8594215e0aa30365e8e4b4dd38a57ce",
+        "dashboard_config.json": "c8d659f1f833fc66589a7e24c4e9c5f1a978c8248b50a5451ef297c88e96c7f2",
+        "manifest.json": "29f83d7cb32ee6cadeb4a07723d6a1b3fb82b0c9ce0530c3fbce27e1de39bf83"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "store_tools_in_toolbox",
+      "layout": 0,
+      "run_id": "cc59ebac139fbdfd7e07",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0022_store_tools_in_toolbox_l0",
+      "url": "http://10.162.250.228:8094/runs?id=cc59ebac139fbdfd7e07",
+      "instruction": "Place each tool into its matching position in the toolbox, then reset the robot arm.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 499.3,
+      "planner_elapsed_s": 449.3,
+      "interactions": 39,
+      "input_tokens": 1323851,
+      "output_tokens": 2949,
+      "total_tokens": 1326800,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 9,
+        "back_project": 7,
+        "pi0_pick": 6,
+        "move_to": 1,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-48-58_cam_head.mp4",
+        "videos/episode_2026-11-15_01-48-58_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-48-58_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "c2c77756289007be5905f77efc69711c7f9bf121a79f47e3d9bf208190991326",
+        "outcome.json": "1041a6f664e01fb60f43142b9c4c1f0aeac7dbad894f8bc85c0244495ab63047",
+        "dashboard_config.json": "b5d36b6015bf5226a80d8c7eba873cbaf6a9d636aaecb9ab49c02b97733ca380",
+        "manifest.json": "138cffd4c3b12a83466c98484b28518fee5fcc5df8c545dfda78888c6476f16d"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "swap_T",
+      "layout": 0,
+      "run_id": "72fedf596f50c384a50c",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0031_swap_T_l0",
+      "url": "http://10.162.250.228:8094/runs?id=72fedf596f50c384a50c",
+      "instruction": "Pick up the two T-shaped blocks, swap their positions, and place them back with the correct orientations.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 512.2,
+      "planner_elapsed_s": 466.3,
+      "interactions": 36,
+      "input_tokens": 1340159,
+      "output_tokens": 2516,
+      "total_tokens": 1342675,
+      "action_tool_calls": 7,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 7,
+        "back_project": 7,
+        "pi0_pick": 7,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-50-22_cam_head.mp4",
+        "videos/episode_2026-11-15_01-50-22_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-50-22_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "bfd26825aee2f2abe868f4af2e09a35dbfcb3fdceb04de9f90890ee480093494",
+        "outcome.json": "277755e4db4065b7dd4f93a200b489f5ef7f5996e5d5f64fc96e266f4d936ef2",
+        "dashboard_config.json": "67a61dada4eb6e2024dd89c85bb4db6d49d76cefa2fb9c584d8fc7266c0366b1",
+        "manifest.json": "63ef4722d8bde0dabff022280015989de884ae83db0ceeb165686c6129d4b003"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "swap_blocks",
+      "layout": 0,
+      "run_id": "891fc2ea14fa1567179f",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0023_swap_blocks_l0",
+      "url": "http://10.162.250.228:8094/runs?id=891fc2ea14fa1567179f",
+      "instruction": "Swap the two blocks using the empty mat, pressing the button after each move.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 347.3,
+      "planner_elapsed_s": 300.9,
+      "interactions": 30,
+      "input_tokens": 962686,
+      "output_tokens": 2403,
+      "total_tokens": 965089,
+      "action_tool_calls": 6,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 7,
+        "back_project": 6,
+        "pi0_pick": 4,
+        "move_to": 2,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-57-21_cam_head.mp4",
+        "videos/episode_2026-11-15_01-57-21_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-57-21_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "8553bc5c413f87fb5b7cbfa2184aeaa6240e5e61d5fc4834e80f6c9aba37e239",
+        "outcome.json": "3a3710b5f27c03a2da4939bb38d844fd533cfe19db7c614486768bc2e45b8548",
+        "dashboard_config.json": "2166e831f07f7ab4cc1114c7a9a540544d99f28105a05cfd4860414da6649501",
+        "manifest.json": "932bbacd3bc23c584d57592405124b1e84828aafc126f085222ba18630b8da4e"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "sweep_blocks",
+      "layout": 0,
+      "run_id": "304265769f79d3fe13b6",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-052827-3633538/tasks/0032_sweep_blocks_l0",
+      "url": "http://10.162.250.228:8094/runs?id=304265769f79d3fe13b6",
+      "instruction": "Pick up the broom, hand it over to the right hand, then use the dustpan to sweep the blocks.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 569.2,
+      "planner_elapsed_s": 520.2,
+      "interactions": 39,
+      "input_tokens": 1390584,
+      "output_tokens": 2624,
+      "total_tokens": 1393208,
+      "action_tool_calls": 5,
+      "tool_calls": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "segment": 6,
+        "back_project": 5,
+        "pi0_pick": 5,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_01-58-59_cam_head.mp4",
+        "videos/episode_2026-11-15_01-58-59_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_01-58-59_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "676cbee62aa0516ca9bc11a8ea8b6dc700eebe60b359132460ab03f499256dc8",
+        "outcome.json": "6f0c92ddaf9d92f11654e36cb11b785a854e834aed5d203520ee8b5ab56a5e4b",
+        "dashboard_config.json": "684d8bf28a914bec6935468860e243a479dbbaa608f653b5e6e1120d90e6b94f",
+        "manifest.json": "83da5c13cd177a0cc4e5845aff0086b830b324b5ea6b0802490521a7ae525c8f"
+      },
+      "lane": "A",
+      "parallel_lanes": 2
+    },
+    {
+      "task": "sweep_blocks_random",
+      "layout": 0,
+      "run_id": "e3ad0bb70be8c061d9b9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-parallel-b-20261114-152235-107673/tasks/0024_sweep_blocks_random_l0",
+      "url": "http://10.162.250.228:8094/runs?id=e3ad0bb70be8c061d9b9",
+      "instruction": "Pick up the broom, hand it over to the right hand, then use the dustpan to sweep the objects.",
+      "valid": true,
+      "incident": null,
+      "success": false,
+      "status": "completed",
+      "finish_status": "stuck",
+      "error": null,
+      "elapsed_s": 403.5,
+      "planner_elapsed_s": 338.3,
+      "interactions": 31,
+      "input_tokens": 866879,
+      "output_tokens": 1939,
+      "total_tokens": 868818,
+      "action_tool_calls": 4,
+      "tool_calls": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "segment": 4,
+        "back_project": 4,
+        "pi0_pick": 4,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "memory_reads_requested": [
+        "/home/zwy/work/embodied_harness/language-materials/v1/memory/MEMORY.md"
+      ],
+      "video_files": [
+        "videos/episode_2026-11-15_02-03-08_cam_head.mp4",
+        "videos/episode_2026-11-15_02-03-08_cam_left_wrist.mp4",
+        "videos/episode_2026-11-15_02-03-08_cam_right_wrist.mp4"
+      ],
+      "source_hashes": {
+        "result.json": "84f496f16aa2ead1ff29c47d5beebad94bf4c277dd5ff0eb9d0b785165e9524c",
+        "outcome.json": "6ccf9b686933ba1fa9d8a06dde57e2a1318075924705a154d3500d546f45c1e0",
+        "dashboard_config.json": "dfb850a7d7d531a1ec77e098a965652922aa35cc893e49571a7f089a8737e384",
+        "manifest.json": "76ab25c7cc7f2afde38f2d6a4df7c1be578b0eb19b1ab2550479e2681bf0cc5d"
+      },
+      "lane": "B",
+      "parallel_lanes": 2
+    }
+  ],
+  "review_status": {
+    "completed": 21,
+    "failed": 2,
+    "unprocessed": 30,
+    "quota_failure": true
+  },
+  "audit": {
+    "primary_sdk_errors": [],
+    "source_result_hashes_verified": 53,
+    "full_valid_task_coverage": false
+  },
+  "checked_at": "2026-11-15T02:24:08.232245+00:00",
+  "provenance": {
+    "retained_serial_valid_runs": 9,
+    "resumed_parallel_valid_runs": 44,
+    "operator_interrupted_attempt_excluded": "d3040f06e29568ed591c",
+    "initialization_incident_excluded": "5b3809aee43cd91133c2"
+  },
+  "aggregate": {
+    "valid_runs": 53,
+    "successes": 4,
+    "failures": 49,
+    "success_rate_percent": 7.547169811320755,
+    "timeout_failures": 3,
+    "other_valid_failures": 46,
+    "mean_interactions": 34.0188679245283,
+    "mean_elapsed_s": 423.16792452830185,
+    "total_tokens": 62972373,
+    "mean_tokens": 1188157.9811320754
+  }
+}
