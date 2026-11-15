@@ -72,6 +72,9 @@ class RoboDojoToolkit(Toolkit):
         )
         self.init_primitives(primitives_kwargs=primitives_kwargs)
         self._register_robodojo_tools()
+        if selected is None:
+            # The short EEF controller is opt-in; preserve the default toolkit.
+            self._tools.pop("move_eef", None)
         if selected is not None:
             names = {item["name"] for item in selected}
             self._tools = {

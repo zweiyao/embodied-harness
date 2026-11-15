@@ -215,6 +215,55 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         return obs, reward, done, info
 
     # ---- RoboDojo-specific RPC ----
+    def step_eef(self, target: dict) -> dict[str, Any]:
+        """Execute one bounded robot-only DLS update and record its real ACK."""
+        from robots.robodojo.eef_control import (
+            DualKinematics,
+            pose_errors,
+            transform,
+            validate_targets,
+        )
+
+        if self.eval_fair:
+            raise ValueError("GPT EEF control requires explicit dev tool selection")
+        observation = self.get_obs()
+        targets = validate_targets(target, observation["state"], 1)
+        if not hasattr(self, "_eef_kinematics"):
+            self._eef_kinematics = DualKinematics(self.env)
+        action, diagnostics = self._eef_kinematics.target(targets)
+        before = int(self.env.take_action_cnt[0])
+        observed, _reward, _done, info = self.step_native(action)
+        after = int(self.env.take_action_cnt[0])
+        if after != before + 1:
+            raise RuntimeError(
+                "EEF action did not receive exactly one native control ACK"
+            )
+        final = {}
+        for arm in ("left", "right"):
+            measured = np.asarray(observed["state"][f"{arm}_ee_pose"], dtype=float)
+            dp, dr = pose_errors(
+                transform(measured[:3], measured[3:]),
+                transform(targets[arm]["position"], targets[arm]["quaternion_wxyz"]),
+            )
+            final[arm] = {
+                "measured_link6_pose": measured.tolist(),
+                "position_error_m": float(np.linalg.norm(dp)),
+                "rotation_error_rad": float(np.linalg.norm(dr)),
+                "commanded_opening": action[f"{arm}_ee_joint_state"][0],
+            }
+        return {
+            "native_step_before": before,
+            "native_step_after": after,
+            "method": "robot_only_numerical_jacobian_dls",
+            "diagnostics": diagnostics,
+            "final": final,
+            "status": {
+                key: info["status"][key]
+                for key in ("step", "step_limit")
+                if key in info["status"]
+            },
+        }
+
     def get_obs(self) -> dict[str, Any]:
         return self._observation()
 

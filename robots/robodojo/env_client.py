@@ -42,6 +42,10 @@ class RoboDojoEnvClient(BaseEnvClient):
     def get_obs(self) -> dict[str, Any]:
         return self._client.call("env.get_obs")
 
+    def step_eef(self, target: dict) -> dict[str, Any]:
+        """Execute one short EEF control step through the owning ENV server."""
+        return self._client.call("env.step_eef", kwargs={"target": target})
+
     def get_status(self) -> dict[str, Any]:
         return self._client.call("env.get_status")
 

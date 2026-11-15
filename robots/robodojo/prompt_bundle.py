@@ -30,6 +30,16 @@ def system_prompt(
         return {
             "EXECUTION": "Replay the frozen plan using live RGB-D and robot proprioception. No language model participates."
         }
+    if any(
+        item.get("name") == "move_eef"
+        for item in (variables or {}).get("manual_tools", [])
+    ):
+        return {
+            "GPT EEF CONTROL": system_parts.GPT_EEF,
+            "SAFETY": system_parts.SAFETY,
+            "REWARD AND SCORE": system_parts.REWARD,
+            "OUTPUT DISCIPLINE": system_parts.OUTPUT_DISCIPLINE,
+        }
     return {
         "ROLE AND RULES": system_parts.ROLE_AND_RULES,
         "TOOL ACCESS": system_parts.TOOL_ACCESS,
