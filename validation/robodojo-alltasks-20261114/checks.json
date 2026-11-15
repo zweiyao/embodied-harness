@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-11-15T02:29:37.732594+00:00",
+  "documentation_base_commit": "06e1f448f56fe52dd7c9cbe3d4f2cb56a38b48fb",
+  "evaluation_source_commit": "f09ce22352531a02ab2dff81b6f1bf401c72f87f",
+  "remote_checks": {
+    "precommit_all_files": "passed",
+    "unit_tests": {
+      "passed": 2039,
+      "skipped": 15,
+      "warnings": 2,
+      "seconds": 73.28,
+      "python": "3.11"
+    }
+  },
+  "bilingual_task_rows": 54,
+  "valid_result_rows": 53,
+  "excluded_initialization_rows": 1,
+  "table_matches_snapshot": true,
+  "matching_sphinx_inputs_changed": false,
+  "primary_sdk_error_scan": {
+    "runs": 53,
+    "flagged": 0
+  },
+  "raw_result_hashes_verified": 53
+}
