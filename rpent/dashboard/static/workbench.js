@@ -7,10 +7,24 @@ const link=(title,url)=>{const a=el('a',title);a.href=url;return a;};
 const jsonSection=(title,value)=>{const d=el('details');d.append(el('summary',title),el('pre',value==null?'未记录':JSON.stringify(value,null,2)));return d;};
 const asset=(id,path)=>`/api/runs/${id}/artifact/${path.split('/').map(encodeURIComponent).join('/')}`;
 function eventView(record){const d=el('details');const p=record.payload||record;d.append(el('summary',`${record.time||''} ${record.kind||p.type||'记录'} ${p.name||p.tool||''}`),el('pre',JSON.stringify(p,null,2)));return d;}
+function deleteButton(run){
+  const button=el('button','永久删除','delete-run');button.type='button';
+  button.onclick=async()=>{
+    if(!window.confirm(`永久删除这条实验记录？\n\n记录 ID：${run.id}\n远程目录：${run.path}\n\n将彻底删除该目录内的配置、日志、观测和录像，无法撤销。`))return;
+    button.disabled=true;
+    try{
+      const response=await fetch(`/api/runs/${encodeURIComponent(run.id)}`,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({confirm_run_id:run.id})});
+      const result=await response.json();if(!response.ok)throw Error(result.error||`删除失败 ${response.status}`);
+      if(new URLSearchParams(location.search).has('id')){location.assign('/runs');return;}
+      $('status').classList.remove('error');await load();
+    }catch(error){$('status').textContent=error.message;$('status').classList.add('error');button.disabled=false;}
+  };
+  return button;
+}
 async function showRun(id){
   const run=await request(`/api/runs/${id}`),root=$('content');root.replaceChildren();
   const h=el('section');h.append(el('h2',`${run.config.model} · ${id}`));
-  h.append(link('← 返回实验文件夹','/runs'));
+  h.append(link('← 返回实验文件夹','/runs'),deleteButton(run));
   h.append(el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'));
   const outcome=run.outcome;h.append(el('p',`官方成功：${outcome.environment_success==null?'未记录':outcome.environment_success?'是':'否'} · ${outcome.status||'旧记录 / 未记录结束状态'} · 放置稳定性：${outcome.stable_placement||'未独立验证'}`));
   h.append(el('p',formatRunTimes(run),'note'),el('p',formatRunMetrics(outcome),'statline'),el('p','交互轮次按记录的模型响应次数统计，不等于工具调用次数。缺失用量不计作零；异常结束时可能只包含已返回的用量。','note'));
@@ -42,7 +56,7 @@ function runCard(run){
   const success=run.outcome?.environment_success;
   const result=success===true?['任务成功','success']:success===false?['任务失败','failure']:['成功状态未记录','unknown'];
   const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',result[0],`run-result ${result[1]}`),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));
-  left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));return card;
+  left.append(el('p',formatRunMetrics(run.outcome),'statline'));const actions=el('div',null,'run-actions');actions.append(link('查看过程 →',`/runs?id=${run.id}`),deleteButton(run));card.append(left,actions);return card;
 }
 function showFolders(runs,setup){
   const root=$('content');root.replaceChildren();

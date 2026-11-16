@@ -3,12 +3,12 @@
   "scope": "read-only experiment record presentation",
   "remote_python": "3.11",
   "dashboard_tests": {
-    "passed": 131
+    "passed": 139
   },
   "unit_tests": {
-    "passed": 2163,
+    "passed": 2171,
     "skipped": 11,
-    "seconds": 73.07
+    "seconds": 72.66
   },
   "pre_commit": "passed",
   "docs_en": "passed (-W --keep-going)",
@@ -53,5 +53,25 @@
     "raw_configuration_on_card": false,
     "full_configuration_in_details": true,
     "live_four_workbench_checks": "passed"
+  },
+  "permanent_delete": {
+    "scope": "one finalized task directory in configured roots",
+    "confirmation": "browser confirmation plus matching confirm_run_id",
+    "active_or_unfinalized_runs": "refused",
+    "external_symlink_targets": "preserved",
+    "live_workbenches_tested": [
+      "robodojo",
+      "flexiv",
+      "libero",
+      "univtac"
+    ],
+    "disposable_records_deleted": 4,
+    "real_records_deleted": 0,
+    "original_record_count": 407,
+    "protected_metadata_files_unchanged": 1200,
+    "device_and_access_service_pids": "preserved",
+    "workbench_services_reloaded": 6,
+    "auxiliary_units": "recreated from original launcher after transient-unit collection; shared model endpoints rebound",
+    "libero_runtime": "record management works; experiment initialization waits for old non-listening VLA/SAM3 endpoints"
   }
 }

@@ -47,3 +47,36 @@ sampled saved outcome, absence of raw tool/budget JSON, unchanged detail and
 video access, and mobile layout. The three-file patch preserves all six process
 PIDs. Follow-up evidence and screenshots are under `result-card/` in the remote
 validation directory.
+
+## Permanent record deletion
+
+Record cards and details include a permanent-delete button. Its confirmation
+shows the run ID and remote directory. `DELETE /api/runs/{id}` also requires
+the matching `confirm_run_id`. Only a catalogued task directory beneath a
+configured run/history root is eligible. Active Session runs are refused; a
+saved outcome and, when present, a final `run_end` journal event are required.
+Legacy records without an outcome remain undeletable until their archive state
+is resolved. Nested external symlink targets, sibling records and parent
+directories are preserved. Deletion does not modify tools, memories or scoring.
+
+Validation: 139 dashboard tests; full suite 2171 passed / 11 skipped in
+72.66 seconds; all-files and explicit UI-test pre-commit checks pass. EN/ZH
+Sphinx warning-as-error builds pass. Live browser tests on all four workbenches
+verify cancellation, confirmation, unfinished-record refusal, permanent removal,
+404 detail/artifact links, count refresh and mobile layout. Only four clearly
+labelled disposable fixture records were deleted. All 407 original IDs and
+1200 existing configuration/outcome/manifest hashes remain unchanged; ten legacy
+missing outcomes remain absent. No experiment was launched.
+
+Six idle workbench backends were reloaded after confirming no pending tasks,
+Flexiv unarmed/no lease/IDLE, and preserving model/tool/budget selections. Two
+auxiliary transient units were collected on stop and recreated with the original
+launcher; its shared-model addresses now refer to the reloaded owner. RDK, RGB-D,
+ENV and both access-service PIDs are unchanged. LIBERO's configured borrowed
+VLA/SAM3 ports are not listening: its record management works, while experiment
+initialization waits for those dependencies. No additional LIBERO weights were
+loaded. This remains an explicit deployment limitation.
+
+Evidence under the remote `delete/` directory retains before/after metadata
+hashes, deployment/recovery scripts and logs, unit/docs logs, UI checks and
+screenshots. Only small validation summaries are committed.

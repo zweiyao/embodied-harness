@@ -66,6 +66,123 @@ def candidate():
     }
 
 
+@pytest.fixture
+def finalized_record(bench):
+    root = bench.root / "session/tasks/delete-me"
+    root.mkdir(parents=True)
+    (root / "dashboard_config.json").write_text("{}")
+    (root / "outcome.json").write_text('{"status":"completed"}')
+    (root / "events.jsonl").write_text('{"kind":"run_end"}\n')
+    return root, bench.runs()[0]["id"]
+
+
+def test_delete_record_removes_only_selected_directory(bench, finalized_record):
+    root, run_id = finalized_record
+    shared = bench.root / "shared"
+    shared.mkdir()
+    (shared / "keep").write_bytes(b"shared resource")
+    (root / "external-link").symlink_to(shared, target_is_directory=True)
+    (root / "episode.mp4").write_bytes(b"recording fixture")
+    (root / "observations").mkdir()
+    (root / "observations/0.png").write_bytes(b"image fixture")
+    sibling = root.parent / "keep"
+    sibling.mkdir()
+    (sibling / "dashboard_config.json").write_text("{}")
+
+    bench.delete_run(run_id)
+
+    assert not root.exists()
+    assert (shared / "keep").read_bytes() == b"shared resource"
+    assert sibling.exists() and root.parent.exists()
+    assert all(run["id"] != run_id for run in bench.runs())
+
+
+@pytest.mark.parametrize("unfinished", ["missing_outcome", "open_journal"])
+def test_delete_rejects_unfinalized_record(bench, finalized_record, unfinished):
+    root, run_id = finalized_record
+    if unfinished == "missing_outcome":
+        (root / "outcome.json").unlink()
+    else:
+        (root / "events.jsonl").write_text('{"kind":"tool_request"}\n')
+    with pytest.raises(RuntimeError, match="尚未结束归档"):
+        bench.delete_run(run_id)
+    assert root.exists()
+
+
+def test_delete_configured_history_without_deleting_primary(bench, finalized_record):
+    primary, _ = finalized_record
+    history = bench.root / "archive"
+    root = history / "session/tasks/delete-me"
+    root.mkdir(parents=True)
+    (root / "dashboard_config.json").write_text("{}")
+    (root / "outcome.json").write_text('{"status":"completed"}')
+    configured = Workbench({**bench.config, "history_roots": [str(history)]})
+    run_id = next(run["id"] for run in configured.runs() if run["path"] == str(root))
+    configured.delete_run(run_id)
+    assert not root.exists()
+    assert primary.exists() and history.exists()
+
+
+def test_delete_api_requires_matching_confirmation(bench, finalized_record):
+    root, run_id = finalized_record
+    state = DashboardState(output_dir=bench.root / "ui", dashboard_spec=DASHBOARD_SPEC)
+    state.workbench = bench
+    client = TestClient(DashboardServer(state=state, robot_name="libero")._app)
+    url = f"/api/runs/{run_id}"
+    assert client.request("DELETE", url).status_code == 400
+    assert (
+        client.request("DELETE", url, json={"confirm_run_id": "wrong"}).status_code
+        == 400
+    )
+    assert root.exists()
+    response = client.request("DELETE", url, json={"confirm_run_id": run_id})
+    assert response.status_code == 200 and response.json() == {"deleted": run_id}
+    assert not root.exists()
+    assert client.get(url).status_code == 404
+    assert client.get(url + "/artifact/outcome.json").status_code == 404
+    assert (
+        client.request("DELETE", url, json={"confirm_run_id": run_id}).status_code
+        == 404
+    )
+
+
+def test_delete_api_rejects_active_record_even_with_final_files(bench):
+    state = DashboardState(output_dir=bench.root / "ui", dashboard_spec=DASHBOARD_SPEC)
+    state.workbench = bench
+    state.shared_services_ready()
+    bench.checks = {profile: {"ok": True} for profile in bench.profiles}
+    state.request_task({"seed": 1})
+    claimed = state.wait_for_task(0)
+    root = claimed.output_dir
+    (root / "dashboard_config.json").write_text("{}")
+    (root / "outcome.json").write_text('{"status":"completed"}')
+    (root / "events.jsonl").write_text('{"kind":"run_end"}\n')
+    client = TestClient(DashboardServer(state=state, robot_name="libero")._app)
+    url = f"/api/runs/{state.run_id}"
+    payload = {"confirm_run_id": state.run_id}
+    assert client.request("DELETE", url, json=payload).status_code == 409
+    assert root.exists()
+    state.complete_task(state="succeeded")
+    assert client.request("DELETE", url, json=payload).status_code == 200
+    assert not root.exists()
+
+
+def test_delete_does_not_follow_run_directory_outside_root(bench, tmp_path):
+    outside = tmp_path.parent / f"{tmp_path.name}-outside"
+    outside.mkdir()
+    (outside / "dashboard_config.json").write_text("{}")
+    alias = bench.root / "session/tasks/alias"
+    alias.parent.mkdir(parents=True)
+    alias.symlink_to(outside, target_is_directory=True)
+    # Even a guessed ID cannot turn the alias into a path-based deletion API.
+    import hashlib
+
+    run_id = hashlib.sha256(b"session/tasks/alias").hexdigest()[:20]
+    with pytest.raises((ValueError, PermissionError)):
+        bench.delete_run(run_id)
+    assert (outside / "dashboard_config.json").exists()
+
+
 def test_selection_is_explicit_and_versions_frozen(bench):
     version = publish(bench.library, candidate(), {"dependencies": ["back_project"]})
     assert all(t["origin"] == "native" for t in bench.selection())

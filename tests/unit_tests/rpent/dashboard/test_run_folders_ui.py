@@ -72,7 +72,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const source = fs.readFileSync(process.argv[1], 'utf8');
 const el = (tag,text,className) => ({tag,text,className,children:[],append(...nodes){this.children.push(...nodes);}});
-const context = vm.createContext({el,link:(text,href)=>({text,href,children:[]}),formatRunMetrics:()=> 'metrics'});
+const context = vm.createContext({el,link:(text,href)=>({text,href,children:[]}),formatRunMetrics:()=> 'metrics',deleteButton:()=>el('button','永久删除')});
 vm.runInContext(source.slice(source.indexOf('function runCard('),source.indexOf('function showFolders(')),context);
 const all = node => [node,...node.children.flatMap(all)];
 for (const [success,label,style] of [[true,'任务成功','success'],[false,'任务失败','failure'],[null,'成功状态未记录','unknown'],[undefined,'成功状态未记录','unknown']]) {
@@ -83,6 +83,39 @@ for (const [success,label,style] of [[true,'任务成功','success'],[false,'任
   assert.ok(!nodes.some(n=>String(n.text).includes('native:move_eef')));
   assert.equal(nodes.find(n=>n.href).href,'/runs?id=record');
 }
+"""
+    result = subprocess.run(
+        [node, "-e", script, str(source)], text=True, capture_output=True, timeout=20
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_delete_button_confirms_before_request_and_handles_failure():
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required for the browser contract check")
+    source = Path(__file__).resolve().parents[4] / "rpent/dashboard/static/workbench.js"
+    script = r"""
+const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
+const source = fs.readFileSync(process.argv[1],'utf8');
+let confirmed=false, fail=false, requests=[], reloads=0, redirected;
+const status={classList:{add(){},remove(){}}};
+const context=vm.createContext({
+  el:()=>({}),window:{confirm:message=>{assert.match(message,/无法撤销/);assert.match(message,/record-id/);return confirmed;}},
+  fetch:async(url,options)=>{requests.push({url,options});return {ok:!fail,json:async()=>fail?{error:'当前实验仍在运行，不能删除'}:{deleted:'record-id'}};},
+  location:{search:'',assign:path=>{redirected=path;}},URLSearchParams,
+  $:()=>status,load:async()=>{reloads++;}
+});
+vm.runInContext(source.slice(source.indexOf('function deleteButton('),source.indexOf('async function showRun(')),context);
+(async()=>{
+  const button=context.deleteButton({id:'record-id',path:'/runs/session/tasks/one'});
+  await button.onclick();assert.equal(requests.length,0); // Cancel means no mutation.
+  confirmed=true;await button.onclick();
+  assert.equal(requests[0].url,'/api/runs/record-id');assert.equal(requests[0].options.method,'DELETE');
+  assert.equal(JSON.parse(requests[0].options.body).confirm_run_id,'record-id');assert.equal(reloads,1);
+  fail=true;await button.onclick();assert.equal(button.disabled,false);assert.match(status.textContent,/不能删除/);assert.equal(reloads,1);
+  fail=false;context.location.search='?id=record-id';await button.onclick();assert.equal(redirected,'/runs');
+})().catch(error=>{console.error(error);process.exitCode=1;});
 """
     result = subprocess.run(
         [node, "-e", script, str(source)], text=True, capture_output=True, timeout=20
