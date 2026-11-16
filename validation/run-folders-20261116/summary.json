@@ -3,12 +3,12 @@
   "scope": "read-only experiment record presentation",
   "remote_python": "3.11",
   "dashboard_tests": {
-    "passed": 130
+    "passed": 131
   },
   "unit_tests": {
-    "passed": 2162,
+    "passed": 2163,
     "skipped": 11,
-    "seconds": 74.96
+    "seconds": 73.07
   },
   "pre_commit": "passed",
   "docs_en": "passed (-W --keep-going)",
@@ -44,5 +44,14 @@
   "service_restarts": 0,
   "data_migrations": 0,
   "mac_robodojo_http_status": 200,
-  "raw_screenshots_committed": false
+  "raw_screenshots_committed": false,
+  "record_card_result": {
+    "source": "outcome.environment_success",
+    "true": "任务成功",
+    "false": "任务失败",
+    "missing": "成功状态未记录",
+    "raw_configuration_on_card": false,
+    "full_configuration_in_details": true,
+    "live_four_workbench_checks": "passed"
+  }
 }

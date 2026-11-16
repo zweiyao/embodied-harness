@@ -59,3 +59,32 @@ const fs = require('node:fs');
         [node, "-e", script, str(source)], text=True, capture_output=True, timeout=20
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_run_card_shows_official_success_instead_of_configuration():
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required for the browser contract check")
+    source = Path(__file__).resolve().parents[4] / "rpent/dashboard/static/workbench.js"
+    script = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync(process.argv[1], 'utf8');
+const el = (tag,text,className) => ({tag,text,className,children:[],append(...nodes){this.children.push(...nodes);}});
+const context = vm.createContext({el,link:(text,href)=>({text,href,children:[]}),formatRunMetrics:()=> 'metrics'});
+vm.runInContext(source.slice(source.indexOf('function runCard('),source.indexOf('function showFolders(')),context);
+const all = node => [node,...node.children.flatMap(all)];
+for (const [success,label,style] of [[true,'任务成功','success'],[false,'任务失败','failure'],[null,'成功状态未记录','unknown'],[undefined,'成功状态未记录','unknown']]) {
+  const run = {id:'record',config:{model:'gpt-6-astra',task:{max_turns:120,tools:['native:move_eef']}},outcome:{status:'completed',environment_success:success},updated:0};
+  const nodes = all(context.runCard(run));
+  assert.equal(nodes.find(n=>n.className===`run-result ${style}`).text,label);
+  assert.ok(!nodes.some(n=>String(n.text).includes('max_turns')));
+  assert.ok(!nodes.some(n=>String(n.text).includes('native:move_eef')));
+  assert.equal(nodes.find(n=>n.href).href,'/runs?id=record');
+}
+"""
+    result = subprocess.run(
+        [node, "-e", script, str(source)], text=True, capture_output=True, timeout=20
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

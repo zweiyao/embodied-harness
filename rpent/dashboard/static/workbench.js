@@ -39,7 +39,9 @@ async function showRun(id){
   const files=el('details');files.append(el('summary',`全部留档文件 · ${run.files.length}`));for(const name of run.files){const p=el('p');p.append(link(name,asset(id,name)));files.append(p);}root.append(files);
 }
 function runCard(run){
-  const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',JSON.stringify(run.config.task)),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));
+  const success=run.outcome?.environment_success;
+  const result=success===true?['任务成功','success']:success===false?['任务失败','failure']:['成功状态未记录','unknown'];
+  const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',result[0],`run-result ${result[1]}`),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));
   left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));return card;
 }
 function showFolders(runs,setup){

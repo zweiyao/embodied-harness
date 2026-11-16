@@ -34,3 +34,16 @@ remain outside Git in
 The desktop browser integration was unavailable; live UI checks used an
 isolated remote headless Chrome instance. Screenshots and raw run data are not
 committed. This UI validation does not establish task success.
+
+Record cards display the saved `outcome.environment_success` instead of raw
+configuration JSON: true is task success, false is task failure, and missing
+values are explicitly unknown. `status=completed` alone never implies success.
+Complete configuration remains on the detail page.
+
+Follow-up validation: 131 dashboard tests; full suite 2163 passed / 11 skipped
+in 73.07 seconds; all-files and explicit new-file pre-commit checks pass.
+Four live workbench browser checks verify displayed card results against each
+sampled saved outcome, absence of raw tool/budget JSON, unchanged detail and
+video access, and mobile layout. The three-file patch preserves all six process
+PIDs. Follow-up evidence and screenshots are under `result-card/` in the remote
+validation directory.
