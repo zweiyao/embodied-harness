@@ -86,7 +86,7 @@ async function load(){
     renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · 目录只读查看${selectable?'，前往开始页选择本轮工具':'，当前服务未启用工具选择'}`;
   }else{
     $('title').textContent='实验记录';$('intro').textContent='按环境和任务展开文件夹，查看每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
-    const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 只读查看';return;}
+    const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 记录详情';return;}
     const [{runs},setup]=await Promise.all([request('/api/runs'),request('/api/setup')]);showFolders(runs,setup);
   }
 }
