@@ -32,3 +32,7 @@ task outcome or a success-rate improvement.
 Upstream reference: [GPT-as-Policy GPT-only workflow](https://github.com/anonymous-report-421/GPT-as-Policy/blob/8f3d362b077d8efb77e2a7274d5b2c20e2243846/hybrid_rollout/robodojo/robodojo-gpt-only-rollout/SKILL.md#L57)
 distinguishes validation rejections from transport/physics errors. This change
 implements that distinction for RPent's multi-step EEF call.
+
+The repeat has finished: real range recovery was verified, but the 600-second
+planner timeout counts as failure despite a final native true verdict. See
+[the repeat summary](../robodojo-layered-task0-retry-20261116/README.md).

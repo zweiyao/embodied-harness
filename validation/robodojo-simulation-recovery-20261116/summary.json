@@ -1,5 +1,5 @@
 {
-  "status": "offline_verified",
+  "status": "verified_deployed_and_retested",
   "base": "ef90c15",
   "scope": "RoboDojo range rejection and simulation recovery only",
   "range_limits_unchanged": true,
@@ -16,6 +16,16 @@
   "sphinx_zh_strict": "passed",
   "wheel_resources": 21,
   "wheel_matches_source": true,
-  "task_repeat": "pending",
-  "no_claim_of_success_rate_improvement": true
+  "task_repeat": {
+    "run_id": "736e5786c205b1a9d2e8",
+    "success": false,
+    "timeout_failure": true,
+    "environment_success_observed": true,
+    "native_ack_count": 200,
+    "first_native_success_time": "not recorded"
+  },
+  "no_claim_of_success_rate_improvement": true,
+  "source": "6ead00e",
+  "runtime_range_recovery": "verified_zero_step_rejection_then_revised_model_action",
+  "mid_chunk_runtime_rejection": "not triggered in repeat; regression-tested"
 }
