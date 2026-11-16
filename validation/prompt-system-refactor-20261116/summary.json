@@ -1,0 +1,95 @@
+{
+  "status": "code_verified_runtime_analysis_blocked",
+  "branch": "refactor/prompt-system",
+  "base": "55742f6",
+  "implementation": {
+    "layered_robots": [
+      "robodojo",
+      "libero",
+      "flexiv",
+      "univtac"
+    ],
+    "codex_fixed_role": "developer_instructions",
+    "analysis_opt_in": "--codex-analysis",
+    "experience_bodies_modified": false,
+    "frozen_libero_materials_preserved": true
+  },
+  "validation": {
+    "host": "zwy@10.162.250.228",
+    "python": "3.11",
+    "unit": {
+      "passed": 2141,
+      "skipped": 16,
+      "elapsed_s": 70.58
+    },
+    "pre_commit": "passed",
+    "sphinx_en_strict": "passed",
+    "sphinx_zh_strict": "passed",
+    "wheel_markdown_resources": 19,
+    "wheel_resources_match_source": true,
+    "protected_files_unchanged": 236
+  },
+  "candidate": {
+    "loopback_port": 38094,
+    "state": "ready",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "codex_analysis": true,
+    "tools": [
+      "move_eef",
+      "view_env_state",
+      "back_project",
+      "segment",
+      "read_text_file",
+      "write_text_file",
+      "list_dir",
+      "finish"
+    ],
+    "native_steps": 0,
+    "run_id": null,
+    "public_service_replaced": false
+  },
+  "model_probe": {
+    "robot_constructed": false,
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "native_image_view": "passed",
+    "registered_finish": "passed",
+    "native_command_execution": "blocked_before_execution",
+    "calculation": "unverified",
+    "crop": "unverified",
+    "native_write_permissions": "unverified",
+    "native_network_denial": "unverified",
+    "error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
+    "legacy_landlock": "not a supported substitute for filesystem-restricted execution; not enabled"
+  },
+  "pending": [
+    "Additional approval and administrator access for scoped remote Bubblewrap AppArmor prerequisite",
+    "Repeat no-action calculation/crop/native-permission probe after host prerequisite is available",
+    "Switch public RoboDojo workbench only after verification and idle check"
+  ],
+  "unchanged": {
+    "public_workbench_pid": 3633538,
+    "previous_eef_pid": 1847374,
+    "proxy_configuration": true,
+    "mac_network": true,
+    "robot_control_implementation": true
+  },
+  "task_experiments_started": 0,
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/prompt-system-refactor-20261116",
+  "evidence": [
+    "unit-pass.log",
+    "pre-commit-final.log",
+    "sphinx-en-final.log",
+    "sphinx-zh-final.log",
+    "wheel-resources.json",
+    "analysis-probe-v2.json",
+    "candidate-settings.json",
+    "preservation.json"
+  ],
+  "limitations": [
+    "One remote Python version checked; GitHub CI matrix separate",
+    "Native analysis and protected execution are not declared verified or production deployed",
+    "No task performance or success-rate claim"
+  ]
+}

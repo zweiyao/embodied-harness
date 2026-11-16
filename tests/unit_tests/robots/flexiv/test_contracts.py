@@ -294,14 +294,9 @@ def test_prompt_uses_measured_tcp_and_real_command_fields(tmp_path):
     )
     assert config.task_desc["control_mode"] == "eef_delta"
     prompt = system_prompt(config.prompt_vars)
-    assert (
-        prompt["POLICY"]
-        == "Operate as the autonomous policy for one physical Flexiv episode."
-    )
-    assert (
-        prompt["EMBODIMENT"]
-        == "Robot: one Flexiv Rizon4 arm with one gripper. Views are side and wrist RGB-D."
-    )
+    assert "autonomous agent" in prompt["GENERAL REQUIREMENTS"]
+    assert "one Flexiv Rizon4 arm with one gripper" in prompt["ROBOT CONTROL"]
+    assert "side and wrist RGB-D" in prompt["ROBOT CONTROL"]
     text = get_robot_spec().prompts.render("system", variables=config.prompt_vars)
     assert "state.tcp_pose" in text
     assert "translation_m" in text and "rotation_vector_rad" in text

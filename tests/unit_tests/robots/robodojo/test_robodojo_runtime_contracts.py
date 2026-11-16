@@ -643,7 +643,8 @@ def test_pi0_pick_checks_cancel_between_native_actions():
     assert len(executed) == 1
 
 
-def test_memory_discovery_is_scoped_to_dev_user_prompt():
+def test_memory_discovery_is_scoped_to_dev_user_prompt(tmp_path):
+    (tmp_path / "MEMORY.md").write_text("# Published experience index\n")
     bundle = robot_spec.get_robot_spec().prompts
     variables = {
         "task": "arrange_largest_number",
@@ -652,14 +653,14 @@ def test_memory_discovery_is_scoped_to_dev_user_prompt():
         "action_type": "joint",
         "output_dir": "/output",
         "task_summary": "scene",
-        "memory_dir": "/memory/reference",
+        "memory_dir": str(tmp_path),
         "mode": "dev",
     }
     user = bundle.render("user", variables=variables)
-    assert "/memory/reference/MEMORY.md" in user
+    assert str(tmp_path / "MEMORY.md") in user
     assert "read_text_file" in user
-    assert "/memory/reference" not in bundle.render("system", variables=variables)
+    assert str(tmp_path) not in bundle.render("system", variables=variables)
     replay = bundle.render("user", variables={**variables, "mode": "eval-fair"})
     assert "arrange_largest_number / layout 0" in replay
     assert "read_text_file" not in replay
-    assert "/memory/reference" not in replay
+    assert str(tmp_path) not in replay

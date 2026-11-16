@@ -200,12 +200,12 @@ def test_eef_mode_cannot_include_other_action_tools(other):
 
 def test_opt_in_prompt_uses_feedback_without_policy_instructions():
     default = system_prompt({})
-    assert "Pi_05" in default["ROLE AND RULES"]
+    assert "Pi_05" in default["ROBOT CONTROL"]
     eef = system_prompt({"manual_tools": selected("move_eef", "finish")})
     text = "\n".join(eef.values())
     assert "pi0_pick" not in text and "CuRobo" not in text
     assert "observation_step" in text and "wait for its returned" in text
-    assert "OUTPUT DISCIPLINE" in eef
+    assert "Before finish, save a concise audit" in text
 
 
 def test_native_eef_step_recomputes_after_ack_and_maps_grippers(

@@ -108,6 +108,7 @@ class CodexPlanner(Planner):
         output_path: str | Path | None = None,
         model: str | None = None,
         reasoning_effort: str = "none",
+        analysis_enabled: bool = False,
     ):
         """Initialize the Codex SDK backend."""
         self._output_dir = str(output_dir)
@@ -116,6 +117,10 @@ class CodexPlanner(Planner):
         self._extra_dirs = extra_dirs or []
         self._output_path = Path(output_path) if output_path else None
         self._model = model or os.environ.get("CODEX_MODEL", None)
+        self._analysis_enabled = analysis_enabled
+        self._analysis_workspace: Path | None = None
+        self._analysis_memory: Path | None = None
+        self._source_root = Path(self._repo_root)
         self._base_url = os.environ.get("CODEX_BASE_URL", None)
         self._api_key = os.environ.get("CODEX_API_KEY", None)
         self._service_tier = os.environ.get("CODEX_SERVICE_TIER", None)
@@ -145,7 +150,7 @@ class CodexPlanner(Planner):
         input_queue: queue.Queue[str | None] | None = None,
         dashboard_interaction: DashboardInteractionPort | None = None,
     ) -> PlannerResult:
-        """Use only registered tools when the toolkit requires an evaluation boundary."""
+        """Keep fixed instructions separate and scope optional native analysis."""
         kwargs = {
             "system_prompt": system_prompt,
             "user_message": user_message,
@@ -162,40 +167,71 @@ class CodexPlanner(Planner):
                     "system": system_prompt,
                     "user": user_message,
                     "options": self._turn_options,
-                    "model": self._model if hasattr(self, "_model") else None,
+                    "model": self._model,
+                    "fixed_instruction_role": "developer_instructions",
+                    "analysis_enabled": self._analysis_enabled,
                 },
             )
-        if not getattr(toolkit, "planner_tools_only", False):
-            return self._solve(**kwargs)
-        with tempfile.TemporaryDirectory(prefix="rpent-planner-") as directory:
-            root = Path(directory)
-            cwd, home = root / "work", root / "codex"
-            cwd.mkdir()
-            home.mkdir()
-            old_root, old_thread, old_turn = (
-                self._repo_root,
-                self._thread_options,
-                self._turn_options,
-            )
-            self._restricted_home = home
-            self._restricted_tools = [tool.name for tool in toolkit.list_tools()]
-            self._repo_root = str(cwd)
-            self._thread_options = {
-                **old_thread,
-                "cwd": str(cwd),
-                "sandbox": openai_codex.Sandbox.read_only,
-            }
-            self._turn_options = {**old_turn, **self._thread_options}
-            try:
+        old_root, old_thread, old_turn = (
+            self._repo_root,
+            self._thread_options,
+            self._turn_options,
+        )
+        self._thread_options = {**old_thread, "developer_instructions": system_prompt}
+        restricted = (
+            getattr(toolkit, "planner_tools_only", False) or self._analysis_enabled
+        )
+        try:
+            if not restricted:
                 return self._solve(**kwargs)
-            finally:
-                self._repo_root, self._thread_options, self._turn_options = (
-                    old_root,
-                    old_thread,
-                    old_turn,
-                )
-                self._restricted_home = None
-                self._restricted_tools = []
+            with tempfile.TemporaryDirectory(prefix="rpent-planner-") as directory:
+                root = Path(directory)
+                home = root / "codex"
+                home.mkdir()
+                self._restricted_home = home
+                self._restricted_tools = [tool.name for tool in toolkit.list_tools()]
+                if self._analysis_enabled:
+                    from rpent.planner.codex_workspace import prepare_workspace
+
+                    memory = getattr(toolkit, "memory", None)
+                    self._analysis_memory = memory.root if memory is not None else None
+                    cwd = prepare_workspace(
+                        Path(self._output_dir), self._analysis_memory
+                    )
+                    self._analysis_workspace = cwd
+                    if memory is not None:
+                        memory.restrict_writes_to(cwd)
+                    self._thread_options = {
+                        k: v for k, v in self._thread_options.items() if k != "sandbox"
+                    }
+                    self._turn_options = {
+                        k: v for k, v in old_turn.items() if k != "sandbox"
+                    }
+                    self._thread_options["config"] = {
+                        "model_reasoning_effort": self._turn_options["effort"].value
+                    }
+                else:
+                    cwd = root / "work"
+                    cwd.mkdir()
+                    self._thread_options["sandbox"] = openai_codex.Sandbox.read_only
+                    self._turn_options = {
+                        **old_turn,
+                        "sandbox": openai_codex.Sandbox.read_only,
+                    }
+                self._repo_root = str(cwd)
+                self._thread_options["cwd"] = str(cwd)
+                self._turn_options["cwd"] = str(cwd)
+                return self._solve(**kwargs)
+        finally:
+            self._repo_root, self._thread_options, self._turn_options = (
+                old_root,
+                old_thread,
+                old_turn,
+            )
+            self._restricted_home = None
+            self._restricted_tools = []
+            self._analysis_workspace = None
+            self._analysis_memory = None
 
     def _solve(
         self,
@@ -212,7 +248,7 @@ class CodexPlanner(Planner):
             raise ValueError(
                 "input_queue and dashboard_interaction cannot be used together"
             )
-        prompt = f"{system_prompt}\n\n{user_message}" if system_prompt else user_message
+        prompt = user_message
         if dashboard_interaction is not None:
             return asyncio.run(
                 self._solve_dashboard(
@@ -635,6 +671,26 @@ class CodexPlanner(Planner):
             "browser_use",
             "computer_use",
         )
+        analysis = ()
+        if self._analysis_enabled:
+            from rpent.planner.codex_workspace import analysis_overrides
+
+            analysis = analysis_overrides(
+                self._analysis_workspace, self._analysis_memory, self._source_root
+            )
+            manifest = {
+                "requested_model": self._model,
+                "requested_effort": self._turn_options["effort"].value,
+                "analysis_enabled": True,
+                "permission_profile": "rpent_analysis",
+                "workspace": str(self._analysis_workspace),
+                "robot_tools": self._restricted_tools,
+                "requested_features": ["shell", "python_execution", "image_viewing"],
+                "fixed_instruction_role": "developer_instructions",
+            }
+            (Path(self._output_dir) / "codex-capabilities.json").write_text(
+                json.dumps(manifest, indent=2) + "\n"
+            )
         return replace(
             config,
             env=env,
@@ -648,7 +704,8 @@ class CodexPlanner(Planner):
                 "tools.experimental_request_user_input.enabled=false",
                 'web_search="disabled"',
                 "apps._default.enabled=false",
-            ),
+            )
+            + analysis,
         )
 
 

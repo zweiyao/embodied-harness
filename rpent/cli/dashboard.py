@@ -149,6 +149,11 @@ def run_dashboard_session(
         base_url=args.base_url,
         robot_name=robot_spec.name,
         run_options={
+            **(
+                {"codex_analysis": True}
+                if getattr(args, "codex_analysis", False)
+                else {}
+            ),
             "max_turns": args.max_turns,
             "max_tokens": args.max_tokens,
             "planner_timeout_s": args.planner_timeout_s,
@@ -318,7 +323,13 @@ def _run_dashboard_task_inner(
                 **{
                     name: value
                     for name, value in vars(task_args).items()
-                    if name in {"max_turns", "max_tokens", "planner_timeout_s"}
+                    if name
+                    in {
+                        "max_turns",
+                        "max_tokens",
+                        "planner_timeout_s",
+                        "codex_analysis",
+                    }
                 },
             },
             indent=2,
@@ -334,6 +345,9 @@ def _run_dashboard_task_inner(
     from rpent.memory.loading import prepare_run_memory
 
     prepare_run_memory(task_args, robot_spec, run_config)
+    from rpent.cli.prompts import prepare_prompt_context, record_prompts, render_prompt
+
+    prepare_prompt_context(task_args, run_config)
     if getattr(state, "workbench", None) is not None:
         material_root = state.workbench.config.get("language_materials")
         if material_root and robot_spec.name == "libero":
@@ -368,7 +382,9 @@ def _run_dashboard_task_inner(
                 **shared_runtime_kwargs,
             }
             prompt_vars = {**run_config.prompt_vars, "output_dir": output_dir}
-            session_message = robot_spec.prompts.render("user", variables=prompt_vars)
+            session_message, user_sources = render_prompt(
+                robot_spec.prompts, "user", prompt_vars, output_dir
+            )
             sessions = max(
                 1,
                 int(getattr(task_args, "explore_sessions", 1) or 1),
@@ -395,13 +411,15 @@ def _run_dashboard_task_inner(
                         sessions,
                         robot_name=args.robot_name,
                     )
-                system_prompt = robot_spec.prompts.render(
+                system_prompt, system_sources = render_prompt(
+                    robot_spec.prompts,
                     "system",
-                    variables={
+                    {
                         **prompt_vars,
                         "session_number": session_number,
                         "session_max": sessions,
                     },
+                    output_dir,
                 )
                 state_output_dir = output_dir
                 if getattr(task_args, "explore", False):
@@ -442,20 +460,16 @@ def _run_dashboard_task_inner(
                     )
                 solved = False
                 if getattr(state, "workbench", None) is not None:
-                    from robots.libero.research.manual import availability_prompt
                     from rpent.dashboard.workbench import write_json
+                    from rpent.prompt.composition import availability_prompt
 
                     # UniVTAC renders its frozen selection inside its PromptBundle.
                     # Legacy guides still need the selection override.
-                    if args.robot_name != "univtac":
+                    if args.robot_name != "univtac" and not system_sources["layered"]:
                         system_prompt = (
                             availability_prompt(claimed.request["frozen_tools"])
                             + system_prompt
                         )
-                    write_json(
-                        Path(output_dir) / "prompts.json",
-                        {"system": system_prompt, "user": session_message},
-                    )
                     write_json(
                         Path(output_dir) / "tool-declarations.json",
                         [
@@ -467,6 +481,12 @@ def _run_dashboard_task_inner(
                             for t in toolkit.list_tools()
                         ],
                     )
+                record_prompts(
+                    output_dir,
+                    system_prompt,
+                    session_message,
+                    planner=task_args.planner,
+                )
                 state.bind_toolkit(toolkit)
                 memory_manager = toolkit.memory
                 try:
@@ -481,6 +501,7 @@ def _run_dashboard_task_inner(
                         max_tokens=task_args.max_tokens,
                         planner_timeout_s=task_args.planner_timeout_s,
                         reasoning_effort=task_args.reasoning_effort,
+                        codex_analysis=getattr(task_args, "codex_analysis", False),
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,
