@@ -1,0 +1,304 @@
+{
+  "at": "2026-11-16T04:06:44.124181+00:00",
+  "phase": "running",
+  "source": "569fc7192291a016d729f7c0d8aa005e9cc6d88d",
+  "tasks": [
+    {
+      "index": 1,
+      "task": "arrange_largest_number",
+      "layout": 0
+    },
+    {
+      "index": 2,
+      "task": "arrange_largest_number_random",
+      "layout": 0
+    },
+    {
+      "index": 3,
+      "task": "build_tower",
+      "layout": 0
+    },
+    {
+      "index": 4,
+      "task": "classify_objects",
+      "layout": 0
+    },
+    {
+      "index": 5,
+      "task": "classify_objects_by_language",
+      "layout": 0
+    },
+    {
+      "index": 6,
+      "task": "cover_blocks",
+      "layout": 0
+    },
+    {
+      "index": 7,
+      "task": "deposit_coin",
+      "layout": 0
+    },
+    {
+      "index": 8,
+      "task": "fasten_screws",
+      "layout": 0
+    },
+    {
+      "index": 9,
+      "task": "fill_egg_holder",
+      "layout": 0
+    },
+    {
+      "index": 10,
+      "task": "fill_pen_holder",
+      "layout": 0
+    }
+  ],
+  "configuration": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 120,
+    "max_tokens": 16384,
+    "planner_timeout_s": 1800,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_eef",
+      "native:view_env_state",
+      "native:back_project",
+      "native:segment",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:list_dir",
+      "native:finish"
+    ],
+    "reasoning_effort": "high"
+  },
+  "lanes": {
+    "A": {
+      "session_state": "running",
+      "run_id": "517e1baf62ed5c1a24a1",
+      "error": null,
+      "runtime": {
+        "env": {
+          "status": "ready",
+          "error": null
+        },
+        "vla": {
+          "status": "ready",
+          "error": null
+        },
+        "sam3": {
+          "status": "ready",
+          "error": null
+        }
+      },
+      "n_steps": 5,
+      "usage": {
+        "in": 322682,
+        "out": 2316,
+        "tool_calls": 25
+      },
+      "index": 1,
+      "task": "arrange_largest_number",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-prompt-refactor-20261116-024712-2606590/tasks/0002_arrange_largest_number_l0",
+      "confirmed_native_controls": 25,
+      "eef_recovery_feedbacks": 0
+    },
+    "B": {
+      "session_state": "running",
+      "run_id": "42a3ed2b0ed3a2a014af",
+      "error": null,
+      "runtime": {
+        "env": {
+          "status": "ready",
+          "error": null
+        },
+        "vla": {
+          "status": "ready",
+          "error": null
+        },
+        "sam3": {
+          "status": "ready",
+          "error": null
+        }
+      },
+      "n_steps": 1,
+      "usage": {
+        "in": 135224,
+        "out": 1263,
+        "tool_calls": 17
+      },
+      "index": 2,
+      "task": "arrange_largest_number_random",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-tasks1-10-1800-B-20261116-040307-2688666/tasks/0001_arrange_largest_number_random_l0",
+      "confirmed_native_controls": 2,
+      "eef_recovery_feedbacks": 1
+    },
+    "C": {
+      "session_state": "running",
+      "run_id": "b43d576fd8f529fa4116",
+      "error": null,
+      "runtime": {
+        "env": {
+          "status": "ready",
+          "error": null
+        },
+        "vla": {
+          "status": "ready",
+          "error": null
+        },
+        "sam3": {
+          "status": "ready",
+          "error": null
+        }
+      },
+      "n_steps": 0,
+      "usage": {
+        "in": 25422,
+        "out": 203,
+        "tool_calls": 3
+      },
+      "index": 3,
+      "task": "build_tower",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-tasks1-10-1800-C-20261116-040307-2688670/tasks/0001_build_tower_l0",
+      "confirmed_native_controls": 0,
+      "eef_recovery_feedbacks": 0
+    }
+  },
+  "connection_checks": {
+    "A": {
+      "port": 8094,
+      "server_id": "4429bb142fae4d7b869153dd9bfb37ae",
+      "config": {
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "codex_full_access": true,
+        "codex_analysis": true,
+        "max_turns": 120,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1800,
+        "model_profile": "gpt-6-astra",
+        "tools": [
+          "native:move_eef",
+          "native:view_env_state",
+          "native:back_project",
+          "native:segment",
+          "native:read_text_file",
+          "native:write_text_file",
+          "native:list_dir",
+          "native:finish"
+        ],
+        "reasoning_effort": "high"
+      },
+      "connection_check": {
+        "ok": true,
+        "status": "ok",
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "credential_env": "CODEX_API_KEY",
+        "credential_present": false,
+        "base_url": null,
+        "base_url_env": "CODEX_BASE_URL",
+        "detail": "",
+        "reply": "ok",
+        "latency_s": 14.101,
+        "checked_at": "2026-11-16T04:03:29.442282+00:00"
+      }
+    },
+    "B": {
+      "port": 18094,
+      "server_id": "862a43ac1a3f42e2a7324039a3e49d43",
+      "config": {
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "codex_full_access": true,
+        "codex_analysis": true,
+        "max_turns": 120,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1800,
+        "model_profile": "gpt-6-astra",
+        "tools": [
+          "native:move_eef",
+          "native:view_env_state",
+          "native:back_project",
+          "native:segment",
+          "native:read_text_file",
+          "native:write_text_file",
+          "native:list_dir",
+          "native:finish"
+        ],
+        "reasoning_effort": "high"
+      },
+      "connection_check": {
+        "ok": true,
+        "status": "ok",
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "credential_env": "CODEX_API_KEY",
+        "credential_present": false,
+        "base_url": null,
+        "base_url_env": "CODEX_BASE_URL",
+        "detail": "",
+        "reply": "ok",
+        "latency_s": 8.187,
+        "checked_at": "2026-11-16T04:03:37.940012+00:00"
+      }
+    },
+    "C": {
+      "port": 28094,
+      "server_id": "fc1d9780f9f144718e48569550e0d04d",
+      "config": {
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "codex_full_access": true,
+        "codex_analysis": true,
+        "max_turns": 120,
+        "max_tokens": 16384,
+        "planner_timeout_s": 1800,
+        "model_profile": "gpt-6-astra",
+        "tools": [
+          "native:move_eef",
+          "native:view_env_state",
+          "native:back_project",
+          "native:segment",
+          "native:read_text_file",
+          "native:write_text_file",
+          "native:list_dir",
+          "native:finish"
+        ],
+        "reasoning_effort": "high"
+      },
+      "connection_check": {
+        "ok": true,
+        "status": "ok",
+        "planner": "codex",
+        "model": "gpt-6-astra",
+        "credential_env": "CODEX_API_KEY",
+        "credential_present": false,
+        "base_url": null,
+        "base_url_env": "CODEX_BASE_URL",
+        "detail": "",
+        "reply": "ok",
+        "latency_s": 9.044,
+        "checked_at": "2026-11-16T04:03:47.353168+00:00"
+      }
+    }
+  },
+  "resources": {
+    "used_mib": 39612,
+    "total_mib": 49140,
+    "peak_used_mib": 39612
+  },
+  "source_and_memory_hashes_unchanged": true,
+  "diagnostic_unlimited_actions": true,
+  "benchmark_comparable": false,
+  "validation": {
+    "remote_python_compile": "passed",
+    "shell_syntax": "passed",
+    "three_lane_config_equality": "passed",
+    "three_live_connection_checks": "passed"
+  },
+  "final_task_results": false
+}
