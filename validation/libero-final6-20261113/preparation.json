@@ -1,0 +1,37 @@
+{
+  "root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-ipv4-final6-20261113",
+  "remaining": [
+    [
+      1,
+      3
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      8,
+      3
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      9,
+      2
+    ],
+    [
+      9,
+      4
+    ]
+  ],
+  "retained_unique": 44,
+  "source_hashes_preserved": 460,
+  "backend_ports": {
+    "vla": "37995",
+    "sam3": "39907"
+  },
+  "configuration_unchanged": true,
+  "early_stop_rule_approved": true
+}

@@ -1,0 +1,149 @@
+{
+  "at": "2026-11-13T08:59:06.326445+00:00",
+  "is_final": true,
+  "planned_unique_cells": 50,
+  "overall": {
+    "completed": 50,
+    "successes": 45,
+    "success_rate_percent": 90.0,
+    "mean_model_interactions": 23.62,
+    "mean_episode_elapsed_s": 584.56,
+    "mean_success_elapsed_s": 587.1022222222222,
+    "mean_total_tokens": 767299.14,
+    "sum_total_tokens": 38364957
+  },
+  "tasks": [
+    {
+      "task": 0,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 18.2,
+      "mean_episode_elapsed_s": 603.86,
+      "mean_success_elapsed_s": 603.86,
+      "mean_total_tokens": 452810.2,
+      "sum_total_tokens": 2264051
+    },
+    {
+      "task": 1,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 21.2,
+      "mean_episode_elapsed_s": 1872.4199999999998,
+      "mean_success_elapsed_s": 1872.4199999999998,
+      "mean_total_tokens": 618077.4,
+      "sum_total_tokens": 3090387
+    },
+    {
+      "task": 2,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 12.6,
+      "mean_episode_elapsed_s": 80.72,
+      "mean_success_elapsed_s": 80.72,
+      "mean_total_tokens": 297265.6,
+      "sum_total_tokens": 1486328
+    },
+    {
+      "task": 3,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 15.4,
+      "mean_episode_elapsed_s": 97.14,
+      "mean_success_elapsed_s": 97.14,
+      "mean_total_tokens": 404372.2,
+      "sum_total_tokens": 2021861
+    },
+    {
+      "task": 4,
+      "planned": 5,
+      "completed": 5,
+      "successes": 3,
+      "success_rate_percent": 60.0,
+      "mean_model_interactions": 39.4,
+      "mean_episode_elapsed_s": 371.74,
+      "mean_success_elapsed_s": 266.76666666666665,
+      "mean_total_tokens": 1557204,
+      "sum_total_tokens": 7786020
+    },
+    {
+      "task": 5,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 25.8,
+      "mean_episode_elapsed_s": 196.74,
+      "mean_success_elapsed_s": 196.74,
+      "mean_total_tokens": 830491,
+      "sum_total_tokens": 4152455
+    },
+    {
+      "task": 6,
+      "planned": 5,
+      "completed": 5,
+      "successes": 2,
+      "success_rate_percent": 40.0,
+      "mean_model_interactions": 43.8,
+      "mean_episode_elapsed_s": 433.68,
+      "mean_success_elapsed_s": 209.2,
+      "mean_total_tokens": 1840018.4,
+      "sum_total_tokens": 9200092
+    },
+    {
+      "task": 7,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 19,
+      "mean_episode_elapsed_s": 141.58,
+      "mean_success_elapsed_s": 141.58,
+      "mean_total_tokens": 584392.2,
+      "sum_total_tokens": 2921961
+    },
+    {
+      "task": 8,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 13.8,
+      "mean_episode_elapsed_s": 440.24,
+      "mean_success_elapsed_s": 440.24,
+      "mean_total_tokens": 303167.4,
+      "sum_total_tokens": 1515837
+    },
+    {
+      "task": 9,
+      "planned": 5,
+      "completed": 5,
+      "successes": 5,
+      "success_rate_percent": 100.0,
+      "mean_model_interactions": 27,
+      "mean_episode_elapsed_s": 1607.48,
+      "mean_success_elapsed_s": 1607.48,
+      "mean_total_tokens": 785193,
+      "sum_total_tokens": 3925965
+    }
+  ],
+  "sources": {
+    "retained_ipv4": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-original-50-ipv4-resume-20261113",
+    "four_retests": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-pre-ipv4-retest-5-20261113",
+    "six_completions": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-ipv4-final6-20261113"
+  },
+  "excluded": "All five pre-IPv4 cells; infrastructure incidents; two operator-interrupted attempts, retained separately. Previously settled failures were not retried. The older unresolved idle attempt is retained separately; this six-cell continuation uses the newly approved early-stop rule.",
+  "early_stop_policy": "Only running+idle, complete stop response, no pending model/tool calls, no finish call and terminated=false. Save derived failure separately and abort only to release the completed planner. Never append prompts or overwrite the raw outcome.",
+  "definitions": {
+    "interactions": "model requests",
+    "elapsed": "all settled valid runs including failures",
+    "tokens": "input plus output; cached input is already included"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "actual_retained": 44,
+  "synthetic_new_cells": 6,
+  "unique_total": 50,
+  "per_task_count": 5,
+  "all_synthetic_failures_preserved": true,
+  "expected_successes": 39,
+  "real_calls": 0,
+  "real_results_modified": false
+}

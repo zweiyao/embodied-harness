@@ -1,0 +1,144 @@
+{
+  "checked_at": "2026-11-13T06:56:49.473537+00:00",
+  "phase": "running",
+  "completed_new": 0,
+  "planned_new": 6,
+  "retained_valid_ipv4": 44,
+  "final_fifty_available": false,
+  "root": "/home/zwy/work/embodied_harness/experiments/libero-object-t-qwenflash-ipv4-final6-20261113",
+  "runtime_revision": "59181787c873e537aff5c3f81e4d90f19b38cfa3",
+  "configuration": {
+    "model_profile": "qwen3.8-flash",
+    "planner": "api",
+    "model": "openai-chat:qwen3.8-flash",
+    "reasoning_effort": "none",
+    "max_turns": 50,
+    "max_tokens": 16384,
+    "planner_timeout_s": 0,
+    "tools": [
+      "native:move_pose",
+      "native:move_to",
+      "native:pi0_doubled",
+      "native:pi0_pick",
+      "native:release",
+      "native:rotate_pitch",
+      "native:rotate_wrist",
+      "native:set_gripper",
+      "native:back_project",
+      "native:read_image",
+      "native:segment",
+      "native:view_camera_meta",
+      "native:view_env_state",
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file"
+    ]
+  },
+  "network": "Inherited IPv4 direct through existing loopback DIRECT gateway; external remote proxy not enabled",
+  "source_and_material_hashes_preserved": 460,
+  "preflight": {
+    "passed": true,
+    "lanes": [
+      {
+        "name": "a",
+        "pid": 2178517,
+        "server_id": "4e3f58e981cd4ba3a8f30bafda327473",
+        "connection_latency_s": 1.477,
+        "config_matches": true,
+        "ipv4_network_selected": true
+      },
+      {
+        "name": "b",
+        "pid": 2178524,
+        "server_id": "744d492c04744984a585b3038fb89641",
+        "connection_latency_s": 1.455,
+        "config_matches": true,
+        "ipv4_network_selected": true
+      }
+    ],
+    "no_tasks_dispatched": true,
+    "same_source_and_materials": true
+  },
+  "active": [
+    {
+      "lane": "a",
+      "run_id": "bec1abdb8aaea222395c",
+      "task": {
+        "model_profile": "qwen3.8-flash",
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "max_turns": 50,
+        "max_tokens": 16384,
+        "planner_timeout_s": 0,
+        "suite": "libero_object_task",
+        "task": 1,
+        "seed": 3
+      },
+      "requests": 5,
+      "http_timeouts_none": true,
+      "thinking_disabled": true,
+      "session_state": "running",
+      "planner_activity": "busy",
+      "steps": 0
+    },
+    {
+      "lane": "b",
+      "run_id": "827538f7b67f4fdc9d06",
+      "task": {
+        "model_profile": "qwen3.8-flash",
+        "tools": [
+          "native:move_pose",
+          "native:move_to",
+          "native:pi0_doubled",
+          "native:pi0_pick",
+          "native:release",
+          "native:rotate_pitch",
+          "native:rotate_wrist",
+          "native:set_gripper",
+          "native:back_project",
+          "native:read_image",
+          "native:segment",
+          "native:view_camera_meta",
+          "native:view_env_state",
+          "native:finish",
+          "native:list_dir",
+          "native:read_text_file",
+          "native:write_text_file"
+        ],
+        "max_turns": 50,
+        "max_tokens": 16384,
+        "planner_timeout_s": 0,
+        "suite": "libero_object_task",
+        "task": 8,
+        "seed": 1
+      },
+      "requests": 5,
+      "http_timeouts_none": true,
+      "thinking_disabled": true,
+      "session_state": "running",
+      "planner_activity": "busy",
+      "steps": 0
+    }
+  ],
+  "controller": "RuntimeMaxUSec=infinity\nMainPID=2180458\nActiveState=active",
+  "raw_operator_stops": "/home/zwy/work/embodied_harness/validation/robodojo-astra-task0-20261113/libero-stop-reason.json",
+  "queued_robo_astra": "deferred until LIBERO completes; no RoboDojo task was started"
+}

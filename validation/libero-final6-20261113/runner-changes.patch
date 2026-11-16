@@ -1,0 +1,47 @@
+--- retest/run_batch.py
++++ final6/run_batch.py
+@@ -13,0 +14,2 @@
++
++from idle_settlement import early_stop_evidence
+@@ -160,0 +163 @@
++            adjudication = None
+@@ -200,0 +204,19 @@
++                if (
++                    run
++                    and adjudication is None
++                    and state["session_state"] == "running"
++                    and state.get("interaction", {}).get("planner_activity") == "idle"
++                ):
++                    event_path = Path(run["path"]) / "events.jsonl"
++                    if event_path.exists():
++                        events = [
++                            json.loads(line)
++                            for line in event_path.read_text().splitlines()
++                        ]
++                        adjudication = early_stop_evidence(state, events)
++                        if adjudication is not None:
++                            save(
++                                Path(run["path"]) / "batch-adjudication.json",
++                                adjudication,
++                            )
++                            api(port, "/api/session/abort", {})
+@@ -207,0 +230,9 @@
++            raw_status = outcome["status"]
++            if adjudication is not None:
++                assert raw_status == "aborted", outcome
++                outcome = {
++                    **outcome,
++                    "status": "model_stopped_without_finish",
++                    "environment_success": False,
++                    "error": None,
++                }
+@@ -212,0 +244 @@
++                "model_stopped_without_finish",
+@@ -222,0 +255,2 @@
++                "raw_harness_status": raw_status,
++                "batch_adjudication": adjudication,
+@@ -286 +320,3 @@
+-
++        import sys
++
++        subprocess.run([sys.executable, str(ROOT / "summarize_final50.py")], check=True)
