@@ -175,6 +175,7 @@ class DashboardServer:
                 {
                     **(self._setup or {}),
                     "robot": self._robot_name,
+                    "task_spec": self._state.dashboard_spec["task"],
                     "workbench": self._workbench is not None,
                     "tool_catalog": self._workbench is not None
                     or self._robot_name == "flexiv",

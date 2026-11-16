@@ -34,7 +34,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--env-cfg-type", default="arx_x5")
     parser.add_argument("--cuda-device", type=int, default=0)
     parser.add_argument("--num-envs", type=int, default=1)
-    parser.add_argument("--max-episode-steps", type=int, default=700)
+    parser.add_argument(
+        "--max-episode-steps",
+        type=int,
+        default=700,
+        help="Native action cap; 0 disables action limits for dev diagnostics only",
+    )
     parser.add_argument("--save-dir", default=os.getcwd())
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=0)
@@ -64,6 +69,10 @@ def build_config(args: argparse.Namespace):
     """Translate CLI settings into the RLinf wrapper and runtime task config."""
     from omegaconf import OmegaConf
 
+    if args.max_episode_steps < 0:
+        raise ValueError("max_episode_steps must be nonnegative")
+    if args.max_episode_steps == 0 and args.mode != "dev":
+        raise ValueError("Unlimited actions are for dev diagnostics only")
     if args.num_envs != 1:
         raise ValueError("RoboDojo RPC serves exactly one environment")
     return OmegaConf.create(

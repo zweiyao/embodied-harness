@@ -1,0 +1,34 @@
+{
+  "recoveries": [
+    {
+      "rejected_observation": 4,
+      "steps_used": 0,
+      "cancelled_steps": 5,
+      "feedback_images": 3,
+      "next_observation_used": 4,
+      "target_revised": true,
+      "next_steps_used": 5
+    }
+  ],
+  "native_acks": 200,
+  "non_range_controller_errors": [],
+  "mid_chunk_rejection_observed_in_this_episode": false,
+  "partial_prefix_branch": "covered by regression tests, not triggered in this episode",
+  "videos": [
+    {
+      "file": "videos/episode_2026-11-16_10-48-47_cam_left_wrist.mp4",
+      "frames_decoded": 483,
+      "fps": 25.0
+    },
+    {
+      "file": "videos/episode_2026-11-16_10-48-47_cam_right_wrist.mp4",
+      "frames_decoded": 483,
+      "fps": 25.0
+    },
+    {
+      "file": "videos/episode_2026-11-16_10-48-47_cam_head.mp4",
+      "frames_decoded": 483,
+      "fps": 25.0
+    }
+  ]
+}

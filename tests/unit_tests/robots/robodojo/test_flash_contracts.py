@@ -289,7 +289,7 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
     from robots.robodojo import tools
 
     agent = make_agent(
-        SimpleNamespace(is_success=lambda **kw: True), meta={"mode": "dev"}
+        SimpleNamespace(is_success=lambda **kw: True, step_lim=5), meta={"mode": "dev"}
     )
     facade = env_server.RoboDojoEnvFacade(agent)
     monkeypatch.setattr(agent_module, "_reward_details", lambda *a: {"score": 100})
@@ -303,9 +303,9 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
         SimpleNamespace(call=call), expected_meta={"mode": "dev"}
     )
     primitives = SimpleNamespace(env=client)
-    assert client.get_reward_details() == {"score": 100}
+    assert client.get_reward_details() == {"score": 100, "step_limit": 5}
     assert client.get_safety_status() == {"rolling": []}
-    assert tools.get_reward_details(primitives, None) == {"score": 100}
+    assert tools.get_reward_details(primitives, None) == {"score": 100, "step_limit": 5}
     assert tools.get_safety_status(primitives, None) == {"rolling": []}
     toolkit = object.__new__(RoboDojoToolkit)
     toolkit.eval_fair = False
@@ -316,7 +316,11 @@ def test_dev_diagnostics_remain_callable_through_client_rpc(
 def test_agent_close_flushes_video_before_runtime(make_agent):
     events = []
     agent = make_agent(
-        SimpleNamespace(),
+        SimpleNamespace(
+            sim=SimpleNamespace(
+                sim=SimpleNamespace(clear_instance=lambda: events.append("context"))
+            )
+        ),
         recorder=SimpleNamespace(close=lambda: events.append("writer")),
     )
     agent.venv.close = lambda clear_cache: events.append(("runtime", clear_cache))
@@ -326,7 +330,7 @@ def test_agent_close_flushes_video_before_runtime(make_agent):
     assert events == []
     facade.close()
     facade.close()
-    assert events == ["writer", ("runtime", True)]
+    assert events == ["writer", "context", ("runtime", True)]
 
 
 def test_eval_client_rejects_dev_service_and_does_not_reset():
@@ -379,6 +383,7 @@ def test_mode_tools_state_and_prompt_gate(monkeypatch, tmp_path, eval_fair):
         "env_cfg_type": "arx_x5",
         "action_type": "joint",
         "task_summary": "scene",
+        "memory_dir": str(tmp_path / "memory"),
     }
     prompt = bundle.render("system", variables=variables) + bundle.render(
         "user", variables=variables
@@ -484,3 +489,45 @@ def test_flash_config_selects_mode_without_task_summary(monkeypatch, tmp_path):
     config = robot_spec._parse_config(args)
     assert config.prompt_vars["mode"] == "eval-fair"
     assert config.prompt_vars["task_summary"] == {}
+
+
+@pytest.mark.parametrize("mode", ["dev", "eval-fair"])
+def test_connect_validates_metadata_without_resetting_scene(mode):
+    calls = []
+
+    def call(method, **kwargs):
+        calls.append(method)
+        if method == "env.get_env_meta":
+            return {"mode": mode}
+        if method == "env.reset" and mode == "dev":
+            return {"instruction": "new episode"}
+        pytest.fail(f"unexpected RPC on connect: {method}")
+
+    client = RoboDojoEnvClient(SimpleNamespace(call=call), expected_meta={"mode": mode})
+    assert calls == ["env.get_env_meta"]
+    if mode == "dev":
+        assert client.reset() == {"instruction": "new episode"}
+        assert calls == ["env.get_env_meta", "env.reset"]
+
+
+@pytest.mark.parametrize("failure", ["writer", "context"])
+def test_agent_close_keeps_runtime_cleanup_after_flush_error(make_agent, failure):
+    events = []
+
+    def phase(name):
+        events.append(name)
+        if name == failure:
+            raise RuntimeError(failure)
+
+    agent = make_agent(
+        SimpleNamespace(
+            sim=SimpleNamespace(
+                sim=SimpleNamespace(clear_instance=lambda: phase("context"))
+            )
+        ),
+        recorder=SimpleNamespace(close=lambda: phase("writer")),
+    )
+    agent.venv.close = lambda clear_cache: events.append(("runtime", clear_cache))
+    with pytest.raises(RuntimeError, match=failure):
+        agent.close()
+    assert events == ["writer", "context", ("runtime", True)]

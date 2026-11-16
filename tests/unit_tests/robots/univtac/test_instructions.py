@@ -31,7 +31,7 @@ def test_planner_task_matches_official_reset_text(tmp_path, task_index, expected
     prompt = robot_spec.get_robot_spec().prompts.render(
         "user", variables=config.prompt_vars
     )
-    assert prompt.strip().endswith(expected)
+    assert f"Official instruction: {expected}\n" in prompt
     assert "GUIDANCE" not in prompt
 
 

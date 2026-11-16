@@ -1,0 +1,126 @@
+{
+  "updated_at": "2026-11-12T01:14:27.484573+00:00",
+  "status": "approved_correction_verified",
+  "baseline_commit": "d596643cd7afe2fff792bb7813ecb4fee8441ef",
+  "approved_patch_sha256": "b12b3ab30a3bc6b99a54e6f7addd620e57cc5b99325809108821ba1e666cc7d5",
+  "source_sha256": {
+    "robots/robodojo/rlinf_env.py": "c1f2610e60ec94c46a9f376b16628fd861f756228039b1d1f9840f8301fac8f8",
+    "tests/unit_tests/robots/robodojo/test_flash_contracts.py": "8bc947c9c87ffc766f4447cbc74114b66d4b331cf75e77a9abdce3d10b2e6a14"
+  },
+  "regression_before_fix": {
+    "failed": 3,
+    "deselected": 19,
+    "reason": "The fixture now reflects CollectEnv.sim -> Gym IsaacRLEnv.sim -> SimulationContext; the old context target raises AttributeError.",
+    "log": "regression-before-fix.log"
+  },
+  "cpu_checks": {
+    "python": "3.11.16",
+    "robodojo_passed": 165,
+    "robodojo_seconds": 1.31,
+    "unit_passed": 2043,
+    "unit_skipped": 15,
+    "unit_seconds": 72.7,
+    "warnings": 2,
+    "pre_commit": "passed",
+    "ci_matrix": "not run"
+  },
+  "real_checks": {
+    "gpu-dev": {
+      "status": "passed",
+      "scope": "Single simulator lifecycle check, no planner or action calls",
+      "phase": "complete",
+      "health_before": {
+        "status": "ok"
+      },
+      "health_after_borrowed_close": {
+        "status": "ok"
+      },
+      "borrowed_server_survived": true,
+      "owned_server_exit_code": 0,
+      "videos": [
+        {
+          "camera_file": "episode_2026-11-12_09-10-21_cam_head.mp4",
+          "bytes": 34745,
+          "readable": true
+        },
+        {
+          "camera_file": "episode_2026-11-12_09-10-21_cam_left_wrist.mp4",
+          "bytes": 26122,
+          "readable": true
+        },
+        {
+          "camera_file": "episode_2026-11-12_09-10-21_cam_right_wrist.mp4",
+          "bytes": 28833,
+          "readable": true
+        }
+      ],
+      "child_exit_after_cleanup": 0
+    },
+    "gpu-eval-fair": {
+      "mode": "eval-fair",
+      "status": "passed",
+      "scope": "Single simulator lifecycle check, no planner or action calls",
+      "phase": "complete",
+      "health_before": {
+        "status": "ok"
+      },
+      "health_after_borrowed_close": {
+        "status": "ok"
+      },
+      "borrowed_server_survived": true,
+      "owned_server_exit_code": 0,
+      "videos": [
+        {
+          "camera_file": "episode_2026-11-12_09-11-00_cam_head.mp4",
+          "bytes": 34871,
+          "readable": true
+        },
+        {
+          "camera_file": "episode_2026-11-12_09-11-00_cam_left_wrist.mp4",
+          "bytes": 26054,
+          "readable": true
+        },
+        {
+          "camera_file": "episode_2026-11-12_09-11-00_cam_right_wrist.mp4",
+          "bytes": 28988,
+          "readable": true
+        }
+      ],
+      "child_exit_after_cleanup": 0
+    }
+  },
+  "preservation": {
+    "source_guard": {
+      "checked": 608,
+      "changed": []
+    },
+    "collector_and_other_workbenches": "Observed active; no service changes in this stage",
+    "mac_network_modified": false,
+    "network": "Inherited direct mode selected via dedicated remote-network.sh; no proxy manipulation inside probes",
+    "planner_requests": 0,
+    "simulator_task_actions": 0,
+    "hardware_actions": 0
+  },
+  "commands": [
+    ".venv/bin/python -m pytest tests/unit_tests/robots/robodojo -q",
+    ".venv/bin/pre-commit run --all-files",
+    ".venv/bin/python -m pytest tests/unit_tests -q --junitxml=<stage-06>/unit-tests.xml",
+    ".venv/bin/python <stage-02>/check_env_ownership.py <stage-06>/gpu-dev",
+    ".venv/bin/python <stage-02>/check_env_ownership_eval.py <stage-06>/gpu-eval-fair"
+  ],
+  "conditions": {
+    "task": "put_bottles_into_dustbin",
+    "layout": 0,
+    "exit_deadline_seconds": 45,
+    "vulkan_compat": "Existing profile enabled only in the diagnostic simulator process",
+    "placement_settle_override": "not set; unchanged from failed lifecycle candidates"
+  },
+  "limitations": [
+    "Explicit repeated dev reset stability not yet verified",
+    "Default launcher compatibility profile not deployed",
+    "Action and geometry validation pending",
+    "GPU policy inference, SAM3 and workflow checks pending",
+    "Unified simulator workbench integration pending",
+    "Nine dependency metadata conflicts remain as documented in stage-01"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "approved_at": "2026-11-14T05:19:08.410326+00:00",
+  "user_approval": "批准",
+  "proposal": "proposals/robodojo-rpent-memory-20261114",
+  "scope": "Same frozen RPent v1 corpus read-only;38-word dev user-prompt memory discovery; isolated candidate; no task experiments, tool/control/budget changes or network changes",
+  "base_revision": "a259434c602891b723fbae3d229cb900161240e7",
+  "necessary_test_fixture_update": "Existing Flash mode/score gate test also renders the dev user prompt; supply its real memory_dir input. No assertion removed or weakened, no extra runtime behavior."
+}

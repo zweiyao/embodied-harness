@@ -1,0 +1,196 @@
+{
+  "checked_at": "2026-11-14T03:44:39.355850+00:00",
+  "source_revision": "f2e77cf23e540da8e9c5b71e7a7ce911f0396ec6",
+  "public_deployment": "Validated candidate now deployed on8094;347 tracked rpent/robots/deploy files match local commit",
+  "task": "align_blocks",
+  "layout": 0,
+  "model": "gpt-6-astra",
+  "planner": "codex",
+  "reasoning_effort": "low",
+  "max_turns": 120,
+  "max_tokens": 16384,
+  "planner_timeout_s": 600,
+  "memory": "existing empty-memory directory; no experience added",
+  "network": "remote own proxy127.0.0.1:7900 enabled with independent remote-network.sh; Mac network unchanged",
+  "astra_text_connection_latencies_s": [
+    12.965,
+    11.126
+  ],
+  "diagnostic_launcher_change": {
+    "before": "--max-episode-steps700",
+    "after": "--max-episode-steps0",
+    "original_launcher_unchanged": true,
+    "scope": "Independent validation launcher; existing dev-only support; no source implementation changes"
+  },
+  "unlimited_contract": {
+    "configured_max_episode_steps": 0,
+    "live_step_limit": null,
+    "live_checks": "native-status-checks.jsonl; samples615 and1309, no safety alarms"
+  },
+  "results": [
+    {
+      "id": "326975fcadb9321c51f9",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-032859-3488089/tasks/0001_align_blocks_l0",
+      "environment_success": false,
+      "status": "completed",
+      "error": null,
+      "finish": {
+        "_finish": true,
+        "status": "failure",
+        "summary": "Episode ended after 200 simulator steps with blocks unaligned and left arm not reset. Audit saved to audit.json. Environment score unknown."
+      },
+      "elapsed_s": 121.4,
+      "planner_elapsed_s": 79.7,
+      "planner_interactions_reported": 9,
+      "tool_calls": 8,
+      "input_tokens": 246353,
+      "output_tokens": 801,
+      "total_tokens": 247154,
+      "action_tool_calls": 1,
+      "native_actions": 200,
+      "video_recorded": true,
+      "videos": [
+        {
+          "file": "videos/episode_2026-11-14_11-30-35_cam_right_wrist.mp4",
+          "bytes": 351695
+        },
+        {
+          "file": "videos/episode_2026-11-14_11-30-35_cam_head.mp4",
+          "bytes": 367883
+        },
+        {
+          "file": "videos/episode_2026-11-14_11-30-35_cam_left_wrist.mp4",
+          "bytes": 1143750
+        }
+      ],
+      "url": "http://10.162.250.228:8094/runs?id=326975fcadb9321c51f9",
+      "diagnostic_unlimited_actions": false,
+      "benchmark_comparable": false
+    },
+    {
+      "id": "865f74a45f70d7e15385",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261114-033340-3495126/tasks/0001_align_blocks_l0",
+      "environment_success": false,
+      "status": "completed",
+      "error": null,
+      "finish": {
+        "_finish": true,
+        "status": "stuck",
+        "summary": "Repeated policy recovery attempts did not establish a set-square grasp or align the three blocks. Blocks remain on table; left arm reset incomplete. Audit saved; environment score unknown."
+      },
+      "elapsed_s": 546.0,
+      "planner_elapsed_s": 500.9,
+      "planner_interactions_reported": 43,
+      "tool_calls": 19,
+      "input_tokens": 1107177,
+      "output_tokens": 2578,
+      "total_tokens": 1109755,
+      "action_tool_calls": 5,
+      "native_actions": 3033,
+      "video_recorded": true,
+      "videos": [
+        {
+          "file": "videos/episode_2026-11-14_11-35-28_cam_head.mp4",
+          "bytes": 6781948
+        },
+        {
+          "file": "videos/episode_2026-11-14_11-35-28_cam_left_wrist.mp4",
+          "bytes": 12576080
+        },
+        {
+          "file": "videos/episode_2026-11-14_11-35-28_cam_right_wrist.mp4",
+          "bytes": 11377844
+        }
+      ],
+      "url": "http://10.162.250.228:8094/runs?id=865f74a45f70d7e15385",
+      "diagnostic_unlimited_actions": true,
+      "benchmark_comparable": false
+    }
+  ],
+  "runtime_state_after": "ready; error=null; VLA/SAM3 remain running",
+  "web_access": "Loopback health and homepage200; current Mac request source10.230.32.61 is denied by unchanged allowlist10.162.217.98; no access policy loosened",
+  "interpretation": "No runtime exception or action dimension/RPC error observed in these two runs. Both native task outcomes false. This does not certify all bugs absent or establish that the policy can complete this task. No new harness/tool/prompt/memory edits.",
+  "checks": "Prior mapping tests2090passed/16skipped and242targeted; current347source hashes equal validated revision. Independent launcher bash-n passed. No unit/Sphinx rerun for evidence-only archive.",
+  "unlimited_video_checks": [
+    {
+      "file": "episode_2026-11-14_11-35-28_cam_head.mp4",
+      "codec": "h264",
+      "duration_s": 124.0,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": true
+    },
+    {
+      "file": "episode_2026-11-14_11-35-28_cam_left_wrist.mp4",
+      "codec": "h264",
+      "duration_s": 124.0,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": true
+    },
+    {
+      "file": "episode_2026-11-14_11-35-28_cam_right_wrist.mp4",
+      "codec": "h264",
+      "duration_s": 124.0,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": true
+    }
+  ],
+  "bounded_video_checks": [
+    {
+      "file": "episode_2026-11-14_11-30-35_cam_head.mp4",
+      "codec": "h264",
+      "duration_s": 8.24,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": [
+        480,
+        640,
+        3
+      ]
+    },
+    {
+      "file": "episode_2026-11-14_11-30-35_cam_left_wrist.mp4",
+      "codec": "h264",
+      "duration_s": 8.24,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": [
+        480,
+        640,
+        3
+      ]
+    },
+    {
+      "file": "episode_2026-11-14_11-30-35_cam_right_wrist.mp4",
+      "codec": "h264",
+      "duration_s": 8.24,
+      "fps": 25.0,
+      "size": [
+        640,
+        480
+      ],
+      "first_frame_decoded": [
+        480,
+        640,
+        3
+      ]
+    }
+  ]
+}

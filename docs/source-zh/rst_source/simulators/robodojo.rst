@@ -34,6 +34,9 @@ uv 会把已装的 ``2.7.0+cu126`` 视作满足钉住的 ``torch==2.7.0`` 而不
 预测长度为 50，模型动作补齐到 32 维，环境动作保持 14 维。\
 真实权重的 RPC 推理已返回形状为 ``(1, 50, 14)`` 且全部有限的动作；这不保证任务成功。
 
+发布的 ARX-X5 checkpoint 使用 ``[左臂6, 左夹爪1, 右臂6, 右夹爪1]`` 排列输入状态和反归一化后的策略输出。
+RoboDojo VLA 边界用原始状态还原关节增量，保留夹爪的绝对值，再转换为原生控制向量顺序 ``[左臂6, 右臂6, 左夹爪1, 右夹爪1]``。该预设关闭 RLinf 默认增量转换，避免套用不匹配的 12 关节掩码；反归一化和移除 32 维填充仍由 RLinf loader 负责。手动原生动作字典保持不变。
+
 仿真桥需要运行时包 0.3.0 或更新版本。发布版本号之前，暂时使用 Git 引用。全\
 新依赖安装与 GPU rollout 仍需分别验证；桥的离线测试不代表仿真兼容性已获验证。
 IsaacLab 上游的非 editable 打包可能遗漏扩展配置。如果所安装的版本仍有此问题，需\
@@ -352,13 +355,66 @@ GPU、真实策略服务与仿真端到端。
 应指明目标身份；未解析标记会在策略推理前被拒绝。多物体官方任务不一定指定抓取顺序，描\
 述性覆盖也不保证 checkpoint 能选择任意实例，必须检查实际抓住的目标。
 
+研究工作台
+----------
+
+可选的 ``RPENT_WORKBENCH`` JSON 配置复用开始页、控制台、工具目录与实验记录页。
+RoboDojo 提供原生 ``task`` 和 ``layout`` 字段，不使用 LIBERO 的任务集／任务编号／seed。
+使用 ``robots.robodojo.catalog.task_fields``，传入实际安装的源码目录、资产目录和环境配置，
+生成 profile 的 ``task_fields``。layout ID 遵循原生 SeedManager 在配置布局组中的枚举顺序。
+任务名是标识符；官方指令在场景的 description manager 初始化后读取，随观测保存。
+
+dev 工作台逐轮冻结原生工具名单。未选择的工具不能由 planner 调用；过期声明和未接入的
+生成工具在任务环境启动前被拒绝。``finish`` 必须保留。未提供工作台名单时，原 CLI 和
+Flash 路径保留现有注册方式。工具调用沿用运行日志，实验记录展示保存的各路 episode
+录像，包括 RoboDojo 的三路相机视频。
+
+该配置不会部署服务或启动任务。模型配置与凭据由服务端管理；显式检查所选模型后，
+在控制台发送准备好的命令才开始实验。
+
+
+三路 episode 视频使用 RGB 输入编码为 H.264，并提前写入 MP4 索引以便浏览器播放。
+``pi0_pick`` 分别报告 ``chunks_used`` 和 ``simulator_steps``，且在每个原生动作前
+检查取消。后者统计已提交的原生控制动作，不是物理子步数，也不是任务成功信号。
+
+使用 ``deploy/start-robodojo-workbench.sh runtime.env workbench.json``，在独立配置中
+指定 ``RPENT_REPO_ROOT``、``RPENT_RUNS_ROOT`` 和 ``RPENT_MEMORY_DIR``。
+默认仅监听回环端口 8094；外部访问代理需单独配置来源 IP 白名单。启动脚本继承网络环境，
+在脚本之外使用远程网络脚本选择网络。源码中的 ``deploy/ROBODOJO_WORKBENCH.md``
+说明部署方法。
+
+dev 语言规划器在用户提示中获得配置的 ``memory_dir/MEMORY.md`` 路径，再通过
+``read_text_file`` 按需读取相关叶子。发布经验保持只读，正文不加入系统提示词。
+显式选择的其他环境经验库作为历史参考：仅使用机器人／工具及场景前提匹配的经验，
+重新推导当前几何，不重放历史动作数值，并在审计中记录读取的文件。
+Flash eval-fair 提示不包含这一语言规划器检索步骤。
+
+已准备环境的 GPU 检查
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+现有 GPU runner 提供独立的 ``robodojo-prepared`` 目标：
+
+.. code-block:: bash
+
+   bash tests/e2e_tests/run_gpu_suite.sh robodojo-prepared \
+     /path/to/new-output /path/to/prepared-venv
+
+先加载独立运行配置并选择一张 GPU。第三参数为已有环境，不会被删除。五项检查覆盖
+RGB-D／状态与保持动作、Pi0.5、SAM3、chunk 内取消，以及脚本规划器经公开 CLI 执行
+策略的闭环。任务成功另行评价。
+
+该目标保存真实依赖检查的退出码和报告，不代表清洁安装已通过。实测准备环境仍有九项
+上游元数据分歧：除已列出的 override 外，还包括 Isaac Sim 的 ``packaging==23.0``
+与 planner SDK 要求冲突。其他三个 runner 目标保留原清洁安装门禁；不要修改第三方包
+元数据以制造检查通过。
+
 能力范围与限制
 --------------
 
 RoboDojo 提供双臂运动与夹爪原语、三相机 RGB-D、SAM3 感知、RLinf Pi0.5（或可选 XPolicyLab）及\
 冻结 Flash 重放。任务名称来自配置的源码目录，例如
 ``put_bottles_into_dustbin``、``fill_pen_holder`` 和 ``stack_bowls_random``，并\
-非已验证成功的任务套件。``place_in_bin`` 仅为 ``put_bottles_into_dustbin`` 注册。尚\
+非已验证成功的任务套件。``place_in_bin`` 在 dev 模式注册，但面向垃圾桶放置，不能作为所有任务的通用放置策略。尚\
 未实现 handover。低 Z 桌面级与侧向脚本 IK 存在可达性限制，应检查
 ``reached`` 和 ``dist_to_target``，不要假设指令位姿已到达。共\
 享的仅评测 planner 见 :doc:`../guides/flash`；重放会执行动作，并非对机器人只读。
@@ -382,3 +438,14 @@ dev 与 Flash 都应检查这些工件；退出码为零不代表官方任务成
 traceback 或 ``Fatal Python error``。Headless GLFW warning 是预期噪音，不\
 能据此忽略关闭错误。环境在主线程依次释放录像 writer、相机 annotator/render
 product、syntheticdata 图句柄，停止 Replicator，最后关闭 stage/app。
+
+
+无动作步数限制的诊断
+------------------------
+
+``--max-episode-steps 0`` 仅供独立的 ``dev`` 诊断使用，同时关闭配置和任务原生动作
+步数配额。计数仍持续增加，状态以 ``step_limit: null`` 表示无限额。它只改变本轮环境
+实例，不改任务定义、评分条件、关节限制或动作映射。普通正数配置仍取原生上限与配置
+上限中的较小值；``eval-fair`` 拒绝零值。结果标记为 ``diagnostic_unlimited_actions``
+及 ``benchmark_comparable: false``。保留有限的模型时间／请求预算和取消能力，不能将
+这种结果与官方动作配额下的成绩直接比较。

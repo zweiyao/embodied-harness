@@ -42,6 +42,15 @@ adapter and ``pi05_robodojo_arx_x5``. The RoboDojo preset selects the OpenPI
 and 14-dimensional environment actions. Real-weight RPC inference has returned
 finite actions of shape ``(1, 50, 14)``; this is not a task-success guarantee.
 
+For the released ARX-X5 checkpoint, state inputs and unnormalized policy outputs
+use ``[left arm(6), left gripper(1), right arm(6), right gripper(1)]``.
+The RoboDojo VLA boundary restores joint deltas with the raw state, leaves both
+grippers absolute, and converts to the native vector order
+``[left arm(6), right arm(6), left gripper(1), right gripper(1)]`` before control.
+The RLinf default delta transform is disabled for this preset to avoid applying
+its incompatible 12-joint mask. Unnormalization and removal of the 32-D padding
+remain owned by the RLinf loader. Manual native action dictionaries are unchanged.
+
 The simulation bridge requires runtime version 0.3.0 or later.
 The Git references are temporary until versioned releases are published.
 Fresh dependency installation and GPU rollout must be validated separately;
@@ -416,6 +425,74 @@ object; unresolved markers are rejected before inference. Official multi-object
 tasks do not specify a grasp order, and descriptive overrides do not guarantee
 that a checkpoint can select arbitrary instances. Verify the actual held target.
 
+Research workbench
+------------------
+
+The optional ``RPENT_WORKBENCH`` JSON configuration uses the shared setup,
+console, tool catalog and run-history pages. RoboDojo supplies native ``task``
+and ``layout`` fields instead of LIBERO suite/task/seed indices. Build the
+profile's ``task_fields`` using ``robots.robodojo.catalog.task_fields`` with the
+installed source root, asset root and environment config. Layout IDs follow the
+native SeedManager's enumeration in the configured layout group. The task name
+is an identifier; the official instruction becomes available after the scene's
+description manager is initialized and is saved with the observations.
+
+The dev workbench freezes a native tool allowlist for each run. Unselected tools
+are unavailable to the planner; stale declarations and unsupported generated
+tools are rejected before starting the task environment. ``finish`` is required.
+The existing CLI and Flash paths retain their tool registration when no workbench
+selection is supplied. Tool calls use the existing run journal, and run history
+shows each saved episode video, including the three RoboDojo camera streams.
+
+This configuration does not deploy a service or start a task. Prepare model
+profiles and credentials on the server, check the selected model explicitly,
+and submit the prepared command in the console to start an experiment.
+
+
+The three episode streams are encoded as H.264 with RGB input and a fast-start
+MP4 index for browser playback. ``pi0_pick`` reports ``chunks_used`` separately
+from ``simulator_steps`` and checks cancellation before each native action.
+The latter is a submitted native control-action count, not a physics-substep
+count or a task-success signal.
+
+Use ``deploy/start-robodojo-workbench.sh runtime.env workbench.json`` with the
+independent runtime's ``RPENT_REPO_ROOT``, ``RPENT_RUNS_ROOT`` and
+``RPENT_MEMORY_DIR`` configured. It binds loopback port 8094 by default; an
+external access proxy needs a separately configured source-IP allowlist. The
+launcher inherits network settings; select them outside the launcher with the
+remote network script. See ``deploy/ROBODOJO_WORKBENCH.md`` in the source tree.
+
+Dev language planners receive the configured ``memory_dir/MEMORY.md`` reference
+in the user prompt and read relevant leaves on demand with ``read_text_file``.
+Published memory remains read-only; experience bodies are not injected into the
+system prompt. An explicitly selected corpus from another environment is a
+historical reference: apply only lessons whose robot/tool and scene assumptions
+match, derive current geometry, and do not replay stored action values. Record
+consulted files in the audit. Flash eval-fair prompts do not include this
+language-planner discovery step.
+
+Prepared-runtime GPU checks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The existing GPU runner has a separate ``robodojo-prepared`` target:
+
+.. code-block:: bash
+
+   bash tests/e2e_tests/run_gpu_suite.sh robodojo-prepared \
+     /path/to/new-output /path/to/prepared-venv
+
+Load the independent runtime profile and select one GPU before invoking it.
+The third argument is an existing environment and is never removed. The five
+checks cover RGB-D/state and a hold action, Pi0.5, SAM3, cancellation within an
+action chunk, and a scripted public-CLI policy chain. Task success is separate.
+
+This target records the actual dependency-check exit code and report. It does
+not validate a clean installation. The tested prepared stack still has nine
+upstream metadata disagreements, including Isaac Sim's ``packaging==23.0``
+versus the planner SDK requirement in addition to the documented overrides.
+The other three runner targets retain their clean-install dependency gates.
+Do not edit third-party package metadata to make the check appear clean.
+
 Capability scope and limitations
 --------------------------------
 
@@ -423,7 +500,8 @@ RoboDojo provides dual-arm motion and gripper primitives, three-camera RGB-D,
 SAM3 perception, RLinf Pi0.5 (or optional XPolicyLab) and frozen Flash replay. Task names come from
 the configured checkout; examples include ``put_bottles_into_dustbin``,
 ``fill_pen_holder`` and ``stack_bowls_random``, not a validated success suite.
-``place_in_bin`` is registered only for ``put_bottles_into_dustbin``.
+``place_in_bin`` is registered in dev mode but designed for dustbin placement;
+it is not a general placement strategy for every task.
 Handover is not implemented. Low-Z tabletop and lateral scripted IK motions
 have reachability limits: inspect ``reached`` and ``dist_to_target`` rather
 than assuming the commanded pose was achieved. See :doc:`../guides/flash` for the
@@ -452,3 +530,16 @@ status. Between ``[robodojo-env] shutdown begin`` and process exit, require no
 expected noise, not a reason to ignore shutdown errors. The environment
 releases writers, camera annotators/render products, and syntheticdata graph
 handles before stopping Replicator and closing the stage/app on the main thread.
+
+
+Unlimited action diagnostics
+----------------------------
+
+``--max-episode-steps 0`` disables both the configured and native task action
+budgets for an isolated ``dev`` diagnosis. Counters keep increasing and status
+reports ``step_limit: null``. This changes only the running environment instance,
+not the task definition, scoring predicates, joint constraints or action mapping.
+Normal positive budgets retain the stricter native/configured cap; ``eval-fair``
+rejects zero. Results are tagged ``diagnostic_unlimited_actions`` and
+``benchmark_comparable: false``. Keep a finite planner time/request budget and
+retain cancellation. Such results cannot be compared with official-cap scores.

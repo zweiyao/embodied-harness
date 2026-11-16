@@ -182,35 +182,115 @@ RPent 的整体进程划分、服务职责和通信方式见 :doc:`系统说明 
 
 .. _add-robot-prompts:
 
-2. ``prompt_bundle.py``
------------------------
+2. 定义分层提示词
+-----------------
 
-定义 ``system_prompt()`` 和 ``user_prompt()`` 两个 prompt 工厂，并在机器人的 ``robot_spec.py`` 中构造 ``PromptBundle(system=system_prompt, user=user_prompt)`` （见上面的“入口”）。每个工厂返回一个有序的 ``dict[str, PromptNode]``，其中包含带标题的分节； ``PromptBundle.render`` 负责组装和填充。一套 prompt 供 API loop、Claude Code 和 Codex 等 planner 共用。正文使用工具的裸名（如 ``move_to``），并说明 Claude Code 和 Codex SDK 会将其显示为 ``mcp__rpent__<name>``；无需分别维护 CLI 与 API 版本。
+继续使用 ``RobotSpec`` 和 ``PromptBundle`` 注册及渲染提示词，按职责拆分内容：
+
+.. code-block:: text
+
+   rpent/prompt/
+       common.md                 # 与机器人无关的固定要求
+       execution_recovery.md     # 默认停止规则
+       memory.md                 # 可选的经验目录及索引入口
+       analysis_workspace.md     # 仅在启用 Codex 分析能力时使用
+   robots/myrobot/
+       prompt_bundle.py          # 选择真实控制模式及当前任务文件
+       prompts/
+           control_eef.md        # 当前机器人的坐标、参考点及控制约定
+           control_native.md     # 如有需要，保存另一种控制模式
+           tasks/
+               default.md        # 原始指令及运行时任务参数
+               my_task.md        # 已核实的任务语义与完成条件
+
+固定提示由通用要求、当前机器人控制契约、实际工具边界和已启用的分析目录说明组成。
+用户输入提供当前任务、任务补充说明、运行参数和可选的经验入口。工具说明与 JSON
+schema 仍由 toolkit 单独注册，不在 Markdown 中重复参数表或声明不存在的工具。
+
+机器人的 ``prompt_bundle.py`` 负责选内容，通过公共组合辅助函数返回现有
+``PromptNode``；注册方式仍为 ``PromptBundle(system=system_prompt,
+user=user_prompt)``。原有 Python 工厂继续兼容。CLI 和 Dashboard 使用同一渲染路径，
+在 ``prompts.json`` 旁记录实际来源文件及哈希。Markdown 需纳入 wheel，并验证非编辑
+安装能读取这些资源。
+
+工厂可保持简短。以下示例假设机器人 parser 提供已验证的 ``control_mode`` 和
+``task_key``，runner 提供真实能力及解析后的运行变量：
 
 .. code-block:: python
 
-   # robots/myrobot/prompt_bundle.py
-   from robots.myrobot.prompts import system as system_parts
-   from robots.myrobot.prompts import user as user_parts
-   from rpent.prompt.utils import PromptNode
+   from pathlib import Path
+   from rpent import prompt
+   from rpent.prompt.composition import (
+       system_sections, user_sections, task_file, memory_available,
+   )
 
-   def system_prompt() -> PromptNode:
-       return {
-           "INTRO": system_parts.PREAMBLE,
-           "GOAL": system_parts.GOAL,
-           "RULES": system_parts.RULES,
-           "WORKFLOW": system_parts.WORKFLOW,
-           "ENVIRONMENT": system_parts.ENVIRONMENT,
-           "OUTPUT": system_parts.OUTPUT,
-       }
+   COMMON = Path(prompt.__file__).parent
+   ROBOT = Path(__file__).parent / "prompts"
 
-   def user_prompt() -> PromptNode:
-       return {
-           "TASK": user_parts.TASK,
-           "BEGIN": user_parts.BEGIN,
-       }
+   def system_prompt(variables=None):
+       values = variables or {}
+       control = {"eef": "control_eef.md", "native": "control_native.md"}[
+           values["control_mode"]
+       ]
+       return system_sections(
+           COMMON, ROBOT / control, analysis=values.get("analysis_enabled", False),
+           variables=values,
+       )
 
-将 prompt 内容保存在机器人包内，例如 ``robots/myrobot/prompts/system.py`` 和 ``user.py``。分节内容可以是普通字符串，也可以使用 ``BulletList`` 或 ``Numbered``。占位符 ``{{suite}}`` / ``{{task}}`` / ``{{seed}}`` / ``{{output_dir}}`` / ``{{recipe_tag}}`` 在渲染时填充。
+   def user_prompt(variables=None):
+       values = variables or {}
+       return user_sections(
+           COMMON, task_file(ROBOT / "tasks", values["task_key"]),
+           memory_available=memory_available(values), variables=values,
+       )
+
+``PromptBundle`` 渲染返回的分段并记录来源哈希。上述控制模式名称仅为示例，
+只声明机器人真实支持的模式，不要把自由文本任务指令当作 ``task_key``。
+
+机器人控制契约
+~~~~~~~~~~~~~~
+
+明确机器人和机械臂身份、相机名称、位置单位、坐标原点及轴含义、位姿数组顺序、
+四元数格式、绝对与增量命令、参考连杆或原生 TCP。逐臂说明观测字段与动作目标的
+对应关系。区分夹爪命令和实测开度，区分表面定位点和抓取参考点。当前限制读取真实
+工具 schema 或运行配置。
+
+不要在文字中把所有机器人强行写成同一种约定：RoboDojo 的短段 EEF 使用共用环境
+原点下的 link6 位姿和 wxyz；LIBERO 当前 EEF 使用 xyzw；Flexiv 增量模式使用基座系
+平移与旋转向量。真机安全、操作员启用、标定和故障处理规则仍归对应机器人模式维护。
+
+``system_sections`` 可通过 ``recovery=Path(...)`` 选择机器人专属的恢复规则，
+默认加载公共 ``execution_recovery.md``。RoboDojo 仿真在目标范围超限后重新观察、
+重新规划，不因此结束任务。EEF 工具保留已执行回报、取消剩余步数，并返回最新反馈
+供模型作下一次决策；真正的传输或物理仿真故障仍作为错误处理。真机和其他默认规则
+保留停止要求。
+动作限幅及控制错误回报与这一提示选择分别维护。
+
+任务与经验
+~~~~~~~~~~
+
+保留原生任务指令。任务文件只补充已核实的公开语义和完成条件，不放隐藏场景坐标、
+固定轨迹或替代任务指令。只加载当前任务补充，没有则使用 ``default.md``；任务标识
+不能变成任意文件路径，必须拒绝目录遍历。
+
+经验保留为以 ``MEMORY.md`` 建索引的只读目录。提示中提供解析后的根目录及适用条件，
+有需要时只读相关条目；不把整个经验库拼进固定提示，也不强制每轮先读索引。机器人
+几何及接口契约属于控制说明，不写成任务经验。提示迁移不改写已冻结经验或回放证据。
+
+Codex 分析能力
+~~~~~~~~~~~~~~
+
+Codex 后端通过 ``developer_instructions`` 传固定要求，通过用户输入传任务。显式的
+分析设置可以开启代码、计算及图片检查。``workspace.json`` 给出解释器与证据路径，
+``NOTES.md`` 和 ``scratch/`` 保存本轮工作内容。
+默认分析写入限制在本轮 agent 目录；源码、原始证据和发布经验保持只读。RPent 文件工具
+采用同一写入边界。显式全权限模式见 :doc:`add_planner`；该模式的原生文件系统和
+网络不受沙箱限制，任务输入的只读要求属于行为约定。分析权限不授予第二个机器人连接、复位、Pi 推理、场景真值或网络
+管理权限。必须验证真实 SDK 能力与文件权限，不能仅靠提示文字宣称存在执行限制。
+
+离线测试验证分段选择、变量、来源哈希、工具/schema 一致性、developer/user 分离及
+控制行为不变。真实模型能力使用合成证据独立检查，不产生机器人动作。适用全仓检查
+在远程运行环境执行，真机验证仍需操作员授权。
 
 .. _add-robot-toolkit:
 

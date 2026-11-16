@@ -20,7 +20,7 @@ set -euo pipefail
 unset PYTHONPATH VIRTUAL_ENV CONDA_PREFIX
 
 if [[ $# -ne 3 ]]; then
-  echo "Usage: $0 <libero-pro|robocasa|robotwin> <output-dir> <venv-root>"
+  echo "Usage: $0 <libero-pro|robocasa|robotwin|robodojo-prepared> <output-dir> <venv-root>"
   exit 2
 fi
 
@@ -33,8 +33,17 @@ if [[ -z "${CUDA_VISIBLE_DEVICES:-}" ]]; then
   echo "CUDA_VISIBLE_DEVICES must expose exactly one selected GPU"
   exit 1
 fi
-if [[ -e "$output_dir" || -e "$venv_root" ]]; then
-  echo "Output and venv paths must not already exist"
+if [[ -e "$output_dir" ]]; then
+  echo "Output path must not already exist"
+  exit 1
+fi
+if [[ "$target" == robodojo-prepared ]]; then
+  if [[ ! -x "$venv_root/bin/python" ]]; then
+    echo "robodojo-prepared requires an existing isolated venv as its third argument"
+    exit 1
+  fi
+elif [[ -e "$venv_root" ]]; then
+  echo "Venv path must not already exist"
   exit 1
 fi
 if ! command -v uv >/dev/null 2>&1; then
@@ -60,7 +69,7 @@ fi
 mkdir -p "$output_dir" "$venv_root"
 
 cleanup() {
-  if [[ -d "$venv_root" ]]; then
+  if [[ "$target" != robodojo-prepared && -d "$venv_root" ]]; then
     find "$venv_root" -depth -delete
   fi
 }
@@ -252,6 +261,25 @@ run_in_clean_env() {
 }
 
 case "$target" in
+  robodojo-prepared)
+    require_dir ROBODOJO_ASSETS_ROOT
+    require_dir PI05_CHECKPOINT_PATH
+    require_file SAM3_CHECKPOINT_PATH
+    # This target validates runtime behavior in an explicitly prepared stack.
+    # Preserve the real metadata check result; do not claim a clean install.
+    set +e
+    uv pip check --python "$venv_root/bin/python" >"$output_dir/dependency-check.txt" 2>&1
+    dependency_status=$?
+    set -e
+    echo "prepared_environment_dependency_check_exit=$dependency_status" >"$output_dir/environment-status.txt"
+    cat "$output_dir/dependency-check.txt"
+    echo "Prepared mode: GPU results do not establish clean dependency consistency."
+    (
+      cd "$repo_root"
+      run_gpu_pytest robodojo "$venv_root/bin/python" tests/e2e_tests/robodojo \
+        "$output_dir/robodojo" "$output_dir/robodojo-junit.xml"
+    )
+    ;;
   libero-pro)
     require_dir PI05_CHECKPOINT_PATH
     require_file SAM3_CHECKPOINT_PATH

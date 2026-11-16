@@ -150,9 +150,11 @@ def test_fake_and_real_implement_toolkit_primitive_protocol() -> None:
         )
 
 
+@pytest.mark.parametrize("workbench", [False, True])
 def test_toolkit_constructs_and_captures_an_initial_observation(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
+    workbench: bool,
 ) -> None:
     FakeRoboTwinPrimitives.instances.clear()
     dumped: list[dict[str, Any]] = []
@@ -182,18 +184,41 @@ def test_toolkit_constructs_and_captures_an_initial_observation(
         ),
     )
 
+    from robots.robotwin.catalog import native_catalog
+    from rpent.dashboard.workbench import RunJournal
+
+    selected = (
+        [
+            t
+            for t in native_catalog()
+            if t["name"] in {"finish", "view_env_state", "render"}
+        ]
+        if workbench
+        else None
+    )
     robot_toolkit = toolkit.RoboTwinToolkit(
+        selected=selected,
+        journal=RunJournal(tmp_path) if workbench else None,
         runtime_kwargs={"env": object(), "model": object(), "seed": 7},
         dashboard_events=NullDashboardEventSink(),
         memory=MemoryManager(tmp_path / "memory"),
     )
 
-    assert _tool_names(robot_toolkit) == EXPECTED_TOOLS
-    assert _readonly_names(robot_toolkit) == COMMON_TOOLS | {
-        "view_env_state",
-        "sample_world_xyz",
-        "query_world_map",
-    }
+    assert _tool_names(robot_toolkit) == (
+        {"finish", "view_env_state", "render"} if workbench else EXPECTED_TOOLS
+    )
+    assert _readonly_names(robot_toolkit) == (
+        {"finish", "view_env_state"}
+        if workbench
+        else COMMON_TOOLS
+        | {
+            "view_env_state",
+            "sample_world_xyz",
+            "query_world_map",
+        }
+    )
+    if workbench:
+        assert "unknown tool" in robot_toolkit.execute_tool("move_to", {}).data["error"]
     assert len(dumped) == 1
     assert dumped[0]["log"] == {
         "command": {"action": "reset"},
@@ -214,3 +239,14 @@ def test_toolkit_constructs_and_captures_an_initial_observation(
         "finish", {"status": "failure", "summary": "offline"}
     )
     assert finish.data.get("_finish", False) is True
+
+    if workbench:
+        import json
+
+        events = [
+            json.loads(line)
+            for line in (tmp_path / "events.jsonl").read_text().splitlines()
+        ]
+        assert [
+            e["payload"]["name"] for e in events if e["kind"] == "tool_request"
+        ] == ["move_to", "render", "finish"]

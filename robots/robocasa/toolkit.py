@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any
 
 from robots.robocasa import tools as robocasa_tools
 from rpent.dashboard.events import DashboardEventSink
+from rpent.dashboard.native_tools import NativeToolSelectionMixin
 from rpent.session import EnvState
 from rpent.tools import ToolResult, iter_tools
 from rpent.tools.direct_action import direct_action_tool
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
 logger = get_logger("robocasa_toolkit")
 
 
-class RoboCasaToolkit(Toolkit):
+class RoboCasaToolkit(NativeToolSelectionMixin, Toolkit):
     """Toolkit for the RoboCasa robot."""
 
     def __init__(
@@ -51,8 +52,14 @@ class RoboCasaToolkit(Toolkit):
         mode: str = "evaluation",
         attempts_per_session: int = 0,
         state_output_dir: Path | str | None = None,
+        selected: list[dict] | None = None,
+        journal: Any = None,
     ) -> None:
         """Create a RoboCasa toolkit, wiring the primitives and tools."""
+        if selected is not None:
+            from robots.robocasa.catalog import validate_selection
+
+            validate_selection(selected)
         if mode not in {"evaluation", "exploration"}:
             raise ValueError(f"unsupported RoboCasa toolkit mode: {mode!r}")
         state = EnvState(Path(state_output_dir or get_output_dir()))
@@ -77,6 +84,8 @@ class RoboCasaToolkit(Toolkit):
                     self._primitives.env.action_specs, self._primitives.execute_action
                 )
             )
+
+        self.configure_workbench_tools(selected, journal)
 
     def _register_robocasa_tools(self) -> None:
         self.add_tools(iter_tools(self._primitives))

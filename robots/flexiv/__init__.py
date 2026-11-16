@@ -16,4 +16,11 @@
 
 from robots.flexiv.robot_spec import get_robot_spec, get_toolkit
 
-__all__ = ["get_robot_spec", "get_toolkit"]
+
+def native_catalog() -> list[dict]:
+    from robots.flexiv.catalog import catalog
+
+    return catalog(control_mode="native")
+
+
+__all__ = ["get_robot_spec", "get_toolkit", "native_catalog"]

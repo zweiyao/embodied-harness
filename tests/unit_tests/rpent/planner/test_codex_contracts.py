@@ -423,7 +423,9 @@ def test_successful_fake_codex_lifecycle_uses_fake_mcp_and_accounts_events(
     assert FakeMcpServer.instances[0].stopped is True
     fake_codex = FakeCodex.instances[0]
     assert fake_codex.closed is True
-    assert fake_codex.thread.turn_prompts[0][0] == "system rules\n\nuser task"
+    assert fake_codex.thread_options["developer_instructions"] == "system rules"
+    assert fake_codex.thread.turn_prompts[0][0] == "user task"
+    assert "developer_instructions" not in fake_codex.thread.turn_prompts[0][1]
     assert result.finish_result == {
         "_finish": True,
         "status": "success",

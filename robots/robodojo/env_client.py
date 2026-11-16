@@ -36,11 +36,15 @@ class RoboDojoEnvClient(BaseEnvClient):
         super().__init__(
             client,
             expected_meta=expected_meta,
-            reset_on_connect=expected_meta.get("mode") != "eval-fair",
+            reset_on_connect=False,
         )
 
     def get_obs(self) -> dict[str, Any]:
         return self._client.call("env.get_obs")
+
+    def step_eef(self, target: dict) -> dict[str, Any]:
+        """Execute one short EEF control step through the owning ENV server."""
+        return self._client.call("env.step_eef", kwargs={"target": target})
 
     def get_status(self) -> dict[str, Any]:
         return self._client.call("env.get_status")

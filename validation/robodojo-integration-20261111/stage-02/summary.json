@@ -1,0 +1,166 @@
+{
+  "updated_at": "2026-11-11T23:49:35.382724+00:00",
+  "status": "implemented_cpu_verified_gpu_incomplete",
+  "branch": "feat/robodojo-integration",
+  "baseline_commit": "4f9ab4c",
+  "isolated_checkout": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111",
+  "scope": "Approved ENV ownership and separately approved connection-without-reset changes; no prompt, action, memory or scoring changes.",
+  "implementation": {
+    "runtime": "Pass owns_env only when initializing ENV, based on whether the runtime owns its daemon.",
+    "toolkit": "Drain calls; close an ENV only when owned.",
+    "client": "Validate launch metadata on connect; do not implicitly reset the scene. Explicit dev reset remains available."
+  },
+  "source_sha256": {
+    "robots/robodojo/robot_spec.py": "2f4db10d2189eb986864b71f408d9e0e883e007467f8c987ed66a8b32f0828a2",
+    "robots/robodojo/toolkit.py": "0105d355ddfb45256f542bbf6b90e2c08b4bf5a3b2191af6cc84462e853923b2",
+    "robots/robodojo/env_client.py": "bc696ab93b5a0f1af10ac98e345e63c82d6110900ac6b6dde0cd8bd4943e190e",
+    "tests/unit_tests/robots/robodojo/test_robodojo_runtime_contracts.py": "1c8fab60cd147cfe602aee95b60416fba51eb133ee8df8c8098da6f24e6bb68e",
+    "tests/unit_tests/robots/robodojo/test_flash_contracts.py": "a49d7bae0f7b87fa1a0528105fdb4b0084f0f5ae6c2f5a48be3de5d5a345d85d"
+  },
+  "cpu_validation": {
+    "python": "3.11.16",
+    "targeted_before_changes": {
+      "passed": 157
+    },
+    "targeted_ownership": {
+      "passed": 161,
+      "seconds": 0.94
+    },
+    "all_units_ownership": {
+      "passed": 2039,
+      "skipped": 15,
+      "seconds": 71.97
+    },
+    "targeted_with_connection_fix": {
+      "passed": 163,
+      "seconds": 1.11
+    },
+    "all_units_with_connection_fix": {
+      "passed": 2041,
+      "skipped": 15,
+      "seconds": 71.28,
+      "junit": "unit-tests-connect.xml"
+    },
+    "pre_commit_all_files": "passed",
+    "cli_help": "passed",
+    "git_diff_check": "passed",
+    "matrix_limit": "Only Python 3.11 on this host; not the complete CI matrix."
+  },
+  "environment_preparation": {
+    "sse_starlette": "3.0.3",
+    "wrapt": "1.17.3",
+    "codex_sdk_and_binary": "0.162.1 (aligned with the existing validated environment)",
+    "packaging": "26.3; additional upstream metadata disagreement with isaacsim-core==5.1.0.0 remains documented",
+    "isaaclab": "Editable installation of the same afca7b09 source, as already documented, to include extension configuration",
+    "asset_config_generation": {
+      "source": "/home/zwy/work/embodied_harness/checkouts/robodojo-integration-20261111/.venv/lib/python3.11/site-packages/robodojo_runtime/_source/utils/update_embodiment_config_path.py",
+      "source_sha256": "6a8252e1dcb3fa7aba15fbbecf4408a908beb324f11624d979e867d2ea332259",
+      "only_substitution": "ASSETS_PATH to the fixed downloaded resource root; no numerical/control parameter changes",
+      "files": [
+        {
+          "template": "Assets/Robots/franka/curobo_tmp.yml",
+          "template_sha256": "c54a79d7e475875ffa6aba6e836a7548099c525e661cf761c827117e19b88643",
+          "target": "Assets/Robots/franka/curobo.yml",
+          "generated_sha256": "c195ad883ec17a83623106a9b678dc8aec95bcc1a2d5aabdb0c0f8ed7fd37a47",
+          "existed_before": false
+        },
+        {
+          "template": "Assets/Robots/x5/curobo_tmp.yml",
+          "template_sha256": "5eea08bf7ef276bf9dfd078ef9f69221e9a67c8cf6cd19fce5ef66d42e96b3f2",
+          "target": "Assets/Robots/x5/curobo.yml",
+          "generated_sha256": "39a40f0e169597c56e924e9f155f195032d3543e4dd1631c15461e58a0180de6",
+          "existed_before": false
+        }
+      ]
+    },
+    "vulkan": "Existing private layer verified against its seven recorded SHA256 hashes; enabled in diagnostic subprocesses only; default launchers and existing services unchanged"
+  },
+  "gpu_validation": {
+    "dev_before_connection_fix": {
+      "artifact": "gpu-ownership-05/summary.json",
+      "healthz": "passed",
+      "connection": "Failed because the implicit env.reset returned All scene Unstable Error"
+    },
+    "eval_fair_ownership": {
+      "artifact": "gpu-ownership-08/summary.json",
+      "borrowed_close_healthz": "passed",
+      "owned_env_close_rpc": "sent and returned",
+      "owned_exit_within_45_seconds": "failed",
+      "parent_pipe_cleanup_exit_code": 0
+    },
+    "videos_after_parent_cleanup": {
+      "artifact": "gpu-ownership-06/video-after-cleanup.json",
+      "camera_videos": 3,
+      "readable": 3,
+      "note": "Verified after parent-owned cleanup; does not establish graceful env.close RPC completion.",
+      "files": [
+        {
+          "file": "episode_2026-11-12_07-36-13_cam_head.mp4",
+          "readable": true,
+          "bytes": 34846
+        },
+        {
+          "file": "episode_2026-11-12_07-36-13_cam_left_wrist.mp4",
+          "readable": true,
+          "bytes": 26141
+        },
+        {
+          "file": "episode_2026-11-12_07-36-13_cam_right_wrist.mp4",
+          "readable": true,
+          "bytes": 29052
+        }
+      ]
+    },
+    "dev_after_connection_fix": {
+      "artifact": "gpu-ownership-09/summary.json",
+      "connection_rpc_calls": [
+        "env.get_env_meta"
+      ],
+      "connection_no_implicit_reset": "passed",
+      "borrowed_close_healthz": "passed",
+      "owned_env_close_rpc": "sent and returned",
+      "owned_exit_within_45_seconds": "failed",
+      "parent_pipe_cleanup_exit_code": 0
+    },
+    "owned_shutdown_diagnosis": {
+      "artifact": "lifecycle-trace-09.txt.4078781.stacks",
+      "main_thread": "SimulationApp.close -> IsaacLab SimulationContext._app_control_on_stop_handle_fn -> render",
+      "pinned_source": "IsaacLab afca7b09d60d8beb9c1cb28b43066499940b969b",
+      "cause": "STOP callback keeps rendering while timeline is stopped; this blocks normal app close.",
+      "proposed_fix": "Use the existing public SimulationContext.clear_instance() during owned RoboDojo teardown to unsubscribe STOP; draft only, not applied."
+    },
+    "explicit_dev_reset": "Dispatch preserved by CPU regression; real repeated-reset stability is not verified and a previous implicit reset failed."
+  },
+  "remaining": [
+    "Cross-task/layout reset stability and independent camera geometry",
+    "Action/control and bounded CLI/workflow validation",
+    "Unified workbench integration; approved independent profile/components passed in stage-07"
+  ],
+  "preservation": {
+    "existing_source_guards": {
+      "checked": 608,
+      "changed": []
+    },
+    "existing_services": [
+      "embodied-manual-workbench.service",
+      "rpent-univtac-workbench.service",
+      "rpent-lan-access.service"
+    ],
+    "existing_services_active": true,
+    "mac_network_settings_modified": false,
+    "remote_network": "direct; no proxy switching in probes",
+    "model_requests": 0,
+    "benchmark_experiments": 0,
+    "real_hardware_actions": 0
+  },
+  "git_workflow": "Stage commits only; one PR after complete adaptation; no automatic merge.",
+  "later_resolution": {
+    "artifact": "../stage-06/summary.json",
+    "owned_exit": "passed dev/eval-fair after separately approved owner-chain correction",
+    "historical_failures_retained": true
+  },
+  "later_components": {
+    "artifact": "../stage-07/summary.json",
+    "scope": "Two explicit dev resets, one unexecuted Pi0.5 prediction and one SAM3 request; one task/layout"
+  }
+}

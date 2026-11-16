@@ -23,6 +23,11 @@ TASK = """- task:   {{task}}
 - output_dir: {{output_dir}}
 - scene (static hint): {{task_summary}}"""
 
+MEMORY = """After observing the scene, use `read_text_file` when available to read
+`{{memory_dir}}/MEMORY.md` and relevant leaves only. Apply lessons only when
+robot/tool and scene assumptions match. Re-derive geometry; do not replay stored
+action values. Record consulted files in the audit."""
+
 BEGIN = """Call `view_env_state` first to read the instruction and observe the
 scene, then localize targets and execute."""
 

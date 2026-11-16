@@ -1,0 +1,25 @@
+{
+  "functional_commit": "b6c9937",
+  "github_checks": {
+    "Pre-commit": "passed",
+    "Unit tests (3.10)": "passed",
+    "Unit tests (3.11)": "passed",
+    "Unit tests (3.12)": "passed",
+    "unittest": "passed"
+  },
+  "github_runs": [43613776108, 43613776093],
+  "initialization_incident": {
+    "task": "imitate_sorting_sequence",
+    "layout": 0,
+    "run_id": "5b3809aee43cd91133c2",
+    "model_calls": 0,
+    "native_actions": 0,
+    "counted_as_result": false,
+    "cause": "Native CollectEnv.reset -> task.run_reward -> load_support_arm_traj requires self.eval_seed, which is absent on CollectEnv. The official EvalEnv sets it from eval configuration. The task also requires the native support-arm demonstration contract; merely inserting an arbitrary value is not a verified adaptation.",
+    "diagnostic": "Reproduced with a diagnostic-only close wrapper that prints the active exception before Isaac shutdown. No production source or control behavior was changed.",
+    "resolution": "Task quarantined pending adaptation. External batch collection now records pre-tool-initialization failures without requiring tool-declarations.json; other tasks continue.",
+    "raw_record_status": "network_failure",
+    "raw_status_caveat": "The raw label follows the later refused health connection after the environment exited; this is not evidence of a model API network failure."
+  },
+  "execution_status": "Two task environments continue with frozen f09ce22; full valid 54-task coverage remains incomplete. Automatic homepage publication waits for complete valid coverage. Three environments passed initialization/camera/IK checks only; four were not launched."
+}

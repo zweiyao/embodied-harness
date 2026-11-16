@@ -1,0 +1,116 @@
+{
+  "at": "2026-11-14T05:31:30.942879+00:00",
+  "status": "deployed_and_verified_no_task_experiment",
+  "code_revision": "f09ce22352531a02ab2dff81b6f1bf401c72f87f",
+  "base_revision": "a259434c602891b723fbae3d229cb900161240e7",
+  "approval": "User approved proposals/robodojo-rpent-memory-20261114",
+  "scope": "Read-only reuse of the same frozen RPent v1 corpus used by LIBERO final50;38-word dev user-prompt index discovery. No experience body, tool implementation, system prompt, control, budget or network change.",
+  "memory": {
+    "root": "/home/zwy/work/embodied_harness/language-materials/v1/memory",
+    "profile": "local",
+    "material_version": "language-c592f23a3a324c08",
+    "global_files": 61,
+    "task_family_files": 75,
+    "task_specific_files": 75,
+    "index_sha256": "c41a5cebd95b5665d5da92869a2ec1848b6d5957b5b783378bf0a0d7920da43f",
+    "origin": "LIBERO historical narratives; apply only compatible assumptions and current RoboDojo tool contracts; no replay of stored action values",
+    "read_only": true,
+    "loaded_on_demand": true,
+    "not_injected_into_system_prompt": true
+  },
+  "checks": {
+    "targeted": {
+      "passed": 160,
+      "duration_s": 0.47
+    },
+    "fixture_regressions": {
+      "passed": 152,
+      "duration_s": 0.83
+    },
+    "unit_tests": {
+      "passed": 2091,
+      "skipped": 16,
+      "duration_s": 69.73,
+      "python": "3.11.16"
+    },
+    "pre_commit": "all files passed",
+    "commit_message": "passed",
+    "sphinx": "EN/ZH -E -W --keep-going passed; rendered memory paragraph checked",
+    "real_memory_tools": {
+      "scope": "CPU offline toolkit with actual frozen library; no model/simulator/action request",
+      "reads": [
+        {
+          "file": "MEMORY.md",
+          "chars": 32249,
+          "sha256": "c41a5cebd95b5665d5da92869a2ec1848b6d5957b5b783378bf0a0d7920da43f"
+        },
+        {
+          "file": "global/visual-over-pick-heuristic.md",
+          "chars": 1711,
+          "sha256": "e0cd4851fecd66d24502ad12e296db3cf0c75b198415f7a84dc78b3336564e74"
+        }
+      ],
+      "published_write_denied": true,
+      "other_robot_repo_memory_denied": true,
+      "selected_tools_unchanged": true,
+      "dev_user_prompt_index_resolved": true,
+      "system_no_corpus_injection": true,
+      "eval_fair_no_memory_discovery": true,
+      "protected_material_files": 216,
+      "material_hashes_unchanged": true,
+      "other_robot_permission_check": {
+        "path": "/home/zwy/work/embodied_harness/checkouts/robodojo-rpent-memory-20261114/memory/flexiv/MEMORY.md",
+        "error_type": "PermissionError",
+        "error": "access to another robot's memory is denied: /home/zwy/work/embodied_harness/checkouts/robodojo-rpent-memory-20261114/memory/flexiv/MEMORY.md",
+        "file_exists": true
+      }
+    },
+    "initial_failure": "One old Flash test fixture lacked the new memory_dir input; supplied the actual runtime field, retained all assertions, then full suite passed. Initial log preserved remotely.",
+    "notes": "Offline library reads use the actual file tools with an ENV substitute. They do not establish that a language model selected or benefited from memory in a task."
+  },
+  "deployment": {
+    "source": "/home/zwy/work/embodied_harness/checkouts/robodojo-rpent-memory-20261114",
+    "workbench_pid": 3633538,
+    "session_state": "ready",
+    "current_task": null,
+    "mac_homepage_http_status": 200,
+    "configuration_preserved": {
+      "model_profile": "gpt-6-astra",
+      "max_turns": 120,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600,
+      "tools": [
+        "native:move_to",
+        "native:set_gripper",
+        "native:pi0_pick",
+        "native:stabilize",
+        "native:place_in_bin",
+        "native:view_env_state",
+        "native:back_project",
+        "native:segment",
+        "native:read_text_file",
+        "native:write_text_file",
+        "native:list_dir",
+        "native:finish"
+      ]
+    },
+    "diagnostic_unlimited_actions_preserved": true,
+    "vla_checkpoint_unchanged": "/home/zwy/work/embodied_harness/resources/robodojo/1127bda94f172d757386945af3eb3a6754d1a4e6/pi05_robodojo_arx_x5_torch",
+    "astra_text_probe_latency_s": 11.776,
+    "model_probe_is_not_a_task_experiment": true
+  },
+  "preservation": {
+    "old_source_protected_files_unchanged": 1632,
+    "material_protected_files_unchanged": 216,
+    "historical_run_metadata_files_unchanged": 24,
+    "mac_network_changed": false,
+    "network_changed": false,
+    "new_task_requested": false
+  },
+  "limits": [
+    "No task-success, token saving or performance validation.",
+    "Previously audited move_to boundary defects remain unmodified.",
+    "Prepared dependency stack is reused; this is not a clean-install certification or a local Python3.10/3.12 matrix run."
+  ],
+  "raw_evidence_root": "/home/zwy/work/embodied_harness/validation/robodojo-rpent-memory-20261114"
+}

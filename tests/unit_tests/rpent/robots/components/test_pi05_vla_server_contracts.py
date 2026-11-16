@@ -150,6 +150,7 @@ def test_robodojo_preset_uses_full_horizon_and_joint_actions():
     )
 
     cfg = build_model_cfg("/checkpoint", PI05_EMBODIMENTS["robodojo"])
+    assert cfg.openpi_data.extra_delta_transform is False
     assert cfg.openpi.config_name == "pi05_robodojo_arx_x5"
     assert cfg.openpi.task == "eval"
     assert cfg.openpi.model_action_dim == 32
@@ -263,3 +264,52 @@ def test_shared_pi05_health_and_model_metadata_are_separate(embodiment):
     else:
         with pytest.raises(ValueError, match="unknown RPC method"):
             facade._dispatch("vla.get_model_meta", (), {})
+
+
+def test_robodojo_converts_checkpoint_deltas_before_rpc_dispatch(monkeypatch):
+    import sys
+    from types import ModuleType
+
+    import torch
+
+    states = np.array([[1, 2, 3, 4, 5, 6, 0.9, 7, 8, 9, 10, 11, 12, 0.1]])
+
+    class Model:
+        def cuda(self):
+            return self
+
+        def eval(self):
+            return self
+
+        def predict_action_batch(self, obs, mode):
+            np.testing.assert_array_equal(obs["states"], states)
+            actions = torch.zeros((1, 50, 14))
+            actions[..., 0] = 0.5
+            actions[..., 7] = -0.5
+            actions[..., 6] = 0.25
+            actions[..., 13] = 0.75
+            return actions, None
+
+    def get_model(cfg, torch_dtype):
+        assert cfg.openpi_data.extra_delta_transform is False
+        assert (
+            cfg.openpi_data.norm_stats_path
+            == "/checkpoint/assets/arx_x5_sim/norm_stats.json"
+        )
+        return Model()
+
+    loader = ModuleType("rlinf.models.embodiment.openpi")
+    loader.get_model = get_model
+    monkeypatch.setitem(sys.modules, loader.__name__, loader)
+    facade = Pi05VLAFacade(
+        model_path="/checkpoint",
+        embodiment="robodojo",
+        norm_stats_path="/checkpoint/assets/arx_x5_sim/norm_stats.json",
+    )
+    try:
+        actions = facade._dispatch("vla.predict", ({"states": states},), {})
+        expected = [1.5, 2, 3, 4, 5, 6, 6.5, 8, 9, 10, 11, 12, 0.25, 0.75]
+        assert actions.shape == (1, 50, 14) and actions.dtype == np.float32
+        np.testing.assert_allclose(actions[0], np.tile(expected, (50, 1)))
+    finally:
+        facade.close()

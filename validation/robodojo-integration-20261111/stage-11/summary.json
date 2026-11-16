@@ -1,0 +1,286 @@
+{
+  "status": "bounded_integration_acceptance_completed",
+  "date": "2026-11-12",
+  "base_commit": "4a999d4f7ed095c36b16e74a7fe4bd1b9d8ea773",
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/robodojo-completion-20261112",
+  "validation": {
+    "unit_tests": {
+      "passed": 2079,
+      "skipped": 11,
+      "failures": 0
+    },
+    "final_native_interface_tests": {
+      "passed": 25
+    },
+    "gpu_prepared": {
+      "passed": 5,
+      "seconds": 169.284,
+      "owned_process_cleanup": "passed"
+    },
+    "sphinx": [
+      "English -W --keep-going passed",
+      "Chinese -W --keep-going passed"
+    ],
+    "pre_commit": "all-files passed, including final native-interface and acceptance files",
+    "scripted_chain": {
+      "status": "passed",
+      "definition": "offline planner -> public CLI -> toolkit -> checkpoint-backed VLA -> simulator action -> finish",
+      "planner": "offline-scripted",
+      "action_tool": "pi0_pick",
+      "recorded_action_steps": 1,
+      "simulator_action_count": 50,
+      "simulator_action_count_field": "simulator_steps",
+      "finish_status": "stuck",
+      "transcript": "transcript_put_bottles_into_dustbin_l0.json",
+      "state_manifest": "states.json",
+      "elapsed_s": 51.52025862503797
+    },
+    "real_planner_runs": [
+      {
+        "task": "put_bottles_into_dustbin",
+        "layout": 0,
+        "run_id": "644b494b410d1aa6348a",
+        "max_turns": 3,
+        "model": "qwen3.8-flash",
+        "outcome": {
+          "ended_at": "2026-11-12T04:24:21.988919+00:00",
+          "environment_success": false,
+          "finish": null,
+          "error": null,
+          "stats": {
+            "total_input_tokens": 18461,
+            "total_output_tokens": 154,
+            "total_cached_input_tokens": 5888,
+            "turns_used": 3,
+            "tool_calls": 3
+          },
+          "elapsed_s": 139.1,
+          "status": "budget_exhausted",
+          "last_completed_step": 1,
+          "actions": 1,
+          "release_count": 0,
+          "release_evidence": [],
+          "last_gripper_qpos": null,
+          "video_recorded": true,
+          "stable_placement": "未独立验证"
+        },
+        "camera_counts": [
+          3,
+          3
+        ]
+      },
+      {
+        "task": "fill_pen_holder",
+        "layout": 0,
+        "run_id": "75908eb7b8a847b4cdf5",
+        "max_turns": 3,
+        "model": "qwen3.8-flash",
+        "outcome": {
+          "ended_at": "2026-11-12T04:48:50.951140+00:00",
+          "environment_success": false,
+          "finish": null,
+          "error": null,
+          "stats": {
+            "total_input_tokens": 18152,
+            "total_output_tokens": 322,
+            "total_cached_input_tokens": 5888,
+            "turns_used": 3,
+            "tool_calls": 3
+          },
+          "elapsed_s": 164.0,
+          "status": "budget_exhausted",
+          "last_completed_step": 1,
+          "actions": 1,
+          "release_count": 0,
+          "release_evidence": [],
+          "last_gripper_qpos": null,
+          "video_recorded": true,
+          "stable_placement": "未独立验证"
+        },
+        "camera_counts": [
+          3,
+          3
+        ]
+      }
+    ],
+    "planned_web_abort": {
+      "status": "passed",
+      "kind": "planned_abort_integration_check",
+      "run_id": "a57fbf8da06056af24d8",
+      "outcome_status": "aborted",
+      "abort_seconds": 2.0299913501366973,
+      "startup_seconds": 42.084839389659464,
+      "owned_env_pids_before": [
+        235945
+      ],
+      "owned_env_pids_after": [],
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-20261112-043845-217602/tasks/0002_put_bottles_into_dustbin_l2"
+    },
+    "independent_geometry": [
+      {
+        "status": "passed",
+        "task": "put_bottles_into_dustbin",
+        "layout": 1,
+        "points": 9,
+        "native_steps": 0,
+        "max_projection_error_px": 1.1269284154355663,
+        "max_world_error_m": 0.00038989363013893906,
+        "depths_m": [
+          0.029,
+          0.1022
+        ]
+      },
+      {
+        "status": "passed",
+        "task": "fill_pen_holder",
+        "layout": 0,
+        "points": 9,
+        "native_steps": 0,
+        "max_projection_error_px": 1.1269284154355663,
+        "max_world_error_m": 0.00038989363013893906,
+        "depths_m": [
+          0.029,
+          0.1022
+        ]
+      }
+    ],
+    "real_video_playback": [
+      {
+        "status": "passed",
+        "run_id": "644b494b410d1aa6348a",
+        "videos": [
+          {
+            "src": "videos/episode_2026-11-12_12-22-45_cam_head.mp4",
+            "readyState": 4,
+            "duration": 16.4,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.623669,
+            "error": null
+          },
+          {
+            "src": "videos/episode_2026-11-12_12-22-45_cam_left_wrist.mp4",
+            "readyState": 4,
+            "duration": 16.4,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.605387,
+            "error": null
+          },
+          {
+            "src": "videos/episode_2026-11-12_12-22-45_cam_right_wrist.mp4",
+            "readyState": 4,
+            "duration": 16.4,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.595363,
+            "error": null
+          }
+        ],
+        "page_errors": [],
+        "real_recordings": true
+      },
+      {
+        "status": "passed",
+        "run_id": "75908eb7b8a847b4cdf5",
+        "videos": [
+          {
+            "src": "videos/episode_2026-11-12_12-46-30_cam_head.mp4",
+            "readyState": 4,
+            "duration": 28.64,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.62455,
+            "error": null
+          },
+          {
+            "src": "videos/episode_2026-11-12_12-46-30_cam_left_wrist.mp4",
+            "readyState": 4,
+            "duration": 28.64,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.605584,
+            "error": null
+          },
+          {
+            "src": "videos/episode_2026-11-12_12-46-30_cam_right_wrist.mp4",
+            "readyState": 4,
+            "duration": 28.64,
+            "width": 640,
+            "height": 480,
+            "currentTime": 0.590853,
+            "error": null
+          }
+        ],
+        "page_errors": [],
+        "real_recordings": true
+      }
+    ],
+    "shared_ui": {
+      "status": "passed",
+      "browser": "153.0.8010.12",
+      "fixtures_only": true,
+      "results": {
+        "robodojo": {
+          "tasks": 54,
+          "dustbin_layouts": 55,
+          "native_command": true,
+          "saved_tools": true,
+          "copy_restores_task_layout_tools": true,
+          "three_synthetic_videos_loaded": true
+        },
+        "libero": {
+          "legacy_command": "/rpent-task libero_10 1 9",
+          "seed_options": 10
+        },
+        "univtac": {
+          "legacy_command": "/rpent-task univtac 1 102",
+          "seed_options": 13
+        },
+        "robocasa": {
+          "native_command": "/rpent-task OpenDrawer target 10",
+          "task_count": 50
+        },
+        "robotwin": {
+          "native_command": "/rpent-task adjust_bottle demo_randomized 100005",
+          "task_count": 50
+        },
+        "flexiv": {
+          "readonly_default": true,
+          "physical_template_command": true
+        }
+      },
+      "page_errors": [],
+      "external_requests": []
+    }
+  },
+  "deployment": {
+    "url": "http://10.162.250.228:8094/",
+    "allowed_source_ip": "10.162.217.98",
+    "underlying_listener": "127.0.0.1:8094",
+    "models": [
+      "qwen3.8-flash",
+      "qwen3.8-max",
+      "gpt-6-astra"
+    ],
+    "default_requests": 30,
+    "default_response_tokens": 4096,
+    "default_planner_timeout_s": 600,
+    "default_native_action_cap": 700,
+    "memory": "isolated empty local corpus; no experience migration",
+    "collector": "both units inactive; no reset/gripper/fault-clear API calls",
+    "original_code_protection": {
+      "files": 312,
+      "changed": []
+    }
+  },
+  "limitations": [
+    "Prepared runtime has 9 recorded dependency metadata incompatibilities; clean installation not certified.",
+    "Two Qwen checks used only 3 requests each, ended budget_exhausted with official success false, and are integration evidence rather than a success-rate evaluation.",
+    "Geometry: 9 markers per task, initial static poses only; head depth 0.1022m and wrists 0.029m. Does not certify all depths or occluded object pose estimation.",
+    "Initial raycast and occluded marker diagnostics failed and remain archived; passed checks are the explicitly named visible-marker summaries.",
+    "RoboCasa/RoboTwin GPU runtimes were not exercised; their new workbench contracts were tested offline.",
+    "No claim of all-54-task success, optional XPolicyLab GPU, Flash cross-layout or parallel ENV validation.",
+    "No Mac network changes; credentials, assets, videos and raw observations remain outside Git."
+  ]
+}

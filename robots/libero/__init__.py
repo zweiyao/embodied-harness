@@ -16,4 +16,11 @@
 
 from robots.libero.robot_spec import get_robot_spec, get_toolkit
 
-__all__ = ["get_robot_spec", "get_toolkit"]
+
+def native_catalog() -> list[dict]:
+    from rpent.dashboard.workbench import native_catalog as catalog
+
+    return catalog("libero")
+
+
+__all__ = ["get_robot_spec", "get_toolkit", "native_catalog"]

@@ -1,0 +1,10 @@
+{
+  "relative_links": "passed",
+  "relative_link_count": 5,
+  "summary_json": "passed",
+  "plan_sha256": "08d2c2cbacfb6ffbe7db15c7aeb3081d14ec9dff34b724b3ec4c8f940406bf8d",
+  "environment_execution": false,
+  "checked_at": "2026-11-11T12:51:04.598757+00:00",
+  "scope": "Planning amendment only; no production source, prompt, tool, environment configuration or runtime change.",
+  "previous_code_checks": "Original unchanged-code baseline remains 2035 passed / 15 skipped and full pre-commit passed; not rerun for this Markdown/JSON-only amendment."
+}

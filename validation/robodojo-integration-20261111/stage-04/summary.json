@@ -1,0 +1,92 @@
+{
+  "status": "candidate_failed_real_shutdown_pending_corrected_draft",
+  "baseline_commit": "d596643cd7afe2fff792bb7813ec3b4fee8441ef",
+  "candidate_patch_sha256": "e6ca2c5d9c42096a11b87dfd79ee027c69da283eedc11f52da5341f18e42a5f2",
+  "cpu_checks": {
+    "robodojo_passed": 165,
+    "unit_passed": 2043,
+    "unit_skipped": 15,
+    "pre_commit": "passed",
+    "python": "3.11.16"
+  },
+  "real_checks": {
+    "gpu-dev": {
+      "status": "failed",
+      "scope": "Single simulator lifecycle check, no planner or action calls",
+      "phase": "owned_toolkit",
+      "health_before": {
+        "status": "ok"
+      },
+      "health_after_borrowed_close": {
+        "status": "ok"
+      },
+      "borrowed_server_survived": true,
+      "owned_server_exit_code": null,
+      "error_type": "AssertionError",
+      "error": "Owned ENV did not exit cleanly",
+      "child_exit_after_cleanup": 0
+    },
+    "gpu-eval-fair-trace": {
+      "mode": "eval-fair",
+      "status": "failed",
+      "scope": "Single simulator lifecycle check, no planner or action calls",
+      "phase": "owned_toolkit",
+      "health_before": {
+        "status": "ok"
+      },
+      "health_after_borrowed_close": {
+        "status": "ok"
+      },
+      "borrowed_server_survived": true,
+      "owned_flag": true,
+      "close_trace": [
+        {
+          "method": "env.get_obs",
+          "returned": true
+        },
+        {
+          "method": "env.get_status",
+          "returned": true
+        },
+        {
+          "method": "env.get_task_language",
+          "returned": true
+        },
+        {
+          "method": "env.close",
+          "returned": true
+        }
+      ],
+      "owned_server_exit_code": null,
+      "error_type": "AssertionError",
+      "error": "Owned ENV did not exit cleanly",
+      "child_exit_after_cleanup": 0
+    }
+  },
+  "diagnosis": {
+    "runtime": "6d76a0c4a49a7a47bf5ee3924de2ccd7ecb8a8b7",
+    "actual_owner_chain": "CollectEnv.sim (Gym IsaacRLEnv) -> IsaacRLEnv.sim (IsaacLab SimulationContext)",
+    "candidate_wrong_target": "self.env.sim.clear_instance()",
+    "corrected_draft_target": "self.env.sim.sim.clear_instance()",
+    "corrected_draft_status": "not applied; approval pending",
+    "stack": "lifecycle-trace.txt.4127437.stacks",
+    "observed_block": "SimulationApp.close -> IsaacLab STOP callback -> render",
+    "note": "Nested finally still runs native cleanup if the preceding context call raises, so the traceback at native cleanup does not establish a successful preceding context call."
+  },
+  "scope": {
+    "planner_calls": 0,
+    "task_actions": 0,
+    "hardware_actions": 0,
+    "collector_services_modified": false
+  },
+  "remaining": [
+    "Approve corrected two-file draft and repeat lifecycle checks",
+    "Real repeated dev reset stability remains unverified",
+    "Policy conversion and inference",
+    "Actions, geometry and unified workbench integration"
+  ],
+  "resolution": {
+    "artifact": "../stage-06/summary.json",
+    "status": "corrected owner chain passed dev and eval-fair; original failures retained"
+  }
+}

@@ -917,12 +917,16 @@ def test_task_replacement_cancels_and_drains_physical_work(
     assert result.finish_result is None
 
 
-def test_timeout_drains_physical_work_and_records_partial_history(tmp_path):
+def test_timeout_drains_physical_work_and_records_partial_history(
+    tmp_path, monkeypatch
+):
     events = Events()
     toolkit = RobotToolkit(events)
+    started = threading.Event()
     stopped = threading.Event()
 
     def move():
+        started.set()
         try:
             while True:
                 toolkit.raise_if_cancelled()
@@ -934,6 +938,26 @@ def test_timeout_drains_physical_work_and_records_partial_history(tmp_path):
 
     async def stream(messages, info):
         yield tool("move")
+
+    wait_for = asyncio.wait_for
+    first_wait = True
+
+    async def timeout_after_move_starts(awaitable, timeout):
+        nonlocal first_wait
+        if not first_wait:
+            return await wait_for(awaitable, timeout)
+        first_wait = False
+        task = asyncio.ensure_future(awaitable)
+        try:
+            # Test cancellation of active work, independently of model/SDK startup.
+            assert await asyncio.to_thread(started.wait, 5), "move never started"
+            return await wait_for(task, timeout)
+        finally:
+            if not task.done():
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+
+    monkeypatch.setattr(asyncio, "wait_for", timeout_after_move_starts)
 
     result, _, _ = solve(
         tmp_path, FunctionModel(stream_function=stream), toolkit, events, timeout_s=0.15

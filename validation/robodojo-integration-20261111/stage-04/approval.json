@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-11-12T00:30:54.460242+00:00",
+  "user_response": [
+    "继续配置吧",
+    "那个robodojo"
+  ],
+  "authorization_basis": "Resume the previously displayed pending two-file STOP callback repair; authorization is limited to this draft.",
+  "scope": [
+    "robots/robodojo/rlinf_env.py",
+    "tests/unit_tests/robots/robodojo/test_flash_contracts.py"
+  ],
+  "patch_sha256": "e6ca2c5d9c42096a11b87dfd79ee027c69da283eedc11f52da5341f18e42a5f2",
+  "status": "implemented_cpu_passed_real_shutdown_failed",
+  "implementation_applied_local": true,
+  "implementation_applied_remote": true,
+  "candidate_tests_executed": true
+}

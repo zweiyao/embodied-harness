@@ -1,0 +1,9 @@
+{
+  "approval": "User: 测试看看, following the displayed 8-file Pi0.5 native-action conversion proposal",
+  "base_revision": "0e5dbaabdcb2554e01130632f6aca504c667200e",
+  "approved_patch_sha256": "a06fab5ec7d9ec903f44c4105a53dfd4dbf038453070b43b85b2d691448d25d4",
+  "scope": "RoboDojo checkpoint state order, delta restoration and native action conversion; unit/transform/real-weight/bounded simulator checks; no public deployment or task benchmark",
+  "necessary_validation_caller_update": "The GPU environment hold check previously sent model-encoded state as native control. It now sends the unchanged native four-key action dictionary, because checkpoint state order and native action order differ. No assertion removed or weakened.",
+  "network": "inherited; no experiment/probe/launcher proxy or IP-family overrides",
+  "commit_message": "fix(robodojo): correct Pi0.5 action mapping"
+}

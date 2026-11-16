@@ -16,4 +16,17 @@
 
 from robots.robotwin.robot_spec import get_robot_spec, get_toolkit
 
-__all__ = ["get_robot_spec", "get_toolkit"]
+
+def native_catalog() -> list[dict]:
+    from robots.robotwin.catalog import native_catalog as catalog
+
+    return catalog()
+
+
+def validate_selection(selected: list[dict]) -> None:
+    from robots.robotwin.catalog import validate_selection as validate
+
+    validate(selected)
+
+
+__all__ = ["get_robot_spec", "get_toolkit", "native_catalog", "validate_selection"]

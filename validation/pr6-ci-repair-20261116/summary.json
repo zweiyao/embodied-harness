@@ -1,0 +1,27 @@
+{
+  "base_commit": "6b7c7e633056dab29340993d5b78123e02448ba8",
+  "scope": "test-only; no production or service change",
+  "original_ci_run": 43857966023,
+  "reproduction": {
+    "fake_model_start_delay_s": 0.25,
+    "planner_timeout_s": 0.15,
+    "before": "fails stopped.is_set()",
+    "after": "1 passed"
+  },
+  "remote_python": "3.11",
+  "planner": {
+    "passed": 61
+  },
+  "unit": {
+    "passed": 2152,
+    "skipped": 16,
+    "seconds": 72.16
+  },
+  "pre_commit": "passed",
+  "post_format_planner": {
+    "passed": 61,
+    "seconds": 3.15
+  },
+  "github_matrix": "pending push",
+  "automatic_merge": false
+}

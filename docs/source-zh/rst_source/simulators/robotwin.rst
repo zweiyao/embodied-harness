@@ -242,3 +242,16 @@ RPent 默认使用 RoboTwin 的 ``demo_randomized`` 任务配置，该配置带�
      --max-episode-steps 10000
 
 本例运行 ``beat_block_hammer`` 的 seed 100000。复现全部成绩时，按 ``demo_randomized.json`` 为每个任务逐一运行其中列出的 seed。运行前还需按照本页前文配置 RoboTwin 仿真资源和 LingBot-VLA checkpoint。每次运行仅在 ``TASK_ENV.eval_success`` 的最终值为 ``true`` 时计为成功；规划器调用 ``finish`` 本身不代表成功。
+
+
+统一研究工作台
+--------------
+
+服务端 ``RPENT_WORKBENCH`` 配置可复用其他仿真环境的开始页、控制台、工具页与历史页。
+使用 ``robots.robotwin.catalog.task_fields()`` 生成 profile 的 ``task_fields``。
+字段保留当前维护的 demo_randomized 协议快照中的原生任务名、配置／split 与 seed，
+不套用 LIBERO 任务编号，也不代表已覆盖全部原生任务。官方运行时语言仍是任务指令来源。
+
+显式工作台名单冻结当前原生工具，必须保留 ``finish``；过期声明及未接入的生成工具会被拒绝。
+原生控制保护保留。未提供名单时，CLI／探索工具保持现有行为。工具请求和响应沿用共享运行日志。
+这些适配契约有离线测试覆盖；真实运行仍需前文列出的仿真器、资产和策略资源。

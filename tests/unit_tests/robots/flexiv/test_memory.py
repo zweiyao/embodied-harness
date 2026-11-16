@@ -39,7 +39,7 @@ def test_insertion_experience_is_indexed_and_loaded_only_by_file_tool(monkeypatc
     assert "INSERTION" not in system
     assert "MEMORY.md" not in system
     assert str(root / "MEMORY.md") in user
-    assert "read_text_file is enabled" in user
+    assert "read_text_file when enabled" in user
     for prompt in (system, user):
         assert "35a7fbd1bfabd254f93c" not in prompt
         assert "11.95" not in prompt

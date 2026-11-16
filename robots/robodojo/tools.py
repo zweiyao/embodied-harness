@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 from pydantic.json_schema import SkipJsonSchema
 
 from rpent.tools import ToolResult, tool
@@ -30,6 +30,73 @@ CAMERA_ARTIFACTS: tuple[tuple[str, str], ...] = (
     ("cam_left_wrist", "cam_left_wrist.png"),
     ("cam_right_wrist", "cam_right_wrist.png"),
 )
+
+
+class EefArmTarget(BaseModel):
+    """An explicit link6 pose and intended gripper command."""
+
+    model_config = ConfigDict(extra="forbid")
+    position: Annotated[list[float], Field(min_length=3, max_length=3)]
+    quaternion_wxyz: Annotated[list[float], Field(min_length=4, max_length=4)]
+    gripper_closed: StrictBool
+
+
+class DualEefTarget(BaseModel):
+    """Both arms must be commanded, including any arm intended to hold still."""
+
+    model_config = ConfigDict(extra="forbid")
+    left: EefArmTarget
+    right: EefArmTarget
+
+
+@tool(readonly=False, exclude=("primitives", "state"))
+def move_eef(
+    primitives: Any,
+    state: Any,
+    observation_step: StrictInt,
+    target: DualEefTarget,
+    steps: Annotated[StrictInt, Field(ge=1, le=5)] = 1,
+) -> ToolResult:
+    """Execute one short dual-arm EEF action, then return fresh RGB and robot state.
+
+    Use absolute link6 poses in environment-origin meters and unit wxyz quaternions.
+    Both arm targets and intended gripper commands are required; true means closed.
+    Use the latest observation_step. Targets are limited to 0.05 m / 0.35 rad from
+    the current measured pose. Execute 1–5 control steps using bounded local DLS IK.
+    Inspect returned measured poses and images before choosing the next action.
+    Native gripper opening is a controller command, not measured finger gap.
+    A target-range rejection cancels remaining steps and returns the executed
+    prefix plus fresh state. Replan from that feedback; the episode stays active.
+    """
+    from robots.robodojo.eef_control import EefTargetLimitError, validate_targets
+
+    if observation_step != state.latest_record().step_idx:
+        raise ValueError("Stale observation_step; inspect the returned fresh state")
+    targets = target.model_dump()
+    controls = []
+    rejection = None
+    try:
+        validate_targets(targets, _refresh_obs(primitives)["state"], steps)
+        for _ in range(steps):
+            primitives._check_cancelled()
+            feedback = primitives.env.step_eef(targets)
+            if feedback.get("rejected"):
+                rejection = feedback
+                break
+            controls.append(feedback)
+            if _action_budget_exhausted(feedback["status"]):
+                break
+    except EefTargetLimitError as exc:
+        rejection = {"code": "eef_target_limit", "message": str(exc)}
+    data = {"control_steps": controls, "steps_used": len(controls)}
+    if rejection is not None:
+        data.update(
+            rejection=rejection,
+            requested_steps=steps,
+            cancelled_steps=steps - len(controls),
+            replan_required=True,
+        )
+    return ToolResult(data=data)
 
 
 @tool(readonly=True, exclude=("state",))
@@ -214,6 +281,11 @@ def _refresh_obs(primitives) -> dict:
     return primitives._last_obs
 
 
+def _action_budget_exhausted(status: dict) -> bool:
+    limit = status.get("step_limit", 0)
+    return limit is not None and int(status.get("step", 0)) >= int(limit)
+
+
 @tool(readonly=False, exclude=("primitives", "state", "tol", "max_steps"))
 def move_to(
     primitives: Any,
@@ -305,7 +377,7 @@ def move_to(
         dist_to_target = float(
             np.linalg.norm(np.asarray(target) - np.asarray(final_xyz))
         )
-        if info["status"].get("step", 0) >= info["status"].get("step_limit", 1):
+        if _action_budget_exhausted(info["status"]):
             break
     payload = {
         "arm": arm,
@@ -324,7 +396,9 @@ def move_to(
 def set_gripper(
     primitives: Any, state: Any, arm: Literal["left", "right"], gripper: float
 ) -> ToolResult:
-    """Open or close an arm gripper. 1=close, -1=open.
+    """Command a gripper and report measured opening (1=open, 0=closed).
+
+    Submits one native step without waiting for completion. gripper: 1=close, -1=open.
 
     Args:
         gripper: 1=close, -1=open"""
@@ -343,10 +417,15 @@ def set_gripper(
             if a != arm:
                 val = float(np.asarray(joint).reshape(-1)[0])
             action[_arm_ee_joint_key(a)] = [val]
-    _obs_step, _reward, _done, info = primitives.env.step(action)
+    obs_step, _reward, _done, info = primitives.env.step(action)
+    observed = obs_step.get("state", {}).get(_arm_ee_joint_key(arm))
     payload = {
         "arm": arm,
-        "gripper": "closed" if gripper > 0 else "open",
+        "gripper": "close_commanded" if gripper > 0 else "open_commanded",
+        "target_opening": 0.0 if gripper > 0 else 1.0,
+        "measured_opening": (
+            float(np.asarray(observed).reshape(-1)[0]) if observed is not None else None
+        ),
         "status": {
             key: info["status"][key]
             for key in ("step", "step_limit")
@@ -399,6 +478,7 @@ def pi0_pick(
         for a in arms
     }
     chunks_used = 0
+    simulator_steps = 0
     success = False
     terminated = False
     for c in range(max_chunks):
@@ -419,7 +499,9 @@ def pi0_pick(
         actions = vla.predict(obs)
         chunks_used = c + 1
         for action in actions:
+            primitives._check_cancelled()
             obs_step, _reward, _done, info = primitives.env.step(action)
+            simulator_steps += 1
             st = obs_step["state"]
             for a in arms:
                 t = track[a]
@@ -443,7 +525,7 @@ def pi0_pick(
                 # for an ungrasped state and would reopen the gripper, dropping
                 # the object while ``success`` stays true.
                 break
-            if info["status"]["step"] >= info["status"]["step_limit"]:
+            if _action_budget_exhausted(info["status"]):
                 terminated = True
                 break
         if success or terminated:
@@ -464,6 +546,7 @@ def pi0_pick(
         "instruction": prompt,
         "success": success,
         "chunks_used": chunks_used,
+        "simulator_steps": simulator_steps,
         "arms": per_arm,
         "terminated": terminated,
     }
@@ -600,7 +683,7 @@ def dump_state(primitives, state, *, log: dict | None = None, perception=None):
         # Official success is read by the runner after planner execution,
         # not written into planner-readable state artifacts.
         terminated=False,
-        truncated=int(status.get("step", 0)) >= int(status.get("step_limit", 0) or 0),
+        truncated=_action_budget_exhausted(status),
         command=log.get("command"),
         result=log.get("result"),
         elapsed_s=log.get("elapsed_s"),

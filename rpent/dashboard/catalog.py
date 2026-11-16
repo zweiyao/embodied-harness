@@ -8,7 +8,7 @@ import copy
 import json
 from pathlib import Path
 
-_ENVIRONMENTS = {"libero", "univtac", "flexiv"}
+from rpent.robots.base import _resolve_robot, enumerate_robots
 
 
 def load_sources(path: str | None) -> list[dict]:
@@ -28,7 +28,12 @@ def load_sources(path: str | None) -> list[dict]:
         }:
             raise ValueError("Invalid tool catalog source")
         robot = source.get("robot")
-        if not isinstance(robot, str) or robot not in _ENVIRONMENTS or robot in seen:
+        if (
+            not isinstance(robot, str)
+            or robot not in enumerate_robots()
+            or robot in seen
+            or not callable(getattr(_resolve_robot(robot), "native_catalog", None))
+        ):
             raise ValueError("Tool catalog sources need unique supported robot names")
         seen.add(robot)
         for key in ("library_root", "runs_root"):

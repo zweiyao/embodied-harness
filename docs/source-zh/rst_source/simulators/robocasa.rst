@@ -529,3 +529,16 @@ VLA 推理检查
    - **会话隔离：** ``RpcClient`` 在 ``wait_for_ready`` 时注册私有的 ``rpc_`` + UUID 十六进制 ID。服务器将其传给 ``predict`` / ``reset_session``，隔离各客户端的 RLDX 记忆和 RTC 状态。ID 不放入观测，``rldx_skill`` / ``vla_client`` 无需处理。
    - **会话清理：** 服务器定期清理空闲会话，默认超时 3600 秒；客户端退出时通过 ``atexit`` 发送 ``session.close``。
    - **探索提示词：** ``robots/robocasa/prompts/explore.py`` 规定移动底盘、``task_progress``、RLDX 连续执行及失败记录规则。``reset`` 使用环境原有复位流程，只导出最后一次复位后成功尝试的动作序列。
+
+
+统一研究工作台
+--------------
+
+服务端 ``RPENT_WORKBENCH`` 配置可复用其他仿真环境的开始页、控制台、工具页与历史页。
+使用 ``robots.robocasa.catalog.task_fields()`` 生成 profile 的 ``task_fields``。
+字段保留当前维护的 target50 协议快照中的原生任务名、配置／split 与 seed，
+不套用 LIBERO 任务编号，也不代表已覆盖全部原生任务。官方运行时语言仍是任务指令来源。
+
+显式工作台名单冻结当前原生工具，必须保留 ``finish``；过期声明及未接入的生成工具会被拒绝。
+原生控制保护保留。未提供名单时，CLI／探索工具保持现有行为。工具请求和响应沿用共享运行日志。
+这些适配契约有离线测试覆盖；真实运行仍需前文列出的仿真器、资产和策略资源。

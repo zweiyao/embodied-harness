@@ -109,6 +109,26 @@ bash tests/e2e_tests/run_gpu_suite.sh \
   /path/to/new-venv-root
 ```
 
+## RoboDojo prepared-runtime GPU checks
+
+RoboDojo uses the existing helpers and pytest organization under
+`e2e_tests/robodojo/`. Load its independently prepared runtime profile, select one
+GPU, and choose a new output directory:
+
+```bash
+bash tests/e2e_tests/run_gpu_suite.sh robodojo-prepared \
+  /path/to/new-output /path/to/prepared-venv
+```
+
+The third argument must be an existing isolated environment and is preserved.
+The target records `dependency-check.txt` and `environment-status.txt` without
+claiming a clean install. The tested stack retains nine upstream metadata
+conflicts; the three existing clean-install targets and their gates are unchanged.
+The five tests cover ENV/state/RGB-D plus one hold action, real Pi0.5 and SAM3
+requests, cancellation during a chunk, and the scripted public-CLI policy chain.
+They use no external planning model and do not assert benchmark task success.
+The runner still requires normal process cleanup; residual daemons fail the run.
+
 ## Dual-Franka VLA diagnostic console
 
 Run the real-robot diagnostic explicitly from a source checkout after installing

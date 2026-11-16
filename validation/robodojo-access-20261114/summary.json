@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-14T04:13:54.286574+00:00",
+  "reason": "Mac current VPN source differs from previous single-IP allowlist",
+  "old_allowed_ip": "10.162.217.98",
+  "allowed_ip": "10.230.32.61",
+  "source_identity_evidence": "Mac utun6 address, remote SSH client IP and rejected dashboard peer all match",
+  "port": 8094,
+  "single_ip_restriction_preserved": true,
+  "mac_network_changed": false,
+  "workbench_pid_unchanged": 3495126,
+  "harness_changed": false,
+  "task_started": false,
+  "stage": "validated",
+  "checked_at": "2026-11-14T04:14:40.779527+00:00",
+  "mac_page_http_status": 200,
+  "mac_state_api_http_status": 200,
+  "session_state": "ready",
+  "error": null,
+  "non_whitelisted_remote_source": "rejected: ConnectionResetError",
+  "scope": "RoboDojo8094 only; other access allowlists unchanged",
+  "restriction": "single source IPv4; not device authentication; VPN/source changes require another allowlist update"
+}

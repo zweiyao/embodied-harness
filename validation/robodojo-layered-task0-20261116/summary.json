@@ -1,0 +1,70 @@
+{
+  "at": "2026-11-16T02:11:37.566836+00:00",
+  "phase": "completed_with_incident",
+  "task_index": 0,
+  "task": "align_blocks",
+  "layout": 0,
+  "run_id": "1e81ae7f7eb07fc139d8",
+  "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-prompt-refactor-20261116-015337-2541355/tasks/0001_align_blocks_l0",
+  "url": "http://10.162.250.228:8094/runs?id=1e81ae7f7eb07fc139d8",
+  "instruction": "Use the set square to push the three blocks into a straight, aligned row, then reset the robot arm.",
+  "valid": false,
+  "incident": "Accepted multi-step EEF call ended with internal limit revalidation error after measured pose changed; executed-step ACKs for that call were not returned",
+  "success": null,
+  "status": "completed",
+  "finish": {
+    "_finish": true,
+    "status": "stuck",
+    "summary": "Halted after partial-execution controller error at observation 11. Blocks remain unaligned; no grasp confirmed and arm not returned home. No native success reported. Audit and notes saved in agent/."
+  },
+  "error": null,
+  "elapsed_s": 202.0,
+  "planner_elapsed_s": 159.5,
+  "interactions": 19,
+  "input_tokens": 663717,
+  "output_tokens": 2919,
+  "total_tokens": 666636,
+  "tool_calls": {
+    "view_env_state": 2,
+    "read_text_file": 1,
+    "back_project": 6,
+    "move_eef": 11,
+    "write_text_file": 2,
+    "finish": 1
+  },
+  "eef_tool_requests": 11,
+  "pi_requests": 0,
+  "other_action_requests": {},
+  "config": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 120,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_eef",
+      "native:view_env_state",
+      "native:back_project",
+      "native:segment",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:list_dir",
+      "native:finish"
+    ],
+    "reasoning_effort": "high"
+  },
+  "videos": [
+    "videos/episode_2026-11-16_10-08-36_cam_head.mp4",
+    "videos/episode_2026-11-16_10-08-36_cam_left_wrist.mp4",
+    "videos/episode_2026-11-16_10-08-36_cam_right_wrist.mp4"
+  ],
+  "source_hashes_unchanged": true,
+  "authoritative_result_consistent": true,
+  "environment_success_observed": false,
+  "confirmed_native_steps": 50,
+  "unreported_final_action_steps": true,
+  "exclude_from_success_rate": true
+}

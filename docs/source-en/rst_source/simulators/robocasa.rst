@@ -708,3 +708,22 @@ observation and session details are below.
      base use, ``task_progress``, RLDX continuity and failure notes. ``reset`` uses
      the native episode reset; only the winning commands after the final reset
      are exported.
+
+
+Shared research workbench
+-------------------------
+
+A server-owned ``RPENT_WORKBENCH`` configuration can use the same setup,
+console, tools and history pages as the other simulators. Set the profile's
+``task_fields`` from ``robots.robocasa.catalog.task_fields()``. The fields keep
+native task names, configuration/split and seed values from the maintained
+target50 protocol snapshot; they are not LIBERO task indices or a claim
+that every native task is available. Official runtime language remains the
+instruction source.
+
+An explicit workbench selection freezes the currently registered native tools,
+requires ``finish`` and rejects stale or unsupported generated declarations.
+Native control guards remain in effect. Runs without an explicit selection
+keep their existing CLI/exploration tools. Tool requests and responses use the
+shared run journal. These adapter contracts are covered offline; the simulator,
+assets and policy prerequisites above still apply to a real run.

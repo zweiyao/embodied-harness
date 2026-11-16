@@ -1,0 +1,8 @@
+{
+  "authorization": "Earlier user request: 将动作先不设置限制吧; latest: 现在继续尝试astra跑robodojo",
+  "file": "/home/zwy/work/embodied_harness/validation/robodojo-astra-task0-20261114/start-workbench-unlimited.sh",
+  "before": "--max-episode-steps 700",
+  "after": "--max-episode-steps 0",
+  "scope": "Independent dev diagnostic launcher only; existing supported no-action-limit mode; original launcher/runtime tools unchanged",
+  "validation": "bash -n; live env status step_limit=null; retain bounded attempt; observe Astra/Pi/native completion; not benchmark comparable"
+}

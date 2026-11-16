@@ -17,11 +17,20 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from pathlib import Path
 
-from robots.libero.prompts import evaluate as evaluate_parts
 from robots.libero.prompts import explore as explore_parts
-from robots.libero.prompts import user as user_parts
+from robots.libero.prompts.evaluate import allowed_primitives
+from rpent.prompt.composition import (
+    COMMON_DIR,
+    memory_available,
+    system_sections,
+    task_file,
+    user_sections,
+)
 from rpent.prompt.utils import PromptNode
+
+ROOT = Path(__file__).parent / "prompts"
 
 
 def system_prompt(
@@ -32,13 +41,27 @@ def system_prompt(
         from robots.libero.research.language_materials import material_prompt
 
         return material_prompt(variables, "system.md")
-    if (variables or {}).get("sensor_library"):
-        from robots.libero.research.native import SYSTEM_PROMPT
-
-        return SYSTEM_PROMPT
-    if (variables or {}).get("mode", "eval") == "explore":
-        return explore_parts.system_prompt(variables)
-    return evaluate_parts.system_prompt(variables)
+    values = variables or {}
+    eef = any(t.get("name") == "move_eef" for t in values.get("manual_tools", []))
+    result = system_sections(
+        COMMON_DIR,
+        ROOT / ("control_eef.md" if eef else "control_native.md"),
+        analysis=values.get("analysis_enabled", False),
+        variables=values,
+    )
+    if values.get("mode", "eval") == "explore":
+        old = explore_parts.system_prompt(variables)
+        result["EXPLORATION RULES"] = old["RULES (NON-NEGOTIABLE)"]
+        result["RESTORATION"] = (
+            "Also allowed: `reset` within the explicit exploration-mode rules."
+        )
+    else:
+        result["EPISODE"] = "SINGLE-ATTEMPT MODE: one episode; do not reset."
+    if "manual_tools" not in values:
+        result["NATIVE ACTIONS"] = allowed_primitives(
+            bool(values.get("enable_direct_action", False))
+        )
+    return result
 
 
 def user_prompt(variables: Mapping[str, object] | None = None) -> PromptNode:
@@ -47,13 +70,14 @@ def user_prompt(variables: Mapping[str, object] | None = None) -> PromptNode:
         from robots.libero.research.language_materials import material_prompt
 
         return material_prompt(variables, "user.md")
-    if (variables or {}).get("sensor_library"):
-        return "Read view_env_state for the instruction and initial scene, then complete the task using the provided tools."
-    return {
-        "CELL": user_parts.CELL,
-        "MODE": user_parts.MODE,
-        "BEGIN": user_parts.BEGIN,
-    }
+    values = variables or {}
+    key = f"{values.get('suite', 'suite')}_t{values.get('task', 0)}"
+    return user_sections(
+        COMMON_DIR,
+        task_file(ROOT / "tasks", key),
+        memory_available=memory_available(values),
+        variables=values,
+    )
 
 
 __all__ = ["system_prompt", "user_prompt"]

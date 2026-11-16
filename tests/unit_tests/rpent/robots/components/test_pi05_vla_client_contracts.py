@@ -52,7 +52,9 @@ def test_robodojo_wire_keys_views_and_unflipped_state(observation):
         assert encoded[key].dtype == np.uint8
         np.testing.assert_array_equal(encoded[key], np.full((1, 2, 4, 3), i))
     assert encoded["states"].dtype == np.float32
-    np.testing.assert_array_equal(encoded["states"], [list(range(12)) + [1.0, 0.0]])
+    np.testing.assert_array_equal(
+        encoded["states"], [list(range(6)) + [1.0] + list(range(6, 12)) + [0.0]]
+    )
     assert encoded["task_descriptions"] == ["pick the bottle"]
 
 

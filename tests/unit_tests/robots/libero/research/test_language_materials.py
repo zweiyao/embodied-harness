@@ -75,9 +75,9 @@ def test_build_preserves_evidence_and_freezes_prompt(tmp_path):
         freeze_materials(package, tmp_path / "next", {})
 
 
-def test_legacy_prompt_is_unchanged_without_package():
+def test_file_backed_default_prompt_without_frozen_package():
     assert isinstance(system_prompt({"memory_profile": "hf"}), dict)
-    assert "BEGIN" in user_prompt({})
+    assert "view_env_state" in user_prompt({})["TASK"]
 
 
 def test_frozen_package_does_not_copy_adjacent_raw_recipes(tmp_path):
