@@ -1,0 +1,48 @@
+{
+  "base_commit": "f3edcf77f4968183aeb2733ff4c87b4a36f886c5",
+  "scope": "read-only experiment record presentation",
+  "remote_python": "3.11",
+  "dashboard_tests": {
+    "passed": 130
+  },
+  "unit_tests": {
+    "passed": 2162,
+    "skipped": 11,
+    "seconds": 74.96
+  },
+  "pre_commit": "passed",
+  "docs_en": "passed (-W --keep-going)",
+  "docs_zh": "passed (-W --keep-going)",
+  "browser": [
+    {
+      "robot": "robodojo",
+      "records": 81,
+      "tasks": 54,
+      "videos": 3
+    },
+    {
+      "robot": "flexiv",
+      "records": 12,
+      "tasks": 8,
+      "videos": 0
+    },
+    {
+      "robot": "libero",
+      "records": 255,
+      "tasks": 27,
+      "videos": 2
+    },
+    {
+      "robot": "univtac",
+      "records": 59,
+      "tasks": 3,
+      "videos": 0
+    }
+  ],
+  "page_errors": [],
+  "live_source_roots": 3,
+  "service_restarts": 0,
+  "data_migrations": 0,
+  "mac_robodojo_http_status": 200,
+  "raw_screenshots_committed": false
+}

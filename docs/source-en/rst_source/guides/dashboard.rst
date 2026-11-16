@@ -81,4 +81,13 @@ Inspect Results and End the Session
 
 After a task ends, review the action timeline and video; use the environment guide for its success criterion. The run output reports the artifact directory, including ``transcript_*.json``. Closing the browser does not stop backend services; press Ctrl+C in the launch terminal to end the session.
 
+In a research workbench, open **Experiment records** (``/runs``) and expand an
+environment folder, then a task folder. Each folder shows its record count;
+records within a task appear newest first. LIBERO task folders include the
+suite so equal task numbers in different suites remain separate. Named tasks
+show their position in the current startup catalog alongside the stored name.
+Older records without task metadata appear under “未记录任务” (task not recorded).
+The folders organize the displayed records; artifact paths and existing detail
+links remain unchanged. Each workbench lists records from its configured roots.
+
 The default bind address is ``127.0.0.1``. For remote access, use the SSH forwarding instructions in :doc:`advanced_deployment`.

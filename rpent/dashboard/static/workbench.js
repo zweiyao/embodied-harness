@@ -1,5 +1,6 @@
 import {formatRunMetrics,formatRunTimes} from './run-metrics.js?v=experiment-metrics-20261103';
 import {el,renderTools,environmentName} from './tool-picker.js?v=all-tools-20261030';
+import {groupRuns} from './run-folders.js?v=run-folders-20261116';
 const $=id=>document.getElementById(id);
 const request=async url=>{const r=await fetch(url);if(!r.ok)throw Error(`请求失败 ${r.status}`);return r.json();};
 const link=(title,url)=>{const a=el('a',title);a.href=url;return a;};
@@ -9,6 +10,7 @@ function eventView(record){const d=el('details');const p=record.payload||record;
 async function showRun(id){
   const run=await request(`/api/runs/${id}`),root=$('content');root.replaceChildren();
   const h=el('section');h.append(el('h2',`${run.config.model} · ${id}`));
+  h.append(link('← 返回实验文件夹','/runs'));
   h.append(el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'));
   const outcome=run.outcome;h.append(el('p',`官方成功：${outcome.environment_success==null?'未记录':outcome.environment_success?'是':'否'} · ${outcome.status||'旧记录 / 未记录结束状态'} · 放置稳定性：${outcome.stable_placement||'未独立验证'}`));
   h.append(el('p',formatRunTimes(run),'note'),el('p',formatRunMetrics(outcome),'statline'),el('p','交互轮次按记录的模型响应次数统计，不等于工具调用次数。缺失用量不计作零；异常结束时可能只包含已返回的用量。','note'));
@@ -36,6 +38,29 @@ async function showRun(id){
   }else{logs.append(el('p','旧实验没有增量事件日志，可查看原生 transcript。'));}
   const files=el('details');files.append(el('summary',`全部留档文件 · ${run.files.length}`));for(const name of run.files){const p=el('p');p.append(link(name,asset(id,name)));files.append(p);}root.append(files);
 }
+function runCard(run){
+  const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',JSON.stringify(run.config.task)),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));
+  left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));return card;
+}
+function showFolders(runs,setup){
+  const root=$('content');root.replaceChildren();
+  const environments=groupRuns(runs,setup.profiles,setup.robot);
+  if(!runs.length)root.append(el('p','暂无实验记录。','note'));
+  for(const environment of environments){
+    const folder=el('details',null,'run-folder'),body=el('div',null,'folder-body');
+    const count=environment.tasks.reduce((total,task)=>total+task.runs.length,0);
+    folder.open=environments.length===1;
+    folder.append(el('summary',`${environment.label} · ${environment.tasks.length} 个任务 · ${count} 条记录`),body);
+    for(const task of environment.tasks){
+      const child=el('details',null,'run-folder');child.append(el('summary',`${task.label} · ${task.runs.length} 条记录`));
+      let loaded=false;
+      child.addEventListener('toggle',()=>{if(child.open&&!loaded){child.append(...task.runs.map(runCard));loaded=true;}});
+      body.append(child);
+    }
+    root.append(folder);
+  }
+  $('status').textContent=`${runs.length} 次实验 · ${environments.length} 个环境 · 任务内按时间倒序`;
+}
 async function load(){
   if(location.pathname==='/tools'){
     const {tools,selectable=true,scope,robot}=await request('/api/tools');
@@ -44,9 +69,9 @@ async function load(){
     $('runsNav').hidden=!selectable;
     renderTools($('content'),tools,[],false);$('status').textContent=`${tools.length} 个工具版本 · 目录只读查看${selectable?'，前往开始页选择本轮工具':'，当前服务未启用工具选择'}`;
   }else{
-    $('title').textContent='实验记录';$('intro').textContent='保留每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
+    $('title').textContent='实验记录';$('intro').textContent='按环境和任务展开文件夹，查看每轮实际配置、动作、观测和模型过程。成功标志与实际放置证据分开记录。';
     const id=new URLSearchParams(location.search).get('id');if(id){await showRun(id);$('status').textContent='历史实验 · 只读查看';return;}
-    const {runs}=await request('/api/runs');$('content').replaceChildren();for(const run of runs){const card=el('article',null,'run-card'),left=el('div');left.append(el('h3',run.config.model||'模型未记录'),el('p',`任务指令（instruct）：${run.instruction||'未记录'}`,'task-instruction'),el('p',JSON.stringify(run.config.task)),el('p',`${new Date(run.updated*1000).toLocaleString()} · ${run.outcome.status||'旧记录 / 状态未记录'}`,'note'));left.append(el('p',formatRunMetrics(run.outcome),'statline'));card.append(left,link('查看过程 →',`/runs?id=${run.id}`));$('content').append(card);}$('status').textContent=`${runs.length} 次实验 · 按创建时间排序`;
+    const [{runs},setup]=await Promise.all([request('/api/runs'),request('/api/setup')]);showFolders(runs,setup);
   }
 }
 load().catch(e=>{$('status').textContent=e.message;$('status').classList.add('error');});
