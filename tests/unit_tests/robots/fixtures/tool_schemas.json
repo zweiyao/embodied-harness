@@ -785,7 +785,7 @@
       },
       {
         "name": "move_eef",
-        "description": "Execute one short dual-arm EEF action, then return fresh RGB and robot state.\n\nUse absolute link6 poses in environment-origin meters and unit wxyz quaternions.\nBoth arm targets and intended gripper commands are required; true means closed.\nUse the latest observation_step. Targets are limited to 0.05 m / 0.35 rad from\nthe current measured pose. Execute 1–5 control steps using bounded local DLS IK.\nInspect returned measured poses and images before choosing the next action.\nNative gripper opening is a controller command, not measured finger gap.",
+        "description": "Execute one short dual-arm EEF action, then return fresh RGB and robot state.\n\nUse absolute link6 poses in environment-origin meters and unit wxyz quaternions.\nBoth arm targets and intended gripper commands are required; true means closed.\nUse the latest observation_step. Targets are limited to 0.05 m / 0.35 rad from\nthe current measured pose. Execute 1–5 control steps using bounded local DLS IK.\nInspect returned measured poses and images before choosing the next action.\nNative gripper opening is a controller command, not measured finger gap.\nA target-range rejection cancels remaining steps and returns the executed\nprefix plus fresh state. Replan from that feedback; the episode stays active.",
         "input_schema": {
           "$defs": {
             "DualEefTarget": {

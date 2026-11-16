@@ -86,10 +86,17 @@ def system_sections(
     *,
     analysis=False,
     variables: Mapping[str, Any] | None = None,
+    recovery: Path | None = None,
 ) -> ComposedPrompt:
     """Compose fixed requirements, the robot contract and actual tool access."""
     values = variables or {}
-    files = {"GENERAL REQUIREMENTS": common_dir / "common.md", "ROBOT CONTROL": control}
+    files = {
+        "GENERAL REQUIREMENTS": common_dir / "common.md",
+        "ROBOT CONTROL": control,
+        "EXECUTION RECOVERY": recovery
+        if recovery is not None
+        else common_dir / "execution_recovery.md",
+    }
     if analysis:
         files["ANALYSIS WORKSPACE"] = common_dir / "analysis_workspace.md"
     result = read_sections(files)

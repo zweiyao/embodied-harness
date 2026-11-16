@@ -1,0 +1,21 @@
+{
+  "status": "offline_verified",
+  "base": "ef90c15",
+  "scope": "RoboDojo range rejection and simulation recovery only",
+  "range_limits_unchanged": true,
+  "controller_increments_unchanged": true,
+  "hidden_retry_or_reset": false,
+  "other_robot_stop_policy_preserved": true,
+  "unit": {
+    "passed": 2152,
+    "skipped": 16,
+    "elapsed_s": 68.83
+  },
+  "pre_commit": "passed",
+  "sphinx_en_strict": "passed",
+  "sphinx_zh_strict": "passed",
+  "wheel_resources": 21,
+  "wheel_matches_source": true,
+  "task_repeat": "pending",
+  "no_claim_of_success_rate_improvement": true
+}

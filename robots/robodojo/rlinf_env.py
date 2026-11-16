@@ -219,6 +219,7 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         """Execute one bounded robot-only DLS update and record its real ACK."""
         from robots.robodojo.eef_control import (
             DualKinematics,
+            EefTargetLimitError,
             pose_errors,
             transform,
             validate_targets,
@@ -227,7 +228,18 @@ class RoboDojoAgentEnv(RoboDojoEnv):
         if self.eval_fair:
             raise ValueError("GPT EEF control requires explicit dev tool selection")
         observation = self.get_obs()
-        targets = validate_targets(target, observation["state"], 1)
+        try:
+            targets = validate_targets(target, observation["state"], 1)
+        except EefTargetLimitError as exc:
+            current_step = int(self.env.take_action_cnt[0])
+            return {
+                "rejected": True,
+                "code": "eef_target_limit",
+                "message": str(exc),
+                "native_step_before": current_step,
+                "native_step_after": current_step,
+                "status": {"step": current_step, "step_limit": self._step_limit()},
+            }
         if not hasattr(self, "_eef_kinematics"):
             self._eef_kinematics = DualKinematics(self.env)
         action, diagnostics = self._eef_kinematics.target(targets)

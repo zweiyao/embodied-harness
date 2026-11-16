@@ -191,6 +191,7 @@ RPent 的整体进程划分、服务职责和通信方式见 :doc:`系统说明 
 
    rpent/prompt/
        common.md                 # 与机器人无关的固定要求
+       execution_recovery.md     # 默认停止规则
        memory.md                 # 可选的经验目录及索引入口
        analysis_workspace.md     # 仅在启用 Codex 分析能力时使用
    robots/myrobot/
@@ -257,6 +258,13 @@ user=user_prompt)``。原有 Python 工厂继续兼容。CLI 和 Dashboard 使�
 不要在文字中把所有机器人强行写成同一种约定：RoboDojo 的短段 EEF 使用共用环境
 原点下的 link6 位姿和 wxyz；LIBERO 当前 EEF 使用 xyzw；Flexiv 增量模式使用基座系
 平移与旋转向量。真机安全、操作员启用、标定和故障处理规则仍归对应机器人模式维护。
+
+``system_sections`` 可通过 ``recovery=Path(...)`` 选择机器人专属的恢复规则，
+默认加载公共 ``execution_recovery.md``。RoboDojo 仿真在目标范围超限后重新观察、
+重新规划，不因此结束任务。EEF 工具保留已执行回报、取消剩余步数，并返回最新反馈
+供模型作下一次决策；真正的传输或物理仿真故障仍作为错误处理。真机和其他默认规则
+保留停止要求。
+动作限幅及控制错误回报与这一提示选择分别维护。
 
 任务与经验
 ~~~~~~~~~~

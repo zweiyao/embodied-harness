@@ -31,6 +31,7 @@ def system_prompt(variables=None):
         ROOT / control,
         analysis=values.get("analysis_enabled", False),
         variables=values,
+        recovery=ROOT / "execution_recovery.md",
     )
 
 

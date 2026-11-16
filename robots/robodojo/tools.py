@@ -65,21 +65,38 @@ def move_eef(
     the current measured pose. Execute 1–5 control steps using bounded local DLS IK.
     Inspect returned measured poses and images before choosing the next action.
     Native gripper opening is a controller command, not measured finger gap.
+    A target-range rejection cancels remaining steps and returns the executed
+    prefix plus fresh state. Replan from that feedback; the episode stays active.
     """
-    from robots.robodojo.eef_control import validate_targets
+    from robots.robodojo.eef_control import EefTargetLimitError, validate_targets
 
     if observation_step != state.latest_record().step_idx:
         raise ValueError("Stale observation_step; inspect the returned fresh state")
     targets = target.model_dump()
-    validate_targets(targets, _refresh_obs(primitives)["state"], steps)
     controls = []
-    for _ in range(steps):
-        primitives._check_cancelled()
-        feedback = primitives.env.step_eef(targets)
-        controls.append(feedback)
-        if _action_budget_exhausted(feedback["status"]):
-            break
-    return ToolResult(data={"control_steps": controls, "steps_used": len(controls)})
+    rejection = None
+    try:
+        validate_targets(targets, _refresh_obs(primitives)["state"], steps)
+        for _ in range(steps):
+            primitives._check_cancelled()
+            feedback = primitives.env.step_eef(targets)
+            if feedback.get("rejected"):
+                rejection = feedback
+                break
+            controls.append(feedback)
+            if _action_budget_exhausted(feedback["status"]):
+                break
+    except EefTargetLimitError as exc:
+        rejection = {"code": "eef_target_limit", "message": str(exc)}
+    data = {"control_steps": controls, "steps_used": len(controls)}
+    if rejection is not None:
+        data.update(
+            rejection=rejection,
+            requested_steps=steps,
+            cancelled_steps=steps - len(controls),
+            replan_required=True,
+        )
+    return ToolResult(data=data)
 
 
 @tool(readonly=True, exclude=("state",))

@@ -22,6 +22,6 @@ The tool schema and feedback specify current limits and actual executed steps.
 The robot-only local DLS controller recomputes after real ACKs; it does not
 plan a collision-free path or guarantee that a target is reached. Inspect
 tracking error, object motion, held-object clearance and both wrist views.
-Rejected inputs execute no action and can be corrected using fresh feedback;
-uncertain execution is not permission to replay a command or reset the scene.
+Use the simulation recovery policy below after tool errors; a failed call does
+not prove that no motion occurred.
 No Pi policy or scripted pick/place is available in this mode.

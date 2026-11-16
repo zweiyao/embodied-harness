@@ -12,6 +12,10 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 
+class EefTargetLimitError(ValueError):
+    """A target is outside the permitted distance from the measured EEF."""
+
+
 def transform(position: Any, quaternion_wxyz: Any) -> np.ndarray:
     """Convert a finite position and unit wxyz quaternion to a transform."""
     position = np.asarray(position, dtype=np.float64)
@@ -68,7 +72,9 @@ def validate_targets(target: dict, state: dict, steps: int) -> dict:
             np.linalg.norm(translation) > 0.05 + 1e-9
             or np.linalg.norm(rotation) > 0.35 + 1e-9
         ):
-            raise ValueError(f"{arm} target exceeds 0.05 m / 0.35 rad decision limit")
+            raise EefTargetLimitError(
+                f"{arm} target exceeds 0.05 m / 0.35 rad decision limit"
+            )
         result[arm] = {key: value[key] for key in value}
     return result
 

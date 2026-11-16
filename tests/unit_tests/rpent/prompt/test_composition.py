@@ -106,3 +106,33 @@ def test_legacy_factories_and_api_capabilities(tmp_path):
     assert config.prompt_vars["analysis_enabled"] is True
     assert config.prompt_vars["analysis_full_access"] is True
     assert config.prompt_vars["analysis_workspace"] == str(tmp_path / "agent")
+
+
+@pytest.mark.parametrize("eef", [False, True])
+def test_robodojo_reobserves_and_replans_after_range_rejection(eef):
+    selected = (
+        [{"name": "move_eef"}, {"name": "view_env_state"}, {"name": "finish"}]
+        if eef
+        else []
+    )
+    bundle = PromptBundle(prompt_bundle.system_prompt, prompt_bundle.user_prompt)
+    text, info = bundle.render_with_sources(
+        "system", variables={"manual_tools": selected}
+    )
+    assert "Stop on safety/authorization faults or uncertain execution" not in text
+    assert "Do not finish solely for this rejection" in text
+    assert "it does not end the episode" in text
+    assert "blindly replay the old command" in text and "not reset the scene" in text
+    assert any(
+        item["path"].endswith("robots/robodojo/prompts/execution_recovery.md")
+        for item in info["files"]
+    )
+
+
+@pytest.mark.parametrize("robot", ["flexiv", "univtac", "libero"])
+def test_other_robots_keep_default_uncertain_execution_stop(robot):
+    from rpent.robots.base import get_robot_spec
+
+    text = get_robot_spec(robot).prompts.render("system", variables={})
+    assert "Stop on safety/authorization faults or uncertain execution" in text
+    assert "Do not finish solely for this rejection" not in text

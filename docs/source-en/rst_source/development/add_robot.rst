@@ -243,6 +243,7 @@ interfaces. Separate the content by responsibility:
 
    rpent/prompt/
        common.md                 # robot-independent fixed requirements
+       execution_recovery.md     # default stop policy
        memory.md                 # optional library/index discovery
        analysis_workspace.md     # only for enabled Codex analysis runs
    robots/myrobot/
@@ -320,6 +321,15 @@ interface uses shared environment-origin link6 poses with wxyz quaternions;
 LIBERO's current EEF interface uses xyzw; Flexiv's incremental EEF mode uses a
 base-frame translation and rotation vector. Keep physical safety, operator
 enablement, calibration and fault-recovery constraints in the owning robot mode.
+
+The optional ``recovery=Path(...)`` argument to ``system_sections`` selects a
+robot-owned recovery policy; otherwise it loads the shared
+``execution_recovery.md``. RoboDojo simulation re-observes and replans after
+a target-range rejection instead of ending the episode. The EEF tool preserves
+the executed prefix, cancels remaining steps and returns fresh feedback for the
+next model decision. Genuine transport/physics failures remain errors. Physical-robot
+and other default policies retain their stop requirement. Motion limits and
+control-error reporting remain separate from this prompt choice.
 
 Task and Memory
 ~~~~~~~~~~~~~~~

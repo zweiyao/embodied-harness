@@ -15,7 +15,7 @@ action, bypass control permissions, or substitute hidden
 scene truth for sensor evidence. Respect the actual runtime budget, action
 limits and operator requirements. When progress stalls, inspect the error and
 consider a supported correction; low expected success alone is not a stopping
-condition. Stop on safety/authorization faults or uncertain execution.
+condition.
 
 Report the observed outcome, uncertainty and saved evidence. Native success is
 authoritative when provided; otherwise do not invent a score or success verdict.
