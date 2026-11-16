@@ -72,6 +72,6 @@
     "device_and_access_service_pids": "preserved",
     "workbench_services_reloaded": 6,
     "auxiliary_units": "recreated from original launcher after transient-unit collection; shared model endpoints rebound",
-    "libero_runtime": "record management works; experiment initialization waits for old non-listening VLA/SAM3 endpoints"
+    "libero_runtime": "record management works; experiment startup is fatal because the configured VLA/SAM3 endpoints are not listening; no additional weights loaded"
   }
 }

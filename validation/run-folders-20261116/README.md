@@ -74,7 +74,7 @@ auxiliary transient units were collected on stop and recreated with the original
 launcher; its shared-model addresses now refer to the reloaded owner. RDK, RGB-D,
 ENV and both access-service PIDs are unchanged. LIBERO's configured borrowed
 VLA/SAM3 ports are not listening: its record management works, while experiment
-initialization waits for those dependencies. No additional LIBERO weights were
+startup fails because those dependencies are unavailable. No additional LIBERO weights were
 loaded. This remains an explicit deployment limitation.
 
 Evidence under the remote `delete/` directory retains before/after metadata
