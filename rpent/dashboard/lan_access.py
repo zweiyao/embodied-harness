@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Expose loopback dashboards to one approved IPv4 peer without restarting them.
+"""Expose loopback dashboards to approved IPv4 peers without restarting them.
 
 This is a TCP source-address restriction, not user authentication. HTTP headers
 cannot grant access. Keep robot RPC ports out of the configured port list.
@@ -41,7 +41,8 @@ async def relay(reader, writer, *, allowed_peer, upstream_port):
     upstream = None
     pumps = []
     try:
-        if peer is None or peer[0] != allowed_peer:
+        allowed = (allowed_peer,) if isinstance(allowed_peer, str) else allowed_peer
+        if peer is None or peer[0] not in allowed:
             log.warning("Rejected peer %s on port %s", peer, upstream_port)
             return
         upstream_reader, upstream = await asyncio.wait_for(
@@ -81,17 +82,19 @@ async def serve(bind, allowed_peer, ports):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bind", type=IPv4Address, required=True)
-    parser.add_argument("--allow", type=IPv4Address, required=True)
+    parser.add_argument("--allow", type=IPv4Address, action="append", required=True)
     parser.add_argument("--ports", type=int, nargs="+", required=True)
     args = parser.parse_args()
     if args.bind.is_unspecified or args.bind.is_loopback or args.bind.is_multicast:
         parser.error("Bind to a specific LAN IPv4 address")
-    if args.allow.is_unspecified or args.allow.is_multicast:
-        parser.error("Allow one specific client IPv4 address")
+    if any(peer.is_unspecified or peer.is_multicast for peer in args.allow):
+        parser.error("Allow specific client IPv4 addresses")
     if any(port < 1024 or port > 65535 for port in args.ports):
         parser.error("Dashboard ports must be in 1024..65535")
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(serve(str(args.bind), str(args.allow), args.ports))
+    asyncio.run(
+        serve(str(args.bind), tuple(str(peer) for peer in args.allow), args.ports)
+    )
 
 
 if __name__ == "__main__":
