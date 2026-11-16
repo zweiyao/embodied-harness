@@ -143,6 +143,16 @@ class MemoryManager:
         self._root = Path(root).resolve()
         self._memory_access = memory_access
         self._inbox_cell_tag = inbox_cell_tag
+        self._run_write_root: Path | None = None
+
+    def restrict_writes_to(self, directory: str | Path) -> None:
+        """Limit file-tool writes to one analysis workspace, not published memory."""
+        directory = Path(directory).resolve()
+        if directory.is_relative_to(self._root) or self._root.is_relative_to(directory):
+            raise ValueError(
+                "Analysis workspace must be separate from published memory"
+            )
+        self._run_write_root = directory
 
     @property
     def root(self) -> Path:
@@ -182,7 +192,16 @@ class MemoryManager:
 
     def _authorize(self, path: str | Path, *, write: bool) -> Path:
         repo_root = get_repo_root()
-        resolved = (repo_root / path).resolve()
+        base = self._run_write_root or repo_root
+        resolved = (base / path).resolve()
+        if (
+            write
+            and self._run_write_root is not None
+            and not resolved.is_relative_to(self._run_write_root)
+        ):
+            raise PermissionError(
+                f"analysis file writes are limited to {self._run_write_root}: {path}"
+            )
         if not resolved.is_relative_to(self._root):
             if resolved.is_relative_to((repo_root / "memory").resolve()):
                 raise PermissionError(

@@ -234,6 +234,8 @@ include = ["rpent*", "robots", "robots.*"]
 exclude = ["tests*", "docs*", "examples*", "docker*", "toolkits*"]
 
 [tool.setuptools.package-data]
+"rpent.prompt" = ["*.md"]
+"*" = ["prompts/*.md", "prompts/tasks/*.md"]
 "rpent.dashboard" = ["*.html", "static/*.css", "static/*.js"]
 "robots.yam" = ["config/*.yaml", "guides/*.md"]
 

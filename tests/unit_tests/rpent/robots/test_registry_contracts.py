@@ -177,29 +177,12 @@ def test_libero_prompts_observe_task_before_reading_memory(
     prompts = get_robot_spec("libero").prompts
     system = prompts.render("system", variables=variables)
     user = prompts.render("user", variables=variables)
-    workflow = system.split("\nWORKFLOW\n", 1)[1]
-    memory_step = (
-        "READ EACH AVAILABLE LOCAL MEMORY LAYER"
-        if mode == "eval" and memory_profile == "local"
-        else "READ MEMORY"
-    )
-
-    assert (
-        workflow.index("READ THE GUIDES")
-        < workflow.index("INSPECT INITIAL STATE")
-        < workflow.index(memory_step)
-    )
-    if mode != "eval" or memory_profile != "local":
-        assert workflow.index("INSPECT INITIAL STATE") < workflow.index(
-            "READ SEED-0 STRATEGY REFERENCES"
-        )
+    assert "First call view_env_state" in system
+    assert "native task_language" in system
     assert "READ MEMORY FIRST" not in system
-    begin = user.split("\nBEGIN\n", 1)[1]
-    assert (
-        begin.index("view_env_state")
-        < begin.index("task_language")
-        < begin.index("memory")
-    )
+    assert "Read the exact native task_language" in user
+    assert "MEMORY.md" not in system
+    assert "PROVEN LEVERS" not in system
 
 
 @pytest.mark.parametrize("robot_name", EXPECTED_ROBOTS)

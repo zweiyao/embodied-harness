@@ -233,46 +233,140 @@ teardown.
 
 .. _add-robot-prompts:
 
-2. ``prompt_bundle.py``
------------------------
+2. Define Layered Prompts
+----------------------------------------------------------------------
 
-Define two prompt factories, ``system_prompt()`` and ``user_prompt()``, and
-build a ``PromptBundle(system=system_prompt, user=user_prompt)`` in the
-robot's ``robot_spec.py`` (see the entry point above). Each factory returns an ordered
-``dict[str, PromptNode]`` of titled sections; ``PromptBundle.render`` assembles
-and fills them. One prompt serves every planner (API loop, Claude Code, Codex):
-refer to tools by their bare names (``move_to``, ...) and note once that the
-Claude Code and Codex SDKs show them as ``mcp__rpent__<name>``. Do not
-maintain separate prompt copies for CLI and API planners.
+Keep ``RobotSpec`` and ``PromptBundle`` as the registration and rendering
+interfaces. Separate the content by responsibility:
+
+.. code-block:: text
+
+   rpent/prompt/
+       common.md                 # robot-independent fixed requirements
+       execution_recovery.md     # default stop policy
+       memory.md                 # optional library/index discovery
+       analysis_workspace.md     # only for enabled Codex analysis runs
+   robots/myrobot/
+       prompt_bundle.py          # choose actual control mode and task files
+       prompts/
+           control_eef.md        # this robot's frame, reference point and controls
+           control_native.md     # another supported mode, when applicable
+           tasks/
+               default.md        # original instruction and runtime task fields
+               my_task.md        # verified task semantics and completion conditions
+
+The fixed prompt consists of common requirements, the selected robot contract,
+the actual tool boundary, and any enabled analysis-workspace instructions.
+The user input supplies the task, its task-specific supplement, runtime values,
+and the optional experience-library pointer. Tool descriptions and JSON schemas
+are registered independently by the toolkit; do not duplicate parameter tables
+or invent a tool in Markdown.
+
+The robot-owned ``prompt_bundle.py`` selects content and returns the existing
+``PromptNode`` structure through the shared composition helpers. Keep the
+``PromptBundle(system=system_prompt, user=user_prompt)`` registration. Plain
+Python factories remain supported for existing integrations. Both CLI and
+Dashboard use the same rendering path and record the contributing files and
+hashes alongside ``prompts.json``. Add Markdown resources to the wheel and check
+that a non-editable installation can read them.
+
+The factory can be kept small; this sketch assumes the robot parser supplies
+validated ``control_mode`` and ``task_key``, and the runner supplies capabilities
+and resolved runtime variables:
 
 .. code-block:: python
 
-   # robots/myrobot/prompt_bundle.py
-   from robots.myrobot.prompts import system as system_parts
-   from robots.myrobot.prompts import user as user_parts
-   from rpent.prompt.utils import PromptNode
+   from pathlib import Path
+   from rpent import prompt
+   from rpent.prompt.composition import (
+       system_sections, user_sections, task_file, memory_available,
+   )
 
-   def system_prompt() -> PromptNode:
-       return {
-           "INTRO": system_parts.PREAMBLE,
-           "GOAL": system_parts.GOAL,
-           "RULES": system_parts.RULES,
-           "WORKFLOW": system_parts.WORKFLOW,
-           "ENVIRONMENT": system_parts.ENVIRONMENT,
-           "OUTPUT": system_parts.OUTPUT,
-       }
+   COMMON = Path(prompt.__file__).parent
+   ROBOT = Path(__file__).parent / "prompts"
 
-   def user_prompt() -> PromptNode:
-       return {
-           "TASK": user_parts.TASK,
-           "BEGIN": user_parts.BEGIN,
-       }
+   def system_prompt(variables=None):
+       values = variables or {}
+       control = {"eef": "control_eef.md", "native": "control_native.md"}[
+           values["control_mode"]
+       ]
+       return system_sections(
+           COMMON, ROBOT / control, analysis=values.get("analysis_enabled", False),
+           variables=values,
+       )
 
-Keep the prompt content under the robot package, for example in
-``robots/myrobot/prompts/system.py`` and ``user.py``. Section bodies are plain
-strings (or ``BulletList`` / ``Numbered``) with ``{{suite}}`` / ``{{task}}`` /
-``{{seed}}`` / ``{{output_dir}}`` / ``{{recipe_tag}}`` placeholders filled at
-render time.
+   def user_prompt(variables=None):
+       values = variables or {}
+       return user_sections(
+           COMMON, task_file(ROBOT / "tasks", values["task_key"]),
+           memory_available=memory_available(values), variables=values,
+       )
+
+``PromptBundle`` renders the returned sections and records their file hashes.
+The control-mode names above are examples; declare only modes actually supported
+by the robot. Do not use a free-form instruction as ``task_key``.
+
+Robot Contract
+~~~~~~~~~~~~~~
+
+Specify the exact robot/arm identity, camera names, position units, coordinate
+origin and axes, pose element order, quaternion convention, absolute versus
+incremental commands, and the reference link or native TCP. Explain how each
+arm's observation fields map to its action target. Document gripper commands
+separately from measured opening, and distinguish a surface localization from
+a grasp reference. Use the actual tool schema/configuration for current limits.
+
+Do not normalize every robot to one convention in prose. RoboDojo's short EEF
+interface uses shared environment-origin link6 poses with wxyz quaternions;
+LIBERO's current EEF interface uses xyzw; Flexiv's incremental EEF mode uses a
+base-frame translation and rotation vector. Keep physical safety, operator
+enablement, calibration and fault-recovery constraints in the owning robot mode.
+
+The optional ``recovery=Path(...)`` argument to ``system_sections`` selects a
+robot-owned recovery policy; otherwise it loads the shared
+``execution_recovery.md``. RoboDojo simulation re-observes and replans after
+a target-range rejection instead of ending the episode. The EEF tool preserves
+the executed prefix, cancels remaining steps and returns fresh feedback for the
+next model decision. Genuine transport/physics failures remain errors. Physical-robot
+and other default policies retain their stop requirement. Motion limits and
+control-error reporting remain separate from this prompt choice.
+
+Task and Memory
+~~~~~~~~~~~~~~~
+
+Keep the native task instruction unchanged. A task file may add verified public
+semantics and completion conditions, but not hidden scene coordinates, fixed
+trajectories or a substituted instruction. Select only the current task file;
+use ``default.md`` when no supplement exists. Reject path traversal instead of
+treating a task identifier as an arbitrary file path.
+
+Experience remains in a read-only corpus indexed by ``MEMORY.md``. Supply its
+resolved root and applicability conditions, and read relevant entries on demand.
+Do not paste the corpus into the fixed prompt or force an index read every run.
+Robot-specific geometry and interface contracts belong in control descriptions,
+not in task experience. Existing frozen corpora and replay evidence are not
+rewritten by a prompt migration.
+
+Codex Analysis
+~~~~~~~~~~~~~~
+
+The Codex backend sends fixed instructions through ``developer_instructions``
+and the task through user input. An explicit analysis setting can enable code,
+calculation and image inspection. ``workspace.json`` gives the interpreter and
+evidence paths; ``NOTES.md`` and ``scratch/`` hold episode-local work.
+By default, keep analysis writes inside the run-owned agent directory and source, recorded
+evidence and published experience read-only. Apply the same write boundary to
+RPent file tools. Explicit full access is described in :doc:`add_planner`; it
+removes native filesystem/network isolation while preserving task rules.
+Analysis does not authorize a second robot connection, reset,
+Pi inference, scene-truth access or network administration. Verify actual SDK
+capabilities and filesystem behavior; a prose instruction alone is not a gate.
+
+Validate prompt selection, variables, source hashes, tool/schema consistency,
+developer/user separation and unchanged control behavior with offline tests.
+Check real model capabilities independently using synthetic evidence without
+robot actions. Run the applicable full checks in the remote runtime. Physical
+robot validation remains subject to operator authorization.
 
 .. _add-robot-toolkit:
 

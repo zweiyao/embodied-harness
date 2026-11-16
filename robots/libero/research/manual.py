@@ -216,17 +216,6 @@ class ManualToolkit(LiberoToolkit):
 
 
 def availability_prompt(selected):
-    names = ", ".join(t["name"] for t in selected)
-    eef_guidance = (
-        "Use the latest images and EEF pose to choose the next short move_eef target. "
-        "Revise it using returned images, measured pose and object motion; EEF arrival is not task completion.\n\n"
-        if any(t["name"] == "move_eef" for t in selected)
-        else ""
-    )
-    return (
-        "EXPERIMENT TOOL SELECTION (overrides references to unavailable tools in the following guides): "
-        f"Only these tools are enabled: {names}. Do not call any other tool or use shell/files/network to bypass this selection. "
-        "Skip guide steps that require disabled tools. Native observations and action feedback remain unchanged. "
-        "Generated perception tools compute evidence, not task success.\n\n"
-        + eef_guidance
-    )
+    from rpent.prompt.composition import availability_prompt as shared_prompt
+
+    return shared_prompt(selected)

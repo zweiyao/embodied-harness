@@ -1,51 +1,54 @@
 # Copyright 2026 The RPent Authors.
 # Licensed under the Apache License, Version 2.0.
-"""Shared instructions for both planners; no hidden task geometry."""
+"""UniVTAC robot contracts and task guidance through the shared composer."""
 
-from rpent.prompt.utils import BulletList
+from pathlib import Path
+
+from rpent.prompt.composition import (
+    COMMON_DIR,
+    memory_available,
+    system_sections,
+    task_file,
+    user_sections,
+)
+
+ROOT = Path(__file__).parent / "prompts"
 
 
 def system_prompt(variables=None):
-    selected = (variables or {}).get("manual_tools", [])
-    names = {item["name"] for item in selected}
-    generated = any(item["origin"] == "generated" for item in selected)
-    return {
-        "ROLE": "Complete the instructed contact manipulation task using observations and tools.",
-        "OBSERVATION": "Use the returned camera images, metric depth, bilateral tactile images and measured robot state. "
-        "Match observations by recorded step number and compare motion and contact changes after each action. "
-        "The initial tactile reference may already be loaded. Pixel or marker displacement is not calibrated force; "
-        "missing data means unknown.",
-        "CONTROL": (
-            "Command the Panda hand in world coordinates: position in metres, unit quaternion wxyz, "
-            "and gripper opening from 0 (closed) to 1 (open). Execute short targets, then inspect the returned "
-            "measured pose and object motion. If progress stops, reassess alignment and contact before repeating."
-            if "move_eef" in names
-            else None
-        ),
-        "AVAILABLE TOOLS": BulletList(
-            [
-                f"{item['name']}: {item['description'].strip().splitlines()[0]}"
-                for item in selected
-            ]
-        ),
-        "TOOL USE": "Use the declared tools to observe and act; their schemas specify arguments and limits. "
-        "Base decisions on returned sensor evidence and robot state. "
-        "Every model response counts toward the decision budget, including perception calls and corrections."
-        + (
-            " Generated perception tools provide measurements and evidence; assess their applicability "
-            "before using them to choose an action. Their output is not an official success verdict."
-            if generated
-            else ""
-        ),
-        "FINISH": "Call finish when observable evidence supports completion or recovery is exhausted. "
-        "Report the outcome and supporting evidence; the official evaluator records success separately.",
-    }
+    values = variables or {}
+    selected = values.get("manual_tools", [])
+    control = (
+        "control_eef.md"
+        if any(t["name"] == "move_eef" for t in selected)
+        else "control_native.md"
+    )
+    result = system_sections(
+        COMMON_DIR,
+        ROOT / control,
+        analysis=values.get("analysis_enabled", False),
+        variables=values,
+    )
+    if not values.get("analysis_enabled", False):
+        result["AVAILABLE TOOLS"] = (
+            "Use only the registered tools listed below. Do not bypass the selection "
+            "with shell, files, network or another controller. Inspect returned evidence."
+        )
+    result["TOOL SUMMARY"] = "\n".join(
+        f"- {t['name']}: {t['description'].strip().splitlines()[0]}" for t in selected
+    )
+    if any(t.get("origin") == "generated" for t in selected):
+        result["GENERATED EVIDENCE"] = (
+            "Generated perception tools provide measurements and evidence, not an official success verdict. Check their applicability."
+        )
+    return result
 
 
 def user_prompt(variables=None):
-    return {
-        "ENVIRONMENT": "The object starts grasped near the target; this does not guarantee alignment or completion. "
-        "The task does not require releasing the object.",
-        "TASK": "{{instruction}}",
-        "GUIDANCE": "{{task_guidance}}",
-    }
+    values = variables or {}
+    return user_sections(
+        COMMON_DIR,
+        task_file(ROOT / "tasks", "default"),
+        memory_available=memory_available(values),
+        variables=values,
+    )

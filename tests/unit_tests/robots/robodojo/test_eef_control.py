@@ -169,7 +169,11 @@ def test_bad_second_arm_causes_zero_control_steps(toolkit):
     value = target()
     value["right"]["position"] = [1.0, 0.0, 0.0]
     args = {"observation_step": tool.state.latest_record().step_idx, "target": value}
-    assert tool.execute_tool("move_eef", args).is_error
+    response = tool.execute_tool("move_eef", args)
+    assert not response.is_error
+    assert response.data["log"]["result"]["replan_required"] is True
+    assert response.data["log"]["result"]["steps_used"] == 0
+    assert len(response.images) == 3
     assert calls == []
 
 
@@ -200,12 +204,12 @@ def test_eef_mode_cannot_include_other_action_tools(other):
 
 def test_opt_in_prompt_uses_feedback_without_policy_instructions():
     default = system_prompt({})
-    assert "Pi_05" in default["ROLE AND RULES"]
+    assert "Pi_05" in default["ROBOT CONTROL"]
     eef = system_prompt({"manual_tools": selected("move_eef", "finish")})
     text = "\n".join(eef.values())
     assert "pi0_pick" not in text and "CuRobo" not in text
     assert "observation_step" in text and "wait for its returned" in text
-    assert "OUTPUT DISCIPLINE" in eef
+    assert "Before finish, save a concise audit" in text
 
 
 def test_native_eef_step_recomputes_after_ack_and_maps_grippers(
@@ -322,3 +326,89 @@ def test_default_workbench_selection_keeps_original_actions(tmp_path):
     )
     names = {item["name"] for item in bench.selection()}
     assert "move_eef" not in names and "pi0_pick" in names
+
+
+@pytest.mark.parametrize("kind", ["distance", "rotation"])
+def test_server_range_rejection_executes_no_native_control(
+    make_agent, monkeypatch, kind
+):
+    from robots.robodojo import eef_control
+
+    native = SimpleNamespace(take_action_cnt=[7])
+    agent = make_agent(native, meta={"max_episode_steps": 0})
+    agent.get_obs = lambda: {"state": state()}
+    monkeypatch.setattr(
+        eef_control,
+        "DualKinematics",
+        lambda _: pytest.fail("rejected target must not construct IK"),
+    )
+    value = target()
+    if kind == "distance":
+        value["right"]["position"] = [0.051, 0, 0]
+    else:
+        value["right"]["quaternion_wxyz"] = (
+            Rotation.from_rotvec([0, 0, 0.351]).as_quat()[[3, 0, 1, 2]].tolist()
+        )
+    result = agent.step_eef(value)
+    assert result["rejected"] and result["code"] == "eef_target_limit"
+    assert result["native_step_before"] == result["native_step_after"] == 7
+    assert native.take_action_cnt == [7]
+
+
+def test_mid_chunk_range_rejection_preserves_prefix_and_next_decision(toolkit):
+    tool, controls = toolkit
+    env = tool._primitives.env
+    observation = env.get_obs()
+    calls = []
+
+    def step(value):
+        calls.append(copy.deepcopy(value))
+        if len(calls) == 3:
+            observation["state"]["left_ee_pose"][0] = 0.051
+            return {
+                "rejected": True,
+                "code": "eef_target_limit",
+                "native_step_before": 2,
+                "native_step_after": 2,
+                "status": {"step": 2, "step_limit": None},
+            }
+        controls.append(copy.deepcopy(value))
+        return {
+            "native_step_before": len(controls) - 1,
+            "native_step_after": len(controls),
+            "status": {"step": len(controls), "step_limit": None},
+        }
+
+    env.step_eef = step
+    initial = tool.state.latest_record().step_idx
+    response = tool.execute_tool(
+        "move_eef", {"observation_step": initial, "target": target(), "steps": 5}
+    )
+    assert not response.is_error and len(response.images) == 3
+    result = response.data["log"]["result"]
+    assert result["steps_used"] == 2 and result["cancelled_steps"] == 3
+    assert result["replan_required"] and len(result["control_steps"]) == 2
+    assert len(calls) == 3 and len(controls) == 2
+    revised = target()
+    revised["left"]["position"][0] = 0.051
+    resumed = tool.execute_tool(
+        "move_eef",
+        {"observation_step": response.data["step"], "target": revised, "steps": 1},
+    )
+    assert not resumed.is_error and resumed.data["log"]["result"]["steps_used"] == 1
+    assert len(controls) == 3
+
+
+def test_non_range_errors_remain_errors(toolkit):
+    tool, calls = toolkit
+
+    def broken(_):
+        raise RuntimeError("physics failed")
+
+    tool._primitives.env.step_eef = broken
+    response = tool.execute_tool(
+        "move_eef",
+        {"observation_step": tool.state.latest_record().step_idx, "target": target()},
+    )
+    assert response.is_error and "physics failed" in response.data["error"]
+    assert calls == []
