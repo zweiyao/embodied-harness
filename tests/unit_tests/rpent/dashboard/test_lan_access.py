@@ -15,10 +15,16 @@
 import asyncio
 from functools import partial
 
+import pytest
+
 from rpent.dashboard.lan_access import relay
 
 
-def test_allowed_peer_streams_both_directions_and_half_close():
+@pytest.mark.parametrize(
+    "allowed_peer",
+    ["127.0.0.1", ("127.0.0.1", "127.0.0.2"), ("127.0.0.2", "127.0.0.1")],
+)
+def test_allowed_peer_streams_both_directions_and_half_close(allowed_peer):
     async def check():
         async def respond(reader, writer):
             data = await reader.read()
@@ -29,7 +35,7 @@ def test_allowed_peer_streams_both_directions_and_half_close():
 
         async with await asyncio.start_server(respond, "127.0.0.1", 0) as upstream:
             port = upstream.sockets[0].getsockname()[1]
-            handler = partial(relay, allowed_peer="127.0.0.1", upstream_port=port)
+            handler = partial(relay, allowed_peer=allowed_peer, upstream_port=port)
             async with await asyncio.start_server(handler, "127.0.0.1", 0) as gateway:
                 reader, writer = await asyncio.open_connection(
                     "127.0.0.1", gateway.sockets[0].getsockname()[1]
@@ -47,7 +53,10 @@ def test_allowed_peer_streams_both_directions_and_half_close():
     asyncio.run(check())
 
 
-def test_disallowed_peer_cannot_reach_upstream_even_with_forwarded_header():
+@pytest.mark.parametrize(
+    "allowed_peer", ["127.0.0.2", "127.0.0.10", ("127.0.0.2", "127.0.0.10")]
+)
+def test_disallowed_peer_cannot_reach_upstream_even_with_forwarded_header(allowed_peer):
     async def check():
         connections = []
 
@@ -58,7 +67,7 @@ def test_disallowed_peer_cannot_reach_upstream_even_with_forwarded_header():
 
         async with await asyncio.start_server(record, "127.0.0.1", 0) as upstream:
             port = upstream.sockets[0].getsockname()[1]
-            handler = partial(relay, allowed_peer="127.0.0.2", upstream_port=port)
+            handler = partial(relay, allowed_peer=allowed_peer, upstream_port=port)
             async with await asyncio.start_server(handler, "127.0.0.1", 0) as gateway:
                 reader, writer = await asyncio.open_connection(
                     "127.0.0.1", gateway.sockets[0].getsockname()[1]
@@ -76,3 +85,30 @@ def test_disallowed_peer_cannot_reach_upstream_even_with_forwarded_header():
                 assert not connections
 
     asyncio.run(check())
+
+
+def test_repeated_allow_keeps_both_addresses(monkeypatch):
+    from rpent.dashboard import lan_access
+
+    calls = []
+
+    async def serve(bind, allowed_peer, ports):
+        calls.append((bind, allowed_peer, ports))
+
+    monkeypatch.setattr(lan_access, "serve", serve)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "lan_access",
+            "--bind",
+            "192.0.2.1",
+            "--allow",
+            "192.0.2.2",
+            "--allow",
+            "192.0.2.3",
+            "--ports",
+            "8094",
+        ],
+    )
+    lan_access.main()
+    assert calls == [("192.0.2.1", ("192.0.2.2", "192.0.2.3"), [8094])]
