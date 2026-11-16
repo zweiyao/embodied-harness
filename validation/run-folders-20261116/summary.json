@@ -1,0 +1,77 @@
+{
+  "base_commit": "f3edcf77f4968183aeb2733ff4c87b4a36f886c5",
+  "scope": "read-only experiment record presentation",
+  "remote_python": "3.11",
+  "dashboard_tests": {
+    "passed": 139
+  },
+  "unit_tests": {
+    "passed": 2171,
+    "skipped": 11,
+    "seconds": 72.66
+  },
+  "pre_commit": "passed",
+  "docs_en": "passed (-W --keep-going)",
+  "docs_zh": "passed (-W --keep-going)",
+  "browser": [
+    {
+      "robot": "robodojo",
+      "records": 81,
+      "tasks": 54,
+      "videos": 3
+    },
+    {
+      "robot": "flexiv",
+      "records": 12,
+      "tasks": 8,
+      "videos": 0
+    },
+    {
+      "robot": "libero",
+      "records": 255,
+      "tasks": 27,
+      "videos": 2
+    },
+    {
+      "robot": "univtac",
+      "records": 59,
+      "tasks": 3,
+      "videos": 0
+    }
+  ],
+  "page_errors": [],
+  "live_source_roots": 3,
+  "service_restarts": 0,
+  "data_migrations": 0,
+  "mac_robodojo_http_status": 200,
+  "raw_screenshots_committed": false,
+  "record_card_result": {
+    "source": "outcome.environment_success",
+    "true": "任务成功",
+    "false": "任务失败",
+    "missing": "成功状态未记录",
+    "raw_configuration_on_card": false,
+    "full_configuration_in_details": true,
+    "live_four_workbench_checks": "passed"
+  },
+  "permanent_delete": {
+    "scope": "one finalized task directory in configured roots",
+    "confirmation": "browser confirmation plus matching confirm_run_id",
+    "active_or_unfinalized_runs": "refused",
+    "external_symlink_targets": "preserved",
+    "live_workbenches_tested": [
+      "robodojo",
+      "flexiv",
+      "libero",
+      "univtac"
+    ],
+    "disposable_records_deleted": 4,
+    "real_records_deleted": 0,
+    "original_record_count": 407,
+    "protected_metadata_files_unchanged": 1200,
+    "device_and_access_service_pids": "preserved",
+    "workbench_services_reloaded": 6,
+    "auxiliary_units": "recreated from original launcher after transient-unit collection; shared model endpoints rebound",
+    "libero_runtime": "record management works; experiment startup is fatal because the configured VLA/SAM3 endpoints are not listening; no additional weights loaded"
+  }
+}
