@@ -76,9 +76,9 @@ Codex; selecting an API model does not grant Codex capabilities.
 Each enabled run works in ``<output_dir>/agent/``. Its ``workspace.json``
 identifies the Python interpreter, evidence and memory paths; ``NOTES.md``
 and ``scratch/`` hold notes, scripts and crops. A Codex permission profile
-grants writes to this workspace while keeping source, evidence and published
+by default grants writes to this workspace while keeping source, evidence and published
 memory read-only. RPent file-tool writes use the same boundary. Native
-analysis commands have no network access and cannot open a second controller
+commands in the default restricted mode have no network access and cannot open a second controller
 connection. Robot actions still go through the registered RPent MCP tools;
 other MCP servers, applications, browsing and multi-agent tools stay disabled.
 
@@ -88,8 +88,22 @@ the selected factories, loaded files, hashes and backend roles. The
 SDK events and produced files to verify actual capabilities. A successful
 calculation probe is not evidence of robot-task success.
 
-On Linux, native execution requires working Bubblewrap and user namespaces.
+For the default restricted mode, Linux native execution requires working
+Bubblewrap and user namespaces.
 Check this prerequisite on the deployment host before enabling analysis. A
 sandbox startup failure leaves calculations and write protection unverified;
-do not replace the permission profile with full access. See the
+do not automatically replace the permission profile with full access. See the
 `Codex Linux sandbox requirements <https://github.com/openai/codex/blob/main/codex-rs/linux-sandbox/README.md>`_.
+
+Explicit Full Access
+~~~~~~~~~~~~~~~~~~~~
+
+``--codex-analysis --codex-full-access`` enables unrestricted native filesystem
+and network access with approval policy ``never``. It is an explicit operator
+choice, not an automatic sandbox-error fallback. Both the thread and subsequent
+turns receive full access; the capability manifest records the selected mode.
+
+Robot control still uses the selected RPent tools. RPent file-tool writes remain
+limited to ``agent/``. Treating source, evidence and published experience as
+read-only is a task rule in this mode, not operating-system isolation. API
+planners do not gain Codex capabilities from these flags.

@@ -109,6 +109,7 @@ class CodexPlanner(Planner):
         model: str | None = None,
         reasoning_effort: str = "none",
         analysis_enabled: bool = False,
+        full_access: bool = False,
     ):
         """Initialize the Codex SDK backend."""
         self._output_dir = str(output_dir)
@@ -118,6 +119,9 @@ class CodexPlanner(Planner):
         self._output_path = Path(output_path) if output_path else None
         self._model = model or os.environ.get("CODEX_MODEL", None)
         self._analysis_enabled = analysis_enabled
+        if full_access and not analysis_enabled:
+            raise ValueError("--codex-full-access requires --codex-analysis")
+        self._full_access = full_access
         self._analysis_workspace: Path | None = None
         self._analysis_memory: Path | None = None
         self._source_root = Path(self._repo_root)
@@ -210,6 +214,11 @@ class CodexPlanner(Planner):
                     self._thread_options["config"] = {
                         "model_reasoning_effort": self._turn_options["effort"].value
                     }
+                    if self._full_access:
+                        self._thread_options["sandbox"] = (
+                            openai_codex.Sandbox.full_access
+                        )
+                        self._turn_options["sandbox"] = openai_codex.Sandbox.full_access
                 else:
                     cwd = root / "work"
                     cwd.mkdir()
@@ -676,13 +685,19 @@ class CodexPlanner(Planner):
             from rpent.planner.codex_workspace import analysis_overrides
 
             analysis = analysis_overrides(
-                self._analysis_workspace, self._analysis_memory, self._source_root
+                self._analysis_workspace,
+                self._analysis_memory,
+                self._source_root,
+                full_access=self._full_access,
             )
             manifest = {
                 "requested_model": self._model,
                 "requested_effort": self._turn_options["effort"].value,
                 "analysis_enabled": True,
-                "permission_profile": "rpent_analysis",
+                "permission_profile": "full_access"
+                if self._full_access
+                else "rpent_analysis",
+                "approval_policy": "never",
                 "workspace": str(self._analysis_workspace),
                 "robot_tools": self._restricted_tools,
                 "requested_features": ["shell", "python_execution", "image_viewing"],

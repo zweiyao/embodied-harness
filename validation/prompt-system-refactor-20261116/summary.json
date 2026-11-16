@@ -1,5 +1,5 @@
 {
-  "status": "code_verified_runtime_analysis_blocked",
+  "status": "verified_and_deployed_full_access",
   "branch": "refactor/prompt-system",
   "base": "55742f6",
   "implementation": {
@@ -12,29 +12,36 @@
     "codex_fixed_role": "developer_instructions",
     "analysis_opt_in": "--codex-analysis",
     "experience_bodies_modified": false,
-    "frozen_libero_materials_preserved": true
+    "frozen_libero_materials_preserved": true,
+    "full_access_opt_in": "--codex-analysis --codex-full-access"
   },
   "validation": {
     "host": "zwy@10.162.250.228",
     "python": "3.11",
     "unit": {
-      "passed": 2141,
+      "passed": 2143,
       "skipped": 16,
-      "elapsed_s": 70.58
+      "elapsed_s": 69.78
     },
     "pre_commit": "passed",
     "sphinx_en_strict": "passed",
     "sphinx_zh_strict": "passed",
     "wheel_markdown_resources": 19,
     "wheel_resources_match_source": true,
-    "protected_files_unchanged": 236
+    "protected_files_unchanged": 236,
+    "wheel_sha256": "d9389c8ffa33bfc00648cf96e0660f8f53ece991f06b929101ea7c3ecca365a2",
+    "public_page_http": 200,
+    "historical_video_range_http": 206
   },
   "candidate": {
-    "loopback_port": 38094,
+    "loopback_port": 8094,
+    "public_url": "http://10.162.250.228:8094/",
     "state": "ready",
     "model": "gpt-6-astra",
     "reasoning_effort": "high",
     "codex_analysis": true,
+    "codex_full_access": true,
+    "approval_policy": "never",
     "tools": [
       "move_eef",
       "view_env_state",
@@ -47,49 +54,76 @@
     ],
     "native_steps": 0,
     "run_id": null,
-    "public_service_replaced": false
+    "public_service_replaced": true,
+    "pid": 2541355
   },
   "model_probe": {
     "robot_constructed": false,
     "model": "gpt-6-astra",
     "effort": "high",
-    "native_image_view": "passed",
-    "registered_finish": "passed",
-    "native_command_execution": "blocked_before_execution",
-    "calculation": "unverified",
-    "crop": "unverified",
-    "native_write_permissions": "unverified",
-    "native_network_denial": "unverified",
-    "error": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted",
-    "legacy_landlock": "not a supported substitute for filesystem-restricted execution; not enabled"
+    "default_restricted_mode": {
+      "calculation": "passed",
+      "image_view_and_crop": "passed",
+      "source_evidence_memory_write_denials": "passed_EROFS",
+      "network_denial": "passed_EPERM",
+      "mcp_write_boundary": "passed"
+    },
+    "explicit_full_access_mode": {
+      "calculation": "passed",
+      "outside_agent_file_write": "passed",
+      "own_loopback_listener": "ping_pong_verified",
+      "native_commands": 4,
+      "native_command_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "crop": "red-square.png_61x61_all_red_verified",
+      "native_image_view": "verified",
+      "elapsed_s": 46.734
+    },
+    "approval_prompts": 0
   },
-  "pending": [
-    "Additional approval and administrator access for scoped remote Bubblewrap AppArmor prerequisite",
-    "Repeat no-action calculation/crop/native-permission probe after host prerequisite is available",
-    "Switch public RoboDojo workbench only after verification and idle check"
-  ],
+  "pending": [],
   "unchanged": {
-    "public_workbench_pid": 3633538,
-    "previous_eef_pid": 1847374,
+    "original_frozen_code_config_and_memory_hashes": 236,
     "proxy_configuration": true,
-    "mac_network": true,
-    "robot_control_implementation": true
+    "mac_network_and_codex": true,
+    "robot_control_implementation": true,
+    "libero_pid": 3593034,
+    "univtac_pid": 1218486
   },
   "task_experiments_started": 0,
   "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/prompt-system-refactor-20261116",
   "evidence": [
-    "unit-pass.log",
-    "pre-commit-final.log",
-    "sphinx-en-final.log",
-    "sphinx-zh-final.log",
-    "wheel-resources.json",
-    "analysis-probe-v2.json",
-    "candidate-settings.json",
-    "preservation.json"
+    "unit-full-access.log",
+    "pre-commit-full-access.log",
+    "sphinx-en-full-access.log",
+    "sphinx-zh-full-access.log",
+    "wheel-resources-full-access.json",
+    "analysis-probe-v3.json",
+    "analysis-probe-v4.json",
+    "analysis-probe-full.json",
+    "native-events-full-access.json",
+    "deployment.json",
+    "public-settings.json",
+    "full-access-config.json"
   ],
   "limitations": [
     "One remote Python version checked; GitHub CI matrix separate",
-    "Native analysis and protected execution are not declared verified or production deployed",
-    "No task performance or success-rate claim"
-  ]
+    "Full native access does not enforce filesystem/network isolation; published inputs remain read-only by task contract and RPent file-tool authorization",
+    "No robot task experiment or success-rate claim; no automatic merge",
+    "The initial restricted probe classifier omitted EROFS and the full probe expected a different crop filename; original records retained, final host audit checked actual errno, crop and SDK events"
+  ],
+  "host_configuration": {
+    "scoped_apparmor_profile": "/etc/apparmor.d/rpent-codex-bwrap",
+    "system_bwrap_probe": "passed",
+    "global_apparmor_restriction_retained": true,
+    "codex_user_configs_updated": 2,
+    "sandbox_mode": "danger-full-access",
+    "approval_policy": "never",
+    "backups_retained": true,
+    "credentials_committed": false
+  }
 }

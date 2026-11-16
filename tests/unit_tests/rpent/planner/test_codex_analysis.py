@@ -142,3 +142,51 @@ def test_dashboard_sdk_separates_fixed_instructions_and_steering(monkeypatch):
     assert seen["thread"]["developer_instructions"] == "fixed"
     assert seen["turn"] == ("task only", {"effort": "high"})
     assert seen["steer"] == "follow-up"
+
+
+def test_explicit_full_access_reaches_thread_turn_and_native_config(
+    tmp_path, monkeypatch
+):
+    config_type = openai_codex.CodexConfig
+    install_fake_backend(monkeypatch)
+    monkeypatch.setattr(openai_codex, "CodexConfig", config_type)
+    toolkit = FakeToolkit()
+    toolkit.memory = MemoryManager(tmp_path / "memory")
+    planner = CodexPlanner(
+        output_dir=str(tmp_path / "run"),
+        repo_root=tmp_path,
+        dashboard_events=RecordingSink(),
+        model="gpt-6-astra",
+        reasoning_effort="high",
+        analysis_enabled=True,
+        full_access=True,
+    )
+    result = planner.solve(
+        system_prompt="fixed", user_message="task", toolkit=toolkit, max_turns=3
+    )
+    assert result.error is None
+    codex = FakeCodex.instances[0]
+    assert codex.thread_options["sandbox"] is openai_codex.Sandbox.full_access
+    assert (
+        codex.thread.turn_prompts[0][1]["sandbox"] is openai_codex.Sandbox.full_access
+    )
+    assert codex.thread_options["approval_mode"] is openai_codex.ApprovalMode.deny_all
+    overrides = codex.config.config_overrides
+    assert 'sandbox_mode="danger-full-access"' in overrides
+    assert 'approval_policy="never"' in overrides
+    assert not any(
+        line.startswith("permissions.") or line.startswith("default_permissions=")
+        for line in overrides
+    )
+    assert "features.shell_tool=true" in overrides
+    # Full native access does not grant additional robot MCP tools or publish memory.
+    assert 'mcp_servers.rpent.enabled_tools=["finish"]' in overrides
+    with pytest.raises(PermissionError):
+        toolkit.memory.authorize_write(tmp_path / "outside.txt")
+
+
+def test_full_access_requires_analysis_mode(tmp_path):
+    with pytest.raises(ValueError, match="requires --codex-analysis"):
+        CodexPlanner(
+            output_dir=str(tmp_path), dashboard_events=RecordingSink(), full_access=True
+        )

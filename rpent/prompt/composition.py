@@ -93,6 +93,12 @@ def system_sections(
     if analysis:
         files["ANALYSIS WORKSPACE"] = common_dir / "analysis_workspace.md"
     result = read_sections(files)
+    if analysis and values.get("analysis_full_access"):
+        result["EXECUTION PERMISSIONS"] = (
+            "Codex has full filesystem and network access without approval prompts. "
+            "Treating source, evidence and published memory as read-only is a task rule, "
+            "not OS isolation. RPent file-tool writes remain limited to agent/."
+        )
     if "manual_tools" in values:
         result["AVAILABLE TOOLS"] = availability_prompt(
             values["manual_tools"], analysis=analysis

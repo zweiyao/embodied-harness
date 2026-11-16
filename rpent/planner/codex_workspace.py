@@ -45,9 +45,25 @@ def prepare_workspace(output_dir: Path, memory_dir: Path | None) -> Path:
 
 
 def analysis_overrides(
-    workspace: Path, memory_dir: Path | None, source_root: Path
+    workspace: Path,
+    memory_dir: Path | None,
+    source_root: Path,
+    *,
+    full_access: bool = False,
 ) -> tuple[str, ...]:
-    """Use Codex permission profiles without a full-access fallback."""
+    """Select explicit full access or the default restricted analysis profile."""
+    features = (
+        "features.shell_tool=true",
+        "features.unified_exec=true",
+        "features.view_image=true",
+        "features.view_image_tool=true",
+    )
+    if full_access:
+        return (
+            'sandbox_mode="danger-full-access"',
+            'approval_policy="never"',
+            *features,
+        )
     entries = {
         str(source_root.resolve()): "read",
         str(workspace.parent): "read",
@@ -64,8 +80,5 @@ def analysis_overrides(
         'default_permissions="rpent_analysis"',
         'permissions.rpent_analysis.extends=":workspace"',
         "permissions.rpent_analysis.filesystem=" + table,
-        "features.shell_tool=true",
-        "features.unified_exec=true",
-        "features.view_image=true",
-        "features.view_image_tool=true",
+        *features,
     )

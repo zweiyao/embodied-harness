@@ -150,6 +150,11 @@ def run_dashboard_session(
         robot_name=robot_spec.name,
         run_options={
             **(
+                {"codex_full_access": True}
+                if getattr(args, "codex_full_access", False)
+                else {}
+            ),
+            **(
                 {"codex_analysis": True}
                 if getattr(args, "codex_analysis", False)
                 else {}
@@ -329,6 +334,7 @@ def _run_dashboard_task_inner(
                         "max_tokens",
                         "planner_timeout_s",
                         "codex_analysis",
+                        "codex_full_access",
                     }
                 },
             },
@@ -502,6 +508,9 @@ def _run_dashboard_task_inner(
                         planner_timeout_s=task_args.planner_timeout_s,
                         reasoning_effort=task_args.reasoning_effort,
                         codex_analysis=getattr(task_args, "codex_analysis", False),
+                        codex_full_access=getattr(
+                            task_args, "codex_full_access", False
+                        ),
                         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
                         dashboard_events=state,
                         no_images=args.no_images,

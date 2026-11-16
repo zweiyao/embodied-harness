@@ -91,12 +91,18 @@ def test_legacy_factories_and_api_capabilities(tmp_path):
     )
     config = SimpleNamespace(output_dir=tmp_path, prompt_vars={})
     args = SimpleNamespace(
-        planner="api", codex_analysis=True, max_turns=5, planner_timeout_s=60
+        planner="api",
+        codex_analysis=True,
+        codex_full_access=True,
+        max_turns=5,
+        planner_timeout_s=60,
     )
     prepare_prompt_context(args, config)
     assert config.prompt_vars["analysis_enabled"] is False
+    assert config.prompt_vars["analysis_full_access"] is False
     assert "analysis_workspace" not in config.prompt_vars
     args.planner = "codex"
     prepare_prompt_context(args, config)
     assert config.prompt_vars["analysis_enabled"] is True
+    assert config.prompt_vars["analysis_full_access"] is True
     assert config.prompt_vars["analysis_workspace"] == str(tmp_path / "agent")

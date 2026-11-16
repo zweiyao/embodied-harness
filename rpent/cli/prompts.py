@@ -15,6 +15,9 @@ def prepare_prompt_context(args, config) -> None:
     values = config.prompt_vars
     values["output_dir"] = str(config.output_dir)
     values["analysis_enabled"] = enabled
+    values["analysis_full_access"] = enabled and bool(
+        getattr(args, "codex_full_access", False)
+    )
     if enabled:
         values["analysis_workspace"] = str(config.output_dir / "agent")
     for key in ("max_turns", "planner_timeout_s"):

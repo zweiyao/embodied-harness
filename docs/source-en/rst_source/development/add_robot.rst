@@ -344,9 +344,11 @@ The Codex backend sends fixed instructions through ``developer_instructions``
 and the task through user input. An explicit analysis setting can enable code,
 calculation and image inspection. ``workspace.json`` gives the interpreter and
 evidence paths; ``NOTES.md`` and ``scratch/`` hold episode-local work.
-Keep analysis writes inside the run-owned agent directory and source, recorded
+By default, keep analysis writes inside the run-owned agent directory and source, recorded
 evidence and published experience read-only. Apply the same write boundary to
-RPent file tools. Analysis does not grant a second robot connection, reset,
+RPent file tools. Explicit full access is described in :doc:`add_planner`; it
+removes native filesystem/network isolation while preserving task rules.
+Analysis does not authorize a second robot connection, reset,
 Pi inference, scene-truth access or network administration. Verify actual SDK
 capabilities and filesystem behavior; a prose instruction alone is not a gate.
 
