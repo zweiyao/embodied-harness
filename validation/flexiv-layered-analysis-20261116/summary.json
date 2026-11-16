@@ -1,0 +1,100 @@
+{
+  "status": "deployed_ready_unarmed",
+  "source": "ed33c0840a8a8584fe21004bac98deab5cadad66",
+  "configuration": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 25,
+    "max_tokens": 16384,
+    "planner_timeout_s": 3600,
+    "control_mode": "rdk",
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:finish",
+      "native:list_dir",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:move_eef_delta",
+      "native:move_tcp",
+      "native:set_gripper",
+      "native:stop_motion",
+      "native:localize_target",
+      "native:observe",
+      "native:tactile_compare",
+      "native:view_perception_setup"
+    ],
+    "reasoning_effort": "high"
+  },
+  "deployment": {
+    "dashboard_pid": "3016849",
+    "working_directory": "/home/zwy/work/embodied_harness/checkouts/prompt-system-refactor-20261116",
+    "unit_override": "/home/zwy/.config/systemd/user/harnessvla-flexiv-dashboard.service.d/zz-layered-analysis.conf",
+    "remote_desktop_url": "http://127.0.0.1:8083/",
+    "physical_control_services_source": "/home/zwy/work/harnessvla",
+    "collector_released": true,
+    "armed": false,
+    "mode": "Mode.IDLE",
+    "fault": false,
+    "calibrated_rgbd_sizes": {
+      "wrist": [
+        1280,
+        720
+      ],
+      "side": [
+        1280,
+        720
+      ]
+    },
+    "tactile_device_present": false,
+    "reset_before_task": false,
+    "robot_task_started": false,
+    "new_rdk_command_events": 0,
+    "audit_method": "Native audit event timestamps at or after the recorded handoff start",
+    "source_config_calibration_memory_unchanged": true,
+    "unrelated_pids_unchanged": true
+  },
+  "validation": {
+    "remote_python": "3.11",
+    "unit_passed": 2152,
+    "unit_skipped": 16,
+    "unit_elapsed_s": 72.78,
+    "native_model_probe": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "elapsed_s": 54.031,
+      "command_execution_count": 4,
+      "native_image_view_count": 2,
+      "all_native_commands_exit_zero": true,
+      "geometry_calculation": "passed",
+      "crop_pixels": "passed",
+      "full_access_sentinel": "passed",
+      "robot_tools_registered": false
+    },
+    "deployed_model_check_latency_s": 11.147,
+    "deployed_model_check_ok": true,
+    "pre_commit": "passed",
+    "shell_syntax": "passed"
+  },
+  "prompt_layout": [
+    "shared requirements",
+    "Flexiv RDK contract",
+    "task",
+    "indexed experience"
+  ],
+  "prompt_roles": {
+    "system": "developer_instructions",
+    "user": "user_input"
+  },
+  "experience_files_unchanged": 3,
+  "unchanged_control_files": 19,
+  "limitations": [
+    "No physical action or task-performance test was run.",
+    "Full native filesystem/network permissions match the explicitly requested RoboDojo mode; source/evidence/memory read-only requirements are task rules, not OS isolation.",
+    "The Xense device is currently absent; tactile operation was not verified.",
+    "Collector shutdown may invoke its existing Stop lifecycle; no reset, enable or gripper command was requested.",
+    "Initial SSH-network, probe preparation and validation-helper failures remain in remote logs; final checks used the actual service environment."
+  ],
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/flexiv-layered-analysis-20261116"
+}
