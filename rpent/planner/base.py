@@ -227,6 +227,8 @@ def build_planner(
     dashboard_events: DashboardEventSink,
     no_images: bool = False,
     interactive: bool = False,
+    codex_analysis: bool = False,
+    codex_full_access: bool = False,
 ) -> Planner:
     """Build a planner for the given backend, resolving credentials from env vars."""
     # Imports are deferred to avoid a circular import: api_loop / claude_code /
@@ -288,6 +290,8 @@ def build_planner(
             output_path=Path(output_dir) / f"codex_{recipe_tag}.txt",
             dashboard_events=dashboard_events,
             reasoning_effort=reasoning_effort,
+            analysis_enabled=codex_analysis,
+            full_access=codex_full_access,
         )
     if planner_type == "flash":
         from rpent.planner.flash import FlashPlanner

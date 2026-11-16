@@ -50,6 +50,14 @@ def validate_selection(selected: list[dict]) -> None:
     """Reject unsupported execution and stale declarations before ENV startup."""
     catalog = {item["id"]: item for item in native_catalog()}
     names = [item["name"] for item in selected]
+    if "move_eef" in names and set(names) & {
+        "move_to",
+        "set_gripper",
+        "pi0_pick",
+        "stabilize",
+        "place_in_bin",
+    }:
+        raise ValueError("Select move_eef without other motion or policy tools")
     if "finish" not in names or len(names) != len(set(names)):
         raise ValueError("Select finish and at most one version per tool")
     for item in selected:

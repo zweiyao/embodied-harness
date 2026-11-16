@@ -407,7 +407,7 @@ def test_back_project_row_axis_follows_the_usd_camera_frame():
 
 
 @pytest.mark.parametrize("task", ["put_bottles_into_dustbin", "stack_bowls_random"])
-def test_toolkit_exposes_every_robot_tool(monkeypatch, tmp_path, task):
+def test_toolkit_exposes_every_default_robot_tool(monkeypatch, tmp_path, task):
     from robots.robodojo import toolkit as module
     from rpent.dashboard.events import NullDashboardEventSink
     from rpent.memory import MemoryManager
@@ -438,10 +438,10 @@ def test_toolkit_exposes_every_robot_tool(monkeypatch, tmp_path, task):
     assert isinstance(toolkit.memory, MemoryManager)
     assert toolkit.memory.root == tmp_path / "memory"
     names = {spec.name for spec in toolkit.list_tools()}
-    robot_names = {spec.name for spec in iter_tools(tools)}
-    # Every backend tool is exposed for every task: the toolkit no longer
-    # filters schemas by group or by task name.
+    robot_names = {spec.name for spec in iter_tools(tools)} - {"move_eef"}
+    # Default tools remain independent of task name; short EEF is opt-in.
     assert names & robot_names == robot_names
+    assert "move_eef" not in names
     assert "finish" in names
     for name in ("get_reward_details", "get_safety_status"):
         assert name not in names
@@ -643,7 +643,8 @@ def test_pi0_pick_checks_cancel_between_native_actions():
     assert len(executed) == 1
 
 
-def test_memory_discovery_is_scoped_to_dev_user_prompt():
+def test_memory_discovery_is_scoped_to_dev_user_prompt(tmp_path):
+    (tmp_path / "MEMORY.md").write_text("# Published experience index\n")
     bundle = robot_spec.get_robot_spec().prompts
     variables = {
         "task": "arrange_largest_number",
@@ -652,14 +653,14 @@ def test_memory_discovery_is_scoped_to_dev_user_prompt():
         "action_type": "joint",
         "output_dir": "/output",
         "task_summary": "scene",
-        "memory_dir": "/memory/reference",
+        "memory_dir": str(tmp_path),
         "mode": "dev",
     }
     user = bundle.render("user", variables=variables)
-    assert "/memory/reference/MEMORY.md" in user
+    assert str(tmp_path / "MEMORY.md") in user
     assert "read_text_file" in user
-    assert "/memory/reference" not in bundle.render("system", variables=variables)
+    assert str(tmp_path) not in bundle.render("system", variables=variables)
     replay = bundle.render("user", variables={**variables, "mode": "eval-fair"})
     assert "arrange_largest_number / layout 0" in replay
     assert "read_text_file" not in replay
-    assert "/memory/reference" not in replay
+    assert str(tmp_path) not in replay

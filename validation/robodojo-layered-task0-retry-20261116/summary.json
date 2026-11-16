@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-16T02:59:10.715623+00:00",
+  "phase": "completed",
+  "task_index": 0,
+  "task": "align_blocks",
+  "layout": 0,
+  "run_id": "736e5786c205b1a9d2e8",
+  "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-prompt-refactor-20261116-024712-2606590/tasks/0001_align_blocks_l0",
+  "url": "http://10.162.250.228:8094/runs?id=736e5786c205b1a9d2e8",
+  "instruction": "Use the set square to push the three blocks into a straight, aligned row, then reset the robot arm.",
+  "valid": true,
+  "incident": null,
+  "success": false,
+  "status": "timeout",
+  "finish": null,
+  "error": "Codex SDK timed out after 600s",
+  "elapsed_s": 643.0,
+  "planner_elapsed_s": 600.2,
+  "interactions": 52,
+  "input_tokens": 3137524,
+  "output_tokens": 12255,
+  "total_tokens": 3149779,
+  "tool_calls": {
+    "view_env_state": 2,
+    "back_project": 23,
+    "move_eef": 41
+  },
+  "eef_tool_requests": 41,
+  "pi_requests": 0,
+  "other_action_requests": {},
+  "config": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 120,
+    "max_tokens": 16384,
+    "planner_timeout_s": 600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_eef",
+      "native:view_env_state",
+      "native:back_project",
+      "native:segment",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:list_dir",
+      "native:finish"
+    ],
+    "reasoning_effort": "high"
+  },
+  "videos": [
+    "videos/episode_2026-11-16_10-48-47_cam_head.mp4",
+    "videos/episode_2026-11-16_10-48-47_cam_left_wrist.mp4",
+    "videos/episode_2026-11-16_10-48-47_cam_right_wrist.mp4"
+  ],
+  "source_hashes_unchanged": true,
+  "authoritative_result_consistent": true,
+  "recoverable_rejections": 1,
+  "confirmed_native_steps": 200,
+  "controller_error_steps": [],
+  "environment_success_observed": true,
+  "timeout_failure": true,
+  "success_definition": "protocol success; timeout counts as failure under operator rule",
+  "native_goal_first_achieved_time": "not recorded; only finalization verdict is available",
+  "recovery_verified": [
+    {
+      "rejected_observation": 4,
+      "steps_used": 0,
+      "cancelled_steps": 5,
+      "feedback_images": 3,
+      "next_observation_used": 4,
+      "target_revised": true,
+      "next_steps_used": 5
+    }
+  ],
+  "continuous_native_acks_verified": 200
+}

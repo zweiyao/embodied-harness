@@ -39,6 +39,7 @@ class RoboDojoEnvFacade(MainThreadServeMixin, BaseEnvFacade):
                 "env.get_reward_details": self.get_reward_details,
                 "env.get_safety_status": self.get_safety_status,
                 "env.solve_ik_position": self.solve_ik_position,
+                "env.step_eef": self.step_eef,
                 "env.is_success": self.is_success,
                 "env.close": self.request_close,
             }
@@ -64,6 +65,7 @@ class RoboDojoEnvFacade(MainThreadServeMixin, BaseEnvFacade):
                 "env.get_safety_status",
                 "env.is_success",
                 "env.reset",
+                "env.step_eef",
             ):
                 self._rpc.pop(method, None)
 
@@ -92,6 +94,10 @@ class RoboDojoEnvFacade(MainThreadServeMixin, BaseEnvFacade):
 
     def get_obs(self) -> dict:
         return self.env.get_obs()
+
+    def step_eef(self, target: dict) -> dict:
+        """Serialize a short EEF update with the existing mutation RPC lock."""
+        return self.env.step_eef(target)
 
     def get_status(self) -> dict:
         return self.env.get_status()

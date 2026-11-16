@@ -185,6 +185,17 @@ def _build_argparser() -> argparse.ArgumentParser:
         "Defaults to MAX_BUDGET_USD env or 10.",
     )
 
+    ap.add_argument(
+        "--codex-analysis",
+        action="store_true",
+        help="Enable run-scoped Codex calculation, code and image analysis; robot actions still use registered tools.",
+    )
+    ap.add_argument(
+        "--codex-full-access",
+        action="store_true",
+        help="Give Codex analysis unrestricted filesystem/network access without approval prompts; requires --codex-analysis.",
+    )
+
     # other config
     ap.add_argument("--output-dir", default=None)
     ap.add_argument(
@@ -303,18 +314,24 @@ def _start_continuation_session(
         max_tokens=args.max_tokens,
         planner_timeout_s=args.planner_timeout_s,
         reasoning_effort=args.reasoning_effort,
+        codex_analysis=getattr(args, "codex_analysis", False),
+        codex_full_access=getattr(args, "codex_full_access", False),
         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
         dashboard_events=dashboard_events,
         no_images=args.no_images,
         interactive=args.interactive,
     )
-    system_prompt = prompt_bundle.render(
+    from rpent.cli.prompts import render_prompt
+
+    system_prompt, _sources = render_prompt(
+        prompt_bundle,
         "system",
-        variables={
+        {
             **prompt_vars,
             "session_number": session_number,
             "session_max": session_max,
         },
+        output_dir,
     )
     session_message = _handoff_message(
         output_dir,
@@ -355,6 +372,8 @@ def main() -> int:
         help="show this help message and exit",
     )
     args = parser.parse_args()
+    if args.codex_full_access and not args.codex_analysis:
+        parser.error("--codex-full-access requires --codex-analysis")
     args.robot_name = early.robot_name
     human_interactive_exploration = (
         args.explore and robot_spec.supports_human_interactive_exploration
@@ -444,6 +463,9 @@ def main() -> int:
     logger.info("physical agent cmd: %s", shlex.join([sys.executable, *sys.argv]))
 
     prepare_run_memory(args, robot_spec, run_config)
+    from rpent.cli.prompts import prepare_prompt_context, record_prompts, render_prompt
+
+    prepare_prompt_context(args, run_config)
 
     dashboard_events = NullDashboardEventSink()
 
@@ -458,6 +480,8 @@ def main() -> int:
         max_tokens=args.max_tokens,
         planner_timeout_s=args.planner_timeout_s,
         reasoning_effort=args.reasoning_effort,
+        codex_analysis=getattr(args, "codex_analysis", False),
+        codex_full_access=getattr(args, "codex_full_access", False),
         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
         dashboard_events=dashboard_events,
         no_images=args.no_images,
@@ -465,13 +489,11 @@ def main() -> int:
     )
     prompt_bundle = robot_spec.prompts
     prompt_vars = {**prompt_vars, "output_dir": output_dir}
-    system_prompt = prompt_bundle.render(
-        "system",
-        variables=prompt_vars,
+    system_prompt, _system_sources = render_prompt(
+        prompt_bundle, "system", prompt_vars, output_dir
     )
-    user_msg = prompt_bundle.render(
-        "user",
-        variables=prompt_vars,
+    user_msg, _user_sources = render_prompt(
+        prompt_bundle, "user", prompt_vars, output_dir
     )
 
     operator_input = None
@@ -602,6 +624,9 @@ def main() -> int:
 
                 operator_input.bind_verdict(accept_verdict)
             try:
+                record_prompts(
+                    output_dir, system_prompt, session_msg, planner=args.planner
+                )
                 result = planner.solve(
                     system_prompt=system_prompt,
                     user_message=session_msg,

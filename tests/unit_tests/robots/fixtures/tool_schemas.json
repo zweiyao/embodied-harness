@@ -1,6 +1,6 @@
 {
   "revision": "068cd64f4f175179a13c67d429a4d00ca56fb196",
-  "source": "TOOLS_SPEC from the recorded revision; common file tools include MEMORY_BOUNDARY_NOTE appended by MemoryManager.get_common_tool_bindings().",
+  "source": "TOOLS_SPEC from the recorded revision; common file tools include MEMORY_BOUNDARY_NOTE appended by MemoryManager.get_common_tool_bindings(). RoboDojo opt-in move_eef is added by feat/robodojo-gpt-eef; original declarations remain unchanged.",
   "tools": {
     "rpent/tools/common.py": [
       {
@@ -781,6 +781,78 @@
             "drop_z": {"type": "number", "description": "EE z to descend to before release, BELOW the rim (default 0.78)"}
           },
           "required": ["arm", "bin_center_xyz"]
+        }
+      },
+      {
+        "name": "move_eef",
+        "description": "Execute one short dual-arm EEF action, then return fresh RGB and robot state.\n\nUse absolute link6 poses in environment-origin meters and unit wxyz quaternions.\nBoth arm targets and intended gripper commands are required; true means closed.\nUse the latest observation_step. Targets are limited to 0.05 m / 0.35 rad from\nthe current measured pose. Execute 1–5 control steps using bounded local DLS IK.\nInspect returned measured poses and images before choosing the next action.\nNative gripper opening is a controller command, not measured finger gap.\nA target-range rejection cancels remaining steps and returns the executed\nprefix plus fresh state. Replan from that feedback; the episode stays active.",
+        "input_schema": {
+          "$defs": {
+            "DualEefTarget": {
+              "description": "Both arms must be commanded, including any arm intended to hold still.",
+              "properties": {
+                "left": {
+                  "$ref": "#/$defs/EefArmTarget"
+                },
+                "right": {
+                  "$ref": "#/$defs/EefArmTarget"
+                }
+              },
+              "required": [
+                "left",
+                "right"
+              ],
+              "type": "object"
+            },
+            "EefArmTarget": {
+              "description": "An explicit link6 pose and intended gripper command.",
+              "properties": {
+                "position": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3,
+                  "type": "array"
+                },
+                "quaternion_wxyz": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 4,
+                  "minItems": 4,
+                  "type": "array"
+                },
+                "gripper_closed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "position",
+                "quaternion_wxyz",
+                "gripper_closed"
+              ],
+              "type": "object"
+            }
+          },
+          "properties": {
+            "observation_step": {
+              "type": "integer"
+            },
+            "target": {
+              "$ref": "#/$defs/DualEefTarget"
+            },
+            "steps": {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "observation_step",
+            "target"
+          ],
+          "type": "object"
         }
       }
     ],

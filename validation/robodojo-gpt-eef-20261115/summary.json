@@ -1,0 +1,187 @@
+{
+  "code_commit": "59f6385",
+  "code_tree": "aa34b2ebfa14d9bccb9b83055082eea0b99869dc",
+  "approval": "User approved proposals/robodojo-gpt-eef-task1-20261115; one independent candidate episode only.",
+  "protocol": "RoboDojo task index 1 / arrange_largest_number / layout 0; Astra low; RPent read-only v1 memory; opt-in EEF only; no Pi calls; original mode preserved. Not an official benchmark reproduction.",
+  "validation": {
+    "remote_runtime": "Prepared Python 3.11, isolated candidate checkout/venv; borrowed installed dependencies.",
+    "unit_tests": {
+      "passed": 2132,
+      "skipped": 16,
+      "warnings": 2,
+      "elapsed_s": 70.35
+    },
+    "focused_robodojo_and_schemas": {
+      "passed": 245
+    },
+    "pre_commit_all_files": "passed",
+    "github_feature_ci": {
+      "pre_commit": "passed",
+      "python_3_10": "passed",
+      "python_3_11": "passed",
+      "python_3_12": "passed",
+      "unittest": "passed"
+    },
+    "all_original_tool_schemas_and_descriptions_unchanged": true,
+    "real_env": {
+      "status": "passed",
+      "elapsed_s": 45.207,
+      "native_steps": 7,
+      "inline_rgb_count": 3,
+      "owned_environment_closed": true,
+      "fk_errors": {
+        "left": {
+          "position_error_m": 5.831615225309271e-08,
+          "rotation_error_rad": 1.7029852924623004e-07,
+          "passed": true
+        },
+        "right": {
+          "position_error_m": 5.831615225309271e-08,
+          "rotation_error_rad": 1.702985292461499e-07,
+          "passed": true
+        }
+      },
+      "short_motion_final_errors_m": {
+        "left": 6.45724114060795e-05,
+        "right": 6.45724114060795e-05
+      },
+      "stale_action_executed": false,
+      "invalid_target_executed": false
+    },
+    "astra_probe_seconds": 6.918,
+    "workbench_astra_probe_seconds": 7.445,
+    "sphinx": "Not run: standalone Markdown only; no Sphinx pages or build inputs changed."
+  },
+  "trial": {
+    "at": "2026-11-15T15:01:32.268495+00:00",
+    "phase": "completed",
+    "task": "arrange_largest_number",
+    "layout": 0,
+    "run_id": "9039ef09b5003b0e45d6",
+    "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-gpt-eef-20261115-145525-1847374/tasks/0001_arrange_largest_number_l0",
+    "url": "http://10.162.250.228:8094/runs?id=9039ef09b5003b0e45d6",
+    "instruction": "Arrange the numbers from left to right to form the largest possible number, and place them on the pad.",
+    "valid": true,
+    "incident": null,
+    "success": false,
+    "status": "completed",
+    "finish": {
+      "_finish": true,
+      "status": "stuck",
+      "summary": "Arrangement incomplete. Target order identified as 8720, but no grasp or placement verified. Approach stalled and shifted 7; withdrew open. Audit saved; score unknown."
+    },
+    "error": null,
+    "elapsed_s": 277.0,
+    "planner_elapsed_s": 232.2,
+    "interactions": 25,
+    "input_tokens": 983338,
+    "output_tokens": 4163,
+    "total_tokens": 987501,
+    "tool_calls": {
+      "view_env_state": 1,
+      "read_text_file": 1,
+      "back_project": 4,
+      "move_eef": 17,
+      "segment": 1,
+      "write_text_file": 1,
+      "finish": 1
+    },
+    "eef_tool_requests": 17,
+    "recorded_native_steps": 85,
+    "pi_requests": 0,
+    "other_action_requests": {},
+    "config": {
+      "planner": "codex",
+      "model": "gpt-6-astra",
+      "max_turns": 120,
+      "max_tokens": 16384,
+      "planner_timeout_s": 600,
+      "model_profile": "gpt-6-astra",
+      "tools": [
+        "native:move_eef",
+        "native:view_env_state",
+        "native:back_project",
+        "native:segment",
+        "native:read_text_file",
+        "native:write_text_file",
+        "native:list_dir",
+        "native:finish"
+      ],
+      "reasoning_effort": "low"
+    },
+    "videos": [
+      "videos/episode_2026-11-15_22-57-14_cam_head.mp4",
+      "videos/episode_2026-11-15_22-57-14_cam_left_wrist.mp4",
+      "videos/episode_2026-11-15_22-57-14_cam_right_wrist.mp4"
+    ],
+    "source_hashes_unchanged": true,
+    "authoritative_result_consistent": true
+  },
+  "trial_checks": {
+    "videos": [
+      {
+        "path": "videos/episode_2026-11-15_22-57-14_cam_head.mp4",
+        "bytes": 224797,
+        "readable": true,
+        "frames": 205,
+        "fps": 25.0
+      },
+      {
+        "path": "videos/episode_2026-11-15_22-57-14_cam_left_wrist.mp4",
+        "bytes": 476729,
+        "readable": true,
+        "frames": 205,
+        "fps": 25.0
+      },
+      {
+        "path": "videos/episode_2026-11-15_22-57-14_cam_right_wrist.mp4",
+        "bytes": 83125,
+        "readable": true,
+        "frames": 205,
+        "fps": 25.0
+      }
+    ],
+    "preserved_files": 236,
+    "preserved_hashes_unchanged": true,
+    "sequential_fresh_observations": true,
+    "eef_responses_with_three_images": 17,
+    "ack_count": 85,
+    "all_tool_calls_error_free": true,
+    "candidate_commit": "59f6385",
+    "candidate_tree": "aa34b2ebfa14d9bccb9b83055082eea0b99869dc",
+    "source_hashes": {
+      "result.json": "5c0eb151108290a84471edd70ddf8d58d33204c96003671b1aa81d6ccf690d43",
+      "outcome.json": "966c58bd159d95e93aa5357ae78a0de1184a0313938a1305921dcfb9acf559f5",
+      "dashboard_config.json": "ad06c4e521aa5a2ec21886e9d8a92968726b5fe510e045acd2339ead4a66025c",
+      "manifest.json": "0c7c48debc70dc69885e13e73282f17e2c53e9975945fe2fd2f91242ad34ee6b",
+      "events.jsonl": "7094514fbeb97dfcfd1a8d4857fdee641948ab98e6718e07ab18b64ed7c92ed4",
+      "tool-declarations.json": "d3a194ece0b46bafeb113456bcec6afb27e2b1091a1d4a5c329bf2016bf65c7c",
+      "states.json": "82c673b7f936428af737e3a4f8639065c1112642a717faec815a3b275ad96d15"
+    }
+  },
+  "interpretation": "Valid failure: model voluntarily finished stuck before either budget expired. Error-free tool calls and matched FK are not proof every target was reached; this single trial does not establish a success-rate improvement.",
+  "deployment": {
+    "candidate_loopback_port": 28094,
+    "candidate_workbench_unit": "rpent-robodojo-gpt-eef-20261115.service",
+    "candidate_state": "idle; no queued repeat",
+    "original_workbench_pid_before_after": 3633538,
+    "records_visible_on_public_workbench": true,
+    "mac_network_changed": false,
+    "single_source_access_update": {
+      "old_ip": "10.162.217.98",
+      "new_ip": "10.230.32.89",
+      "single_source_only": true,
+      "mac_network_changed": false
+    },
+    "borrowed_pi_endpoint": "http://127.0.0.1:53147",
+    "pi_action_calls": 0
+  },
+  "evidence_root": "/home/zwy/work/embodied_harness/validation/robodojo-gpt-eef-20261115",
+  "excluded_from_git": [
+    "raw observations",
+    "videos",
+    "control traces",
+    "credentials",
+    "weights"
+  ]
+}

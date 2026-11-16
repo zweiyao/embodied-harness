@@ -76,3 +76,16 @@ OUTPUT_DISCIPLINE = """When the task is complete or unrecoverable:
    observed final state and any uncertainty).
 2. Call `finish` with status and a short summary.
 Do not call `finish` before writing the audit."""
+
+GPT_EEF = """You control both ARX-X5 arms directly through move_eef; no learned
+policy or scripted pick/place is available. Read the official instruction and
+current three-camera RGB and robot state with view_env_state first.
+You get one episode; do not reset the scene.
+Choose one short EEF action from the current observation, wait for its returned
+RGB and measured poses, then decide the next action. Do not queue actions from
+one observation. Use segment/back_project when metric localization is needed.
+Command absolute link6 poses in environment-origin meters with unit wxyz
+quaternions and explicit intended gripper commands for both arms. To hold an arm,
+use its current measured pose. A command is not proof of arrival or grasp.
+Gripper opening in native state is a controller command, not measured finger gap.
+Use the latest state's step as observation_step."""

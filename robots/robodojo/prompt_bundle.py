@@ -1,59 +1,52 @@
 # Copyright 2026 The RPent Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the Apache License, Version 2.0.
+"""RoboDojo-owned control and task selection for shared prompt composition."""
 
-"""RoboDojo prompt bundle assembly."""
+from pathlib import Path
 
-from __future__ import annotations
+from rpent.prompt.composition import (
+    COMMON_DIR,
+    memory_available,
+    system_sections,
+    task_file,
+    user_sections,
+)
 
-from collections.abc import Mapping
-
-from robots.robodojo.prompts import system as system_parts
-from robots.robodojo.prompts import user as user_parts
-from rpent.prompt.utils import PromptNode
+ROOT = Path(__file__).parent / "prompts"
 
 
-def system_prompt(
-    variables: Mapping[str, object] | None = None,
-) -> PromptNode:
-    if (variables or {}).get("mode") == "eval-fair":
+def _eef(variables):
+    return any(t.get("name") == "move_eef" for t in variables.get("manual_tools", []))
+
+
+def system_prompt(variables=None):
+    values = variables or {}
+    if values.get("mode") == "eval-fair":
         return {
             "EXECUTION": "Replay the frozen plan using live RGB-D and robot proprioception. No language model participates."
         }
-    return {
-        "ROLE AND RULES": system_parts.ROLE_AND_RULES,
-        "TOOL ACCESS": system_parts.TOOL_ACCESS,
-        "PERCEPTION": system_parts.PERCEPTION,
-        "TOOLS AND MANIPULATION": system_parts.TOOLS,
-        "SAFETY": system_parts.SAFETY,
-        "REWARD AND SCORE": system_parts.REWARD,
-        "OUTPUT DISCIPLINE": system_parts.OUTPUT_DISCIPLINE,
-    }
+    control = "control_eef.md" if _eef(values) else "control_native.md"
+    return system_sections(
+        COMMON_DIR,
+        ROOT / control,
+        analysis=values.get("analysis_enabled", False),
+        variables=values,
+        recovery=ROOT / "execution_recovery.md",
+    )
 
 
-def user_prompt(
-    variables: Mapping[str, object] | None = None,
-) -> PromptNode:
-    sections = {
-        "TASK": user_parts.TASK,
-        "MEMORY": user_parts.MEMORY,
-        "BEGIN": user_parts.BEGIN,
-    }
-    if (variables or {}).get("mode") == "eval-fair":
+def user_prompt(variables=None):
+    values = variables or {}
+    if values.get("mode") == "eval-fair":
         return {"TASK": "{{task}} / layout {{layout}}"}
-    if (variables or {}).get("task") == "put_bottles_into_dustbin":
-        sections["TASK CONTEXT"] = user_parts.PUT_BOTTLES_CONTEXT
-    return sections
-
-
-__all__ = ["system_prompt", "user_prompt"]
+    key = str(values.get("task", "default"))
+    if key == "arrange_largest_number_random":
+        key = "arrange_largest_number"
+    result = user_sections(
+        COMMON_DIR,
+        task_file(ROOT / "tasks", key),
+        memory_available=memory_available(values),
+        variables=values,
+    )
+    result.variables["control_mode"] = "eef_absolute" if _eef(values) else "native"
+    return result

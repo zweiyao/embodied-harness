@@ -1,0 +1,158 @@
+{
+  "created_at": "2026-11-16T05:38:42.007125+00:00",
+  "source": "569fc7192291a016d729f7c0d8aa005e9cc6d88d",
+  "tasks": [
+    {
+      "index": 11,
+      "task": "fold_clothes",
+      "layout": 0
+    },
+    {
+      "index": 12,
+      "task": "fold_clothes_random",
+      "layout": 0
+    },
+    {
+      "index": 13,
+      "task": "general_pickup",
+      "layout": 0
+    },
+    {
+      "index": 14,
+      "task": "hang_mugs",
+      "layout": 0
+    },
+    {
+      "index": 15,
+      "task": "hang_mugs_random",
+      "layout": 0
+    },
+    {
+      "index": 16,
+      "task": "imitate_sorting_sequence",
+      "layout": 0
+    },
+    {
+      "index": 17,
+      "task": "insert_key",
+      "layout": 0
+    },
+    {
+      "index": 18,
+      "task": "insert_tubes",
+      "layout": 0
+    },
+    {
+      "index": 19,
+      "task": "make_kong",
+      "layout": 0
+    },
+    {
+      "index": 20,
+      "task": "make_toast",
+      "layout": 0
+    }
+  ],
+  "lanes": {
+    "A": {
+      "port": 8094,
+      "tasks": [
+        {
+          "index": 11,
+          "task": "fold_clothes",
+          "layout": 0
+        },
+        {
+          "index": 14,
+          "task": "hang_mugs",
+          "layout": 0
+        },
+        {
+          "index": 17,
+          "task": "insert_key",
+          "layout": 0
+        },
+        {
+          "index": 20,
+          "task": "make_toast",
+          "layout": 0
+        }
+      ]
+    },
+    "B": {
+      "port": 18094,
+      "tasks": [
+        {
+          "index": 12,
+          "task": "fold_clothes_random",
+          "layout": 0
+        },
+        {
+          "index": 15,
+          "task": "hang_mugs_random",
+          "layout": 0
+        },
+        {
+          "index": 18,
+          "task": "insert_tubes",
+          "layout": 0
+        }
+      ]
+    },
+    "C": {
+      "port": 28094,
+      "tasks": [
+        {
+          "index": 13,
+          "task": "general_pickup",
+          "layout": 0
+        },
+        {
+          "index": 16,
+          "task": "imitate_sorting_sequence",
+          "layout": 0
+        },
+        {
+          "index": 19,
+          "task": "make_kong",
+          "layout": 0
+        }
+      ]
+    }
+  },
+  "configuration": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 120,
+    "max_tokens": 16384,
+    "planner_timeout_s": 1800,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_eef",
+      "native:view_env_state",
+      "native:back_project",
+      "native:segment",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:list_dir",
+      "native:finish"
+    ],
+    "reasoning_effort": "high"
+  },
+  "startup_condition": "Previous ten valid outcomes saved, no infrastructure stop, all prior workers exited successfully, and all three workbenches idle",
+  "previous_batch": "/home/zwy/work/embodied_harness/validation/robodojo-tasks1-10-1800-20261116",
+  "queue_helpers_sha256": {
+    "lane-worker.py": "ffd7e7bdc00a21245205cced86cfef534d20bfd766d125d8065fa2f33ef54011",
+    "monitor.py": "236e7e1c2e0deec0fbc0d06033d9963e3ff8bfb6ce25d472496f67714f7ec236",
+    "configure-lanes.py": "776537fb78968a3d27df71f38941bf9997958d8439d074ae980aa3995835ad0a"
+  },
+  "diagnostic_unlimited_actions": true,
+  "benchmark_comparable": false,
+  "phase": "queued",
+  "episodes_submitted": 0,
+  "harness_changed": false,
+  "network_changed": false,
+  "remote_artifacts": "/home/zwy/work/embodied_harness/validation/robodojo-tasks11-20-1800-20261116"
+}

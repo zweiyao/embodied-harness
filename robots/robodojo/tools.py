@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 from pydantic.json_schema import SkipJsonSchema
 
 from rpent.tools import ToolResult, tool
@@ -30,6 +30,73 @@ CAMERA_ARTIFACTS: tuple[tuple[str, str], ...] = (
     ("cam_left_wrist", "cam_left_wrist.png"),
     ("cam_right_wrist", "cam_right_wrist.png"),
 )
+
+
+class EefArmTarget(BaseModel):
+    """An explicit link6 pose and intended gripper command."""
+
+    model_config = ConfigDict(extra="forbid")
+    position: Annotated[list[float], Field(min_length=3, max_length=3)]
+    quaternion_wxyz: Annotated[list[float], Field(min_length=4, max_length=4)]
+    gripper_closed: StrictBool
+
+
+class DualEefTarget(BaseModel):
+    """Both arms must be commanded, including any arm intended to hold still."""
+
+    model_config = ConfigDict(extra="forbid")
+    left: EefArmTarget
+    right: EefArmTarget
+
+
+@tool(readonly=False, exclude=("primitives", "state"))
+def move_eef(
+    primitives: Any,
+    state: Any,
+    observation_step: StrictInt,
+    target: DualEefTarget,
+    steps: Annotated[StrictInt, Field(ge=1, le=5)] = 1,
+) -> ToolResult:
+    """Execute one short dual-arm EEF action, then return fresh RGB and robot state.
+
+    Use absolute link6 poses in environment-origin meters and unit wxyz quaternions.
+    Both arm targets and intended gripper commands are required; true means closed.
+    Use the latest observation_step. Targets are limited to 0.05 m / 0.35 rad from
+    the current measured pose. Execute 1–5 control steps using bounded local DLS IK.
+    Inspect returned measured poses and images before choosing the next action.
+    Native gripper opening is a controller command, not measured finger gap.
+    A target-range rejection cancels remaining steps and returns the executed
+    prefix plus fresh state. Replan from that feedback; the episode stays active.
+    """
+    from robots.robodojo.eef_control import EefTargetLimitError, validate_targets
+
+    if observation_step != state.latest_record().step_idx:
+        raise ValueError("Stale observation_step; inspect the returned fresh state")
+    targets = target.model_dump()
+    controls = []
+    rejection = None
+    try:
+        validate_targets(targets, _refresh_obs(primitives)["state"], steps)
+        for _ in range(steps):
+            primitives._check_cancelled()
+            feedback = primitives.env.step_eef(targets)
+            if feedback.get("rejected"):
+                rejection = feedback
+                break
+            controls.append(feedback)
+            if _action_budget_exhausted(feedback["status"]):
+                break
+    except EefTargetLimitError as exc:
+        rejection = {"code": "eef_target_limit", "message": str(exc)}
+    data = {"control_steps": controls, "steps_used": len(controls)}
+    if rejection is not None:
+        data.update(
+            rejection=rejection,
+            requested_steps=steps,
+            cancelled_steps=steps - len(controls),
+            replan_required=True,
+        )
+    return ToolResult(data=data)
 
 
 @tool(readonly=True, exclude=("state",))

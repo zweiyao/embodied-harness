@@ -308,7 +308,7 @@ def test_task_model_changes_resolve_root_again_without_changing_effort(
         assert root.name == version
         assert args.reasoning_effort == "low"
         prompt = spec.prompts.render(
-            "system", variables={**config.prompt_vars, "output_dir": config.output_dir}
+            "user", variables={**config.prompt_vars, "output_dir": config.output_dir}
         )
         assert str(root / "MEMORY.md") in prompt
         assert "MULTI-ATTEMPT EXPLORE MODE" not in prompt
@@ -329,10 +329,14 @@ def test_task_model_changes_resolve_root_again_without_changing_effort(
         loading.prepare_run_memory(args, spec, config)
         assert config.prompt_vars["memory_dir"] == str(root)
         prompt = spec.prompts.render(
-            "system", variables={**config.prompt_vars, "output_dir": config.output_dir}
+            "user", variables={**config.prompt_vars, "output_dir": config.output_dir}
         )
         assert str(root / "MEMORY.md") in prompt
-        assert ("MULTI-ATTEMPT EXPLORE MODE" in prompt) is explore
+        system = spec.prompts.render(
+            "system", variables={**config.prompt_vars, "output_dir": config.output_dir}
+        )
+        assert ("EXPLORATION RULES" in system) is explore
+        assert ("SINGLE-ATTEMPT MODE" in system) is not explore
     assert len(hub.calls) == downloaded
 
 
