@@ -1,0 +1,74 @@
+{
+  "at": "2026-11-16T11:34:05.923540+00:00",
+  "allowed_ips": [
+    "10.230.32.89",
+    "10.162.217.98"
+  ],
+  "observed_ssh_source": "10.162.217.98",
+  "browser_rejection_log_source": "10.162.217.98",
+  "ports": [
+    8094
+  ],
+  "bind": "10.162.250.228",
+  "entry_before": {
+    "MainPID": "1851408",
+    "ActiveState": "active"
+  },
+  "entry_after": {
+    "MainPID": "3050578",
+    "ActiveState": "active"
+  },
+  "backend_units_unchanged": true,
+  "backends": {
+    "rpent-robodojo-workbench.service": {
+      "MainPID": "2606590",
+      "ActiveState": "active"
+    },
+    "rpent-robodojo-1800-B-20261116.service": {
+      "MainPID": "2688666",
+      "ActiveState": "active"
+    },
+    "rpent-robodojo-1800-C-20261116.service": {
+      "MainPID": "2688670",
+      "ActiveState": "active"
+    },
+    "harnessvla-flexiv-dashboard.service": {
+      "MainPID": "3016849",
+      "ActiveState": "active"
+    },
+    "flexiv-rdk.service": {
+      "MainPID": "3016812",
+      "ActiveState": "active"
+    },
+    "embodied-manual-workbench.service": {
+      "MainPID": "3593034",
+      "ActiveState": "active"
+    },
+    "rpent-univtac-workbench.service": {
+      "MainPID": "1218486",
+      "ActiveState": "active"
+    }
+  },
+  "mac_network_changed": false,
+  "proxy_selection_changed": false,
+  "robot_commands": [],
+  "validation": {
+    "page_http": 200,
+    "records_http": 200,
+    "records_api_http": 200,
+    "historical_video_range_http": 206,
+    "non_whitelisted_source": {
+      "source": "10.162.250.228",
+      "rejected": true,
+      "client_error": "ConnectionResetError"
+    },
+    "focused_tests_passed": 7,
+    "unit_passed": 2157,
+    "unit_skipped": 16,
+    "unit_elapsed_s": 72.42,
+    "pre_commit": "passed"
+  },
+  "old_client_live_request": "not available; membership covered by exact-IP loopback tests and deployed configuration",
+  "source_match": "exact IPv4 membership; no forwarded-header trust",
+  "remote_evidence_root": "/home/zwy/work/embodied_harness/validation/robodojo-access-add-20261116"
+}
