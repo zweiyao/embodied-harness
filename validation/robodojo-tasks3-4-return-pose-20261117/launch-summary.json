@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-17T05:56:48.807477+00:00",
+  "phase": "running",
+  "planned": 2,
+  "episodes_per_task": 1,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_turns": 200,
+  "planner_timeout_s": 3600,
+  "diagnostic_unlimited_actions": true,
+  "benchmark_comparable": false,
+  "prompt_commit": "0bbc4e4",
+  "changed_common_sha256": "28516485beecf227a73500228b7581a2fd44da7fa47e78f387889cd078897523",
+  "source_hashes_verified": 338,
+  "old_outcomes_preserved": 10,
+  "rows": [
+    {
+      "index": 3,
+      "task": "build_tower",
+      "run_id": "b694aef3acedfe133a42",
+      "session_state": "running",
+      "n_steps": 2,
+      "url": "http://10.162.250.228:8094/runs?id=b694aef3acedfe133a42",
+      "actual_budgets_and_tools_verified": true,
+      "new_common_rule_verified": true
+    },
+    {
+      "index": 4,
+      "task": "classify_objects",
+      "run_id": "167e72e75ec0fc532019",
+      "session_state": "running",
+      "n_steps": 0,
+      "url": "http://10.162.250.228:8094/runs?id=167e72e75ec0fc532019",
+      "actual_budgets_and_tools_verified": true,
+      "new_common_rule_verified": true
+    }
+  ],
+  "connection_checks": {
+    "A": {
+      "ok": true,
+      "model": "gpt-6-astra",
+      "latency_s": 9.35
+    },
+    "B": {
+      "ok": true,
+      "model": "gpt-6-astra",
+      "latency_s": 6.91
+    }
+  },
+  "incidents": []
+}
