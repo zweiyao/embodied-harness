@@ -1,0 +1,137 @@
+{
+  "at": "2026-11-17T02:05:40.641511+00:00",
+  "phase": "running",
+  "tasks": [
+    {
+      "index": 0,
+      "task": "align_blocks",
+      "layout": 0
+    },
+    {
+      "index": 1,
+      "task": "arrange_largest_number",
+      "layout": 0
+    },
+    {
+      "index": 2,
+      "task": "arrange_largest_number_random",
+      "layout": 0
+    },
+    {
+      "index": 3,
+      "task": "build_tower",
+      "layout": 0
+    },
+    {
+      "index": 4,
+      "task": "classify_objects",
+      "layout": 0
+    },
+    {
+      "index": 5,
+      "task": "classify_objects_by_language",
+      "layout": 0
+    },
+    {
+      "index": 6,
+      "task": "cover_blocks",
+      "layout": 0
+    },
+    {
+      "index": 7,
+      "task": "deposit_coin",
+      "layout": 0
+    },
+    {
+      "index": 8,
+      "task": "fasten_screws",
+      "layout": 0
+    },
+    {
+      "index": 9,
+      "task": "fill_egg_holder",
+      "layout": 0
+    }
+  ],
+  "configuration": {
+    "planner": "codex",
+    "model": "gpt-6-astra",
+    "codex_full_access": true,
+    "codex_analysis": true,
+    "max_turns": 200,
+    "max_tokens": 16384,
+    "planner_timeout_s": 3600,
+    "model_profile": "gpt-6-astra",
+    "tools": [
+      "native:move_eef",
+      "native:view_env_state",
+      "native:back_project",
+      "native:segment",
+      "native:read_text_file",
+      "native:write_text_file",
+      "native:list_dir",
+      "native:finish"
+    ],
+    "reasoning_effort": "high"
+  },
+  "episodes_per_task": 1,
+  "active_lanes": [
+    {
+      "index": 0,
+      "task": "align_blocks",
+      "run_id": "4a931a228d6ac8abc262",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-prompt-refactor-20261116-130355-3105383/tasks/0001_align_blocks_l0",
+      "session_state": "running",
+      "n_steps": 10,
+      "usage": {
+        "in": 476607,
+        "out": 2242,
+        "tool_calls": 25
+      }
+    },
+    {
+      "index": 1,
+      "task": "arrange_largest_number",
+      "run_id": "e3aff58602d9573fcfef",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-tasks1-10-1800-B-20261116-130634-3107071/tasks/0001_arrange_largest_number_l0",
+      "session_state": "running",
+      "n_steps": 7,
+      "usage": {
+        "in": 355430,
+        "out": 2036,
+        "tool_calls": 25
+      }
+    },
+    {
+      "index": 2,
+      "task": "arrange_largest_number_random",
+      "run_id": "1033d1cc3a3c1423c13f",
+      "path": "/home/zwy/work/embodied_harness/research-runs/robodojo-workbench/session-tasks1-10-1800-C-20261116-130634-3107077/tasks/0001_arrange_largest_number_random_l0",
+      "session_state": "running",
+      "n_steps": 1,
+      "usage": {
+        "in": 162554,
+        "out": 1446,
+        "tool_calls": 23
+      }
+    }
+  ],
+  "gpu": {
+    "used_mib": 38646,
+    "total_mib": 49140,
+    "peak_used_mib": 38646
+  },
+  "actual_prompt_and_budget_checks": "passed on all three initial episodes",
+  "protected_files_unchanged": 338,
+  "model_connection_seconds": {
+    "A": 10.325,
+    "B": 5.953,
+    "C": 6.029
+  },
+  "completed_attempts": 0,
+  "valid": 0,
+  "runtime_source_head": "9c60c402cd33032442c2eb30c66ad5fcb2054c11",
+  "approved_prompt_commit": "a2d84b8e6be23eb8ea1d61c51616ab15147fbfbd",
+  "benchmark_comparable": false,
+  "diagnostic_unlimited_actions": true
+}
