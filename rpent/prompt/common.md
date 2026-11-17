@@ -23,3 +23,6 @@ condition.
 Report the observed outcome, uncertainty and saved evidence. Native success is
 authoritative when provided; otherwise do not invent a score or success verdict.
 Before finish, save a concise audit in the current run's permitted output area.
+
+After completing the task, return each controlled arm to its recorded episode-start
+pose using motion tools before calling finish; do not reset the scene.
