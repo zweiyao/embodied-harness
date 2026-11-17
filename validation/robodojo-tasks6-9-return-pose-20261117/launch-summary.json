@@ -1,0 +1,83 @@
+{
+  "at": "2026-11-17T12:05:10.655260+00:00",
+  "phase": "running",
+  "planned": 4,
+  "episodes_per_task": 1,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_turns": 200,
+  "planner_timeout_s": 3600,
+  "source_changes": 0,
+  "configuration_changes": 0,
+  "prompt_commit": "0bbc4e4",
+  "protected_hashes_verified": 338,
+  "previous_outcomes_preserved": 12,
+  "previous_outcomes_already_missing": [
+    {
+      "run_id": "ad490fba21c5d153df15",
+      "task": "build_tower"
+    },
+    {
+      "run_id": "b694aef3acedfe133a42",
+      "task": "build_tower"
+    }
+  ],
+  "rows": [
+    {
+      "index": 6,
+      "task": "cover_blocks",
+      "run_id": "736005d82909ada30dfb",
+      "session_state": "running",
+      "n_steps": 4,
+      "url": "http://10.162.250.228:8094/runs?id=736005d82909ada30dfb",
+      "submitted_budget_tools_and_prompt_verified": true
+    },
+    {
+      "index": 7,
+      "task": "deposit_coin",
+      "run_id": "2d6a3d2f0020d801e123",
+      "session_state": "running",
+      "n_steps": 1,
+      "url": "http://10.162.250.228:8094/runs?id=2d6a3d2f0020d801e123",
+      "submitted_budget_tools_and_prompt_verified": true
+    },
+    {
+      "index": 8,
+      "task": "fasten_screws",
+      "run_id": "cc96b0acf1fdc75abac6",
+      "session_state": "running",
+      "n_steps": 0,
+      "url": "http://10.162.250.228:8094/runs?id=cc96b0acf1fdc75abac6",
+      "submitted_budget_tools_and_prompt_verified": true
+    }
+  ],
+  "queued_tasks": [
+    {
+      "index": 9,
+      "task": "fill_egg_holder",
+      "lane": "A",
+      "after": 6
+    }
+  ],
+  "connection_checks": {
+    "A": {
+      "ok": true,
+      "model": "gpt-6-astra",
+      "latency_s": 9.18
+    },
+    "B": {
+      "ok": true,
+      "model": "gpt-6-astra",
+      "latency_s": 8.792
+    },
+    "C": {
+      "ok": true,
+      "model": "gpt-6-astra",
+      "latency_s": 6.779
+    }
+  },
+  "incidents": {},
+  "stop_new_dispatch": false,
+  "diagnostic_unlimited_actions": true,
+  "benchmark_comparable": false
+}

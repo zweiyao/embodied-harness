@@ -1,0 +1,66 @@
+{
+  "file": "/home/zwy/work/embodied_harness/checkouts/prompt-system-refactor-20261116/rpent/prompt/common.md",
+  "before_sha256": "0dd043f0ae09f8db82c7f443c3012ef0576873099a6d1f0741a2ad6188a3aea3",
+  "after_sha256": "28516485beecf227a73500228b7581a2fd44da7fa47e78f387889cd078897523",
+  "settings_unchanged": true,
+  "service_pids_unchanged": true,
+  "service_restarts": 0,
+  "experiments_started": 0,
+  "robot_actions": 0,
+  "applies_to": "new TaskRun prompts; existing conversations unchanged",
+  "verified_at": "2026-11-17T05:55:40.777813+00:00",
+  "unit_tests": "2156 passed, 16 skipped in 77.11s (0:01:17)",
+  "precommit": "passed",
+  "render_checks": {
+    "candidate-render.json": [
+      {
+        "robot": "robodojo",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "flexiv",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "libero",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "univtac",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      }
+    ],
+    "deployed-render.json": [
+      {
+        "robot": "robodojo",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "flexiv",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "libero",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      },
+      {
+        "robot": "univtac",
+        "return_rule_count": 1,
+        "source_hashes_valid": true
+      }
+    ]
+  },
+  "limitations": [
+    "No new physical robot action",
+    "Task retries are separate ongoing episodes",
+    "First recorded pose used for offline home comparison; internal reference not separately saved",
+    "No full reconstruction of object reward predicates"
+  ]
+}
