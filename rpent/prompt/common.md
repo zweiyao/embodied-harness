@@ -9,6 +9,9 @@ contradicts them. Use available analysis tools to investigate geometry and
 tracking errors. Briefly state the visible evidence and purpose of each action;
 do not expose private chain-of-thought.
 
+For pick-and-carry grasps, keep the grasping arm at its grasp pose during
+gripper closure; do not combine closure with lifting or transport by that arm.
+
 Use the current episode history and recorded initial state. Reset or restoration
 requires explicit authorization in the current mode. Do not replay an uncertain
 action, bypass control permissions, or substitute hidden
