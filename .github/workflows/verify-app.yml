@@ -1,0 +1,55 @@
+name: Verify dashboard
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "rpent/dashboard/**"
+      - "rpent/cli/**"
+      - "robots/**"
+      - "tests/e2e_tests/dashboard/**"
+      - "tests/unit_tests/rpent/dashboard/**"
+      - "pyproject.toml"
+      - ".agents/skills/verify-app/**"
+      - ".github/workflows/verify-app.yml"
+  push:
+    branches: [main]
+    paths:
+      - "rpent/dashboard/**"
+      - "rpent/cli/**"
+      - "robots/**"
+      - "tests/e2e_tests/dashboard/**"
+      - "tests/unit_tests/rpent/dashboard/**"
+      - "pyproject.toml"
+      - ".agents/skills/verify-app/**"
+      - ".github/workflows/verify-app.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERIFY_APP_ARTIFACTS: ${{ github.workspace }}/verify-app-artifacts
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - run: uv pip install --system -e ".[test,browser]"
+      - run: python -m playwright install --with-deps chromium
+      - name: Exercise the isolated workbench
+        run: |
+          mkdir -p "$VERIFY_APP_ARTIFACTS"
+          python -m pytest -q tests/e2e_tests/dashboard --junitxml="$VERIFY_APP_ARTIFACTS/results.xml" 2>&1 | tee "$VERIFY_APP_ARTIFACTS/pytest.log"
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-app-chromium
+          path: verify-app-artifacts
+          retention-days: 7

@@ -62,6 +62,7 @@ Documentation = "https://rpent.readthedocs.io/en/latest/"
 "Bug Report" = "https://github.com/RLinf/RPent/issues"
 
 [project.optional-dependencies]
+browser = ["playwright==1.63.0"]
 test = [
     "coverage",
     "pytest",
