@@ -73,6 +73,7 @@ require loading every skill.
 | Explain and review a PR, or review an explicitly selected local diff | [review-pr](.agents/skills/review-pr/SKILL.md) |
 | Check documentation, comments, translations, or user/model-facing prose | [docs-check](.agents/skills/docs-check/SKILL.md) |
 | Select and run checks for a change, or prepare validation evidence | [verify-change](.agents/skills/verify-change/SKILL.md) |
+| After a UI or interaction change, run the mapped feature checks before handoff | [verify-app](.agents/skills/verify-app/SKILL.md) |
 | Add a robot integration or extend its Env/VLA/tool/runtime wiring | [add-robot](.agents/skills/add-robot/SKILL.md) |
 
 Reuse repository tools and the commands documented in CONTRIBUTING and the
