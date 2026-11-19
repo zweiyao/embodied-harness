@@ -1,0 +1,519 @@
+{
+  "formal": [
+    {
+      "index": 6,
+      "group": "B",
+      "success": true,
+      "status": "completed",
+      "run_id": "62f16af030247ec02f3c",
+      "responses": 151,
+      "tools": {
+        "view_env_state": 9,
+        "read_text_file": 1,
+        "list_dir": 1,
+        "back_project": 22,
+        "write_text_file": 11,
+        "move_eef": 105,
+        "finish": 1
+      },
+      "episode_s": 1405.0,
+      "planner_s": 1360.9,
+      "sdk_window_s": 1360.689,
+      "outside_planner_s": 44.1,
+      "intervals_s": {
+        "initial": 50.051,
+        "motion_span": 807.673,
+        "to_handoff": 256.151,
+        "resume_to_move": 204.904,
+        "final": 41.91
+      },
+      "registered_tool_windows_s": 122.772,
+      "all_tool_windows_union_s": 125.827,
+      "outside_logged_tool_windows_s": 1234.862,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 17,
+          "responses": 27,
+          "elapsed_s": 253.717
+        },
+        {
+          "first_action": 18,
+          "last_action": 31,
+          "responses": 20,
+          "elapsed_s": 167.637
+        },
+        {
+          "first_action": 32,
+          "last_action": 48,
+          "responses": 23,
+          "elapsed_s": 192.364
+        },
+        {
+          "first_action": 49,
+          "last_action": 63,
+          "responses": 20,
+          "elapsed_s": 208.328
+        },
+        {
+          "first_action": 64,
+          "last_action": 73,
+          "responses": 15,
+          "elapsed_s": 144.696
+        },
+        {
+          "first_action": 74,
+          "last_action": 90,
+          "responses": 26,
+          "elapsed_s": 228.666
+        },
+        {
+          "first_action": 91,
+          "last_action": 105,
+          "responses": 20,
+          "elapsed_s": 165.281
+        }
+      ],
+      "handoff_to_next_turn_s": [
+        0.01,
+        0.008,
+        0.008,
+        0.008,
+        0.009,
+        0.008
+      ],
+      "step_interval_seconds": {
+        "17": 202.641,
+        "31": 164.844,
+        "48": 210.952,
+        "63": 207.186,
+        "73": 146.664,
+        "90": 218.073,
+        "105": 168.419,
+        "after_last_action": 41.91
+      }
+    },
+    {
+      "index": 7,
+      "group": "C",
+      "success": false,
+      "status": "budget_exhausted",
+      "run_id": "274a944e239e6bdd1963",
+      "responses": 200,
+      "tools": {
+        "view_env_state": 8,
+        "read_text_file": 1,
+        "back_project": 73,
+        "write_text_file": 11,
+        "move_eef": 141
+      },
+      "episode_s": 2140.2,
+      "planner_s": 2095.8,
+      "sdk_window_s": 2095.554,
+      "outside_planner_s": 44.4,
+      "intervals_s": {
+        "initial": 61.641,
+        "motion_span": 1560.076,
+        "to_handoff": 328.077,
+        "resume_to_move": 145.705,
+        "final": 0.055
+      },
+      "registered_tool_windows_s": 162.629,
+      "all_tool_windows_union_s": 166.977,
+      "outside_logged_tool_windows_s": 1928.577,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 29,
+          "responses": 40,
+          "elapsed_s": 409.378
+        },
+        {
+          "first_action": 30,
+          "last_action": 45,
+          "responses": 25,
+          "elapsed_s": 234.151
+        },
+        {
+          "first_action": 46,
+          "last_action": 57,
+          "responses": 19,
+          "elapsed_s": 184.986
+        },
+        {
+          "first_action": 58,
+          "last_action": 93,
+          "responses": 46,
+          "elapsed_s": 506.227
+        },
+        {
+          "first_action": 94,
+          "last_action": 108,
+          "responses": 24,
+          "elapsed_s": 220.407
+        },
+        {
+          "first_action": 109,
+          "last_action": 141,
+          "responses": 46,
+          "elapsed_s": 540.405
+        }
+      ],
+      "handoff_to_next_turn_s": [
+        0.04,
+        0.036,
+        0.037,
+        0.035,
+        0.036
+      ],
+      "step_interval_seconds": {
+        "32": 452.079,
+        "45": 133.597,
+        "57": 172.359,
+        "74": 327.676,
+        "93": 181.987,
+        "108": 207.167,
+        "117": 256.036,
+        "141": 364.598,
+        "after_last_action": 0.055
+      }
+    },
+    {
+      "index": 6,
+      "group": "A",
+      "success": true,
+      "status": "completed",
+      "run_id": "d3672ec6783f4b18c397",
+      "responses": 78,
+      "tools": {
+        "view_env_state": 1,
+        "read_text_file": 1,
+        "back_project": 12,
+        "move_eef": 71,
+        "write_text_file": 2,
+        "finish": 1
+      },
+      "episode_s": 726.0,
+      "planner_s": 681.5,
+      "sdk_window_s": 681.32,
+      "outside_planner_s": 44.5,
+      "intervals_s": {
+        "initial": 34.489,
+        "motion_span": 610.49,
+        "to_handoff": 0.0,
+        "resume_to_move": 0.0,
+        "final": 36.342
+      },
+      "registered_tool_windows_s": 89.016,
+      "all_tool_windows_union_s": 91.178,
+      "outside_logged_tool_windows_s": 590.142,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 71,
+          "responses": 78,
+          "elapsed_s": 681.32
+        }
+      ],
+      "handoff_to_next_turn_s": [],
+      "step_interval_seconds": {
+        "17": 180.475,
+        "31": 108.808,
+        "37": 49.291,
+        "42": 44.878,
+        "46": 30.867,
+        "55": 77.537,
+        "71": 153.123,
+        "after_last_action": 36.342
+      }
+    },
+    {
+      "index": 7,
+      "group": "A",
+      "success": true,
+      "status": "completed",
+      "run_id": "656f703ddb1c80e213c4",
+      "responses": 116,
+      "tools": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "list_dir": 1,
+        "back_project": 32,
+        "move_eef": 98,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "episode_s": 1290.3,
+      "planner_s": 1245.9,
+      "sdk_window_s": 1245.673,
+      "outside_planner_s": 44.4,
+      "intervals_s": {
+        "initial": 80.774,
+        "motion_span": 1114.146,
+        "to_handoff": 0.0,
+        "resume_to_move": 0.0,
+        "final": 50.754
+      },
+      "registered_tool_windows_s": 122.665,
+      "all_tool_windows_union_s": 126.177,
+      "outside_logged_tool_windows_s": 1119.496,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 98,
+          "responses": 116,
+          "elapsed_s": 1245.673
+        }
+      ],
+      "handoff_to_next_turn_s": [],
+      "step_interval_seconds": {
+        "25": 299.691,
+        "56": 327.113,
+        "83": 404.543,
+        "98": 163.572,
+        "after_last_action": 50.754
+      }
+    },
+    {
+      "index": 7,
+      "group": "B",
+      "success": true,
+      "status": "completed",
+      "run_id": "898e39dcd540ea11a55c",
+      "responses": 101,
+      "tools": {
+        "view_env_state": 4,
+        "list_dir": 1,
+        "back_project": 37,
+        "read_text_file": 1,
+        "move_eef": 78,
+        "write_text_file": 4,
+        "finish": 1
+      },
+      "episode_s": 1111.1,
+      "planner_s": 1066.9,
+      "sdk_window_s": 1066.712,
+      "outside_planner_s": 44.2,
+      "intervals_s": {
+        "initial": 64.017,
+        "motion_span": 821.439,
+        "to_handoff": 84.622,
+        "resume_to_move": 46.676,
+        "final": 49.959
+      },
+      "registered_tool_windows_s": 90.041,
+      "all_tool_windows_union_s": 92.38,
+      "outside_logged_tool_windows_s": 974.332,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 42,
+          "responses": 54,
+          "elapsed_s": 560.461
+        },
+        {
+          "first_action": 43,
+          "last_action": 62,
+          "responses": 26,
+          "elapsed_s": 288.539
+        },
+        {
+          "first_action": 63,
+          "last_action": 78,
+          "responses": 21,
+          "elapsed_s": 217.712
+        }
+      ],
+      "handoff_to_next_turn_s": [
+        0.012,
+        0.009
+      ],
+      "step_interval_seconds": {
+        "42": 516.608,
+        "61": 283.858,
+        "78": 216.288,
+        "after_last_action": 49.959
+      }
+    },
+    {
+      "index": 6,
+      "group": "C",
+      "success": true,
+      "status": "completed",
+      "run_id": "e7f08a9b7845aab97ba6",
+      "responses": 162,
+      "tools": {
+        "view_env_state": 9,
+        "list_dir": 1,
+        "back_project": 15,
+        "move_eef": 108,
+        "write_text_file": 2,
+        "finish": 1
+      },
+      "episode_s": 1705.0,
+      "planner_s": 1660.1,
+      "sdk_window_s": 1659.906,
+      "outside_planner_s": 44.9,
+      "intervals_s": {
+        "initial": 64.651,
+        "motion_span": 1064.841,
+        "to_handoff": 356.957,
+        "resume_to_move": 138.148,
+        "final": 35.31
+      },
+      "registered_tool_windows_s": 125.962,
+      "all_tool_windows_union_s": 129.463,
+      "outside_logged_tool_windows_s": 1530.443,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 19,
+          "responses": 27,
+          "elapsed_s": 325.567
+        },
+        {
+          "first_action": 20,
+          "last_action": 34,
+          "responses": 22,
+          "elapsed_s": 218.173
+        },
+        {
+          "first_action": 35,
+          "last_action": 57,
+          "responses": 31,
+          "elapsed_s": 326.347
+        },
+        {
+          "first_action": 58,
+          "last_action": 72,
+          "responses": 22,
+          "elapsed_s": 205.525
+        },
+        {
+          "first_action": 73,
+          "last_action": 81,
+          "responses": 13,
+          "elapsed_s": 133.867
+        },
+        {
+          "first_action": 82,
+          "last_action": 96,
+          "responses": 25,
+          "elapsed_s": 246.066
+        },
+        {
+          "first_action": 97,
+          "last_action": 108,
+          "responses": 17,
+          "elapsed_s": 169.052
+        },
+        {
+          "first_action": null,
+          "last_action": null,
+          "responses": 5,
+          "elapsed_s": 35.31
+        }
+      ],
+      "handoff_to_next_turn_s": [
+        0.039,
+        0.037,
+        0.035,
+        0.037,
+        0.038,
+        0.036,
+        0.037
+      ],
+      "step_interval_seconds": {
+        "19": 277.831,
+        "34": 214.418,
+        "57": 321.006,
+        "72": 211.79,
+        "81": 155.806,
+        "96": 189.408,
+        "108": 217.913,
+        "after_last_action": 71.733
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "index": 6,
+      "group": "excluded A",
+      "success": true,
+      "status": "completed",
+      "run_id": "5b4c8cc6705984df4113",
+      "responses": 86,
+      "tools": {
+        "view_env_state": 2,
+        "read_text_file": 1,
+        "list_dir": 1,
+        "back_project": 18,
+        "move_eef": 75,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "episode_s": 781.2,
+      "planner_s": 736.5,
+      "sdk_window_s": 736.268,
+      "outside_planner_s": 44.7,
+      "intervals_s": {
+        "initial": 55.224,
+        "motion_span": 619.518,
+        "to_handoff": 0.0,
+        "resume_to_move": 0.0,
+        "final": 61.526
+      },
+      "registered_tool_windows_s": 92.529,
+      "all_tool_windows_union_s": 95.129,
+      "outside_logged_tool_windows_s": 641.139,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 75,
+          "responses": 86,
+          "elapsed_s": 736.268
+        }
+      ],
+      "handoff_to_next_turn_s": [],
+      "step_interval_seconds": {}
+    },
+    {
+      "index": 7,
+      "group": "excluded A",
+      "success": false,
+      "status": "budget_exhausted",
+      "run_id": "34c6f261c87e0e70c8ab",
+      "responses": 200,
+      "tools": {
+        "view_env_state": 2,
+        "back_project": 46,
+        "write_text_file": 1,
+        "move_eef": 165
+      },
+      "episode_s": 2801.1,
+      "planner_s": 2755.4,
+      "sdk_window_s": 2755.152,
+      "outside_planner_s": 45.7,
+      "intervals_s": {
+        "initial": 79.001,
+        "motion_span": 2676.096,
+        "to_handoff": 0.0,
+        "resume_to_move": 0.0,
+        "final": 0.055
+      },
+      "registered_tool_windows_s": 201.085,
+      "all_tool_windows_union_s": 208.661,
+      "outside_logged_tool_windows_s": 2546.492,
+      "segments": [
+        {
+          "first_action": 1,
+          "last_action": 165,
+          "responses": 200,
+          "elapsed_s": 2755.152
+        }
+      ],
+      "handoff_to_next_turn_s": [],
+      "step_interval_seconds": {}
+    }
+  ]
+}
