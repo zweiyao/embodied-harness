@@ -62,6 +62,8 @@ from rpent.planner.request_timeout import (
     request_timeout,
     timed_sdk_events,
 )
+from rpent.planner.task_board import INSTRUCTIONS as BOARD_INSTRUCTIONS
+from rpent.planner.task_board import TaskBoard
 from rpent.planner.utils.http_mcp_server import HttpMcpServer
 from rpent.tools.toolkit import Toolkit
 from rpent.utils.config import get_repo_root
@@ -155,6 +157,21 @@ class CodexPlanner(Planner):
         dashboard_interaction: DashboardInteractionPort | None = None,
     ) -> PlannerResult:
         """Keep fixed instructions separate and scope optional native analysis."""
+        board_mode = os.environ.get("RPENT_ROBODOJO_TASK_BOARD")
+        if board_mode:
+            from robots.robodojo.toolkit import RoboDojoToolkit
+
+            if (
+                board_mode not in {"same", "fresh"}
+                or dashboard_interaction is None
+                or not self._analysis_enabled
+                or not isinstance(toolkit, RoboDojoToolkit)
+                or toolkit.eval_fair
+            ):
+                raise ValueError(
+                    "Task board requires a RoboDojo dev analysis dashboard"
+                )
+            system_prompt += "\n\n" + BOARD_INSTRUCTIONS
         kwargs = {
             "system_prompt": system_prompt,
             "user_message": user_message,
@@ -595,6 +612,11 @@ class CodexPlanner(Planner):
                     control=control,
                     wait_clock=wait_clock,
                 )
+                board_mode = os.environ.get("RPENT_ROBODOJO_TASK_BOARD")
+                if board_mode:
+                    session.board = TaskBoard(
+                        self._analysis_workspace / "TASK_BOARD.md", board_mode
+                    )
                 try:
                     await asyncio.wait_for(session.run(prompt), timeout=self._timeout_s)
                 except asyncio.TimeoutError:
@@ -752,8 +774,11 @@ class _CodexDashboardSession:
         self._turn_task: asyncio.Task[Any] | None = None
         self._closing = False
         self.error: str | None = None
+        self.board: TaskBoard | None = None
+        self._initial_prompt = ""
 
     async def run(self, prompt: str) -> None:
+        self._initial_prompt = prompt
         self._codex = openai_codex.AsyncCodex(self._config)
         self._thread = await self._codex.thread_start(**self._thread_options)
         await self._submit_text(prompt)
@@ -770,6 +795,8 @@ class _CodexDashboardSession:
         if self._turn is not None:
             await self._turn.steer(text)
             return 0
+        if self.board is not None:
+            self._recorder.final_response = None
         if self._wait_clock is None:
             self._turn = await self._thread.turn(text, **self._turn_options)
         else:
@@ -820,6 +847,35 @@ class _CodexDashboardSession:
         if self._codex is not None:
             with contextlib.suppress(Exception):
                 await self._codex.close()
+
+    async def _handoff(self) -> None:
+        board = self.board
+        assert board is not None
+        accepted = board.accept_revision()
+        self._emit_event(
+            {
+                "method": "rpent/boardHandoff",
+                "payload": {
+                    "mode": board.mode,
+                    "accepted": accepted,
+                    "sha256": board.last_digest,
+                    "response": self._recorder.turns,
+                },
+            }
+        )
+        if not accepted:
+            await self._submit_text(
+                "TASK_BOARD.md is missing, empty, unreadable or unchanged. "
+                "Continue in this thread; update the board before signaling again."
+            )
+            return
+        if board.mode == "fresh":
+            self._thread = await self._codex.thread_start(**self._thread_options)
+            self._recorder.start_new_thread()
+        await self._submit_text(
+            self._initial_prompt + "\n\nContinue this same episode. Read TASK_BOARD.md "
+            "and observe the current scene before the next motion."
+        )
 
     async def _consume_turn(self, turn: Any, done: asyncio.Event) -> None:
         limit_reached = False
@@ -879,6 +935,13 @@ class _CodexDashboardSession:
                     or self._recorder.turns >= self._recorder.max_turns
                 ):
                     self._control.end()
+                elif (
+                    self.board is not None
+                    and status == "completed"
+                    and (self._recorder.final_response or "").splitlines()[-1:]
+                    == ["BOARD_READY"]
+                ):
+                    await self._handoff()
                 else:
                     await self._control.complete(self)
                 return
@@ -918,6 +981,7 @@ class _Recorder:
     max_turns: int
     dashboard_events: DashboardEventSink
     turns: int = 0
+    _prior_thread_usage: dict[str, int] = field(default_factory=dict)
     _seen_usage: set[tuple[int, ...]] = field(default_factory=set)
     tool_calls: int = 0
     usage: dict[str, int] = field(
@@ -1038,6 +1102,11 @@ class _Recorder:
 
     # -- helpers -----------------------------------------------------------
 
+    def start_new_thread(self) -> None:
+        """Carry episode totals across an SDK thread counter reset."""
+        self._prior_thread_usage = self.usage.copy()
+        self._seen_usage.clear()
+
     def _set_usage(self, usage: Any) -> bool:
         """Count completed model responses, including reasoning/tool-only ones.
 
@@ -1061,7 +1130,10 @@ class _Recorder:
         if not any(key) or key in self._seen_usage:
             return False
         self._seen_usage.add(key)
-        self.usage = updated
+        self.usage = {
+            key: value + self._prior_thread_usage.get(key, 0)
+            for key, value in updated.items()
+        }
         self.turns += 1
         self.dashboard_events.emit(
             UsageEvent(
