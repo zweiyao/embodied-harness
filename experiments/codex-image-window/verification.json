@@ -1,0 +1,107 @@
+{
+  "codex_version": "0.162.1",
+  "codex_source_commit": "092d3acd6bec3e3a14bdc7e7a2810ab628ab759d",
+  "profile": "dev-small",
+  "fixture": "4 groups of 3 numbered 640x480 synthetic PNGs; loopback mock Responses provider",
+  "binary_sha256": {
+    "matched_control": "8e27d006687d2b67d58b8afe1af36e5d6bbb1d8744116b97e60cb6812e1007ef",
+    "window": "b1d54af215d6c1e03f864d17206b2ed34a479ded826b46cb31dc3f49d3313c13"
+  },
+  "patch_sha256": "f2cd8b128acb60b8f66485795e97e14e7ea2b00fa07c2765dae0f91c57caf978",
+  "external_lockfile_entries_changed": 0,
+  "rust_request_tests_passed": 11,
+  "rpent_unit": {
+    "passed": 2156,
+    "skipped": 16
+  },
+  "pre_commit": [
+    "ruff (legacy alias)......................................................Passed",
+    "ruff format..............................................................Passed"
+  ],
+  "fixture_cases": [
+    "compact",
+    "fallback",
+    "http-code",
+    "http-mcp",
+    "http-user",
+    "http-view",
+    "retry",
+    "ws-code",
+    "ws-mcp",
+    "ws-user",
+    "ws-view"
+  ],
+  "verified": {
+    "packaged": {
+      "cases_passed": 11,
+      "images_per_decision": [
+        3,
+        6,
+        9,
+        12
+      ],
+      "last_image_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "last_placeholders": 0
+    },
+    "matched_control": {
+      "cases_passed": 11,
+      "images_per_decision": [
+        3,
+        6,
+        9,
+        12
+      ],
+      "last_image_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "last_placeholders": 0
+    },
+    "window": {
+      "cases_passed": 11,
+      "images_per_decision": [
+        3,
+        6,
+        9,
+        10
+      ],
+      "last_image_ids": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "last_placeholders": 2
+    }
+  },
+  "negative_control": "Applying window assertions to the packaged client failed on the fourth request as expected."
+}
