@@ -60,3 +60,30 @@ nonzero.
 
 These fixtures measure request contents. Evaluate task success, elapsed time,
 input tokens and cached input tokens in a separate paired RoboDojo experiment.
+
+## RoboDojo paired pilot
+
+Both builds used Astra/high, a single thread, layout 0, the same memory and EEF
+tools, 200 model interactions and a 3,600 s planner budget. Wall time includes
+environment initialization. Total tokens are reported input plus output; cached
+input is included once.
+
+| Task | Client | Native result | Responses | Total tokens | Uncached input | Wall time (s) |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| 6 · cover_blocks | Control | Success | 85 | 7,833,751 | 160,392 | 921.9 |
+| 6 · cover_blocks | Ten images | Success | 80 | 4,014,881 | 2,934,609 | 1,043.1 |
+| 7 · deposit_coin | Control, repeat | Failed at interaction limit | 200 | 21,966,679 | 329,162 | 3,166.1 |
+| 7 · deposit_coin | Ten images | Failed at time limit | 177 | 16,020,431 | 12,512,230 | 3,648.3 |
+
+Task 7's first control run was excluded after five WebSocket reconnects. The
+replacement recovered from one reconnect late in the episode. Its full duration
+includes that interruption. Both tasks have uninterrupted first-50-response
+comparisons. Across those 50 responses, the control and candidate took 494.1
+and 629.7 s on task 6, and 671.5 and 1,192.9 s on task 7. These are durations
+from planner request to the 50th usage update; robot trajectories can diverge.
+
+The smaller window reduced reported total tokens on these two runs. The share
+of input served from cache fell from 98.0% to 26.8% on task 6 and from 98.5% to
+21.7% on task 7. Both candidates took longer. Each task has one observed pair.
+Per-run identifiers, first-action times and the matched-prefix usage breakdown
+are in [the pilot data](paired-pilot.json).
