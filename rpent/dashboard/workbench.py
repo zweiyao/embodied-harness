@@ -500,6 +500,13 @@ class Workbench:
                     f"Unsupported task field {field['name']}: {request.get(field['name'])}"
                 )
         selected = self.selection(request.get("tools"))
+        if self.robot == "flexiv" and self.config.get("control_mode") == "eef_absolute":
+            from robots.flexiv.prompt_bundle import inspection_task
+
+            if inspection_task(
+                request.get("task_key", "default"), request.get("instruction", "")
+            ):
+                selected = [tool for tool in selected if tool["category"] != "control"]
         prepared = {
             **request,
             "model_profile": profile_id,

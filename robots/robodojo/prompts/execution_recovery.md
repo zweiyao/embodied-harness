@@ -5,3 +5,6 @@ Do not finish solely for this rejection or blindly replay the old command.
 For other uncertain execution, inspect fresh feedback before planning again.
 Stop on authorization faults or genuine transport/physics failure; report an
 infrastructure error if usable feedback cannot be obtained. Do not reset the scene.
+
+After completing the task, return each controlled arm to its recorded episode-start
+pose using motion tools before calling finish; do not reset the scene.

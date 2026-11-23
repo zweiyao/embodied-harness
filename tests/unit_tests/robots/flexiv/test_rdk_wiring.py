@@ -171,3 +171,73 @@ def test_rdk_runtime_spawns_direct_backend_without_collector(tmp_path, monkeypat
     assert command[command.index("--backend") + 1] == "rdk"
     assert command[command.index("--rdk-endpoint") + 1] == args.rdk_endpoint
     assert "--collector-endpoint" not in command
+
+
+def test_absolute_uses_latest_observation_and_one_rdk_goal(toolkit_factory):
+    calls = []
+    env = make_env(calls)
+    pose = [0.4, 0.0, 0.2, 1, 0, 0, 0]
+    env.get_observation = lambda: {
+        "state": {
+            "tcp_pose": list(pose),
+            "fault": False,
+            "operational": True,
+            "connected": True,
+        },
+        "control_limits": {"arrival_position_m": 0.001, "arrival_angle_deg": 0.5},
+        "motion_enabled": True,
+    }
+    kit = toolkit_factory(env, "eef_absolute")
+    args = {
+        "position_m": [0.41, 0, 0.2],
+        "quaternion_wxyz": [1, 0, 0, 0],
+        "observation_step": 0,
+    }
+    try:
+        names = {t.name for t in kit.list_tools()}
+        assert {"move_eef", "view_action_record", "set_gripper", "stop_motion"} <= names
+        assert not {"move_eef_delta", "reset_home", "move_tcp"} & names
+        result = kit.execute_tool("move_eef", args)
+        assert result.data["action_result"]["reached"] and len(calls) == 1
+        assert calls[0] == ("move_tcp", (args["position_m"], args["quaternion_wxyz"]))
+        assert (
+            kit.view_action_record(result.data["step"]).data["command"]["action"]
+            == "move_eef"
+        )
+        assert kit.execute_tool("move_eef", args).is_error
+        args["observation_step"] = kit.observe().data["step"]
+        pose[0] += 0.01
+        assert kit.execute_tool("move_eef", args).is_error and len(calls) == 1
+    finally:
+        kit.close()
+
+
+def test_absolute_inspection_and_task_composition(tmp_path):
+    from robots.flexiv.prompt_bundle import inspection_task, user_prompt
+    from robots.flexiv.toolkit import tool_methods
+    from rpent.dashboard.state import _parse_task
+
+    spec = robot_spec.DASHBOARD_SPEC["task"]
+    assert _parse_task(spec, '/rpent-task "observe"') == {"instruction": "observe"}
+    assert (
+        _parse_task(spec, '/rpent-task "carry" manipulation')["task_key"]
+        == "manipulation"
+    )
+    assert inspection_task("unlisted", "inspect") and not inspection_task(
+        "manipulation", "carry"
+    )
+    args = {
+        "control_mode": "rdk",
+        "action_mode": "eef_absolute",
+        "instruction": "carry",
+        "task_key": "manipulation",
+    }
+    assert user_prompt(args)["OFFICIAL INSTRUCTION"] == "{{instruction}}"
+    assert any(
+        s["path"].endswith("/tasks/manipulation.md") for s in user_prompt(args).sources
+    )
+    assert set(tool_methods(None, "eef_absolute", True)).isdisjoint(
+        {"absolute_eef", "rdk_set_gripper", "reset_home"}
+    )
+    with pytest.raises(ValueError):
+        inspection_task("../invalid", "inspect")

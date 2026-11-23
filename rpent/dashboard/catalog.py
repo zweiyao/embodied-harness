@@ -39,7 +39,12 @@ def load_sources(path: str | None) -> list[dict]:
         for key in ("library_root", "runs_root"):
             if key in source and not isinstance(source[key], str):
                 raise ValueError(f"Catalog {key} must be a filesystem path")
-        if source.get("control_mode", "native") not in ("native", "eef_delta", "rdk"):
+        if source.get("control_mode", "native") not in (
+            "native",
+            "eef_delta",
+            "rdk",
+            "eef_absolute",
+        ):
             raise ValueError("Unknown catalog control mode")
     return sources
 

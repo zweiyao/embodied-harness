@@ -115,7 +115,11 @@ def catalog(
                     "move_eef": (
                         "绝对 TCP 目标：position_m=[x,y,z]，基座坐标，米；"
                         "quaternion_wxyz=[w,x,y,z] 为目标姿态单位四元数；"
-                        "steps 指向同一目标的短程控制次数，不保证到位。"
+                        + (
+                            "observation_step 指定最近观测，每次发送一个目标。"
+                            if control_mode == "eef_absolute"
+                            else "steps 指向同一目标的短程控制次数，不保证到位。"
+                        )
                     ),
                 }.get(tool.name, "具体输入、单位与执行方式见参数声明。"),
                 "example": None,

@@ -20,12 +20,14 @@ from rpent.tools import Tool, ToolResult, iter_tools
 from rpent.tools.common import CommonTools
 
 
-def validate_selection(selected: list[dict], control_mode: str, meta: dict) -> None:
+def validate_selection(
+    selected: list[dict], control_mode: str, meta: dict, inspection_only: bool = False
+) -> None:
     """Reject stale, incompatible or unavailable selections before observation."""
     native = {item["name"]: item for item in catalog(control_mode=control_mode)}
     available = {
         getattr(FlexivToolkit, method).name
-        for method in tool_methods(meta, control_mode)
+        for method in tool_methods(meta, control_mode, inspection_only)
     } | {tool.name for tool in iter_tools(CommonTools)}
     names = [item["name"] for item in selected]
     if "finish" not in names or len(names) != len(set(names)):
@@ -86,7 +88,10 @@ class ManualToolkit(FlexivToolkit):
     ):
         self.selection = copy.deepcopy(selected)
         validate_selection(
-            self.selection, kwargs.get("control_mode", "native"), kwargs["env"].meta
+            self.selection,
+            kwargs.get("control_mode", "native"),
+            kwargs["env"].meta,
+            kwargs.get("inspection_only", False),
         )
         self.journal = journal or RunJournal(kwargs["output_dir"])
         self.sandbox = (

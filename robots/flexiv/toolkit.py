@@ -31,20 +31,26 @@ from rpent.tools.base import tool
 from rpent.tools.toolkit import Toolkit
 
 
-def tool_methods(meta: dict | None, control_mode: str) -> list[str]:
+def tool_methods(
+    meta: dict | None, control_mode: str, inspection_only: bool = False
+) -> list[str]:
     """Select method names for registration, or all supported names without meta."""
-    if control_mode not in ("native", "eef_delta", "rdk"):
+    if control_mode not in ("native", "eef_delta", "rdk", "eef_absolute"):
         raise ValueError("Unknown Flexiv control mode")
 
     def enabled(key):
         return meta is None or bool(meta.get(key))
 
     methods = ["observe"]
-    if control_mode == "rdk" and enabled("tactile_configured"):
+    if control_mode == "eef_absolute":
+        methods.append("view_action_record")
+    if control_mode in ("rdk", "eef_absolute") and enabled("tactile_configured"):
         methods.append("tactile_compare")
     if enabled("calibrated_readonly"):
         methods += ["view_perception_setup", "localize_target"]
-    if enabled("motion_enabled"):
+    if enabled("motion_enabled") and not inspection_only:
+        if control_mode == "eef_absolute":
+            methods += ["absolute_eef", "rdk_set_gripper", "stop_motion"]
         if control_mode == "rdk":
             methods += [
                 "rdk_move_eef_delta",
@@ -54,7 +60,9 @@ def tool_methods(meta: dict | None, control_mode: str) -> list[str]:
             ]
         if control_mode == "native":
             methods.append("move_delta")
-        if control_mode != "rdk" and enabled("supervised_control"):
+        if control_mode not in ("rdk", "eef_absolute") and enabled(
+            "supervised_control"
+        ):
             if control_mode == "eef_delta":
                 methods.append("move_eef_delta")
             else:
@@ -70,13 +78,22 @@ def tool_methods(meta: dict | None, control_mode: str) -> list[str]:
 
 class FlexivToolkit(Toolkit):
     def __init__(
-        self, *, env, output_dir, dashboard_events, memory, control_mode="native"
+        self,
+        *,
+        env,
+        output_dir,
+        dashboard_events,
+        memory,
+        control_mode="native",
+        inspection_only=False,
     ):
-        if control_mode not in ("native", "eef_delta", "rdk"):
+        if control_mode not in ("native", "eef_delta", "rdk", "eef_absolute"):
             raise ValueError("Unknown Flexiv control mode")
-        if (control_mode == "rdk") != (env.meta.get("control_backend") == "rdk"):
+        if (control_mode in ("rdk", "eef_absolute")) != (
+            env.meta.get("control_backend") == "rdk"
+        ):
             raise ValueError("rdk control mode requires the direct RDK environment")
-        if control_mode == "rdk":
+        if control_mode in ("rdk", "eef_absolute"):
             if not isinstance(env.meta.get("motion_enabled"), bool):
                 raise ValueError("RDK environment must report motion_enabled")
             if env.meta.get("reset_before_task"):
@@ -91,6 +108,8 @@ class FlexivToolkit(Toolkit):
                 )
             if env.meta.get("reset_before_task"):
                 raise ValueError("eef_delta requires reset_before_task=false")
+        self._absolute = control_mode == "eef_absolute"
+        self._observation_step = None
         self.env = env
         self._observation_lock = threading.RLock()
         super().__init__(
@@ -98,7 +117,7 @@ class FlexivToolkit(Toolkit):
             memory=memory,
             state=EnvState(Path(output_dir)),
         )
-        for method in tool_methods(env.meta, control_mode):
+        for method in tool_methods(env.meta, control_mode, inspection_only):
             self.add_tool(getattr(self, method))
         try:
             self.observe()
@@ -111,6 +130,7 @@ class FlexivToolkit(Toolkit):
             raise
 
     def _capture(self, command=None, result=None, elapsed_s=None):
+        self._observation_step = None
         observed = self.env.get_observation()
         images = []
         info = {
@@ -171,10 +191,70 @@ class FlexivToolkit(Toolkit):
             info["camera_calibration"] = compact_camera_metadata(
                 info["camera_calibration"]
             )
-        info.update(step=index, action_result=result, native_success=None)
+        self._observation_step = index
+        receipt = result
+        if (
+            self._absolute
+            and isinstance(result, dict)
+            and result.get("reached") is True
+        ):
+            # Full controller state and target are already recorded at this step.
+            receipt = {
+                k: v
+                for k, v in result.items()
+                if k not in {"state", "target_pose", "measured_pose"}
+            }
+            info["full_action_record_step"] = index
+        info.update(step=index, action_result=receipt, native_success=None)
         if command is None:
             self._publish_step(self.state.get(index))
         return ToolResult(data=info, images=images)
+
+    @tool(readonly=True)
+    def view_action_record(self, step: int) -> ToolResult:
+        """Read the original command and controller result at a recorded step."""
+        record = self.state.get(step)
+        return ToolResult(
+            data={
+                "step": record.step_idx,
+                "command": record.command,
+                "result": record.result,
+            }
+        )
+
+    @tool(name="move_eef")
+    def absolute_eef(
+        self,
+        observation_step: Annotated[int, Field(ge=0, strict=True)],
+        position_m: Annotated[list[float], Field(min_length=3, max_length=3)],
+        quaternion_wxyz: Annotated[list[float], Field(min_length=4, max_length=4)],
+    ) -> ToolResult:
+        """Send one absolute native TCP target in base metres and unit wxyz, using the latest observation step."""
+        from robots.flexiv.motion import pose_error
+
+        self.raise_if_cancelled()
+        if self._observation_step != observation_step:
+            raise ValueError("Stale observation; observe again")
+        recorded = self.state.get(observation_step).state["tcp_pose"]
+        live = self.env.get_observation()
+        state = live["state"]
+        if (
+            not live["motion_enabled"]
+            or state["fault"]
+            or not state["connected"]
+            or not state["operational"]
+        ):
+            raise ValueError("Physical motion unavailable")
+        distance, angle = pose_error(state["tcp_pose"], recorded)
+        limits = live["control_limits"]
+        if not (
+            distance <= limits["arrival_position_m"]
+            and np.degrees(angle) <= limits["arrival_angle_deg"]
+        ):
+            raise ValueError("TCP changed since observation; observe again")
+        self._observation_step = None
+        self.raise_if_cancelled()
+        return ToolResult(data=self.env.move_tcp(position_m, quaternion_wxyz))
 
     @tool(readonly=True)
     def view_perception_setup(self, step: int) -> ToolResult:
@@ -431,6 +511,10 @@ class FlexivToolkit(Toolkit):
         completion or contact feedback alone does not establish a secure grasp.
         """
         self.raise_if_cancelled()
+        if self._absolute:
+            if self._observation_step is None:
+                raise ValueError("Observe before commanding the gripper")
+            self._observation_step = None
         return ToolResult(data=self.env.set_gripper(width_m))
 
     @tool
@@ -467,7 +551,23 @@ class FlexivToolkit(Toolkit):
 
     def get_env_state(self, *, command, result, elapsed_s):
         with self._observation_lock:
-            return self._capture(command, result, elapsed_s)
+            try:
+                return self._capture(command, result, elapsed_s)
+            except Exception as error:
+                if not self._absolute:
+                    raise
+                self._observation_step = None
+                with self.state.record_step(
+                    state={},
+                    command=command,
+                    result=result,
+                    elapsed_s=elapsed_s,
+                    extras={"capture_error": str(error), "native_success": None},
+                ):
+                    pass
+                raise RuntimeError(
+                    "Post-action observation unavailable; verify the outcome before another command"
+                ) from error
 
     def cancel_active_and_wait(self):
         with self._scheduler.condition:

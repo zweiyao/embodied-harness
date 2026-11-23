@@ -19,7 +19,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from robots.flexiv.prompt_bundle import system_prompt, user_prompt
+from robots.flexiv.prompt_bundle import (
+    ROOT,
+    inspection_task,
+    system_prompt,
+    user_prompt,
+)
 from rpent.memory import MemoryManager
 from rpent.robots.prompt_bundle import PromptBundle
 from rpent.robots.robot_spec import RobotSpec, RunConfig
@@ -33,8 +38,17 @@ DASHBOARD_SPEC = {
     "external_env": True,
     "task": {
         "command": "/rpent-task",
-        "usage": '/rpent-task "<instruction>"',
-        "fields": ({"name": "instruction", "suggestions": (INSPECTION,)},),
+        "usage": '/rpent-task "<instruction>" [task_key]',
+        "fields": (
+            {"name": "instruction", "suggestions": (INSPECTION,)},
+            {
+                "name": "task_key",
+                "optional": True,
+                "suggestions": tuple(
+                    sorted(p.stem for p in (ROOT / "tasks").glob("*.md"))
+                ),
+            },
+        ),
         "display": "Flexiv: {instruction}",
         "output_slug": "flexiv",
     },
@@ -77,6 +91,8 @@ def _add_cli_args(parser: argparse.ArgumentParser, use_dashboard: bool):
     parser.add_argument("--env-endpoint", default=None)
     parser.add_argument("--collector-endpoint", default="http://127.0.0.1:9527")
     parser.add_argument("--rdk-endpoint", default="http://127.0.0.1:5000")
+    parser.add_argument("--task-key", default="default")
+    parser.add_argument("--action-mode", choices=("eef_absolute",), default=None)
     parser.add_argument("--instruction", default=INSPECTION)
     parser.add_argument(
         "--control-mode",
@@ -99,11 +115,20 @@ def _parse_config(args):
     control_mode = getattr(args, "control_mode", "native")
     if control_mode not in ("native", "eef_delta", "rdk"):
         raise ValueError("Unknown Flexiv control mode")
+    action_mode = getattr(args, "action_mode", None)
+    key = getattr(args, "task_key", "default")
+    if action_mode and control_mode != "rdk":
+        raise ValueError("Absolute EEF requires the RDK backend")
+    values = {"instruction": instruction, "control_mode": control_mode, "task_key": key}
+    if action_mode:
+        values.update(
+            action_mode=action_mode, inspection_only=inspection_task(key, instruction)
+        )
     return RunConfig(
         recipe_tag="flexiv",
         output_dir=output,
-        prompt_vars={"instruction": instruction, "control_mode": control_mode},
-        task_desc={"instruction": instruction, "control_mode": control_mode},
+        prompt_vars=dict(values),
+        task_desc=dict(values),
     )
 
 
@@ -124,7 +149,9 @@ def get_toolkit(*, runtime_kwargs, dashboard_events, config):
             env=runtime_kwargs["env"],
             output_dir=config.output_dir,
             dashboard_events=dashboard_events,
-            control_mode=config.prompt_vars.get("control_mode", "native"),
+            control_mode=config.prompt_vars.get("action_mode")
+            or config.prompt_vars.get("control_mode", "native"),
+            inspection_only=config.prompt_vars.get("inspection_only", False),
             memory=MemoryManager(
                 root=get_memory_dir("flexiv"), memory_access="read_only"
             ),
