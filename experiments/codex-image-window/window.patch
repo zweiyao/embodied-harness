@@ -1,0 +1,93 @@
+--- a/codex-rs/core/src/client_common.rs
++++ b/codex-rs/core/src/client_common.rs
+@@ -61,29 +61,48 @@
+         model_info: &ModelInfo,
+     ) -> Vec<ResponseItem> {
+         let mut input = self.input.clone();
+-        normalize_image_details(&mut input, model_info);
++        format_request_images(&mut input, model_info);
+         input
+     }
+ }
+
+-fn normalize_image_details(items: &mut [ResponseItem], model_info: &ModelInfo) {
+-    for item in items {
++const IMAGE_WINDOW: usize = 10;
++const OMITTED_IMAGE: &str = "[Earlier image omitted]";
++
++fn format_request_images(items: &mut [ResponseItem], model_info: &ModelInfo) {
++    // Count individual image blocks from newest to oldest across messages and tool outputs.
++    let mut seen = 0;
++    for item in items.iter_mut().rev() {
+         match item {
+             ResponseItem::Message { content, .. } => {
+-                for content_item in content {
++                for content_item in content.iter_mut().rev() {
+                     if let ContentItem::InputImage { detail, .. } = content_item {
+-                        normalize_image_detail(detail, model_info);
++                        seen += 1;
++                        if seen > IMAGE_WINDOW {
++                            *content_item = ContentItem::InputText {
++                                text: OMITTED_IMAGE.to_owned(),
++                            };
++                        } else {
++                            normalize_image_detail(detail, model_info);
++                        }
+                     }
+                 }
+             }
+             ResponseItem::FunctionCallOutput { output, .. }
+             | ResponseItem::CustomToolCallOutput { output, .. } => {
+                 if let Some(content) = output.content_items_mut() {
+-                    for content_item in content {
++                    for content_item in content.iter_mut().rev() {
+                         if let FunctionCallOutputContentItem::InputImage { detail, .. } =
+                             content_item
+                         {
+-                            normalize_image_detail(detail, model_info);
++                            seen += 1;
++                            if seen > IMAGE_WINDOW {
++                                *content_item = FunctionCallOutputContentItem::InputText {
++                                    text: OMITTED_IMAGE.to_owned(),
++                                };
++                            } else {
++                                normalize_image_detail(detail, model_info);
++                            }
+                         }
+                     }
+                 }
+--- a/codex-rs/core/src/client_common_tests.rs
++++ b/codex-rs/core/src/client_common_tests.rs
+@@ -266,3 +266,32 @@
+         Some("flex")
+     );
+ }
++
++#[test]
++fn window_preserves_the_original_prompt_and_mixed_tool_outputs() {
++    let mut prompt = Prompt::default();
++    let model = model_info_from_slug("gpt-5.4");
++    for group in 0..4 {
++        prompt.input.extend(prompt_with_image_outputs(None).input);
++        let original = prompt.input.clone();
++        let mut expected = original.clone();
++        if group == 3 {
++            let ResponseItem::Message { content, .. } = &mut expected[0] else {
++                panic!("expected a user message")
++            };
++            content[1] = ContentItem::InputText {
++                text: "[Earlier image omitted]".into(),
++            };
++            let ResponseItem::FunctionCallOutput { output, .. } = &mut expected[1] else {
++                panic!("expected a function result")
++            };
++            output.content_items_mut().unwrap()[0] = FunctionCallOutputContentItem::InputText {
++                text: "[Earlier image omitted]".into(),
++            };
++        }
++        for _attempt in 0..2 {
++            assert_eq!(prompt.get_formatted_input_for_request(&model), expected);
++            assert_eq!(prompt.input, original);
++        }
++    }
++}

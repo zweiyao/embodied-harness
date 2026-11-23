@@ -1324,6 +1324,19 @@ class DashboardState:
         with self._lock:
             return self._snapshot_locked()
 
+    def delete_run(self, run_id: str) -> None:
+        """Delete a finalized archive while excluding this Session's active run."""
+        with self._lock:
+            if self.workbench is None:
+                raise ValueError("Workbench unavailable")
+            if run_id == self.run_id and (
+                self._task_state not in TERMINAL_RUN_STATES
+                or self._active_primitive_calls
+            ):
+                raise RuntimeError("当前实验仍在运行，不能删除")
+            workbench = self.workbench
+        workbench.delete_run(run_id)
+
     def wait_for_snapshot(
         self,
         since: int,
