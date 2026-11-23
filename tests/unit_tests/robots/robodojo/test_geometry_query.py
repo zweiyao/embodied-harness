@@ -47,3 +47,15 @@ def test_modes_share_samples_and_reject_stale_observations(monkeypatch):
     assert measurements["raw"]["valid_fraction"] == 0.5
     assert "circle" not in measurements["raw"]
     assert "unavailable" in measurements["fit"]["circle"]
+
+
+def test_json_pixel_pairs_pass_toolkit_strict_validation():
+    args = {"observation_step": 0, "camera": "cam_head", "pixels": [[11, 20], [12, 19]]}
+    validated = query_geometry.args_schema.model_validate(args, strict=True)
+    assert validated.pixels == args["pixels"]
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        query_geometry.args_schema.model_validate(
+            {**args, "pixels": [[11]]}, strict=True
+        )

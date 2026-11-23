@@ -57,7 +57,8 @@ def query_geometry(
     observation_step: StrictInt,
     camera: Literal["cam_head", "cam_left_wrist", "cam_right_wrist"],
     pixels: Annotated[
-        list[tuple[StrictInt, StrictInt]], Field(min_length=1, max_length=32)
+        list[Annotated[list[StrictInt], Field(min_length=2, max_length=2)]],
+        Field(min_length=1, max_length=32),
     ],
 ) -> ToolResult:
     """Measure selected (row, col) pixels on the latest image in world metres.

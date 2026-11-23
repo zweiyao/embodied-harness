@@ -19,8 +19,10 @@
   "diagnostics": "Tool calls and geometry-query use, first accepted motion and observed object progress, model time, input/output tokens. Check initial recorded views before interpreting pairs.",
   "infrastructure": "Keep failed requests and raw attempts. Exclude confirmed transport failures and retry the same cell with backoff. Budget exhaustion during normal execution is a task failure. One active episode at a time.",
   "verification": {
-    "whole_unit_suite": {"passed": 2176, "skipped": 11},
+    "whole_unit_suite": {"passed": 2177, "skipped": 11},
     "pre_commit": "passed",
+    "http_mcp": "Both raw and fit accepted nested JSON integer arrays over HTTP MCP. The previous tuple declaration is excluded as an infrastructure incident.",
+    "live_check": "In run 75d3eccb3e480a59dd51 (B, layout 0), Astra received 13 valid head-camera XYZ samples from one query.",
     "frame_probe": "Eight selected head-camera pixels from one simulated frame agreed between raw, fit, and the original point projector. This checks the numerical wiring, not semantic rim selection.",
     "limits": ["Visible-rim identification is left to the agent.", "No cross-view fusion or finger-to-link6 conversion.", "Two layouts cannot establish a cross-task improvement."]
   }
