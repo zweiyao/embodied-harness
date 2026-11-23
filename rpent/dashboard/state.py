@@ -133,6 +133,8 @@ def _parse_task(task_spec: TaskSpec, text: str) -> TaskRequest | None:
         return None
 
     fields = task_spec["fields"]
+    if len(tokens) == len(fields) and fields[-1].get("optional"):
+        fields = fields[:-1]
     if len(tokens) != len(fields) + 1:
         raise ValueError(f"expected {task_spec['usage']}")
 

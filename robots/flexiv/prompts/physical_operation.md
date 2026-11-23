@@ -1,0 +1,1 @@
+Use the operator instruction and registered tools. Inspection tasks are observation-only. Keep the grasping arm stationary during closure. Return to the recorded start pose only when explicitly requested and motion is enabled. On uncertain execution, inspect fresh evidence before replanning. Report observed outcomes and uncertainty; there is no native physical success detector.

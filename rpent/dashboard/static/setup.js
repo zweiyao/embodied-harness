@@ -24,7 +24,7 @@ function tasks() {
 function command() {
   $('command').textContent = taskPicker ? taskPicker.command() : profile.suites
     ? `/rpent-task ${$('suite').value} ${$('task').value} ${$('seed').value}`
-    : `/rpent-task ${JSON.stringify($('physicalInstruction').value.trim())}`;
+    : `/rpent-task ${JSON.stringify($('physicalInstruction').value.trim())}${$('flexivTaskLabel').hidden ? '' : ' ' + ($('physicalMode').value === 'readonly' ? 'default' : $('flexivTaskKey').value)}`;
 }
 function budget(id, values, label) {
   const current = config[id];
@@ -71,6 +71,7 @@ async function physicalAction(action) {
 $('armPhysical').addEventListener('click', () => physicalAction('arm'));
 $('stopPhysical').addEventListener('click', () => physicalAction('stop'));
 $('physicalMode').addEventListener('change', async () => {
+  command();
   if ($('physicalMode').value === 'readonly') await physicalAction('stop');
   else await physicalStatus();
 });
@@ -118,6 +119,12 @@ try {
   } else if (profile.task_fields) {
     taskPicker = renderTaskFields($('nativeTaskFields'), profile.task_fields, setup.task_spec, command);
   } else {
+    const taskKeys = setup.task_spec?.fields.find(f => f.name === 'task_key')?.suggestions;
+    if (taskKeys && config.control_mode === 'eef_absolute') {
+      $('flexivTaskLabel').hidden = false;
+      options('flexivTaskKey', taskKeys.map(k => [k,k]), 'manipulation');
+      $('flexivTaskKey').addEventListener('change', command);
+    }
     options('inspection', profile.inspections.map(s => [s,s]));
     $('physicalInstruction').value = $('inspection').value;
     await physicalStatus();

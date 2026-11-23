@@ -5,7 +5,7 @@
 <title>RPent · 实验开始</title>
 <link rel="stylesheet" href="/static/setup.css">
 <link rel="stylesheet" href="/static/workbench.css">
-<script type="module" src="/static/setup.js?v=native-tasks-20261112"></script>
+<script type="module" src="/static/setup.js?v=flexiv-absolute"></script>
 </head>
 <body>
 <main>
@@ -30,6 +30,7 @@
         <div id="nativeTaskFields" class="grid" hidden></div>
         <div id="physical" hidden>
           <label>任务模板<select id="inspection"></select></label>
+          <label id="flexivTaskLabel" hidden>任务补充<select id="flexivTaskKey"></select></label>
           <label>实验指令<textarea id="physicalInstruction" rows="3" style="width:100%;box-sizing:border-box"></textarea></label>
           <label>控制模式<select id="physicalMode"><option value="readonly">只读观察与定位</option><option value="supervised">受限真机实验</option></select></label>
           <p id="physicalStatus" role="status">正在读取机械臂状态…</p>

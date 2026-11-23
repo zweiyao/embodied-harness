@@ -125,8 +125,8 @@ def run_dashboard_session(
     if state.workbench is not None:
         if robot_spec.name == "flexiv":
             state.workbench.config["control_mode"] = getattr(
-                args, "control_mode", "native"
-            )
+                args, "action_mode", None
+            ) or getattr(args, "control_mode", "native")
         state.workbench.recover_interrupted()
         if getattr(args, "pilot_root", None):
             state.workbench.bind_pilot(
@@ -163,7 +163,10 @@ def run_dashboard_session(
             "max_tokens": args.max_tokens,
             "planner_timeout_s": args.planner_timeout_s,
             **(
-                {"control_mode": getattr(args, "control_mode", "native")}
+                {
+                    "control_mode": getattr(args, "action_mode", None)
+                    or getattr(args, "control_mode", "native")
+                }
                 if robot_spec.name == "flexiv"
                 else {}
             ),

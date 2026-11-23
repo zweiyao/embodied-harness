@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-23",
+  "subject": "Flexiv absolute EEF dashboard migration",
+  "code_base": "f3edcf77f4968183aeb2733ff4c87b4a36f886c5",
+  "deployed_overlay_base": "9c60c40",
+  "service": "harnessvla-flexiv-dashboard.service",
+  "configuration": {
+    "control_backend": "rdk",
+    "action_mode": "eef_absolute",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "codex_analysis": true,
+    "codex_full_access": true,
+    "max_turns": 200,
+    "planner_timeout_s": 3600,
+    "image_window": 10,
+    "codex_sha256": "b1d54af215d6c1e03f864d17206b2ed34a479ded826b46cb31dc3f49d3313c13"
+  },
+  "verified": {
+    "remote_unit_tests": {"passed": 2158, "skipped": 16},
+    "remote_pre_commit": "passed",
+    "latest_image_wire_counts": [3, 6, 9, 10],
+    "offline_native_astra": "Archived side RGB crop and normalized camera ray matched independent calculation. Scratch result and notes persisted.",
+    "archived_feedback": "Replayed step 5 in session-20261103-062056-1638327/task 0001. Both RGB images, measured TCP and error fields retained. Full controller result read back identically.",
+    "dashboard_browser": "Default inspection and supervised task previews, 200-turn budget, HTTP and browser console checks passed. Browser accepted GET only.",
+    "operator_state": "Session ready, operator inactive, RDK disarmed, gripper not ready. RDK, ENV and RGB-D service PIDs preserved.",
+    "live_readonly": "Read both side and wrist RGB-D from ENV while disarmed."
+  },
+  "private_remote_evidence_dir": "~/work/embodied_harness/validation/flexiv-absolute-20261123",
+  "evidence_files": ["tests-release.log", "hooks-final.log", "wire.log", "analysis-probe/codex-capabilities.json", "setup.png", "setup-trace.zip"],
+  "not_verified": ["Physical EEF tracking and grasp", "Live tactile feedback", "Physical task success, time or token improvements"],
+  "permissions": "RPent tool registration limits model tool calls. The fully trusted Codex shell has the operating-system permissions of the dashboard user."
+}
