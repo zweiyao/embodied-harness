@@ -1,0 +1,18 @@
+--- a/validation/prompt-system-refactor-20261116/start-public-workbench.sh
++++ b/validation/prompt-system-refactor-20261116/start-public-workbench.sh
+@@ -9,5 +9,5 @@
+   --robot robodojo --dashboard --dashboard-host 127.0.0.1 --dashboard-port 8094 \
+   --dashboard-language zh-cn --planner codex --model gpt-6-astra --reasoning-effort high --codex-analysis --codex-full-access \
+   --memory-profile local --memory-dir "$RPENT_MEMORY_DIR" \
+-  --max-turns 120 --max-tokens 16384 --planner-timeout-s 1800 --max-episode-steps 0 \
++  --max-turns 200 --max-tokens 16384 --planner-timeout-s 3600 --max-episode-steps 0 \
+   --output-dir "$RPENT_RUNS_ROOT/session-prompt-refactor-$(date -u +%Y%m%d-%H%M%S)-$$"
+--- a/validation/robodojo-tasks1-10-1800-20261116/start-lane.sh
++++ b/validation/robodojo-tasks1-10-1800-20261116/start-lane.sh
+@@ -10,5 +10,5 @@
+   --dashboard-language zh-cn --planner codex --model gpt-6-astra --reasoning-effort high \
+   --codex-analysis --codex-full-access --memory-profile local --memory-dir "$RPENT_MEMORY_DIR" \
+   --vla-endpoint http://127.0.0.1:59243 --sam3-endpoint http://127.0.0.1:52489 \
+-  --max-turns 120 --max-tokens 16384 --planner-timeout-s 1800 --max-episode-steps 0 \
++  --max-turns 200 --max-tokens 16384 --planner-timeout-s 3600 --max-episode-steps 0 \
+   --output-dir "$RPENT_RUNS_ROOT/session-tasks1-10-1800-$1-$(date -u +%Y%m%d-%H%M%S)-$$"

@@ -1,0 +1,22 @@
+{
+  "base_commit": "f3edcf77f4968183aeb2733ff4c87b4a36f886c5",
+  "changed_prompt_files": [
+    "rpent/prompt/common.md",
+    "robots/robodojo/prompts/control_eef.md"
+  ],
+  "approval": "user revised draft to constrain only the grasping side and remove the settling/verification-lift procedure",
+  "focused_passed": 64,
+  "unit": {
+    "passed": 2161,
+    "skipped": 11,
+    "seconds": 75.11
+  },
+  "pre_commit": "passed",
+  "candidate_and_deployed_rendering": "passed with source provenance",
+  "service_restarts": 0,
+  "experiments_started": 0,
+  "robot_actions": 0,
+  "existing_settings": "unchanged",
+  "effective": "new TaskRun prompts in active layered checkout",
+  "task_success_or_drop_rate_improvement": "not evaluated"
+}

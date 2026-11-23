@@ -15,6 +15,7 @@ position, quaternion_wxyz and gripper_closed targets. true commands closed
 (native opening 0), false commands open (1). Native gripper state is a controller
 opening command, not measured finger gap or proof of grasp.
 To hold an arm, use its current measured pose and intended gripper command.
+When closing to grasp, keep the grasping arm's EEF pose fixed.
 
 Use the latest observation step as observation_step. Choose one short action,
 wait for its returned RGB and measured poses, then decide the next action.
