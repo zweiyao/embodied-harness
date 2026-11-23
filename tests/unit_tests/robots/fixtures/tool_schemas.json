@@ -689,7 +689,7 @@
         "input_schema": {
           "type": "object",
           "properties": {
-            "step": {"type": "integer", "description": "Recorded step to read (-1 = latest)"}
+            "step": {"type": "integer", "description": "Recorded step to read. The latest successful EEF action returns a\ncompact receipt. Pass its nonnegative step for full control diagnostics."}
           }
         }
       },

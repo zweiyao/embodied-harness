@@ -1,0 +1,214 @@
+{
+  "study": "RoboDojo compact EEF receipts, exploratory paired pilot",
+  "task": "arrange_largest_number",
+  "index": 1,
+  "layout": 0,
+  "episodes_per_condition": 1,
+  "date": "2026-11-23",
+  "image_window": 10,
+  "max_responses": 200,
+  "planner_budget_s": 3600,
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "single_thread": true,
+  "source_revision": "9c60c402cd33032442c2eb30c66ad5fcb2054c11",
+  "changed_runtime_files": [
+    "robots/robodojo/toolkit.py",
+    "robots/robodojo/tools.py"
+  ],
+  "matched_initial_joint_and_eef_state": true,
+  "matched_instruction": true,
+  "identical_initial_rgb_bytes": [
+    false,
+    false,
+    false
+  ],
+  "client_sha256": "b1d54af215d6c1e03f864d17206b2ed34a479ded826b46cb31dc3f49d3313c13",
+  "runs": {
+    "control": {
+      "run_id": "2a1f0888ffeee7a51531",
+      "status": "completed",
+      "success": true,
+      "elapsed_s": 1410.1,
+      "planner_elapsed_s": 1364.8,
+      "interactions": 102,
+      "eef_requests": 91,
+      "confirmed_native_steps": 452,
+      "outcome_sha256": "34f6c10aa374beabf76881c9f2154c9f7ef9082cd05a4699ceb07c4c5e9418bb",
+      "first_eef_s": 66.36,
+      "input_tokens": 6719721,
+      "cached_input_tokens": 1875328,
+      "uncached_input_tokens": 4844393,
+      "output_tokens": 13977,
+      "total_tokens": 6733698,
+      "compact_receipts": 0,
+      "explicit_step_reads": 1,
+      "noninitial_step_reads": 0,
+      "states_json_file_tool_reads": 0,
+      "rejected_actions": 1,
+      "subsequent_accepted_sequences": 1,
+      "median_eef_receipt_bytes": 22690
+    },
+    "candidate": {
+      "run_id": "567f2ed630e5c26742f2",
+      "status": "completed",
+      "success": true,
+      "elapsed_s": 1208.0,
+      "planner_elapsed_s": 1160.0,
+      "interactions": 97,
+      "eef_requests": 85,
+      "confirmed_native_steps": 422,
+      "outcome_sha256": "59f32c238bef3bbb7ac10ada35e7cecc5b229647f9c72cd2b035d35fc93cd2be",
+      "first_eef_s": 56.04,
+      "input_tokens": 4522992,
+      "cached_input_tokens": 1700864,
+      "uncached_input_tokens": 2822128,
+      "output_tokens": 10936,
+      "total_tokens": 4533928,
+      "compact_receipts": 84,
+      "explicit_step_reads": 1,
+      "noninitial_step_reads": 1,
+      "states_json_file_tool_reads": 0,
+      "rejected_actions": 1,
+      "subsequent_accepted_sequences": 1,
+      "median_eef_receipt_bytes": 3450
+    }
+  },
+  "matched_response_prefixes": [
+    {
+      "control": {
+        "responses": 10,
+        "elapsed_s": 104.19,
+        "input": 266365,
+        "uncached": 63613,
+        "output": 2079
+      },
+      "candidate": {
+        "responses": 10,
+        "elapsed_s": 118.34,
+        "input": 251134,
+        "uncached": 49022,
+        "output": 2171
+      }
+    },
+    {
+      "control": {
+        "responses": 50,
+        "elapsed_s": 701.49,
+        "input": 2495625,
+        "uncached": 1698953,
+        "output": 8761
+      },
+      "candidate": {
+        "responses": 50,
+        "elapsed_s": 570.66,
+        "input": 1890305,
+        "uncached": 1006465,
+        "output": 6990
+      }
+    },
+    {
+      "control": {
+        "responses": 97,
+        "elapsed_s": 1306.47,
+        "input": 6252187,
+        "uncached": 4687899,
+        "output": 12928
+      },
+      "candidate": {
+        "responses": 97,
+        "elapsed_s": 1159.66,
+        "input": 4522992,
+        "uncached": 2822128,
+        "output": 10936
+      }
+    }
+  ],
+  "historical_replay": {
+    "source_run": "e3aff58602d9573fcfef",
+    "compact_actions": 87,
+    "mcp_text_bytes_median": [
+      22730,
+      3470
+    ],
+    "mcp_text_bytes_sum": [
+      1977747,
+      301856
+    ]
+  },
+  "native_http_loopback_replay": {
+    "control": [
+      {
+        "move": 1,
+        "utf8_text_bytes": 22660,
+        "marker": "control_steps",
+        "image_count_in_request": 3
+      },
+      {
+        "move": 2,
+        "utf8_text_bytes": 22496,
+        "marker": "control_steps",
+        "image_count_in_request": 6
+      },
+      {
+        "move": 3,
+        "utf8_text_bytes": 22623,
+        "marker": "control_steps",
+        "image_count_in_request": 9
+      },
+      {
+        "move": 4,
+        "utf8_text_bytes": 22674,
+        "marker": "control_steps",
+        "image_count_in_request": 10
+      }
+    ],
+    "candidate": [
+      {
+        "move": 1,
+        "utf8_text_bytes": 3520,
+        "marker": "full_record",
+        "image_count_in_request": 3
+      },
+      {
+        "move": 2,
+        "utf8_text_bytes": 3493,
+        "marker": "full_record",
+        "image_count_in_request": 6
+      },
+      {
+        "move": 3,
+        "utf8_text_bytes": 3489,
+        "marker": "full_record",
+        "image_count_in_request": 9
+      },
+      {
+        "move": 4,
+        "utf8_text_bytes": 3487,
+        "marker": "full_record",
+        "image_count_in_request": 10
+      }
+    ]
+  },
+  "verification": {
+    "pre_commit": [
+      "ruff (legacy alias)......................................................Passed",
+      "ruff format..............................................................Passed"
+    ],
+    "unit_tests": {
+      "tests": 2173,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 16
+    },
+    "runtime_unit_tests": {
+      "tests": 2174,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 16
+    }
+  },
+  "excluded_prelaunch_incidents": [
+    "First control workbench stopped before simulator/model task startup because the configured records root did not contain its output directory. Both valid runs used the shared research records root."
+  ]
+}

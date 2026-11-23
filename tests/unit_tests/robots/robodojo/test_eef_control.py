@@ -164,6 +164,42 @@ def test_tool_returns_fresh_three_camera_feedback_and_rejects_stale_action(toolk
     assert "unknown tool" in tool.execute_tool("pi0_pick", {}).data["error"]
 
 
+def test_compact_eef_receipt_preserves_measurements_and_full_record(toolkit):
+    tool, _ = toolkit
+    env = tool._primitives.env
+    obs = env.get_obs()
+    wrist = obs["vision"]["cam_left_wrist"]
+    wrist["extrinsic_matrix"] = np.eye(4)
+    wrist["intrinsic_matrix"] = np.eye(3)
+    obs["state"]["left_ee_joint_state"] = [0.0]
+    env.step_eef = lambda _: {
+        "status": {"step": 1, "step_limit": None},
+        "final": {"left": {"position_error_m": 0.002, "rotation_error_rad": 0.01}},
+        "diagnostics": {"fk_check": {"passed": True}},
+    }
+    initial = tool.execute_tool("view_env_state", {}).data
+    result = tool.execute_tool(
+        "move_eef", {"observation_step": initial["step"], "target": target()}
+    )
+    receipt = result.data
+    full = tool.execute_tool("view_env_state", {"step": receipt["step"]})
+    assert full.images == result.images and len(result.images) == 3
+    assert full.data["task_language"] == initial["task_language"]
+    assert "task_language" not in receipt
+    assert receipt["state"]["state"] == full.data["state"]["state"]
+    assert receipt["state"]["cameras"]["cam_left_wrist"] == {
+        "extrinsic_matrix": np.eye(4).tolist(),
+        "intrinsic_matrix": np.eye(3).tolist(),  # changed since step zero
+    }
+    assert "control_steps" not in receipt["log"]["result"]
+    assert receipt["log"]["result"]["target_error"]["left"] == {
+        "position_error_m": 0.002,
+        "rotation_error_rad": 0.01,
+    }
+    assert full.data["log"]["result"]["control_steps"][0]["diagnostics"]
+    assert tool.execute_tool("view_env_state", {}).data == receipt
+
+
 def test_bad_second_arm_causes_zero_control_steps(toolkit):
     tool, calls = toolkit
     value = target()
