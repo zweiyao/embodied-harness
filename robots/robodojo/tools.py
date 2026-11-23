@@ -104,7 +104,8 @@ def view_env_state(step: int = -1, *, state: Any) -> ToolResult:
     """Read one recorded RoboDojo state: robot joint/ee state, camera shapes and calibration, the task instruction, and the three camera RGB images (cam_head, cam_left_wrist, cam_right_wrist). Step -1 selects the latest record.
 
     Args:
-        step: Recorded step to read (-1 = latest)"""
+        step: Recorded step to read. The latest successful EEF action returns a
+            compact receipt. Pass its nonnegative step for full control diagnostics."""
     try:
         record = state.get(step)
     except Exception as error:
@@ -122,6 +123,43 @@ def view_env_state(step: int = -1, *, state: Any) -> ToolResult:
         "result": record.result,
         "elapsed_s": record.elapsed_s,
     }
+    if (
+        step == -1
+        and (record.command or {}).get("action") == "move_eef"
+        and not record.truncated
+        and (record.result or {}).get("control_steps")
+        and not (record.result.get("rejection") or record.result.get("error"))
+    ):
+        initial = state.get(0)
+        receipt = dict(record.result)
+        last = receipt.pop("control_steps")[-1]
+        # Keep fresh joint/EEF state. A gripper value reports the command.
+        observed = dict(record.state)
+        observed.pop("eef", None)  # aliases the two EE poses under state
+        if observed.get("instruction") == initial.state.get("instruction"):
+            observed.pop("instruction", None)
+        if result["task_language"] == initial.extras.get("task_language"):
+            result.pop("task_language")
+        observed["cameras"] = {
+            camera: {
+                key: value
+                for key, value in calibration.items()
+                if key == "extrinsic_matrix"
+                or initial.state.get("cameras", {}).get(camera, {}).get(key) != value
+            }
+            for camera, calibration in observed.get("cameras", {}).items()
+        }
+        receipt["target_error"] = {
+            arm: {
+                key: values[key]
+                for key in ("position_error_m", "rotation_error_rad")
+                if key in values
+            }
+            for arm, values in last.get("final", {}).items()
+        }
+        result["state"] = observed
+        result["log"] = {"result": receipt, "elapsed_s": record.elapsed_s}
+        result["full_record"] = {"tool": "view_env_state", "step": record.step_idx}
     images: list[bytes] = []
     for _, artifact in CAMERA_ARTIFACTS:
         if artifact in record.artifacts:

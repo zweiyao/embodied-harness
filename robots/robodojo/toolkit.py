@@ -211,7 +211,8 @@ class RoboDojoToolkit(Toolkit):
             perception=self._pending_perception,
         )
         self._pending_perception = []
-        return robodojo_tools.view_env_state(record.step_idx, state=self._state)
+        step = -1 if command.get("action") == "move_eef" else record.step_idx
+        return robodojo_tools.view_env_state(step, state=self._state)
 
 
 class RoboDojoPrimitives:
