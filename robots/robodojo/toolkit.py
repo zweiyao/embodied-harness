@@ -75,6 +75,7 @@ class RoboDojoToolkit(Toolkit):
         if selected is None:
             # The short EEF controller is opt-in; preserve the default toolkit.
             self._tools.pop("move_eef", None)
+            self._tools.pop("query_geometry", None)
         if selected is not None:
             names = {item["name"] for item in selected}
             self._tools = {
@@ -188,8 +189,9 @@ class RoboDojoToolkit(Toolkit):
 
     def _register_robodojo_tools(self) -> None:
         from robots.robodojo import tools as robodojo_tools
+        from robots.robodojo.geometry import optional_geometry_tools
 
-        for definition in iter_tools(robodojo_tools):
+        for definition in [*iter_tools(robodojo_tools), *optional_geometry_tools()]:
             resources = {"state": self._state}
             if definition.name != "view_env_state":
                 resources["primitives"] = self._primitives

@@ -15,11 +15,12 @@ from rpent.tools.common import CommonTools
 
 def native_catalog() -> list[dict]:
     from robots.robodojo import tools
+    from robots.robodojo.geometry import optional_geometry_tools
 
     common = list(iter_tools(CommonTools))
     common_names = {t.name for t in common}
     result = []
-    for declaration in [*iter_tools(tools), *common]:
+    for declaration in [*iter_tools(tools), *optional_geometry_tools(), *common]:
         source = inspect.getsource(declaration.handler)
         auxiliary = declaration.name in common_names
         result.append(
