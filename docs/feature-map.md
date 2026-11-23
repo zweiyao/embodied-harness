@@ -10,7 +10,7 @@ Run selectors with `python -m pytest tests/e2e_tests/dashboard -k SELECTOR`. The
 | --- | --- | --- | --- |
 | Task setup, `/` | Wait for ready, select task B and seed 3 in the demo suite | Preview updates to `/rpent-task demo 1 3`. Enter remains disabled until the fixture model passes its connection check | `setup_preview` |
 | Tool library, `/tools` | Open details for `move_to`, inspect the parameter section, close | Dialog identifies the selected tool and shows its parameter heading. The catalog remains available after close | `tool_details` |
-| History and replay, `/runs` → `/runs?id=<id>` | Locate the sample instruction, open its record, select the initial step | List shows one run. Detail shows the recorded native success, last action and the initial state after selecting step 0 | `run_replay` |
+| History and replay, `/runs` → `/runs?id=<id>` | Expand the sample task folder, open its record, select the initial step | The task folder shows one successful run and its instruction. Detail shows the recorded native success, last action and the initial state after selecting step 0 | `run_replay` |
 | Live monitor, `/console` | Open the idle session and wait for the first server-sent state event | Live indicator appears, run identity shows no experiment and abort is disabled | `console_stream` |
 
 ## Additional interaction surfaces

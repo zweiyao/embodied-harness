@@ -34,7 +34,10 @@ def workbench_url(bench):
     root = bench.root / "session/tasks/0001_demo"
     root.mkdir(parents=True)
     for filename, data in {
-        "dashboard_config.json": {"model": "fixture", "task": {"seed": 0}},
+        "dashboard_config.json": {
+            "model": "fixture",
+            "task": {"suite": "demo", "task": 0, "seed": 0},
+        },
         "outcome.json": {"status": "completed", "environment_success": True},
         "states.json": {
             "steps": [
@@ -157,7 +160,9 @@ def test_run_replay(workbench_url, browser_page):
     page = browser_page
     page.goto(workbench_url + "/runs")
     expect(page.locator("#status")).to_contain_text("1 次实验")
+    page.get_by_text("demo / task 0 · A · 1 条记录", exact=True).click()
     expect(page.locator(".task-instruction")).to_contain_text(INSTRUCTION)
+    expect(page.get_by_text("任务成功", exact=True)).to_be_visible()
     page.get_by_role("link", name="查看过程").click()
     expect(page.locator("#status")).to_contain_text("历史实验")
     expect(page.get_by_text("官方成功：是", exact=False)).to_be_visible()
