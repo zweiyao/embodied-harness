@@ -61,6 +61,21 @@ nonzero.
 These fixtures measure request contents. Evaluate task success, elapsed time,
 input tokens and cached input tokens in a separate paired RoboDojo experiment.
 
+## RoboDojo research baseline
+
+Use the ten-image client and the single-thread EEF configuration from the
+November 19, 2026 candidate runs as the reference for future comparisons.
+Check the client executable against `binary_sha256.window` in
+[verification.json](verification.json). Count individual image blocks across
+all cameras and tools. The window applies to the outgoing model request.
+
+The reference runs are `e669b0f7d2b4cea66805` and `4d51914faa36f6a90644`.
+Their manifests record RPent revision
+`9c60c402cd33032442c2eb30c66ad5fcb2054c11` and per-file hashes for the
+runtime snapshot. Use those manifests and the archived launch configuration
+when reproducing the runs. The paired results below describe the observed
+performance of both clients.
+
 ## RoboDojo paired pilot
 
 Both builds used Astra/high, a single thread, layout 0, the same memory and EEF
