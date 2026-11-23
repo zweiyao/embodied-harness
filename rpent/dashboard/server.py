@@ -232,6 +232,26 @@ class DashboardServer:
             except ValueError as exc:
                 return JSONResponse({"error": str(exc)}, status_code=404)
 
+        @app.delete("/api/runs/{run_id}")
+        def delete_run(
+            run_id: str, payload: dict[str, Any] = Body(default={})
+        ) -> JSONResponse:
+            if payload.get("confirm_run_id") != run_id:
+                return JSONResponse(
+                    {"error": "请明确确认要永久删除的记录"}, status_code=400
+                )
+            try:
+                self._state.delete_run(run_id)
+            except ValueError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=404)
+            except RuntimeError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=409)
+            except PermissionError as exc:
+                return JSONResponse({"error": str(exc)}, status_code=403)
+            except OSError as exc:
+                return JSONResponse({"error": f"删除失败：{exc}"}, status_code=500)
+            return JSONResponse({"deleted": run_id})
+
         @app.get("/api/runs/{run_id}/artifact/{name:path}")
         def run_artifact(run_id: str, name: str):
             try:

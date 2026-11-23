@@ -13,6 +13,7 @@ import inspect
 import json
 import os
 import re
+import shutil
 import subprocess
 import threading
 from contextlib import contextmanager
@@ -652,6 +653,36 @@ class Workbench:
                 )
                 return item
         raise ValueError("Unknown run")
+
+    def delete_run(self, run_id: str) -> None:
+        """Permanently remove one finalized record from a configured run root."""
+        item = next((run for run in self.runs() if run["id"] == run_id), None)
+        if item is None:
+            raise ValueError("Unknown run")
+        root = Path(item["path"])
+        if root.parent.name != "tasks" or root.parent.parent.parent not in (
+            self.root,
+            *self.history_roots,
+        ):
+            raise PermissionError("Record is outside the configured task directories")
+        if root.is_symlink() or root.resolve() != root:
+            raise PermissionError("Record directory changed or contains a symlink")
+        if not (root / "outcome.json").is_file():
+            raise RuntimeError("记录尚未结束归档，不能删除")
+        events = root / "events.jsonl"
+        if events.exists():
+            with events.open("rb") as stream:
+                stream.seek(0, os.SEEK_END)
+                stream.seek(max(0, stream.tell() - 65536))
+                tail = stream.read().splitlines()
+            try:
+                ended = bool(tail) and json.loads(tail[-1]).get("kind") == "run_end"
+            except (ValueError, AttributeError):
+                ended = False
+            if not ended:
+                raise RuntimeError("记录尚未结束归档，不能删除")
+        # rmtree unlinks nested symlinks without deleting their external targets.
+        shutil.rmtree(root)
 
     def artifact(self, run_id, name):
         root = Path(self.run(run_id)["path"]).resolve()

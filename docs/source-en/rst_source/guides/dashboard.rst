@@ -81,4 +81,22 @@ Inspect Results and End the Session
 
 After a task ends, review the action timeline and video; use the environment guide for its success criterion. The run output reports the artifact directory, including ``transcript_*.json``. Closing the browser does not stop backend services; press Ctrl+C in the launch terminal to end the session.
 
+In a research workbench, open **Experiment records** (``/runs``) and expand an
+environment folder, then a task folder. Each folder shows its record count;
+records within a task appear newest first. LIBERO task folders include the
+suite so equal task numbers in different suites remain separate. Named tasks
+show their position in the current startup catalog alongside the stored name.
+Older records without task metadata appear under “未记录任务” (task not recorded).
+The folders organize the displayed records; artifact paths and existing detail
+links remain unchanged. Each workbench lists records from its configured roots.
+
+Use **永久删除** (permanently delete) on a record card or detail page to remove
+that record from the remote host. The confirmation shows its ID and directory.
+Confirming permanently deletes the selected task directory, including its
+configuration, logs, observations and recordings; there is no undo. Other
+records and shared resources remain. Links to resources outside the directory
+are removed without deleting their targets. Active runs and records whose
+archival has not finished cannot be deleted. After deletion the folder counts
+refresh, and the old detail and artifact links stop working.
+
 The default bind address is ``127.0.0.1``. For remote access, use the SSH forwarding instructions in :doc:`advanced_deployment`.
