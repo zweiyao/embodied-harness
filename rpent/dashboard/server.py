@@ -368,7 +368,8 @@ class DashboardServer:
                 blocking=False
             ):
                 return JSONResponse(
-                    {"error": "机械臂复位中，请等待完成后再开始实验"}, status_code=409
+                    {"error": "操作员动作正在执行，请等待完成后再开始实验"},
+                    status_code=409,
                 )
             try:
                 self._state.submit_input(
@@ -474,7 +475,8 @@ class DashboardServer:
                 blocking=False
             ):
                 return JSONResponse(
-                    {"error": "机械臂复位中，请等待完成后再执行动作"}, status_code=409
+                    {"error": "操作员动作正在执行，请等待完成后再执行动作"},
+                    status_code=409,
                 )
             try:
                 tool_result = self._state.execute_primitive(name, arguments)

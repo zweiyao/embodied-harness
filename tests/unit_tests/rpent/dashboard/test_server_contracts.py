@@ -159,7 +159,8 @@ def test_flexiv_selection_is_frozen_before_task_claim(tmp_path, monkeypatch):
     )
 
 
-def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkeypatch):
+@pytest.mark.parametrize("action", ["reset-home", "gripper/open"])
+def test_flexiv_operator_actions_exclude_other_motion(state, monkeypatch, action):
     import io
     from concurrent.futures import ThreadPoolExecutor
 
@@ -171,7 +172,11 @@ def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkey
     def urlopen(request, timeout):
         if request.full_url.endswith("/home-preview"):
             return io.BytesIO(b'{"available":true,"timeout_s":30}')
-        if request.full_url.endswith("/jointreset"):
+        if request.full_url.endswith("/state"):
+            return io.BytesIO(
+                b'{"armed":true,"gripper_ready":true,"config":{"gripper_max_width_m":0.085}}'
+            )
+        if request.full_url.endswith(("/jointreset", "/move_gripper")):
             entered.set()
             assert release.wait(timeout=5)
             return io.BytesIO(b'{"reached":true}')
@@ -183,9 +188,11 @@ def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkey
     state.shared_services_ready()
     with _client(_server(state, robot_name="flexiv")) as client:
         with ThreadPoolExecutor(max_workers=1) as pool:
-            reset = pool.submit(client.post, "/api/flexiv/reset-home")
+            pending = pool.submit(client.post, f"/api/flexiv/{action}")
             try:
                 assert entered.wait(timeout=5)
+                assert client.post("/api/flexiv/gripper/close").status_code == 409
+                assert client.post("/api/flexiv/reset-home").status_code == 409
                 assert (
                     client.post(
                         "/api/session/messages", json={"text": "/rpent-task 1"}
@@ -202,7 +209,7 @@ def test_flexiv_reset_blocks_new_tasks_and_primitives_but_not_stop(state, monkey
                 assert state.session_state == "ready"
             finally:
                 release.set()
-            assert reset.result().json()["reached"]
+            assert pending.result().json()["reached"]
         assert (
             client.post(
                 "/api/session/messages", json={"text": "/rpent-task 1"}

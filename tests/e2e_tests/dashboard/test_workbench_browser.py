@@ -179,3 +179,70 @@ def test_console_stream(workbench_url, browser_page):
     expect(page.locator("#connMeta")).to_contain_text("live")
     expect(page.locator("#runIdentity")).to_have_text("尚未开始实验")
     expect(page.locator("#abortExperiment")).to_be_disabled()
+
+
+def test_manual_gripper(workbench_url, browser_page):
+    from playwright.sync_api import expect
+
+    page = browser_page
+    commands = []
+
+    def setup(route):
+        data = route.fetch().json()
+        data.update(
+            robot="flexiv",
+            profiles=[
+                {
+                    "robot": "flexiv",
+                    "label": "Flexiv",
+                    "note": "",
+                    "inspections": ["仅观察"],
+                }
+            ],
+        )
+        route.fulfill(json=data)
+
+    def gripper(route):
+        direction = urlsplit(route.request.url).path.rsplit("/", 1)[1]
+        commands.append((route.request.method, direction))
+        opened = direction == "open"
+        route.fulfill(json={"reached": opened, "width_m": 0.086 if opened else 0.02})
+
+    page.route(workbench_url + "/api/setup", setup)
+    page.route(
+        workbench_url + "/api/flexiv/status",
+        lambda route: route.fulfill(
+            json={
+                "control_backend": "rdk",
+                "armed": True,
+                "gripper_ready": True,
+                "gripper_available": True,
+                "state": {
+                    "mode": "TEST",
+                    "tcp_pose": [0, 0, 0],
+                    "gripper_width_m": 0.05,
+                },
+            }
+        ),
+    )
+    page.route(workbench_url + "/api/flexiv/gripper/*", gripper)
+    page.goto(workbench_url)
+    toggle = page.get_by_role("button", name="夹爪 ▾")
+    expect(toggle).to_be_visible()
+    expect(toggle).to_be_disabled()
+    page.locator("#physicalMode").select_option("supervised")
+    toggle.click()
+    expect(page.get_by_role("button", name="张开", exact=True)).to_be_visible()
+    assert not commands
+    page.get_by_role("button", name="张开", exact=True).evaluate(
+        "(b) => { b.click(); b.click(); }"
+    )
+    expect(page.locator("#gripperResult")).to_have_text("已到位 · 实测开度 86.0 mm")
+    expect(toggle).to_have_attribute("aria-expanded", "false")
+    toggle.click()
+    page.get_by_role("button", name="闭合", exact=True).click()
+    expect(page.locator("#gripperResult")).to_have_text(
+        "未到达目标开度 · 实测开度 20.0 mm"
+    )
+    assert commands == [("POST", "open"), ("POST", "close")]
+    toggle.click()
