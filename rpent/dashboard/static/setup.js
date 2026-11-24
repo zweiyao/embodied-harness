@@ -50,6 +50,35 @@ $('suite').addEventListener('change', tasks);
 for (const id of ['task', 'seed']) $(id).addEventListener('change', command);
 $('inspection').addEventListener('change', () => { $('physicalInstruction').value = $('inspection').value; command(); });
 $('physicalInstruction').addEventListener('input', command);
+let gripperBusy = false;
+function closeGripperChoices() {
+  $('gripperChoices').hidden = true;
+  $('gripperToggle').setAttribute('aria-expanded', 'false');
+}
+$('gripperToggle').onclick = () => {
+  $('gripperChoices').hidden = !$('gripperChoices').hidden;
+  $('gripperToggle').setAttribute('aria-expanded', String(!$('gripperChoices').hidden));
+};
+$('gripperChoices').onclick = async event => {
+  const direction = event.target.dataset.gripper;
+  if (!direction || gripperBusy || $('gripperToggle').disabled || $('physicalMode').value !== 'supervised') return;
+  gripperBusy = true;
+  closeGripperChoices();
+  $('gripperToggle').disabled = true;
+  const message = $('gripperResult');
+  message.hidden = false;
+  message.textContent = direction === 'open' ? '正在张开夹爪…' : '正在闭合夹爪…';
+  try {
+    const result = await request(`/api/flexiv/gripper/${direction}`, {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    const width = Number.isFinite(result.width_m) ? `实测开度 ${(result.width_m * 1000).toFixed(1)} mm` : '开度未报告';
+    message.textContent = `${result.reached === true ? '已到位' : '未到达目标开度'} · ${width}`;
+  } catch (error) {
+    message.textContent = `夹爪操作未确认：${error.message}`;
+  } finally {
+    gripperBusy = false;
+    try { await physicalStatus(); } catch (error) { $('gripperToggle').disabled = true; }
+  }
+};
 async function physicalStatus() {
   const data = await request('/api/flexiv/status');
   const direct = data.control_backend === 'rdk';
@@ -58,6 +87,9 @@ async function physicalStatus() {
   if (direct) $('physical').querySelector('.note').textContent = '通过非夕 RDK 服务器执行动作，到达目标后返回图像和状态。启用保持当前位姿，不归位。每次实验结束或停止后需重新启用。';
   $('physicalStatus').textContent = `${direct ? 'RDK 直连' : '采集器'} · ${data.armed ? '动作已启用' : '动作未启用'} · ${data.state.mode} · TCP Z ${data.state.tcp_pose[2].toFixed(4)} m · 夹爪 ${data.gripper_ready ? (data.state.gripper_width_m*1000).toFixed(1)+' mm' : '待操作员连接'}`;
   $('armPhysical').disabled = $('physicalMode').value !== 'supervised' || data.armed || data.lease_active;
+  $('gripperToggle').hidden = !direct;
+  $('gripperToggle').disabled = gripperBusy || $('physicalMode').value !== 'supervised' || !data.gripper_available;
+  if ($('gripperToggle').disabled) closeGripperChoices();
   physicalReset.update(data);
   return data;
 }
@@ -130,6 +162,8 @@ try {
     await physicalStatus();
     setInterval(() => physicalStatus().catch(error => {
       $('resetPhysical').disabled = true;
+      $('gripperToggle').disabled = true;
+      closeGripperChoices();
       $('physicalStatus').textContent = `状态不可用：${error.message}`;
     }), 3000);
   }

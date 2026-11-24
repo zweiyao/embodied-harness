@@ -242,3 +242,81 @@ def test_collector_reset_is_explicitly_unavailable(monkeypatch):
     with TestClient(app) as client:
         assert client.get("/api/flexiv/home-preview").status_code == 409
         assert client.post("/api/flexiv/reset-home").status_code == 409
+
+
+@pytest.mark.parametrize(
+    "direction,width,reached", [("open", 0.086, True), ("close", 0.003, False)]
+)
+def test_gripper_uses_native_limit_and_preserves_feedback(
+    monkeypatch, direction, width, reached
+):
+    monkeypatch.setenv("RPENT_FLEXIV_RDK_ENDPOINT", "http://rdk:5000")
+    calls = []
+    result = {
+        "width_m": width if reached else 0.02,
+        "reached": reached,
+        "stopped_short": not reached,
+    }
+
+    def urlopen(request, timeout):
+        if (
+            request.full_url == "http://rdk:5000/state"
+            and request.get_method() == "GET"
+        ):
+            return io.BytesIO(
+                b'{"armed":true,"gripper_ready":true,"config":{"timeout_s":76,"gripper_min_width_m":0.003,"gripper_max_width_m":0.086}}'
+            )
+        calls.append((request.full_url, timeout, json.loads(request.data)))
+        return io.BytesIO(json.dumps(result).encode())
+
+    monkeypatch.setattr(operator_ui, "urlopen", urlopen)
+    app = FastAPI()
+    operator_ui.install_operator_routes(app, session_state=lambda: "ready")
+    with TestClient(app) as client:
+        assert client.get("/api/flexiv/status").json()["gripper_available"]
+        assert client.post(f"/api/flexiv/gripper/{direction}").json() == result
+    assert calls == [("http://rdk:5000/move_gripper", 86, {"width_m": width})]
+
+
+@pytest.mark.parametrize(
+    "armed,ready,config", [(False, True, {}), (True, False, {}), (True, True, {})]
+)
+def test_gripper_rejects_unavailable_hardware_or_limit(
+    monkeypatch, armed, ready, config
+):
+    def read_state(request, timeout):
+        assert request.get_method() == "GET"
+        return io.BytesIO(
+            json.dumps(
+                {"armed": armed, "gripper_ready": ready, "config": config}
+            ).encode()
+        )
+
+    monkeypatch.setenv("RPENT_FLEXIV_RDK_ENDPOINT", "http://rdk:5000")
+    monkeypatch.setattr(operator_ui, "urlopen", read_state)
+    app = FastAPI()
+    operator_ui.install_operator_routes(app, session_state=lambda: "ready")
+    with TestClient(app) as client:
+        assert client.post("/api/flexiv/gripper/open").status_code == 409
+
+
+def test_manual_gripper_requires_rdk_idle_and_same_origin(monkeypatch):
+    monkeypatch.setattr(
+        operator_ui,
+        "urlopen",
+        lambda *args, **kwargs: pytest.fail("Unexpected hardware access"),
+    )
+    for backend, session, headers, expected in [
+        ("", "ready", {}, 409),
+        ("http://rdk:5000", "task_starting", {}, 409),
+        ("http://rdk:5000", "ready", {"origin": "https://outside.invalid"}, 403),
+    ]:
+        monkeypatch.setenv("RPENT_FLEXIV_RDK_ENDPOINT", backend)
+        app = FastAPI()
+        operator_ui.install_operator_routes(app, session_state=lambda: session)
+        with TestClient(app) as client:
+            assert (
+                client.post("/api/flexiv/gripper/close", headers=headers).status_code
+                == expected
+            )
+            assert client.post("/api/flexiv/gripper/toggle").status_code == 422
