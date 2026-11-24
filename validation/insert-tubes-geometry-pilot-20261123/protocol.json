@@ -1,0 +1,29 @@
+{
+  "task": "insert_tubes",
+  "instruction": "Insert the three tubes into the rack one by one.",
+  "source_base": "9bcc613a9bb0c8d83fb0e35101ce2f5493bc968d",
+  "design": "One-task circular-rim geometry pilot. Paired by official layout ID; adaptive rollouts may choose different pixels.",
+  "order_by_layout": {"0": ["B", "C", "A"], "1": ["A", "C", "B"]},
+  "modes": {
+    "A": "Original single-pixel back_project and code",
+    "B": "Same tools plus up to 32 agent-selected pixels per query, with individual XYZ results and valid fraction",
+    "C": "Same pixels and back projection as B, plus plane/circle fit, residual and rejection reason"
+  },
+  "run_configuration": {
+    "model": "gpt-6-astra", "reasoning_effort": "high", "max_turns": 200, "planner_timeout_s": 3600,
+    "max_tokens": 16384, "dev_simulator_action_cap": 0, "analysis": true, "full_access": true,
+    "motion": "move_eef", "memory": "local shared read-only library", "codex_image_window": 10,
+    "codex_binary_sha256": "b1d54af215d6c1e03f864d17206b2ed34a479ded826b46cb31dc3f49d3313c13"
+  },
+  "primary_outcome": "Official simulator success, reported as count out of two per mode.",
+  "diagnostics": "Tool calls and geometry-query use, first accepted motion and observed object progress, model time, input/output tokens. Check initial recorded views before interpreting pairs.",
+  "infrastructure": "Keep failed requests and raw attempts. Exclude confirmed transport failures and retry the same cell with backoff. Budget exhaustion during normal execution is a task failure. One active episode at a time.",
+  "verification": {
+    "whole_unit_suite": {"passed": 2177, "skipped": 11},
+    "pre_commit": "passed",
+    "http_mcp": "Both raw and fit accepted nested JSON integer arrays over HTTP MCP. The previous tuple declaration is excluded as an infrastructure incident.",
+    "live_check": "In run 75d3eccb3e480a59dd51 (B, layout 0), Astra received 13 valid head-camera XYZ samples from one query.",
+    "frame_probe": "Eight selected head-camera pixels from one simulated frame agreed between raw, fit, and the original point projector. This checks the numerical wiring, not semantic rim selection.",
+    "limits": ["Visible-rim identification is left to the agent.", "No cross-view fusion or finger-to-link6 conversion.", "Two layouts cannot establish a cross-task improvement."]
+  }
+}
