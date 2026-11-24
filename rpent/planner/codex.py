@@ -26,10 +26,13 @@ register tools in process. Event rendering and stats live in a single
 from __future__ import annotations
 
 import asyncio
+import base64
 import contextlib
+import hashlib
 import json
 import os
 import queue
+import re
 import tempfile
 import threading
 import time
@@ -724,6 +727,26 @@ class CodexPlanner(Planner):
         )
 
 
+def _initial_dashboard_input(prompt: str):
+    """Attach the operator-configured PNG when the Flexiv instruction names its digest."""
+    marker = re.search(r"\[flexiv-reference-sha256:([0-9a-f]{64})\]", prompt)
+    if marker is None:
+        return prompt
+    path = os.environ.get("RPENT_FLEXIV_REFERENCE_PNG")
+    if not path:
+        raise ValueError("Flexiv reference image is not configured")
+    image = Path(path).read_bytes()
+    digest = hashlib.sha256(image).hexdigest()
+    if digest != marker.group(1) or not image.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("Flexiv reference image does not match the requested PNG")
+    return [
+        openai_codex.TextInput(prompt),
+        openai_codex.ImageInput(
+            "data:image/png;base64," + base64.b64encode(image).decode("ascii")
+        ),
+    ]
+
+
 class _CodexDashboardSession:
     """Own one Codex thread and its current interruptible turn."""
 
@@ -756,7 +779,7 @@ class _CodexDashboardSession:
     async def run(self, prompt: str) -> None:
         self._codex = openai_codex.AsyncCodex(self._config)
         self._thread = await self._codex.thread_start(**self._thread_options)
-        await self._submit_text(prompt)
+        await self._submit_text(_initial_dashboard_input(prompt))
         await self._control.start()
         await self._control.run(self)
 
@@ -764,7 +787,7 @@ class _CodexDashboardSession:
         """Steer the active turn or start a turn in the same conversation."""
         return await self._submit_text(message.text)
 
-    async def _submit_text(self, text: str) -> int:
+    async def _submit_text(self, text: str | list) -> int:
         if self._closing or self._thread is None:
             raise RuntimeError("Codex conversation is closed")
         if self._turn is not None:
