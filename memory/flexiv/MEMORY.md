@@ -9,4 +9,4 @@ Generated from memory leaf frontmatter.
 
 ## Task-family
 
-_(none)_
+- [白板手写时判断落笔、出墨与补笔](task-family/task-family_flexiv_manipulation_twhiteboard_writing.md) — Flexiv 已夹持白板笔，能观察笔尖或笔迹并读取末端反馈
