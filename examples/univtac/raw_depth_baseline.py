@@ -12,49 +12,128 @@ import hashlib
 import json
 import time
 import urllib.request
+from collections import Counter
 from pathlib import Path
 
-from rpent.dashboard.workbench import write_json
+from rpent.dashboard.workbench import RunJournal, write_json
 
 TOOLS = {"observe", "read_image", "read_depth", "tactile_stats", "move_eef", "finish"}
+USAGE_FIELDS = (
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "reasoning_output_tokens",
+)
+
+
+def submit_trial(api, journal: RunJournal, task: int, seed: int) -> None:
+    """Keep the cell identity even when the dashboard never returns an outcome."""
+    cell = {"task": task, "seed": seed}
+    journal.append("submission_started", cell)
+    api("/api/session/messages", {"text": f"/rpent-task univtac {task} {seed}"})
+    journal.append("submission_accepted", cell)
+
+
+def verify_trial_identity(run, state, task: int, seed: int) -> None:
+    """The run catalog also indexes other sessions and restored history roots."""
+    actual = (run.get("config") or {}).get("task")
+    cell = (actual.get("task"), actual.get("seed")) if isinstance(actual, dict) else ()
+    run_id = run.get("id")
+    if not run_id or state.get("run_id") != run_id or cell != (task, seed):
+        raise RuntimeError(
+            f"Unexpected finalized run {run_id} for cell {cell}; "
+            f"expected session run {state.get('run_id')} for cell {(task, seed)}"
+        )
+
+
+def summarize_outcomes(rows: list[dict]) -> dict:
+    """Separate clean native verdicts from interrupted or unadjudicated attempts.
+
+    The original successes/trials fields count all true flags and all attempts.
+    A timeout can occur during reset, model wait or the planner deadline. Keep
+    its recorded flag and termination available for protocol-specific scoring.
+    """
+    successes = failures = 0
+    other_attempts = {}
+    for row in rows:
+        verdict = row.get("official_success")
+        termination = row.get("termination") or "unreported"
+        if (
+            termination in {"completed", "budget_exhausted"}
+            and not row.get("error")
+            and type(verdict) is bool
+        ):
+            if verdict:
+                successes += 1
+            else:
+                failures += 1
+        else:
+            signal = "unreported"
+            if verdict is True:
+                signal = "official_true"
+            elif verdict is False:
+                signal = "official_false"
+            other_attempts.setdefault(termination, Counter())[signal] += 1
+    return {
+        "successes": sum(row.get("official_success") is True for row in rows),
+        "trials": len(rows),
+        "evaluated": {
+            "successes": successes,
+            "failures": failures,
+            "trials": successes + failures,
+        },
+        "other_attempts": other_attempts,
+    }
 
 
 def summarize(run):
     """Use official outcomes and provider-reported cumulative usage only."""
     outcome = run["outcome"]
-    usage, calls, tool_seconds = {}, {}, 0.0
-    for line in (Path(run["path"]) / "events.jsonl").read_text().splitlines():
+    stats = outcome.get("stats") or {}
+    updates, zero_usage = {}, {}
+    calls, tool_seconds = {}, 0.0
+    try:
+        lines = (Path(run["path"]) / "events.jsonl").read_text().splitlines()
+    except FileNotFoundError:
+        lines = None
+    for line in lines or ():
         event = json.loads(line)
         payload = event["payload"]
         if (
             event["kind"] == "sdk_event"
             and payload.get("method") == "thread/tokenUsage/updated"
         ):
-            usage = payload["payload"]["token_usage"].get("total", {})
+            total = (payload["payload"].get("token_usage") or {}).get("total")
+            if isinstance(total, dict):
+                reported = {
+                    k: total[k] for k in USAGE_FIELDS if total.get(k) is not None
+                }
+                # The SDK can replay an earlier cumulative notification. Updating
+                # its existing entry preserves the order of distinct responses.
+                # Zero defaults identify duplicate count vectors. Keep the
+                # original fields for reporting omitted measurements.
+                key = tuple(reported.get(k, 0) for k in USAGE_FIELDS)
+                if any(key):
+                    updates.setdefault(key, {}).update(reported)
+                else:
+                    zero_usage.update(reported)
         if event["kind"] == "tool_response":
             name = payload["name"]
             calls[name] = calls.get(name, 0) + 1
             tool_seconds += payload.get("elapsed_s", 0.0)
+    usage = next(reversed(updates.values()), zero_usage)
     return {
         "run_id": run["id"],
         "path": run["path"],
         "official_success": outcome.get("environment_success"),
-        "termination": outcome.get("status"),
+        "termination": outcome.get("termination_reason") or outcome.get("status"),
         "error": outcome.get("error"),
         "elapsed_s": outcome.get("elapsed_s"),
-        "planner_elapsed_s": outcome.get("stats", {}).get("elapsed_s"),
-        "tool_execution_s": round(tool_seconds, 3),
-        "tool_calls": calls,
-        "decisions": outcome.get("stats", {}).get("turns_used"),
-        **{
-            name: usage.get(name)
-            for name in (
-                "input_tokens",
-                "cached_input_tokens",
-                "output_tokens",
-                "reasoning_output_tokens",
-            )
-        },
+        "planner_elapsed_s": stats.get("elapsed_s"),
+        "tool_execution_s": round(tool_seconds, 3) if lines is not None else None,
+        "tool_calls": calls if lines is not None else None,
+        "decisions": stats.get("turns_used"),
+        **{name: usage.get(name) for name in USAGE_FIELDS},
     }
 
 
@@ -87,6 +166,7 @@ def main():
     ]
     hashes = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     trials = [{"task": task, "seed": seed} for task in (1, 2) for seed in range(5)]
+    planned = Counter(trial["task"] for trial in trials)
     write_json(
         args.output / "protocol.json",
         {
@@ -101,6 +181,7 @@ def main():
         },
     )
     results = []
+    journal = RunJournal(args.output)
     try:
         for trial in trials:
             assert api("/api/session/config") == config, (
@@ -119,10 +200,7 @@ def main():
                 args.output / "status.json",
                 {"phase": "starting", **trial, "completed": len(results)},
             )
-            api(
-                "/api/session/messages",
-                {"text": f"/rpent-task univtac {trial['task']} {trial['seed']}"},
-            )
+            submit_trial(api, journal, trial["task"], trial["seed"])
             run = None
             while time.monotonic() - started < 4500:
                 time.sleep(10)
@@ -142,6 +220,7 @@ def main():
                     },
                 )
                 if run and run["outcome"] and state["session_state"] == "ready":
+                    verify_trial_identity(run, state, trial["task"], trial["seed"])
                     break
                 if not run and state.get("error"):
                     raise RuntimeError(state["error"])
@@ -161,20 +240,16 @@ def main():
                 writer.writeheader()
                 writer.writerows(results)
             print(json.dumps(result), flush=True)
-        write_json(
-            args.output / "summary.json",
-            {
-                str(task): {
-                    "successes": sum(
-                        r["official_success"] is True
-                        for r in results
-                        if r["task"] == task
-                    ),
-                    "trials": 5,
-                }
-                for task in (1, 2)
-            },
-        )
+            write_json(
+                args.output / "summary.json",
+                {
+                    str(task): {
+                        "planned_trials": expected,
+                        **summarize_outcomes([r for r in results if r["task"] == task]),
+                    }
+                    for task, expected in planned.items()
+                },
+            )
         write_json(
             args.output / "status.json",
             {"phase": "completed", "completed": len(results)},

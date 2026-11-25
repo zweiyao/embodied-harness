@@ -13,7 +13,13 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-from examples.univtac.raw_depth_baseline import TOOLS, summarize
+from examples.univtac.raw_depth_baseline import (
+    TOOLS,
+    submit_trial,
+    summarize,
+    summarize_outcomes,
+    verify_trial_identity,
+)
 from robots.libero.research import codex_sdk
 from robots.libero.research.library import Sandbox, digest, validate_tools
 from robots.univtac.instructions import SEEN_INSTRUCTIONS
@@ -122,25 +128,27 @@ JUDGE_SCHEMA = {
 
 
 def score(rows):
-    """Rank official successes first, then mean total provider tokens."""
+    """Report native outcomes and attempt costs, including interrupted runs."""
     values = [
         r["input_tokens"] + r["output_tokens"]
         for r in rows
         if r.get("input_tokens") is not None and r.get("output_tokens") is not None
     ]
     return {
-        "successes": sum(r["official_success"] is True for r in rows),
-        "trials": len(rows),
+        **summarize_outcomes(rows),
         "token_records": len(values),
         "mean_total_tokens": sum(values) / len(values)
-        if len(values) == len(rows)
+        if values and len(values) == len(rows)
         else None,
-        "mean_elapsed_s": sum(r["elapsed_s"] for r in rows) / len(rows),
+        "mean_elapsed_s": sum(r["elapsed_s"] for r in rows) / len(rows)
+        if rows and all(r.get("elapsed_s") is not None for r in rows)
+        else None,
         "mean_uncached_input_tokens": sum(
             r["input_tokens"] - r["cached_input_tokens"] for r in rows
         )
         / len(rows)
-        if all(
+        if rows
+        and all(
             r.get("input_tokens") is not None
             and r.get("cached_input_tokens") is not None
             for r in rows
@@ -149,7 +157,35 @@ def score(rows):
     }
 
 
+def all_trials_evaluated(result: dict, expected: int) -> bool:
+    """Require a native verdict on every planned trial before ranking an arm."""
+    return (
+        expected > 0
+        and result.get("trials") == result.get("planned_trials", expected) == expected
+        and result.get("evaluated", {}).get("trials") == expected
+    )
+
+
+def development_score(rows: list[dict]) -> dict:
+    """Verify one complete task-0 development group before using it as a reference."""
+    if len(rows) != 3 or {(r.get("task"), r.get("seed")) for r in rows} != {
+        (0, seed) for seed in range(3)
+    }:
+        raise ValueError(
+            "Expected task 0 and development seeds 0, 1 and 2 exactly once"
+        )
+    result = score(rows)
+    if not all_trials_evaluated(result, 3):
+        raise ValueError("Development group has interrupted or unadjudicated trials")
+    return result
+
+
 def better(candidate, best):
+    expected = best["trials"]
+    if not all_trials_evaluated(candidate, expected) or not all_trials_evaluated(
+        best, expected
+    ):
+        return False
     if candidate["successes"] != best["successes"]:
         return candidate["successes"] > best["successes"]
     return (
@@ -177,7 +213,9 @@ def valid_tool_calls(rows):
 
 def early_stop(candidate, baseline, judgement):
     return (
-        candidate["successes"] == candidate["trials"] == 3
+        all_trials_evaluated(candidate, 3)
+        and all_trials_evaluated(baseline, 3)
+        and candidate["successes"] == 3
         and candidate["mean_total_tokens"] is not None
         and baseline["mean_total_tokens"] is not None
         and candidate["mean_total_tokens"] <= baseline["mean_total_tokens"] * 0.8
@@ -303,8 +341,16 @@ def log_iteration(root, iteration, evaluation, baseline):
     from style_presets import rcparams
 
     measured = evaluation.get("score")
-    metric = measured["successes"] / measured["trials"] if measured else None
-    delta = metric - baseline["successes"] / 3 if metric is not None else None
+    metric = (
+        measured["successes"] / 3
+        if measured and all_trials_evaluated(measured, 3)
+        else None
+    )
+    delta = (
+        metric - baseline["successes"] / 3
+        if metric is not None and all_trials_evaluated(baseline, 3)
+        else None
+    )
     status = (
         "baseline"
         if iteration == 0
@@ -395,6 +441,7 @@ class Experiment:
     def group(self, label, trials, tools):
         output = self.root / label
         output.mkdir(exist_ok=False)
+        trials = tuple(trials)
         state = self.api("/api/session/state")
         if state["server_id"] != self.server_id or state["session_state"] != "ready":
             raise RuntimeError("Dashboard restarted or another episode is active")
@@ -412,6 +459,7 @@ class Experiment:
             raise ValueError("Model or budgets changed")
         write_json(output / "config.json", config)
         results = []
+        journal = RunJournal(output)
         for task, seed in trials:
             if self.api("/api/session/config") != config:
                 raise RuntimeError("Configuration changed")
@@ -430,9 +478,7 @@ class Experiment:
                 completed=len(results),
                 state="starting",
             )
-            self.api(
-                "/api/session/messages", {"text": f"/rpent-task univtac {task} {seed}"}
-            )
+            submit_trial(self.api, journal, task, seed)
             while time.monotonic() - started < 4500:
                 time.sleep(10)
                 state = self.api("/api/session/state")
@@ -453,6 +499,7 @@ class Experiment:
                     state=state["session_state"],
                 )
                 if run and run["outcome"] and state["session_state"] == "ready":
+                    verify_trial_identity(run, state, task, seed)
                     break
                 if not run and state.get("error"):
                     raise RuntimeError(state["error"])
@@ -469,6 +516,9 @@ class Experiment:
                 }
             )
             write_json(output / "results.json", results)
+            write_json(
+                output / "score.json", {"planned_trials": len(trials), **score(results)}
+            )
             print(json.dumps({"phase": label, **results[-1]}), flush=True)
             if results[-1].get("error"):
                 self.status(
@@ -480,7 +530,6 @@ class Experiment:
                     "Episode infrastructure error; subsequent trials stopped: "
                     + results[-1]["error"]
                 )
-        write_json(output / "score.json", score(results))
         return results
 
 
@@ -749,11 +798,7 @@ def main():
                 "development-baseline", [(0, s) for s in range(3)], NATIVE
             )
         )
-        if len(baseline) != 3 or {(r["task"], r["seed"]) for r in baseline} != {
-            (0, s) for s in range(3)
-        }:
-            raise ValueError("Expected three complete development baseline trials")
-        baseline_score = score(baseline)
+        baseline_score = development_score(baseline)
         if args.continue_from:
             (args.output / "development-baseline").mkdir()
             write_json(args.output / "development-baseline/results.json", baseline)

@@ -10,6 +10,7 @@ from examples.univtac.develop_tools import (
     NATIVE,
     Experiment,
     better,
+    development_score,
     score,
     valid_tool_calls,
 )
@@ -35,12 +36,12 @@ def main():
         or any(r["result"].get("error") for r in replay["reports"])
     ):
         raise ValueError("Candidate needs a matching, nonempty sandbox replay")
+    previous = json.loads((args.baseline / "protocol.json").read_text())
+    reference = development_score(
+        json.loads((args.baseline / "development-baseline/results.json").read_text())
+    )
     args.output.mkdir(parents=True, exist_ok=False)
     experiment = Experiment(args.url, args.output)
-    previous = json.loads((args.baseline / "protocol.json").read_text())
-    baseline = json.loads(
-        (args.baseline / "development-baseline/results.json").read_text()
-    )
     if (
         previous["sources"] != experiment.hashes
         or previous["sandbox_image"] != Sandbox("embodied-sensor:pilot").image
@@ -54,8 +55,6 @@ def main():
                 "planner_timeout_s",
             )
         )
-        or len(baseline) != 3
-        or {(r["task"], r["seed"]) for r in baseline} != {(0, s) for s in range(3)}
     ):
         raise ValueError("Baseline runtime, budget or development scenes differ")
     write_json(args.output / "candidate.json", tool)
@@ -106,7 +105,7 @@ def main():
         rows = experiment.group(
             "development", [(0, s) for s in range(3)], NATIVE + ["generated:" + version]
         )
-        measured, reference = score(rows), score(baseline)
+        measured = score(rows)
         write_json(
             args.output / "evaluation.json",
             {

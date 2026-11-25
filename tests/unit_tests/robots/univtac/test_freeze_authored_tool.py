@@ -11,7 +11,19 @@ from robots.libero.research.library import Library
 
 
 @pytest.mark.parametrize(
-    "case", ["no_gain", "different_tool", "different_budget", "valid"]
+    "case",
+    [
+        "no_gain",
+        "different_tool",
+        "different_budget",
+        "interrupted_candidate",
+        "interrupted_baseline",
+        "missing_legacy_rows",
+        "missing_legacy_location",
+        "new_schema_valid",
+        "new_schema_interrupted",
+        "valid",
+    ],
 )
 def test_freeze_checks_development_before_running_heldout(tmp_path, monkeypatch, case):
     dev = tmp_path / "dev"
@@ -27,7 +39,13 @@ def test_freeze_checks_development_before_running_heldout(tmp_path, monkeypatch,
     config = dict.fromkeys(
         ("model", "reasoning_effort", "max_turns", "max_tokens", "planner_timeout_s"), 1
     )
-    protocol = {"tool_version": version, "sources": {}, "base_config": config}
+    base_dir = tmp_path / "base"
+    protocol = {
+        "tool_version": version,
+        "sources": {},
+        "base_config": config,
+        "baseline": str(base_dir),
+    }
     evaluation = {
         "score": {
             "successes": 3,
@@ -37,12 +55,48 @@ def test_freeze_checks_development_before_running_heldout(tmp_path, monkeypatch,
         "baseline": {"mean_total_tokens": 100},
         "calls": {"valid_calls": 1},
     }
+    if case == "missing_legacy_location":
+        protocol.pop("baseline")
+    if case.startswith("new_schema"):
+        evaluation["score"]["evaluated"] = {"successes": 3, "failures": 0, "trials": 3}
+        count = 2 if case == "new_schema_interrupted" else 3
+        evaluation["baseline"].update(
+            trials=3,
+            successes=count,
+            evaluated={"successes": count, "failures": 0, "trials": count},
+        )
     for name, value in (
         ("protocol", protocol),
         ("evaluation", evaluation),
         ("candidate", tool),
     ):
         (dev / (name + ".json")).write_text(json.dumps(value))
+    for directory, tokens, interrupted in (
+        (
+            dev / "development",
+            evaluation["score"]["mean_total_tokens"],
+            case == "interrupted_candidate",
+        ),
+        (base_dir / "development-baseline", 100, case == "interrupted_baseline"),
+    ):
+        if case.startswith("new_schema") or case == "missing_legacy_rows":
+            continue
+        directory.mkdir(parents=True)
+        rows = [
+            {
+                "task": 0,
+                "seed": seed,
+                "official_success": True,
+                "termination": "completed",
+                "input_tokens": tokens,
+                "output_tokens": 0,
+                "elapsed_s": 1,
+            }
+            for seed in range(3)
+        ]
+        if interrupted:
+            rows[-1]["termination"] = "network_failure"
+        (directory / "results.json").write_text(json.dumps(rows))
     if case == "different_tool":
         tool["source"] += "\n# changed"
         (dev / "candidate.json").write_text(json.dumps(tool))
@@ -66,7 +120,6 @@ def test_freeze_checks_development_before_running_heldout(tmp_path, monkeypatch,
             return {"session_state": "ready"}
 
     monkeypatch.setattr(module, "Experiment", Experiment)
-    monkeypatch.setattr(module, "score", lambda rows: {"trials": len(rows)})
     monkeypatch.setattr(
         module, "valid_tool_calls", lambda rows: {"valid_calls": len(rows)}
     )
@@ -82,7 +135,7 @@ def test_freeze_checks_development_before_running_heldout(tmp_path, monkeypatch,
             str(tmp_path / "library"),
         ],
     )
-    if case != "valid":
+    if case not in {"valid", "new_schema_valid"}:
         with pytest.raises(ValueError):
             module.main()
         assert not calls

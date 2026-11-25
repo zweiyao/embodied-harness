@@ -12,6 +12,7 @@ from examples.univtac import develop_tools as module
 def row(success=True, tokens=100):
     return {
         "official_success": success,
+        "termination": "completed",
         "input_tokens": tokens,
         "output_tokens": 10,
         "elapsed_s": 1,
@@ -26,6 +27,115 @@ def test_success_ranks_before_tokens_and_missing_usage_cannot_win():
     assert unknown["mean_total_tokens"] is None
     assert module.better(unknown, base)  # Success improves even when cost is unknown.
     assert not module.better(unknown, module.score([row()] * 3))
+
+
+def test_score_preserves_a_setup_incident_with_missing_time_and_usage():
+    success = {**row(), "termination": "completed"}
+    incident = {
+        "official_success": None,
+        "termination": "setup_failure",
+        "error": "environment initialization failed",
+    }
+    result = module.score([success, incident])
+    assert result["trials"] == 2
+    assert result["evaluated"] == {"successes": 1, "failures": 0, "trials": 1}
+    assert result["other_attempts"] == {"setup_failure": {"unreported": 1}}
+    assert result["mean_elapsed_s"] is None
+    assert result["mean_total_tokens"] is None
+
+
+@pytest.mark.parametrize("verdict", [None, False, True])
+def test_partial_provider_usage_cannot_select_an_interrupted_arm(verdict):
+    baseline = module.score([row(), row(), row(False, 200)])
+    incident = {**row(verdict, 10), "termination": "network_failure"}
+    interrupted = module.score([row(), row(), incident])
+    cheaper = module.score([row(), row(), row(False, 30)])
+    assert interrupted["mean_total_tokens"] < baseline["mean_total_tokens"]
+    assert not module.better(interrupted, baseline)
+    assert not module.better(cheaper, interrupted)
+    assert module.better(cheaper, baseline)
+    judge = {"token_benefit": True, "stop_recommended": True}
+    assert not module.early_stop(interrupted, baseline, judge)
+
+
+def test_equal_evaluated_counts_cannot_hide_a_missing_planned_attempt():
+    two = module.score([row(tokens=10), row(tokens=10)])
+    three = module.score([row(), row(), row(False)])
+    assert not module.better(two, three)
+    assert not module.better({**two, "planned_trials": 3}, module.score([row()] * 2))
+
+
+@pytest.mark.parametrize("cells", [[(0, 0), (0, 1), (0, 1)], [(0, 0), (0, 1), (1, 2)]])
+def test_development_reference_requires_the_same_three_scenes(cells):
+    rows = [dict(row(), task=task, seed=seed) for task, seed in cells]
+    with pytest.raises(ValueError, match="development seeds"):
+        module.development_score(rows)
+
+
+def test_development_reference_accepts_reordered_complete_rows_and_requires_verdicts():
+    rows = [dict(row(), task=0, seed=seed) for seed in (2, 0, 1)]
+    assert module.development_score(rows) == module.score(rows)
+    rows[0]["official_success"] = None
+    with pytest.raises(ValueError, match="unadjudicated"):
+        module.development_score(rows)
+
+
+def test_group_persists_the_interrupted_attempt_before_stopping(tmp_path, monkeypatch):
+    config = {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "max_turns": 60,
+        "max_tokens": 1000,
+        "planner_timeout_s": 3600,
+    }
+    runs = []
+
+    def api(self, path, payload=None):
+        if path == "/api/session/config":
+            return config
+        if path == "/api/session/state":
+            return {
+                "server_id": "test",
+                "session_state": "ready",
+                "run_id": runs[-1]["id"] if runs else None,
+            }
+        if path == "/api/runs":
+            return {"runs": list(runs)}
+        assert path == "/api/session/messages"
+        assert payload == {"text": f"/rpent-task univtac 0 {len(runs)}"}
+        directory = tmp_path / f"run-{len(runs)}"
+        directory.mkdir()
+        outcome = (
+            {"environment_success": True, "status": "completed", "elapsed_s": 12}
+            if not runs
+            else {
+                "environment_success": None,
+                "termination_reason": "setup_failure",
+                "error": "reset failed",
+            }
+        )
+        if not runs:
+            (directory / "events.jsonl").write_text("")
+        runs.append(
+            {
+                "id": directory.name,
+                "path": str(directory),
+                "outcome": outcome,
+                "config": {"task": {"task": 0, "seed": len(runs)}},
+            }
+        )
+
+    monkeypatch.setattr(module.Experiment, "api", api)
+    monkeypatch.setattr(module.time, "sleep", lambda seconds: None)
+    experiment = module.Experiment("unused", tmp_path)
+    with pytest.raises(RuntimeError, match="reset failed"):
+        experiment.group("development", [(0, 0), (0, 1), (0, 2)], [])
+    assert len(runs) == 2
+    report = json.loads((tmp_path / "development/score.json").read_text())
+    assert (report["planned_trials"], report["trials"]) == (3, 2)
+    assert report["evaluated"] == {"successes": 1, "failures": 0, "trials": 1}
+    assert report["other_attempts"] == {"setup_failure": {"unreported": 1}}
+    assert report["mean_elapsed_s"] is None
 
 
 def test_early_stop_requires_measurement_and_astra_assessment():
@@ -346,13 +456,18 @@ def test_group_stops_after_first_connection_error(tmp_path, monkeypatch):
 
     def api(path, payload=None):
         if path == "/api/session/state":
-            return {"server_id": "server", "session_state": "ready"}
+            return {"server_id": "server", "session_state": "ready", "run_id": "failed"}
         if path == "/api/session/config":
             return config
         if path == "/api/session/messages":
             started.append(payload)
             return {}
-        return {"runs": [{"id": "failed", "outcome": True}] if started else []}
+        run = {
+            "id": "failed",
+            "outcome": True,
+            "config": {"task": {"task": 0, "seed": 0}},
+        }
+        return {"runs": [run] if started else []}
 
     experiment.api = api
     monkeypatch.setattr(module.time, "sleep", lambda _: None)

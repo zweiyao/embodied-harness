@@ -42,6 +42,29 @@ like the history page. A clean planner exit or an environment termination flag
 is not a success verdict. Missing results display as unrecorded; the environment
 returning to its waiting state after cleanup does not mean the task failed.
 
+The raw-depth benchmark updates `summary.json` after each recorded attempt.
+Both collectors append `submission_started` before sending the task and seed,
+and `submission_accepted` after the dashboard acknowledges them, to the batch
+or group's `events.jsonl`. An accepted submission can lack a final outcome.
+A lone start leaves delivery unconfirmed. Neither event establishes a reset,
+a model charge, or a native verdict.
+Before recording a result both collectors match its catalog ID to the
+dashboard session's run ID and its archived task/seed to the requested cell.
+This also distinguishes a newly visible history entry from the active run.
+The development collector writes the same outcome counts to each group's
+`score.json`, including the attempt that stopped a group. `planned_trials`
+counts scheduled cells, `trials` counts recorded attempts, and the original
+`successes` field counts all true native flags. `evaluated` counts boolean
+native verdicts on error-free `completed` and `budget_exhausted` attempts.
+`other_attempts` groups the remaining flags by termination. A reset timeout
+can leave the native verdict unknown. A transport failure can retain a false
+flag sampled earlier. Inspect the row's error when interpreting a timeout.
+Tool selection requires complete results in both arms. Each cost or elapsed-time
+mean is reported only when that measurement exists for every recorded attempt.
+For Codex, the collector uses the latest distinct cumulative provider update.
+Replayed earlier notifications and empty updates preserve the reported totals.
+Fields omitted by the provider remain unknown.
+
 Pinned sources:
 
 - UniVTAC `0dafa10262e22f486f160a55d6f11aeab12d8e7b`, Apache-2.0 according to

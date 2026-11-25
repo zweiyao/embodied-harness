@@ -6,9 +6,24 @@ import argparse
 import json
 from pathlib import Path
 
-from examples.univtac.develop_tools import NATIVE, Experiment, score, valid_tool_calls
+from examples.univtac.develop_tools import (
+    NATIVE,
+    Experiment,
+    all_trials_evaluated,
+    development_score,
+    score,
+    valid_tool_calls,
+)
 from robots.libero.research.library import Library, digest
 from rpent.dashboard.workbench import write_json
+
+
+def _legacy_score(path: Path) -> dict:
+    if not path.is_file():
+        raise ValueError(
+            f"Legacy evaluation needs its original per-trial results at {path}"
+        )
+    return development_score(json.loads(path.read_text()))
 
 
 def main():
@@ -19,17 +34,30 @@ def main():
     parser.add_argument("--url", default="http://127.0.0.1:8093")
     args = parser.parse_args()
     evaluation = json.loads((args.development / "evaluation.json").read_text())
+    protocol = json.loads((args.development / "protocol.json").read_text())
     measured, baseline = evaluation["score"], evaluation["baseline"]
+    # Earlier evaluation files only counted true flags. Recover termination
+    # evidence from the recorded development rows before authorizing holdout.
+    if "evaluated" not in measured:
+        measured = _legacy_score(args.development / "development/results.json")
+    if "evaluated" not in baseline:
+        if not protocol.get("baseline"):
+            raise ValueError("Legacy evaluation needs the original baseline location")
+        baseline = _legacy_score(
+            Path(protocol["baseline"]) / "development-baseline/results.json"
+        )
     if not (
-        measured["successes"] == measured["trials"] == 3
+        all_trials_evaluated(measured, 3)
+        and all_trials_evaluated(baseline, 3)
+        and measured["successes"] == 3
         and measured["mean_total_tokens"] is not None
+        and baseline["mean_total_tokens"] is not None
         and measured["mean_total_tokens"] < baseline["mean_total_tokens"]
         and evaluation["calls"]["valid_calls"] > 0
     ):
         raise ValueError(
             "Development has not demonstrated the required measured benefit"
         )
-    protocol = json.loads((args.development / "protocol.json").read_text())
     tool = json.loads((args.development / "candidate.json").read_text())
     version = digest([tool])
     if version != protocol["tool_version"] or Library(args.library).load(version) != [
