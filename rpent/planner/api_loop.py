@@ -25,7 +25,9 @@ import math
 import threading
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from functools import partial
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -100,6 +102,7 @@ class ApiAgentLoop(Planner):
         max_tokens: int = 8192,
         reasoning_effort: str = "none",
         no_images: bool = False,
+        analysis_workspace: Path | None = None,
         timeout_s: float = 1200,
         interactive: bool = False,
     ) -> None:
@@ -112,6 +115,7 @@ class ApiAgentLoop(Planner):
         self.max_tokens = max_tokens
         self.reasoning_effort = reasoning_effort
         self.no_images = no_images
+        self.analysis_workspace = analysis_workspace
         self.timeout_s = timeout_s
         self.interactive = interactive
 
@@ -152,7 +156,10 @@ class ApiAgentLoop(Planner):
     ) -> PlannerResult:
         conversation_id = uuid4().hex
         adapter = _HarnessToolkit(
-            toolkit, dashboard_events=self.dashboard_events, no_images=self.no_images
+            toolkit,
+            dashboard_events=self.dashboard_events,
+            no_images=self.no_images,
+            analysis_workspace=self.analysis_workspace,
         )
         session = _Session(
             adapter, conversation_id, max_turns, interactive=self.interactive
@@ -162,6 +169,12 @@ class ApiAgentLoop(Planner):
         )
         if self.timeout_s == 0:
             settings["timeout"] = None
+        if self.analysis_workspace is not None:
+            settings["parallel_tool_calls"] = False
+            settings["extra_body"] = {
+                **(settings.get("extra_body") or {}),
+                "enable_thinking": self.reasoning_effort != "none",
+            }
         agent = Agent(
             self.model,
             name="rpent_api",
@@ -174,8 +187,14 @@ class ApiAgentLoop(Planner):
             retries={"output": max_turns},
             model_settings=settings,
             capabilities=[
-                SlidingWindowCompaction(
-                    max_messages=80, max_fraction=0.8, keep_messages=40
+                *(
+                    []
+                    if self.analysis_workspace is not None
+                    else [
+                        SlidingWindowCompaction(
+                            max_messages=80, max_fraction=0.8, keep_messages=40
+                        )
+                    ]
                 ),
                 Thinking(
                     False if self.reasoning_effort == "none" else self.reasoning_effort
@@ -220,6 +239,11 @@ class ApiAgentLoop(Planner):
                 "total_cached_input_tokens": session.usage.cache_read_tokens,
                 "turns_used": session.usage.requests,
                 "tool_calls": adapter.tool_calls,
+                **(
+                    {"analysis_calls": adapter.analysis_calls}
+                    if self.analysis_workspace is not None
+                    else {}
+                ),
             },
             error=session.error,
         )
@@ -331,6 +355,7 @@ class _HarnessToolkit(FunctionToolset):
         *,
         dashboard_events: DashboardEventSink,
         no_images: bool,
+        analysis_workspace: Path | None = None,
     ) -> None:
         super().__init__(id="rpent")
         self.toolkit = toolkit
@@ -340,6 +365,12 @@ class _HarnessToolkit(FunctionToolset):
         self.tool_calls = 0
         self.messages: list[dict[str, Any]] = []
         self.stopping = threading.Event()
+        self.analysis_workspace = analysis_workspace
+        self.motion_receipts: dict[str, tuple[dict, ToolResult]] = {}
+        self.analysis_calls = 0
+        if analysis_workspace is not None:
+            self.add_tool(Tool(self.exec_command, takes_ctx=True, sequential=True))
+            self.add_tool(Tool(self.view_image, takes_ctx=True, sequential=True))
         self.validators: dict[str, Draft202012Validator] = {}
         self.output_types: list[Any] = [str]
         if not getattr(toolkit, "planner_tools_only", False):
@@ -381,8 +412,34 @@ class _HarnessToolkit(FunctionToolset):
                         description=spec.get("description"),
                         json_schema=spec["input_schema"],
                         takes_ctx=True,
+                        sequential=analysis_workspace is not None
+                        and name == "move_eef",
                     )
                 )
+
+    async def exec_command(self, ctx: RunContext, cmd: str) -> dict:
+        """Run a shell command in the episode workspace and return its exit status and output."""
+        from rpent.planner.api_analysis import execute_command
+
+        self._record_call("exec_command", {"cmd": cmd}, ctx)
+        self.analysis_calls += 1
+        result = await execute_command(self.analysis_workspace, cmd)
+        self._record_result("exec_command", ctx, json.dumps(result))
+        return result
+
+    async def view_image(self, ctx: RunContext, path: str) -> ToolReturn:
+        """Open a local PNG or JPEG and return it as an image."""
+        from rpent.planner.api_analysis import local_image
+
+        self._record_call("view_image", {"path": path}, ctx)
+        self.analysis_calls += 1
+        try:
+            image = await asyncio.to_thread(local_image, self.analysis_workspace, path)
+            result = ToolReturn(return_value={"path": path}, content=[image])
+        except (OSError, ValueError) as exc:
+            result = ToolReturn(return_value={"error": str(exc)})
+        self._record_result("view_image", ctx, json.dumps(result.return_value))
+        return result
 
     async def read_image(
         self, ctx: RunContext, name: str, step: int = -1
@@ -440,12 +497,26 @@ class _HarnessToolkit(FunctionToolset):
         error = next(self.validators[name].iter_errors(arguments), None)
         if error is not None:
             raise ModelRetry(f"Invalid arguments for {name}: {error.message}")
+        track_motion = (
+            self.analysis_workspace is not None
+            and name == "move_eef"
+            and ctx.tool_call_id
+        )
+        if track_motion and ctx.tool_call_id in self.motion_receipts:
+            previous, receipt = self.motion_receipts[ctx.tool_call_id]
+            if previous != arguments:
+                raise ModelRetry(
+                    "Motion call ID was already used with different arguments"
+                )
+            return receipt
         self._record_call(name, arguments, ctx)
         try:
             result = await execute_tool(self.toolkit, name, arguments)
         except asyncio.CancelledError:
             self.stopping.set()
             raise
+        if track_motion:
+            self.motion_receipts[ctx.tool_call_id] = (arguments, result)
         self._record_result(name, ctx, self._text(result))
         stop_result = getattr(self.toolkit, "planner_stop_result", None)
         if stop_result is not None:
@@ -594,6 +665,12 @@ class _Session(AbstractCapability):
             if self.interactive:
                 message += " Use /exit to close the session."
             raise _RequestBudgetExhausted(message) from None
+        if self.toolkit.analysis_workspace is not None:
+            from rpent.planner.api_analysis import recent_images
+
+            request_context = replace(
+                request_context, messages=recent_images(request_context.messages)
+            )
         journal = getattr(self.toolkit.toolkit, "journal", None)
         if journal is not None:
             journal.append("model_request", request_context)

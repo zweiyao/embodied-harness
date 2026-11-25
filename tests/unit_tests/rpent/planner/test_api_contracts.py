@@ -1283,3 +1283,31 @@ def test_api_executes_readonly_calls_concurrently(tmp_path):
     assert sorted(completed) == ["left", "right"]
     assert result.finish_result == {"_finish": True, **FINISH_ARGS}
     assert result.stats["tool_calls"] == 3
+
+
+def test_bailian_duplicate_eef_call_executes_motion_once(tmp_path):
+    from pydantic_ai import ModelRetry
+
+    from rpent.planner.api_loop import _HarnessToolkit
+
+    events = Events()
+    toolkit = RobotToolkit(events)
+
+    def move_eef(observation_step: int):
+        return {"observation_step": observation_step}
+
+    toolkit.register("move_eef", move_eef)
+    adapter = _HarnessToolkit(
+        toolkit, dashboard_events=events, no_images=False, analysis_workspace=tmp_path
+    )
+    ctx = SimpleNamespace(tool_call_id="motion-1")
+
+    async def run():
+        arguments = {"observation_step": 0}
+        first = await adapter.execute("move_eef", arguments, ctx)
+        assert await adapter.execute("move_eef", arguments, ctx) is first
+        with pytest.raises(ModelRetry, match="different arguments"):
+            await adapter.execute("move_eef", {"observation_step": 1}, ctx)
+
+    asyncio.run(run())
+    assert toolkit.calls == [("move_eef", {"observation_step": 0})]

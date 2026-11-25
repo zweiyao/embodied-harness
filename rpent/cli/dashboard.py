@@ -238,6 +238,7 @@ def _run_dashboard_task(*, args, robot_spec, state, claimed, **kwargs):
         configured = copy.copy(args)
         for key in ("planner", "model", "base_url", "reasoning_effort"):
             setattr(configured, key, profile.get(key))
+        configured.bailian_profile = profile.get("bailian_profile")
         error = None
         try:
             state.workbench.validate_pilot_request(claimed.request)
@@ -510,6 +511,7 @@ def _run_dashboard_task_inner(
                         max_tokens=task_args.max_tokens,
                         planner_timeout_s=task_args.planner_timeout_s,
                         reasoning_effort=task_args.reasoning_effort,
+                        bailian_profile=getattr(task_args, "bailian_profile", None),
                         codex_analysis=getattr(task_args, "codex_analysis", False),
                         codex_full_access=getattr(
                             task_args, "codex_full_access", False

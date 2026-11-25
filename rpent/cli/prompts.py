@@ -12,11 +12,13 @@ from pathlib import Path
 def prepare_prompt_context(args, config) -> None:
     """Supply real runtime values without embedding experience bodies."""
     enabled = bool(getattr(args, "codex_analysis", False) and args.planner == "codex")
+    api_full = bool(getattr(args, "bailian_profile", None) and args.planner == "api")
+    enabled = enabled or api_full
     values = config.prompt_vars
     values["output_dir"] = str(config.output_dir)
     values["analysis_enabled"] = enabled
-    values["analysis_full_access"] = enabled and bool(
-        getattr(args, "codex_full_access", False)
+    values["analysis_full_access"] = (
+        api_full or enabled and bool(getattr(args, "codex_full_access", False))
     )
     if enabled:
         values["analysis_workspace"] = str(config.output_dir / "agent")

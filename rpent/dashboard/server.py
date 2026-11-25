@@ -295,6 +295,13 @@ class DashboardServer:
                 return JSONResponse(
                     {"error": "Flash replay has no language model"}, status_code=422
                 )
+            if self._workbench is not None:
+                profile_id = payload.get(
+                    "model_profile", self._planner_config.get("model_profile")
+                )
+                fixed = self._workbench.profiles.get(profile_id, {}).get("fixed_tools")
+                if fixed:
+                    payload = {**payload, "tools": fixed}
             try:
                 self._state.set_next_config(payload)
             except ValueError as exc:
