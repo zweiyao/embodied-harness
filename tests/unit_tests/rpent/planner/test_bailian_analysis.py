@@ -83,13 +83,15 @@ def test_analysis_workspace_reports_output_and_reads_original_image(tmp_path):
 
 
 def test_command_cancellation_terminates_child_process(tmp_path):
+    async def wait_for_child():
+        while not (tmp_path / "ready").exists():
+            await asyncio.sleep(0.01)
+
     async def run():
         task = asyncio.create_task(
             execute_command(tmp_path, "(sleep 0.5; touch escaped) & touch ready; wait")
         )
-        async with asyncio.timeout(3):
-            while not (tmp_path / "ready").exists():
-                await asyncio.sleep(0.01)
+        await asyncio.wait_for(wait_for_child(), timeout=3)
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task
