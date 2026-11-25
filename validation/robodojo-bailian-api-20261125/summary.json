@@ -1,0 +1,254 @@
+{
+  "task": "stack_bowls",
+  "native_instruction": "Stack the three bowls together.",
+  "layout": 0,
+  "trials_per_model": 1,
+  "implementation_commit": "7ae589a",
+  "baseline": "Archived Astra C rollout. API runs used the same native task, layout, nine tool versions and memory root. Initial RGB images across runs differed.",
+  "metrics": "Elapsed seconds include environment startup and finalization. First EEF time is from manifest start to first move_eef request. Provider-reported input tokens include cached tokens. Tool requests may be rejected before execution. Timeout records may include requests with no completed model usage.",
+  "native_tool_versions": {
+    "move_eef": "7e1aca5e83e3778ed1f0f3199c68ad1041234c632d4d92e6334acdf60ebb7e7e",
+    "view_env_state": "e06525ee36c4e5843e280fd189b4ee324719f30074d9216fb05c8ba06d77b9b4",
+    "back_project": "f22106e213598a295d3b580954fc11fdcdd2c9683e28935fe154625e58314a7f",
+    "segment": "a919812bf3a4b8955b6d90cb30ce5870d9b9cb9c9935f43266e1c1f7b4aca890",
+    "query_geometry": "e722633b74206ee6f53519d78145539f6ffe5bb95ba65da32ab508e28b9801fc",
+    "read_text_file": "7f7cdf170fc3a6d30d6d75c21a32ec335716d903e4d587640e091102893ed142",
+    "write_text_file": "6da947db411019a4af07e164c8fc0cbd48c18fe79f0537454ca2e3f4ffcf01f0",
+    "list_dir": "eaa895106eeb98920f1f91ba824f294a77756f207fb330fe4dc6c4ae3961d5fe",
+    "finish": "0c2069c30df75e18a6fed9074be76703957b263936a0bb14d09babdcdc34acc8"
+  },
+  "formal": [
+    {
+      "run_id": "79560d21871792876fee",
+      "directory": "robodojo-workbench/session-ring-pilot-json-20261123-C/tasks/0003_stack_bowls_l0",
+      "model": "gpt-6-astra",
+      "layout": 0,
+      "status": "completed",
+      "environment_success": true,
+      "elapsed_s": 1441.2,
+      "requests": 71,
+      "input_tokens": 4058733,
+      "cached_input_tokens": 1416192,
+      "output_tokens": 8430,
+      "tool_calls": 82,
+      "analysis_calls": null,
+      "first_eef_request_wall_s": 149.5,
+      "native_tool_requests": {
+        "view_env_state": 3,
+        "read_text_file": 1,
+        "query_geometry": 7,
+        "move_eef": 58,
+        "write_text_file": 1,
+        "finish": 1
+      },
+      "journaled_api_requests": null,
+      "maximum_images_per_api_request": null,
+      "maximum_earlier_image_placeholders": null,
+      "api_model_tool_requests": null,
+      "initial_frame_matches_astra": {
+        "cam_head": true,
+        "cam_left_wrist": true,
+        "cam_right_wrist": true
+      },
+      "max_turns": 200,
+      "timeout_s": 3600,
+      "max_tokens": 16384,
+      "video_recorded": true,
+      "episode_step_count": 58
+    },
+    {
+      "run_id": "9f86a0295b7ff4620888",
+      "directory": "robodojo-bailian-api/session-bailian-api-20261125/tasks/0001_stack_bowls_l0",
+      "model": "openai-chat:qwen3.8-flash",
+      "layout": 0,
+      "status": "timeout",
+      "environment_success": false,
+      "elapsed_s": 3648.1,
+      "requests": 70,
+      "input_tokens": 5905503,
+      "cached_input_tokens": 5208576,
+      "output_tokens": 102232,
+      "tool_calls": 68,
+      "analysis_calls": 17,
+      "first_eef_request_wall_s": 1459.5,
+      "native_tool_requests": {
+        "view_env_state": 1,
+        "list_dir": 2,
+        "read_text_file": 4,
+        "back_project": 4,
+        "segment": 4,
+        "query_geometry": 20,
+        "write_text_file": 1,
+        "move_eef": 15
+      },
+      "journaled_api_requests": 70,
+      "maximum_images_per_api_request": 10,
+      "maximum_earlier_image_placeholders": 43,
+      "api_model_tool_requests": {
+        "view_env_state": 1,
+        "list_dir": 2,
+        "read_text_file": 4,
+        "back_project": 4,
+        "segment": 4,
+        "query_geometry": 21,
+        "exec_command": 12,
+        "view_image": 5,
+        "write_text_file": 1,
+        "move_eef": 15
+      },
+      "initial_frame_matches_astra": {
+        "cam_head": false,
+        "cam_left_wrist": false,
+        "cam_right_wrist": false
+      },
+      "max_turns": 200,
+      "timeout_s": 3600,
+      "max_tokens": 16384,
+      "video_recorded": true,
+      "episode_step_count": 15
+    },
+    {
+      "run_id": "98b6cb88e48a5fedf816",
+      "directory": "robodojo-bailian-api/session-bailian-api-20261125/tasks/0002_stack_bowls_l0",
+      "model": "openai-chat:deepseek-v4.1-flash",
+      "layout": 0,
+      "status": "timeout",
+      "environment_success": false,
+      "elapsed_s": 3644.3,
+      "requests": 115,
+      "input_tokens": 10684521,
+      "cached_input_tokens": 9796096,
+      "output_tokens": 104936,
+      "tool_calls": 114,
+      "analysis_calls": 69,
+      "first_eef_request_wall_s": 889.6,
+      "native_tool_requests": {
+        "view_env_state": 1,
+        "read_text_file": 4,
+        "segment": 3,
+        "query_geometry": 11,
+        "write_text_file": 1,
+        "move_eef": 25
+      },
+      "journaled_api_requests": 115,
+      "maximum_images_per_api_request": 10,
+      "maximum_earlier_image_placeholders": 74,
+      "api_model_tool_requests": {
+        "view_env_state": 1,
+        "exec_command": 63,
+        "read_text_file": 4,
+        "segment": 3,
+        "query_geometry": 11,
+        "view_image": 6,
+        "write_text_file": 1,
+        "move_eef": 25
+      },
+      "initial_frame_matches_astra": {
+        "cam_head": false,
+        "cam_left_wrist": false,
+        "cam_right_wrist": false
+      },
+      "max_turns": 200,
+      "timeout_s": 3600,
+      "max_tokens": 16384,
+      "video_recorded": true,
+      "episode_step_count": 25
+    }
+  ],
+  "history_video_check": [
+    {
+      "run_id": "9f86a0295b7ff4620888",
+      "played_cameras": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist"
+      ],
+      "resolution": [
+        640,
+        480
+      ],
+      "error_count": 0
+    },
+    {
+      "run_id": "98b6cb88e48a5fedf816",
+      "played_cameras": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist"
+      ],
+      "resolution": [
+        640,
+        480
+      ],
+      "error_count": 0
+    }
+  ],
+  "recorded_three_camera_replay": {
+    "measurement": "All models in this replay received the same archived step and supplied rim pixel samples. Radius agreement measures the common program output.",
+    "results": [
+      {
+        "model": "qwen3.8-flash",
+        "model_requests": 12,
+        "tool_calls": [
+          "view_env_state",
+          "query_geometry",
+          "exec_command",
+          "exec_command",
+          "exec_command",
+          "view_image",
+          "exec_command",
+          "exec_command",
+          "exec_command",
+          "exec_command",
+          "exec_command",
+          "finish"
+        ],
+        "radius_m": 0.047102,
+        "rms_m": 0.006955
+      },
+      {
+        "model": "deepseek-v4.1-flash",
+        "model_requests": 7,
+        "tool_calls": [
+          "view_env_state",
+          "query_geometry",
+          "exec_command",
+          "view_image",
+          "exec_command",
+          "view_image",
+          "finish"
+        ],
+        "radius_m": 0.047102,
+        "rms_m": 0.006955
+      }
+    ],
+    "initial_attempts": "Both initial replays reached the 480-second diagnostic cap. Retests used the remote IPv4 route and an 1800-second diagnostic cap."
+  },
+  "http_transport_window": {
+    "fixture_source_images": 15,
+    "request_image_counts": [
+      0,
+      3,
+      6,
+      9,
+      10,
+      10
+    ],
+    "verified_profiles": [
+      "qwen3.8-flash",
+      "deepseek-v4.1-flash"
+    ],
+    "checked": "Image contents and order, earlier placeholders, tool return IDs and thinking switch."
+  },
+  "remote_regression": {
+    "passed": 2194,
+    "skipped": 11,
+    "failed": 0,
+    "includes_playwright_journeys": 6,
+    "pre_commit": "passed",
+    "cli": "Both real argument parsers and planner factories reached simulator startup in a fixture with no provider traffic.",
+    "live_browser": "Both model selections locked the configured tools. Saved records and playback were also checked."
+  },
+  "remote_evidence_root": "validation/robodojo-bailian-api-20261125",
+  "limits": "Single trials support a functional comparison of this layout. Rates and latency improvements need repeated matched trials. The user account grants full local analysis access, so workspace write conventions rely on the agent."
+}

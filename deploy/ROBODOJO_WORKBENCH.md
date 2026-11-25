@@ -61,6 +61,10 @@ and supply a `qwen3.8-flash` model entry with the regional Bailian
 profiles for Qwen3.8-Flash and DeepSeek-V4.1-Flash. Both select the nine
 C-group tools, including direct EEF control and circle fitting.
 
+For concurrent workbenches, give each server its own `runs_root` and put its
+`--output-dir` inside that root. On startup the workbench scans its run tree
+and marks unfinished records as interrupted.
+
 For a terminal run, select `--robot robodojo --bailian-profile qwen3.8-flash`
 or `--bailian-profile deepseek-v4.1-flash`. Supply the same region via
 `--base-url` and the provider credential via `OPENAI_API_KEY`. For the paired
@@ -72,3 +76,7 @@ service endpoints.
 These profiles run shell commands with the simulation account's host permissions.
 The episode directory contains the writable notes and scratch files. Each model
 request keeps the latest ten images across all cameras and local analysis tools.
+
+The [paired stacking trial](../validation/robodojo-bailian-api-20261125/summary.json)
+records native task outcomes, model usage, tool counts and playback checks
+for both API profiles alongside the archived Astra run on layout 0.
