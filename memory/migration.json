@@ -1,0 +1,38 @@
+{
+  "published_notes": {
+    "libero/global/grasp-feature-evidence.md": {
+      "source": "language-materials/qwen-evidence-v3-readable/memory/grasp-feature-evidence.md",
+      "sha256": "68c876d1d4675ad3dd2708db983fffb30d251853887538d0f398ae57b66c89e4"
+    },
+    "libero/global/next-action-evidence.md": {
+      "source": "language-materials/qwen-evidence-v3-readable/memory/next-action-evidence.md",
+      "sha256": "d4c20d57d04fe11978dad96a205cbf1762e4524c9210800608f35789b5da4601"
+    },
+    "libero/global/object-relative-transfer.md": {
+      "source": "language-materials/qwen-evidence-v3-readable/memory/object-relative-transfer.md",
+      "sha256": "f7721eb8d3f54c67a485ea15ee14dffd6647d579bfa1e9b1f4933e52fa8d17e1"
+    },
+    "flexiv/global/insertion_grasp_revalidation.md": {
+      "source": "validation/flexiv-wechat-recording-20261124/runtime/memory/flexiv/global/insertion_grasp_revalidation.md",
+      "sha256": "223ffd6ab74386f823a4d2559169590aef84e0d6622ea785aeef36740b195ff7"
+    },
+    "flexiv/global/insertion_local_alignment.md": {
+      "source": "validation/flexiv-wechat-recording-20261124/runtime/memory/flexiv/global/insertion_local_alignment.md",
+      "sha256": "85fc551a1044651fbe91f6bfa80aed61d883b94a2cf94a4474cac1120eb23a04"
+    },
+    "flexiv/task-family/task-family_flexiv_manipulation_twhiteboard_writing.md": {
+      "source": "validation/flexiv-wechat-recording-20261124/runtime/memory/flexiv/task-family/task-family_flexiv_manipulation_twhiteboard_writing.md",
+      "sha256": "3cf8d627686a52c29bf5c9f858f2a12de7ec2b4186160284dfe69df20b0b3371"
+    }
+  },
+  "legacy_export": "language-materials/v1/memory",
+  "legacy_markdown_counts": {
+    "libero_legacy_candidate_needs_review": 91,
+    "source_needs_review": 45,
+    "historical_run_evidence": 75
+  },
+  "initial_indexes": {
+    "robodojo": "no reviewed notes",
+    "univtac": "reserved; episode memory remains disabled"
+  }
+}

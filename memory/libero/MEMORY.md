@@ -1,7 +1,7 @@
-# LIBERO experience index
+# LIBERO manipulation experience index
 
-Approved candidate experiences, loaded on demand. Task benefit remains unvalidated.
+Read the entry matching the current unresolved decision. These are conditional hypotheses, not fixed trajectories or proof of success.
 
-- [next-action-evidence.md](next-action-evidence.md): Choose the next primitive and resolve only its missing evidence.
-- [object-relative-transfer.md](object-relative-transfer.md): Separate holding evidence, object geometry and observed motion.
-- [grasp-feature-evidence.md](grasp-feature-evidence.md): Ground a manual handle grasp in feature identity, approach geometry and observed motion.
+- [next-action-evidence.md](global/next-action-evidence.md): Before repeated localization, decide which evidence the next available primitive actually needs.
+- [grasp-feature-evidence.md](global/grasp-feature-evidence.md): For a manual handle grasp, distinguish the handle from body, cavity and background; assess approach geometry and stalled motion.
+- [object-relative-transfer.md](global/object-relative-transfer.md): When holding or placement is uncertain, check object-relative evidence and observed motion.

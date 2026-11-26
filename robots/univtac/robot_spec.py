@@ -319,8 +319,9 @@ def get_toolkit(*, runtime_kwargs, dashboard_events, config):
         env=runtime_kwargs["env"],
         output_dir=config.output_dir,
         dashboard_events=dashboard_events,
-        memory=MemoryManager(
-            config.output_dir / "empty-memory", memory_access="read_only"
+        memory=MemoryManager.for_run(
+            config.prompt_vars.get("memory_dir") or config.output_dir / "empty-memory",
+            config.output_dir,
         ),
         selected=config.prompt_vars.get("manual_tools"),
         journal=config.prompt_vars.get("run_journal"),

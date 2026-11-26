@@ -133,3 +133,46 @@ def test_frozen_root_notes_are_readable_through_actual_file_tool(tmp_path):
         file_tools.read_text_file(path=str(root / "libero/note.md"))
     with pytest.raises(PermissionError, match="writing to memory is denied"):
         file_tools.write_text_file(path=str(root / "note.md"), content="changed")
+
+
+def test_centralized_workbench_renders_the_libero_index(tmp_path, monkeypatch):
+    published = tmp_path / "published"
+    monkeypatch.setenv("RPENT_MEMORY_ROOT", str(published))
+    corpus = published / "libero"
+    corpus.mkdir(parents=True)
+    (corpus / "MEMORY.md").write_text("LIBERO index")
+    source = tmp_path / "package"
+    (source / "memory").mkdir(parents=True)
+    contents = {
+        "system.md": "Read {{memory_dir}}/MEMORY.md.",
+        "user.md": "Read {{memory_dir}}/MEMORY.md when useful.",
+        "guide.md": "Use the current observation.",
+        "memory/MEMORY.md": "Historical snapshot",
+    }
+    for name, text in contents.items():
+        (source / name).write_text(text)
+    (source / "manifest.json").write_text(
+        json.dumps(
+            {
+                "version": "fixture",
+                "files": {
+                    name: hashlib.sha256(text.encode()).hexdigest()
+                    for name, text in contents.items()
+                },
+            }
+        )
+    )
+
+    run = tmp_path / "run"
+    variables = {}
+    freeze_materials(source, run, variables)
+    assert variables["memory_dir"] == str(corpus)
+    assert str(corpus / "MEMORY.md") in format_prompt(
+        system_prompt(variables), variables=variables
+    )
+    assert str(corpus / "MEMORY.md") in format_prompt(
+        user_prompt(variables), variables=variables
+    )
+    assert (
+        run / "language-materials/memory/MEMORY.md"
+    ).read_text() == "Historical snapshot"

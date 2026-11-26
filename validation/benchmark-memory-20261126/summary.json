@@ -1,0 +1,47 @@
+{
+  "implementation_commit": "f550464e9377f00a9bf30cdd88fda3f22eac09ab",
+  "regression": {
+    "passed": 2191,
+    "skipped": 11,
+    "failed": 0,
+    "playwright_tests": 5,
+    "pre_commit": "passed"
+  },
+  "prompt_verification": "Rendered using each deployed source and published memory root in an offline episode fixture.",
+  "workbenches": {
+    "robodojo": {
+      "prompt_index": "/home/zwy/work/embodied_harness/memory/robodojo/MEMORY.md",
+      "index_sha256": "94af6ced7c9798476fdcebc8e97292d8a5007ef77bf4c70ce322e9fdb03a5900",
+      "cross_benchmark_read": "denied",
+      "dashboard_ready": true
+    },
+    "bailian": {
+      "prompt_index": "/home/zwy/work/embodied_harness/memory/robodojo/MEMORY.md",
+      "index_sha256": "94af6ced7c9798476fdcebc8e97292d8a5007ef77bf4c70ce322e9fdb03a5900",
+      "cross_benchmark_read": "denied",
+      "archived_geometry_replay": true,
+      "note_roundtrip": true,
+      "dashboard_ready": true,
+      "archived_camera_images_verified": 3
+    },
+    "flexiv": {
+      "prompt_index": "/home/zwy/work/embodied_harness/memory/flexiv/MEMORY.md",
+      "index_sha256": "b70c4902527187bd269e25d3275a0d205df404c4dd418acedafdb4626ba9e821",
+      "cross_benchmark_read": "denied",
+      "dashboard_ready": true
+    },
+    "libero": {
+      "prompt_index": "/home/zwy/work/embodied_harness/memory/libero/MEMORY.md",
+      "index_sha256": "425f0edfc77fc1682dc32f4956889f254797f6bfc563760a607a7751a1ba1f61",
+      "cross_benchmark_read": "denied",
+      "dashboard_ready": true
+    },
+    "univtac": {
+      "prompt_index": null,
+      "cross_benchmark_read": "denied",
+      "dashboard_ready": true
+    }
+  },
+  "dependency_recovery": "Two stale local VLA and SAM3 endpoint pairs were replaced by workbench-owned services using the configured checkpoints. All dashboards returned ready.",
+  "evaluation_scope": "Reused archived geometry and camera evidence. No model requests, new task episodes, or hardware motion."
+}

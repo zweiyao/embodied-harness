@@ -440,3 +440,33 @@ def test_memory_manager_refuses_to_complete_an_existing_partial_task_pair(
     assert result["task"] == 0
     assert result["skipped"] == ["incomplete existing task audit/recipe pair"]
     assert not (task_dir / f"{cell}_recipe.jsonl").exists()
+
+
+def test_centralized_run_keeps_native_file_tools_inside_its_benchmark(
+    monkeypatch, tmp_path: Path
+) -> None:
+    from rpent.utils.config import get_memory_dir
+
+    monkeypatch.setenv("RPENT_MEMORY_ROOT", str(tmp_path / "libraries"))
+    active = get_memory_dir("robodojo")
+    sibling = get_memory_dir("flexiv")
+    episode = tmp_path / "run"
+    other_checkout = tmp_path / "old-checkout" / "memory" / "libero"
+    for root in (active, sibling, episode, other_checkout):
+        root.mkdir(parents=True)
+        (root / "MEMORY.md").write_text(root.name)
+    shortcut = active / "foreign.md"
+    shortcut.symlink_to(sibling / "MEMORY.md")
+    files = CommonTools(memory=MemoryManager.for_run(active, episode))
+
+    assert files.read_text_file(str(active / "MEMORY.md")).data["content"] == "robodojo"
+    assert files.read_text_file("MEMORY.md").data["content"] == "run"
+    for root in (sibling, other_checkout):
+        with pytest.raises(PermissionError):
+            files.read_text_file(str(root / "MEMORY.md"))
+        with pytest.raises(PermissionError):
+            files.list_dir(str(root))
+    with pytest.raises(PermissionError):
+        files.read_text_file(str(shortcut))
+    with pytest.raises(PermissionError):
+        files.read_text_file("../libraries/flexiv/MEMORY.md")

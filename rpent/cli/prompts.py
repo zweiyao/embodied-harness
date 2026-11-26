@@ -34,6 +34,17 @@ def render_prompt(
     path = Path(output_dir) / "prompt-sources.json"
     data = json.loads(path.read_text()) if path.exists() else {"version": 1}
     data[variant] = info
+    if (root := variables.get("memory_dir")) is not None:
+        root = Path(root).resolve()
+        index = root / "MEMORY.md"
+        data["memory"] = {
+            "root": str(root),
+            "index_sha256": hashlib.sha256(index.read_bytes()).hexdigest()
+            if index.is_file()
+            else None,
+        }
+        if version := variables.get("memory_version"):
+            data["memory"]["version"] = version
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
     return text, info
 
