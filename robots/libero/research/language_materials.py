@@ -7,6 +7,8 @@ import json
 import shutil
 from pathlib import Path
 
+from rpent.utils.config import get_memory_dir, get_published_memory_root
+
 
 def freeze_materials(source, output_dir, prompt_vars):
     """Verify the package before copying it; leave the published corpus intact."""
@@ -30,10 +32,18 @@ def freeze_materials(source, output_dir, prompt_vars):
         shutil.copyfile(source / name, destination)
         if hashlib.sha256(destination.read_bytes()).hexdigest() != expected:
             raise ValueError(f"Language material changed while copying: {name}")
+    memory_root = target / "memory"
+    if get_published_memory_root():
+        memory_root = get_memory_dir("libero")
+        index = memory_root / "MEMORY.md"
+        manifest["selected_memory"] = {
+            "root": str(memory_root),
+            "index_sha256": hashlib.sha256(index.read_bytes()).hexdigest(),
+        }
     (target / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     prompt_vars.update(
         language_materials=str(target),
-        memory_dir=str(target / "memory"),
+        memory_dir=str(memory_root),
         memory_version=manifest["version"],
     )
 

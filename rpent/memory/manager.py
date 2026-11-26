@@ -25,7 +25,7 @@ from typing import Any
 
 import yaml
 
-from rpent.utils.config import get_repo_root
+from rpent.utils.config import get_published_memory_root, get_repo_root
 from rpent.utils.logging import get_logger
 
 logger = get_logger("memory")
@@ -139,11 +139,22 @@ class MemoryManager:
         *,
         memory_access: str = "read_only",
         inbox_cell_tag: str | None = None,
+        run_read_root: str | Path | None = None,
     ) -> None:
         self._root = Path(root).resolve()
         self._memory_access = memory_access
         self._inbox_cell_tag = inbox_cell_tag
         self._run_write_root: Path | None = None
+        self._run_read_root = Path(run_read_root).resolve() if run_read_root else None
+
+    @classmethod
+    def for_run(cls, root: str | Path, output_dir: str | Path, **options):
+        """Use scoped file-tool access for runs in the centralized deployment."""
+        return cls(
+            root,
+            run_read_root=output_dir if get_published_memory_root() else None,
+            **options,
+        )
 
     def restrict_writes_to(self, directory: str | Path) -> None:
         """Limit file-tool writes to one analysis workspace, not published memory."""
@@ -192,7 +203,7 @@ class MemoryManager:
 
     def _authorize(self, path: str | Path, *, write: bool) -> Path:
         repo_root = get_repo_root()
-        base = self._run_write_root or repo_root
+        base = self._run_write_root or self._run_read_root or repo_root
         resolved = (base / path).resolve()
         if (
             write
@@ -203,7 +214,15 @@ class MemoryManager:
                 f"analysis file writes are limited to {self._run_write_root}: {path}"
             )
         if not resolved.is_relative_to(self._root):
-            if resolved.is_relative_to((repo_root / "memory").resolve()):
+            if self._run_read_root is not None and not resolved.is_relative_to(
+                self._run_read_root
+            ):
+                raise PermissionError(
+                    f"access outside this run and its memory is denied: {path}"
+                )
+            if self._run_read_root is None and resolved.is_relative_to(
+                (repo_root / "memory").resolve()
+            ):
                 raise PermissionError(
                     f"access to another robot's memory is denied: {path}"
                 )

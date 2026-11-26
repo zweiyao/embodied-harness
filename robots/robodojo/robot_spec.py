@@ -188,8 +188,9 @@ def get_toolkit(
     """Return the RoboDojo toolkit (common tools + RoboDojo primitives)."""
     from robots.robodojo.toolkit import RoboDojoToolkit
 
-    memory = MemoryManager(
-        root=config.prompt_vars.get("memory_dir") or get_memory_dir("robodojo"),
+    memory = MemoryManager.for_run(
+        config.prompt_vars.get("memory_dir") or get_memory_dir("robodojo"),
+        config.output_dir,
     )
     if config.prompt_vars.get("mode") == "eval-fair":
         from robots.robodojo.flash.replay import load_plan

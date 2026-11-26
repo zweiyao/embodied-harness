@@ -166,8 +166,8 @@ def get_toolkit(
         return SensorResearchToolkit(
             runtime_kwargs=runtime_kwargs,
             dashboard_events=dashboard_events,
-            memory=MemoryManager(
-                config.output_dir / "empty-memory", memory_access="read_only"
+            memory=MemoryManager.for_run(
+                config.output_dir / "empty-memory", config.output_dir
             ),
             state_output_dir=state_output_dir or config.output_dir,
             sensor_library=config.prompt_vars["sensor_library"],
@@ -175,8 +175,9 @@ def get_toolkit(
         )
 
     explore = mode == "exploration"
-    memory = MemoryManager(
-        root=config.prompt_vars.get("memory_dir") or get_memory_dir("libero"),
+    memory = MemoryManager.for_run(
+        config.prompt_vars.get("memory_dir") or get_memory_dir("libero"),
+        config.output_dir,
         memory_access="inbox_write" if explore else "read_only",
         inbox_cell_tag=config.recipe_tag if explore else None,
     )

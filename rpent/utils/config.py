@@ -42,9 +42,15 @@ def get_repo_root() -> Path:
 # ============================================================================
 
 
+def get_published_memory_root() -> Path | None:
+    """Return the explicitly configured shared deployment root."""
+    value = os.environ.get("RPENT_MEMORY_ROOT")
+    return Path(value).expanduser().resolve() if value else None
+
+
 def get_memory_dir(robot_name: str) -> Path:
     """Return the persistent, cross-run memory directory for a robot."""
-    return get_repo_root() / "memory" / robot_name
+    return (get_published_memory_root() or get_repo_root() / "memory") / robot_name
 
 
 def get_pi05_checkpoint_path() -> str:

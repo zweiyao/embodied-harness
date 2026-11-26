@@ -152,8 +152,9 @@ def get_toolkit(*, runtime_kwargs, dashboard_events, config):
             control_mode=config.prompt_vars.get("action_mode")
             or config.prompt_vars.get("control_mode", "native"),
             inspection_only=config.prompt_vars.get("inspection_only", False),
-            memory=MemoryManager(
-                root=get_memory_dir("flexiv"), memory_access="read_only"
+            memory=MemoryManager.for_run(
+                config.prompt_vars.get("memory_dir") or get_memory_dir("flexiv"),
+                config.output_dir,
             ),
             **options,
         )
