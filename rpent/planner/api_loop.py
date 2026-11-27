@@ -23,6 +23,7 @@ import asyncio
 import json
 import math
 import threading
+import time
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
 from dataclasses import replace
@@ -63,9 +64,16 @@ from pydantic_ai.capabilities.abstract import (
     WrapNodeRunHandler,
     WrapRunHandler,
 )
-from pydantic_ai.exceptions import UsageLimitExceeded, UserError
-from pydantic_ai.messages import ModelMessage, UserContent
-from pydantic_ai.models import Model, ModelRequestContext
+from pydantic_ai.exceptions import ModelAPIError, UsageLimitExceeded, UserError
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ModelResponse,
+    SystemPromptPart,
+    UserContent,
+    UserPromptPart,
+)
+from pydantic_ai.models import Model, ModelRequestContext, ModelRequestParameters
 from pydantic_ai.run import AgentRun, AgentRunResult
 from pydantic_ai_harness.compaction import SlidingWindowCompaction
 
@@ -103,6 +111,7 @@ class ApiAgentLoop(Planner):
         reasoning_effort: str = "none",
         no_images: bool = False,
         analysis_workspace: Path | None = None,
+        compact_256k: bool = False,
         timeout_s: float = 1200,
         interactive: bool = False,
     ) -> None:
@@ -116,6 +125,7 @@ class ApiAgentLoop(Planner):
         self.reasoning_effort = reasoning_effort
         self.no_images = no_images
         self.analysis_workspace = analysis_workspace
+        self.compact_256k = compact_256k
         self.timeout_s = timeout_s
         self.interactive = interactive
 
@@ -162,7 +172,11 @@ class ApiAgentLoop(Planner):
             analysis_workspace=self.analysis_workspace,
         )
         session = _Session(
-            adapter, conversation_id, max_turns, interactive=self.interactive
+            adapter,
+            conversation_id,
+            max_turns,
+            interactive=self.interactive,
+            compact_256k=self.compact_256k,
         )
         settings = _build_model_settings(
             self.model, self.max_tokens, self.reasoning_effort
@@ -592,6 +606,7 @@ class _Session(AbstractCapability):
         max_turns: int,
         *,
         interactive: bool = False,
+        compact_256k: bool = False,
     ) -> None:
         self.toolkit = toolkit
         self.conversation_id = conversation_id
@@ -607,6 +622,10 @@ class _Session(AbstractCapability):
         self.cancellation: CancellationToken | None = None
         self.completions = 0
         self.model_request_timeout_s = request_timeout(toolkit.toolkit)
+        self.compact_256k = compact_256k
+        self.compaction_attempted = False
+        self.last_input_tokens = 0
+        self.awaiting_compacted_response = False
 
     async def wrap_node_run(
         self, ctx: RunContext, *, node: AgentNode, handler: WrapNodeRunHandler
@@ -671,10 +690,131 @@ class _Session(AbstractCapability):
             request_context = replace(
                 request_context, messages=recent_images(request_context.messages)
             )
+        if self.compact_256k and not self.compaction_attempted:
+            request_context = await self._maybe_compact_context(ctx, request_context)
         journal = getattr(self.toolkit.toolkit, "journal", None)
         if journal is not None:
             journal.append("model_request", request_context)
         return request_context
+
+    async def after_model_request(
+        self,
+        ctx: RunContext,
+        *,
+        request_context: ModelRequestContext,
+        response: ModelResponse,
+    ) -> ModelResponse:
+        if self.compact_256k:
+            self.last_input_tokens = response.usage.input_tokens
+            if self.awaiting_compacted_response:
+                self.awaiting_compacted_response = False
+                journal = getattr(self.toolkit.toolkit, "journal", None)
+                if journal is not None:
+                    journal.append("context_compaction_resumed", response.usage)
+        return response
+
+    async def _maybe_compact_context(
+        self, ctx: RunContext, request_context: ModelRequestContext
+    ) -> ModelRequestContext:
+        from rpent.planner.api_compaction import (
+            INPUT_THRESHOLD,
+            SUMMARY_MAX_TOKENS,
+            SUMMARY_PROMPT,
+            SUMMARY_TIMEOUT_S,
+            checkpoint_observation,
+            compacted_request,
+            parse_summary,
+            split_history,
+            summary_source,
+        )
+
+        used_requests = self.usage.requests + ctx.usage.requests
+        if (
+            self.last_input_tokens < INPUT_THRESHOLD
+            or used_requests + 1 >= self.limits.request_limit
+        ):
+            return request_context
+        split = split_history(request_context.messages)
+        if split is None:
+            return request_context
+        self.compaction_attempted = True
+        older, recent = split
+        journal = getattr(self.toolkit.toolkit, "journal", None)
+        started = time.monotonic()
+        if journal is not None:
+            journal.append("context_compaction_source", request_context)
+        try:
+            details, frames = checkpoint_observation(self.toolkit.toolkit.state)
+            ctx.usage.requests += 1
+            summary_response = await asyncio.wait_for(
+                request_context.model.request(
+                    [
+                        ModelRequest(
+                            parts=[
+                                SystemPromptPart(content=SUMMARY_PROMPT),
+                                UserPromptPart(
+                                    content=(
+                                        f"Native task: {details['task_instruction']}\n"
+                                        + summary_source(older)
+                                    ),
+                                ),
+                            ]
+                        )
+                    ],
+                    {
+                        **(request_context.model_settings or {}),
+                        "max_tokens": SUMMARY_MAX_TOKENS,
+                    },
+                    ModelRequestParameters(),
+                ),
+                timeout=SUMMARY_TIMEOUT_S,
+            )
+            ctx.usage.incr(summary_response.usage)
+            if summary_response.finish_reason != "stop" or any(
+                isinstance(part, ToolCallPart) for part in summary_response.parts
+            ):
+                raise ValueError("summary did not finish with a text response")
+            summary = parse_summary(
+                "".join(
+                    part.content
+                    for part in summary_response.parts
+                    if isinstance(part, TextPart)
+                )
+            )
+            messages = compacted_request(older, recent, summary, details, frames)
+        except (
+            ModelAPIError,
+            OSError,
+            KeyError,
+            ValueError,
+            asyncio.TimeoutError,
+        ) as exc:
+            logger.warning(
+                "RoboDojo context compaction skipped: %s", type(exc).__name__
+            )
+            if journal is not None:
+                journal.append(
+                    "context_compaction_failed",
+                    {
+                        "error_type": type(exc).__name__,
+                        "elapsed_s": time.monotonic() - started,
+                    },
+                )
+            return request_context
+        if journal is not None:
+            journal.append(
+                "context_compaction_complete",
+                {
+                    "previous_input_tokens": self.last_input_tokens,
+                    "summary_usage": summary_response.usage,
+                    "elapsed_s": time.monotonic() - started,
+                    "observation_step": details["step"],
+                    "messages_before": len(request_context.messages),
+                    "messages_after": len(messages),
+                },
+            )
+        self.awaiting_compacted_response = True
+        return replace(request_context, messages=messages)
 
     async def before_node_run(self, ctx: RunContext, *, node: AgentNode) -> AgentNode:
         if self.toolkit.stopping.is_set():

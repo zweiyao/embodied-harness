@@ -272,6 +272,10 @@ def build_planner(
         return ApiAgentLoop(
             model=api_model,
             analysis_workspace=workspace,
+            compact_256k=(
+                bailian_profile == "deepseek-v4.1-flash"
+                and os.environ.get("RPENT_ROBODOJO_API_COMPACT_256K") == "1"
+            ),
             max_tokens=max_tokens,
             reasoning_effort=reasoning_effort,
             dashboard_events=dashboard_events,
