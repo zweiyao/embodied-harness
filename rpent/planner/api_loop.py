@@ -181,6 +181,8 @@ class ApiAgentLoop(Planner):
         settings = _build_model_settings(
             self.model, self.max_tokens, self.reasoning_effort
         )
+        if self.compact_256k:
+            settings.pop("max_tokens", None)
         if self.timeout_s == 0:
             settings["timeout"] = None
         if self.analysis_workspace is not None:

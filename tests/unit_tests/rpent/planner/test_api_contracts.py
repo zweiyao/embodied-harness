@@ -1382,7 +1382,8 @@ def test_robodojo_256k_compaction_on_openai_wire(
             finish_reason = "stop"
             input_tokens = 1234
         else:
-            assert body["max_completion_tokens"] == 8192
+            assert "max_completion_tokens" not in body
+            assert "max_tokens" not in body
             index = decisions
             decisions += 1
             tool_name = "observe" if index < 11 else "finish"
