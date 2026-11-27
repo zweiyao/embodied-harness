@@ -26,7 +26,6 @@ from rpent.planner.api_analysis import recent_images
 INPUT_THRESHOLD = 262_144
 RECENT_EXCHANGES = 8
 SUMMARY_TIMEOUT_S = 120
-SUMMARY_MAX_TOKENS = 4096
 SUMMARY_FIELDS = ("observed_progress", "uncertain_state", "failures", "next_checks")
 SUMMARY_PROMPT = """Summarize the archived part of the current RoboDojo episode for the next control request.
 Return only a JSON object with four arrays of short strings: observed_progress, uncertain_state, failures, next_checks.

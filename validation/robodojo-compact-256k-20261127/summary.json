@@ -63,7 +63,7 @@
     }
   },
   "remaining": [
-    "A successful live summary with a reduced next-request context and verified control continuation."
+    "A full live simulation with the revised summary request and measured post-compaction control continuation."
   ],
   "retry_trial": {
     "run_id": "64ffee4159da0c56c2ad",
@@ -143,6 +143,44 @@
           "fps": 25.0
         }
       ]
+    }
+  },
+  "summary_without_request_output_limit_replay": {
+    "source_run_id": "64ffee4159da0c56c2ad",
+    "trigger_input_tokens": 262492,
+    "checkpoint_step": 26,
+    "original_messages": 313,
+    "retained_messages": 16,
+    "source_text_sha256": "097dd2287ebe4ba03a321e9375b80acefb66e1586c652e1da612172bad0a5978",
+    "request": {
+      "model_id": "deepseek-v4.1-flash",
+      "max_tokens_present": false,
+      "max_completion_tokens_present": false,
+      "thinking": "high"
+    },
+    "response": {
+      "finish_reason": "stop",
+      "input_tokens": 122335,
+      "output_tokens": 3956,
+      "text_characters": 2076,
+      "summary_items": {
+        "observed_progress": 5,
+        "uncertain_state": 4,
+        "failures": 3,
+        "next_checks": 5
+      }
+    },
+    "paid_requests": 1,
+    "compacted_messages": 17,
+    "event": "context_compaction_complete",
+    "elapsed_s": 26.694765344727784,
+    "offline": {
+      "wire_contract_passed": 3,
+      "full_unit": {
+        "passed": 2183,
+        "skipped": 19
+      },
+      "pre_commit": "passed"
     }
   }
 }

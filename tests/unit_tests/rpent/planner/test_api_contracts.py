@@ -1364,7 +1364,8 @@ def test_robodojo_256k_compaction_on_openai_wire(
         if not body.get("tools"):
             summaries += 1
             assert body["model"] == "deepseek-v4.1-flash"
-            assert body["max_completion_tokens"] == 4096
+            assert "max_completion_tokens" not in body
+            assert "max_tokens" not in body
             text = (
                 json.dumps(
                     {
@@ -1381,6 +1382,7 @@ def test_robodojo_256k_compaction_on_openai_wire(
             finish_reason = "stop"
             input_tokens = 1234
         else:
+            assert body["max_completion_tokens"] == 8192
             index = decisions
             decisions += 1
             tool_name = "observe" if index < 11 else "finish"

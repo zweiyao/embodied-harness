@@ -718,7 +718,6 @@ class _Session(AbstractCapability):
     ) -> ModelRequestContext:
         from rpent.planner.api_compaction import (
             INPUT_THRESHOLD,
-            SUMMARY_MAX_TOKENS,
             SUMMARY_PROMPT,
             SUMMARY_TIMEOUT_S,
             checkpoint_observation,
@@ -745,6 +744,8 @@ class _Session(AbstractCapability):
             journal.append("context_compaction_source", request_context)
         try:
             details, frames = checkpoint_observation(self.toolkit.toolkit.state)
+            summary_settings = (request_context.model_settings or {}).copy()
+            summary_settings.pop("max_tokens", None)
             ctx.usage.requests += 1
             summary_response = await asyncio.wait_for(
                 request_context.model.request(
@@ -761,10 +762,7 @@ class _Session(AbstractCapability):
                             ]
                         )
                     ],
-                    {
-                        **(request_context.model_settings or {}),
-                        "max_tokens": SUMMARY_MAX_TOKENS,
-                    },
+                    summary_settings,
                     ModelRequestParameters(),
                 ),
                 timeout=SUMMARY_TIMEOUT_S,
