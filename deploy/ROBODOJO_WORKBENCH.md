@@ -51,3 +51,32 @@ Run history preserves the actual task/configuration, official success availabili
 stop reason, model/tool events, token usage and three camera videos. Videos use
 H.264 and browser-compatible MP4 indexing. A successful component test or model
 `finish` is not evidence of official task success.
+
+### Bailian API analysis profiles
+
+In the RoboDojo workbench configuration set `"bailian_analysis_profiles": true`
+and supply a `qwen3.8-flash` model entry with the regional Bailian
+`base_url` and private `key_file`. Start the workbench with
+`RPENT_ROBODOJO_GEOMETRY=fit`. The model menu then offers independent API
+profiles for Qwen3.8-Flash and DeepSeek-V4.1-Flash. Both select the nine
+C-group tools, including direct EEF control and circle fitting.
+
+For concurrent workbenches, give each server its own `runs_root` and put its
+`--output-dir` inside that root. On startup the workbench scans its run tree
+and marks unfinished records as interrupted.
+
+For a terminal run, select `--robot robodojo --bailian-profile qwen3.8-flash`
+or `--bailian-profile deepseek-v4.1-flash`. Supply the same region via
+`--base-url` and the provider credential via `OPENAI_API_KEY`. For the paired
+stacking trial, select `--task stack_bowls --layout 0 --memory-profile local`,
+the same memory directory, `--max-turns 200 --max-tokens 16384
+--planner-timeout-s 3600 --max-episode-steps 0`, and the existing simulation
+service endpoints.
+
+These profiles run shell commands with the simulation account's host permissions.
+The episode directory contains the writable notes and scratch files. Each model
+request keeps the latest ten images across all cameras and local analysis tools.
+
+The [paired stacking trial](../validation/robodojo-bailian-api-20261125/summary.json)
+records native task outcomes, model usage, tool counts and playback checks
+for both API profiles alongside the archived Astra run on layout 0.

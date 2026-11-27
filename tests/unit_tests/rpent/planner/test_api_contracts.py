@@ -1283,3 +1283,223 @@ def test_api_executes_readonly_calls_concurrently(tmp_path):
     assert sorted(completed) == ["left", "right"]
     assert result.finish_result == {"_finish": True, **FINISH_ARGS}
     assert result.stats["tool_calls"] == 3
+
+
+def test_bailian_duplicate_eef_call_executes_motion_once(tmp_path):
+    from pydantic_ai import ModelRetry
+
+    from rpent.planner.api_loop import _HarnessToolkit
+
+    events = Events()
+    toolkit = RobotToolkit(events)
+
+    def move_eef(observation_step: int):
+        return {"observation_step": observation_step}
+
+    toolkit.register("move_eef", move_eef)
+    adapter = _HarnessToolkit(
+        toolkit, dashboard_events=events, no_images=False, analysis_workspace=tmp_path
+    )
+    ctx = SimpleNamespace(tool_call_id="motion-1")
+
+    async def run():
+        arguments = {"observation_step": 0}
+        first = await adapter.execute("move_eef", arguments, ctx)
+        assert await adapter.execute("move_eef", arguments, ctx) is first
+        with pytest.raises(ModelRetry, match="different arguments"):
+            await adapter.execute("move_eef", {"observation_step": 1}, ctx)
+
+    asyncio.run(run())
+    assert toolkit.calls == [("move_eef", {"observation_step": 0})]
+
+
+@pytest.mark.parametrize(
+    "threshold_usage,valid_summary,expected_compacted",
+    [(262143, True, False), (262144, True, True), (262145, False, False)],
+)
+def test_robodojo_256k_compaction_on_openai_wire(
+    tmp_path, threshold_usage, valid_summary, expected_compacted
+):
+    import httpx2
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    bodies = []
+    observations = [
+        b"checkpoint-head",
+        b"checkpoint-left",
+        b"checkpoint-right",
+    ]
+    record = SimpleNamespace(
+        step_idx=0,
+        state={
+            "instruction": "Stack the three bowls together.",
+            "state": {
+                "left_ee_pose": [0, 0, 0, 1, 0, 0, 0],
+                "right_ee_pose": [0, 0, 0, 1, 0, 0, 0],
+                "left_ee_joint_state": [1],
+                "right_ee_joint_state": [1],
+            },
+        },
+        result={},
+    )
+    env = SimpleNamespace(
+        latest_record=lambda: record,
+        get=lambda step: record,
+        load_bytes=lambda artifact, *, step: {
+            "cam_head.png": observations[0],
+            "cam_left_wrist.png": observations[1],
+            "cam_right_wrist.png": observations[2],
+        }[artifact],
+    )
+    events = Events()
+    toolkit = RobotToolkit(events, state=env)
+    decisions = 0
+    summaries = 0
+
+    def server(request):
+        nonlocal decisions, summaries
+        body = json.loads(request.content)
+        bodies.append(body)
+        if not body.get("tools"):
+            summaries += 1
+            assert body["model"] == "deepseek-v4.1-flash"
+            assert "max_completion_tokens" not in body
+            assert "max_tokens" not in body
+            text = (
+                json.dumps(
+                    {
+                        "observed_progress": [],
+                        "uncertain_state": ["Grasp unverified at step 0."],
+                        "failures": [],
+                        "next_checks": ["Check the latest state."],
+                    }
+                )
+                if valid_summary
+                else "invalid summary"
+            )
+            message = {"role": "assistant", "content": text}
+            finish_reason = "stop"
+            input_tokens = 1234
+        else:
+            assert "max_completion_tokens" not in body
+            assert "max_tokens" not in body
+            index = decisions
+            decisions += 1
+            tool_name = "observe" if index < 11 else "finish"
+            message = {
+                "role": "assistant",
+                "reasoning_content": f"needed reasoning {index}",
+                "tool_calls": [
+                    {
+                        "id": f"test-call-{index}",
+                        "type": "function",
+                        "function": {
+                            "name": tool_name,
+                            "arguments": json.dumps(
+                                FINISH_ARGS if tool_name == "finish" else {}
+                            ),
+                        },
+                    }
+                ],
+            }
+            finish_reason = "tool_calls"
+            input_tokens = threshold_usage
+        usage = {
+            "prompt_tokens": input_tokens,
+            "completion_tokens": 5,
+            "total_tokens": input_tokens + 5,
+        }
+        common = {"id": f"cmpl-{len(bodies)}", "model": body["model"], "created": 1}
+        if body.get("stream"):
+            chunks = [
+                {
+                    **common,
+                    "object": "chat.completion.chunk",
+                    "choices": [{"index": 0, "delta": message, "finish_reason": None}],
+                },
+                {
+                    **common,
+                    "object": "chat.completion.chunk",
+                    "choices": [
+                        {"index": 0, "delta": {}, "finish_reason": finish_reason}
+                    ],
+                },
+                {
+                    **common,
+                    "object": "chat.completion.chunk",
+                    "choices": [],
+                    "usage": usage,
+                },
+            ]
+            return httpx2.Response(
+                200,
+                headers={"content-type": "text/event-stream"},
+                content="".join(f"data: {json.dumps(chunk)}\n\n" for chunk in chunks)
+                + "data: [DONE]\n\n",
+            )
+        return httpx2.Response(
+            200,
+            json={
+                **common,
+                "object": "chat.completion",
+                "choices": [
+                    {"index": 0, "message": message, "finish_reason": finish_reason}
+                ],
+                "usage": usage,
+            },
+        )
+
+    client = httpx2.AsyncClient(transport=httpx2.MockTransport(server))
+    provider = OpenAIProvider(
+        api_key="offline-only",
+        base_url="http://fixture.invalid/v1",
+        http_client=client,
+    )
+    model = OpenAIChatModel(
+        "deepseek-v4.1-flash",
+        provider=provider,
+        profile={
+            "openai_chat_thinking_field": "reasoning_content",
+            "openai_chat_send_back_thinking_parts": "field",
+        },
+    )
+    try:
+        result = ApiAgentLoop(
+            model=model,
+            dashboard_events=events,
+            analysis_workspace=tmp_path,
+            compact_256k=True,
+            reasoning_effort="high",
+        ).solve(
+            system_prompt="Original robot instructions",
+            user_message="Original task",
+            toolkit=toolkit,
+            max_turns=18,
+        )
+    finally:
+        asyncio.run(client.aclose())
+
+    assert result.error is None
+    assert result.finish_result
+    assert summaries == int(threshold_usage >= 262144)
+    assert result.stats["turns_used"] == decisions + summaries
+    assert len([name for name, _ in toolkit.calls if name == "observe"]) == 11
+    carry_requests = [body for body in bodies if body.get("tools")]
+    observed_checkpoint = [
+        "Episode checkpoint." in json.dumps(x) for x in carry_requests
+    ]
+    assert any(observed_checkpoint) is expected_compacted
+    if expected_compacted:
+        resumed = carry_requests[observed_checkpoint.index(True)]
+        messages = resumed["messages"]
+        payload = json.dumps(messages)
+        assert "Original task" in payload
+        assert "Original robot instructions" in payload
+        assert "test-call-0" not in payload
+        assert "needed reasoning 8" in payload
+        assert sum(message["role"] == "tool" for message in messages) == 8
+        assert payload.count('"type": "image_url"') <= 10
+        assert "Recorded checkpoint images at step 0" in payload
+    else:
+        assert "test-call-0" in json.dumps(carry_requests[-1])

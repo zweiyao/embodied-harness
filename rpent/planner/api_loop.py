@@ -23,9 +23,12 @@ import asyncio
 import json
 import math
 import threading
+import time
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from functools import partial
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -61,9 +64,16 @@ from pydantic_ai.capabilities.abstract import (
     WrapNodeRunHandler,
     WrapRunHandler,
 )
-from pydantic_ai.exceptions import UsageLimitExceeded, UserError
-from pydantic_ai.messages import ModelMessage, UserContent
-from pydantic_ai.models import Model, ModelRequestContext
+from pydantic_ai.exceptions import ModelAPIError, UsageLimitExceeded, UserError
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ModelResponse,
+    SystemPromptPart,
+    UserContent,
+    UserPromptPart,
+)
+from pydantic_ai.models import Model, ModelRequestContext, ModelRequestParameters
 from pydantic_ai.run import AgentRun, AgentRunResult
 from pydantic_ai_harness.compaction import SlidingWindowCompaction
 
@@ -100,6 +110,8 @@ class ApiAgentLoop(Planner):
         max_tokens: int = 8192,
         reasoning_effort: str = "none",
         no_images: bool = False,
+        analysis_workspace: Path | None = None,
+        compact_256k: bool = False,
         timeout_s: float = 1200,
         interactive: bool = False,
     ) -> None:
@@ -112,6 +124,8 @@ class ApiAgentLoop(Planner):
         self.max_tokens = max_tokens
         self.reasoning_effort = reasoning_effort
         self.no_images = no_images
+        self.analysis_workspace = analysis_workspace
+        self.compact_256k = compact_256k
         self.timeout_s = timeout_s
         self.interactive = interactive
 
@@ -152,16 +166,31 @@ class ApiAgentLoop(Planner):
     ) -> PlannerResult:
         conversation_id = uuid4().hex
         adapter = _HarnessToolkit(
-            toolkit, dashboard_events=self.dashboard_events, no_images=self.no_images
+            toolkit,
+            dashboard_events=self.dashboard_events,
+            no_images=self.no_images,
+            analysis_workspace=self.analysis_workspace,
         )
         session = _Session(
-            adapter, conversation_id, max_turns, interactive=self.interactive
+            adapter,
+            conversation_id,
+            max_turns,
+            interactive=self.interactive,
+            compact_256k=self.compact_256k,
         )
         settings = _build_model_settings(
             self.model, self.max_tokens, self.reasoning_effort
         )
+        if self.compact_256k:
+            settings.pop("max_tokens", None)
         if self.timeout_s == 0:
             settings["timeout"] = None
+        if self.analysis_workspace is not None:
+            settings["parallel_tool_calls"] = False
+            settings["extra_body"] = {
+                **(settings.get("extra_body") or {}),
+                "enable_thinking": self.reasoning_effort != "none",
+            }
         agent = Agent(
             self.model,
             name="rpent_api",
@@ -174,8 +203,14 @@ class ApiAgentLoop(Planner):
             retries={"output": max_turns},
             model_settings=settings,
             capabilities=[
-                SlidingWindowCompaction(
-                    max_messages=80, max_fraction=0.8, keep_messages=40
+                *(
+                    []
+                    if self.analysis_workspace is not None
+                    else [
+                        SlidingWindowCompaction(
+                            max_messages=80, max_fraction=0.8, keep_messages=40
+                        )
+                    ]
                 ),
                 Thinking(
                     False if self.reasoning_effort == "none" else self.reasoning_effort
@@ -220,6 +255,11 @@ class ApiAgentLoop(Planner):
                 "total_cached_input_tokens": session.usage.cache_read_tokens,
                 "turns_used": session.usage.requests,
                 "tool_calls": adapter.tool_calls,
+                **(
+                    {"analysis_calls": adapter.analysis_calls}
+                    if self.analysis_workspace is not None
+                    else {}
+                ),
             },
             error=session.error,
         )
@@ -331,6 +371,7 @@ class _HarnessToolkit(FunctionToolset):
         *,
         dashboard_events: DashboardEventSink,
         no_images: bool,
+        analysis_workspace: Path | None = None,
     ) -> None:
         super().__init__(id="rpent")
         self.toolkit = toolkit
@@ -340,6 +381,12 @@ class _HarnessToolkit(FunctionToolset):
         self.tool_calls = 0
         self.messages: list[dict[str, Any]] = []
         self.stopping = threading.Event()
+        self.analysis_workspace = analysis_workspace
+        self.motion_receipts: dict[str, tuple[dict, ToolResult]] = {}
+        self.analysis_calls = 0
+        if analysis_workspace is not None:
+            self.add_tool(Tool(self.exec_command, takes_ctx=True, sequential=True))
+            self.add_tool(Tool(self.view_image, takes_ctx=True, sequential=True))
         self.validators: dict[str, Draft202012Validator] = {}
         self.output_types: list[Any] = [str]
         if not getattr(toolkit, "planner_tools_only", False):
@@ -381,8 +428,34 @@ class _HarnessToolkit(FunctionToolset):
                         description=spec.get("description"),
                         json_schema=spec["input_schema"],
                         takes_ctx=True,
+                        sequential=analysis_workspace is not None
+                        and name == "move_eef",
                     )
                 )
+
+    async def exec_command(self, ctx: RunContext, cmd: str) -> dict:
+        """Run a shell command in the episode workspace and return its exit status and output."""
+        from rpent.planner.api_analysis import execute_command
+
+        self._record_call("exec_command", {"cmd": cmd}, ctx)
+        self.analysis_calls += 1
+        result = await execute_command(self.analysis_workspace, cmd)
+        self._record_result("exec_command", ctx, json.dumps(result))
+        return result
+
+    async def view_image(self, ctx: RunContext, path: str) -> ToolReturn:
+        """Open a local PNG or JPEG and return it as an image."""
+        from rpent.planner.api_analysis import local_image
+
+        self._record_call("view_image", {"path": path}, ctx)
+        self.analysis_calls += 1
+        try:
+            image = await asyncio.to_thread(local_image, self.analysis_workspace, path)
+            result = ToolReturn(return_value={"path": path}, content=[image])
+        except (OSError, ValueError) as exc:
+            result = ToolReturn(return_value={"error": str(exc)})
+        self._record_result("view_image", ctx, json.dumps(result.return_value))
+        return result
 
     async def read_image(
         self, ctx: RunContext, name: str, step: int = -1
@@ -440,12 +513,26 @@ class _HarnessToolkit(FunctionToolset):
         error = next(self.validators[name].iter_errors(arguments), None)
         if error is not None:
             raise ModelRetry(f"Invalid arguments for {name}: {error.message}")
+        track_motion = (
+            self.analysis_workspace is not None
+            and name == "move_eef"
+            and ctx.tool_call_id
+        )
+        if track_motion and ctx.tool_call_id in self.motion_receipts:
+            previous, receipt = self.motion_receipts[ctx.tool_call_id]
+            if previous != arguments:
+                raise ModelRetry(
+                    "Motion call ID was already used with different arguments"
+                )
+            return receipt
         self._record_call(name, arguments, ctx)
         try:
             result = await execute_tool(self.toolkit, name, arguments)
         except asyncio.CancelledError:
             self.stopping.set()
             raise
+        if track_motion:
+            self.motion_receipts[ctx.tool_call_id] = (arguments, result)
         self._record_result(name, ctx, self._text(result))
         stop_result = getattr(self.toolkit, "planner_stop_result", None)
         if stop_result is not None:
@@ -521,6 +608,7 @@ class _Session(AbstractCapability):
         max_turns: int,
         *,
         interactive: bool = False,
+        compact_256k: bool = False,
     ) -> None:
         self.toolkit = toolkit
         self.conversation_id = conversation_id
@@ -536,6 +624,10 @@ class _Session(AbstractCapability):
         self.cancellation: CancellationToken | None = None
         self.completions = 0
         self.model_request_timeout_s = request_timeout(toolkit.toolkit)
+        self.compact_256k = compact_256k
+        self.compaction_attempted = False
+        self.last_input_tokens = 0
+        self.awaiting_compacted_response = False
 
     async def wrap_node_run(
         self, ctx: RunContext, *, node: AgentNode, handler: WrapNodeRunHandler
@@ -594,10 +686,135 @@ class _Session(AbstractCapability):
             if self.interactive:
                 message += " Use /exit to close the session."
             raise _RequestBudgetExhausted(message) from None
+        if self.toolkit.analysis_workspace is not None:
+            from rpent.planner.api_analysis import recent_images
+
+            request_context = replace(
+                request_context, messages=recent_images(request_context.messages)
+            )
+        if self.compact_256k and not self.compaction_attempted:
+            request_context = await self._maybe_compact_context(ctx, request_context)
         journal = getattr(self.toolkit.toolkit, "journal", None)
         if journal is not None:
             journal.append("model_request", request_context)
         return request_context
+
+    async def after_model_request(
+        self,
+        ctx: RunContext,
+        *,
+        request_context: ModelRequestContext,
+        response: ModelResponse,
+    ) -> ModelResponse:
+        if self.compact_256k:
+            self.last_input_tokens = response.usage.input_tokens
+            if self.awaiting_compacted_response:
+                self.awaiting_compacted_response = False
+                journal = getattr(self.toolkit.toolkit, "journal", None)
+                if journal is not None:
+                    journal.append("context_compaction_resumed", response.usage)
+        return response
+
+    async def _maybe_compact_context(
+        self, ctx: RunContext, request_context: ModelRequestContext
+    ) -> ModelRequestContext:
+        from rpent.planner.api_compaction import (
+            INPUT_THRESHOLD,
+            SUMMARY_PROMPT,
+            SUMMARY_TIMEOUT_S,
+            checkpoint_observation,
+            compacted_request,
+            parse_summary,
+            split_history,
+            summary_source,
+        )
+
+        used_requests = self.usage.requests + ctx.usage.requests
+        if (
+            self.last_input_tokens < INPUT_THRESHOLD
+            or used_requests + 1 >= self.limits.request_limit
+        ):
+            return request_context
+        split = split_history(request_context.messages)
+        if split is None:
+            return request_context
+        self.compaction_attempted = True
+        older, recent = split
+        journal = getattr(self.toolkit.toolkit, "journal", None)
+        started = time.monotonic()
+        if journal is not None:
+            journal.append("context_compaction_source", request_context)
+        try:
+            details, frames = checkpoint_observation(self.toolkit.toolkit.state)
+            summary_settings = (request_context.model_settings or {}).copy()
+            summary_settings.pop("max_tokens", None)
+            ctx.usage.requests += 1
+            summary_response = await asyncio.wait_for(
+                request_context.model.request(
+                    [
+                        ModelRequest(
+                            parts=[
+                                SystemPromptPart(content=SUMMARY_PROMPT),
+                                UserPromptPart(
+                                    content=(
+                                        f"Native task: {details['task_instruction']}\n"
+                                        + summary_source(older)
+                                    ),
+                                ),
+                            ]
+                        )
+                    ],
+                    summary_settings,
+                    ModelRequestParameters(),
+                ),
+                timeout=SUMMARY_TIMEOUT_S,
+            )
+            ctx.usage.incr(summary_response.usage)
+            if summary_response.finish_reason != "stop" or any(
+                isinstance(part, ToolCallPart) for part in summary_response.parts
+            ):
+                raise ValueError("summary did not finish with a text response")
+            summary = parse_summary(
+                "".join(
+                    part.content
+                    for part in summary_response.parts
+                    if isinstance(part, TextPart)
+                )
+            )
+            messages = compacted_request(older, recent, summary, details, frames)
+        except (
+            ModelAPIError,
+            OSError,
+            KeyError,
+            ValueError,
+            asyncio.TimeoutError,
+        ) as exc:
+            logger.warning(
+                "RoboDojo context compaction skipped: %s", type(exc).__name__
+            )
+            if journal is not None:
+                journal.append(
+                    "context_compaction_failed",
+                    {
+                        "error_type": type(exc).__name__,
+                        "elapsed_s": time.monotonic() - started,
+                    },
+                )
+            return request_context
+        if journal is not None:
+            journal.append(
+                "context_compaction_complete",
+                {
+                    "previous_input_tokens": self.last_input_tokens,
+                    "summary_usage": summary_response.usage,
+                    "elapsed_s": time.monotonic() - started,
+                    "observation_step": details["step"],
+                    "messages_before": len(request_context.messages),
+                    "messages_after": len(messages),
+                },
+            )
+        self.awaiting_compacted_response = True
+        return replace(request_context, messages=messages)
 
     async def before_node_run(self, ctx: RunContext, *, node: AgentNode) -> AgentNode:
         if self.toolkit.stopping.is_set():

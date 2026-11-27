@@ -206,6 +206,13 @@ class Workbench:
             p["id"]: {**p, "reasoning_effort": p.get("reasoning_effort") or "none"}
             for p in config["models"]
         }
+        if robot == "robodojo" and config.get("bailian_analysis_profiles"):
+            from robots.robodojo.bailian import MODELS, model_profile
+
+            source = self.profiles["qwen3.8-flash"]
+            for name in MODELS:
+                profile = {**source, **model_profile(name)}
+                self.profiles[profile["id"]] = profile
         self.checks = {}
         self.environment_lock = threading.RLock()
         self.pilot = None
@@ -399,8 +406,11 @@ class Workbench:
     def public_profiles(self):
         return [
             {
-                k: p.get(k)
-                for k in ("id", "label", "planner", "model", "reasoning_effort")
+                **{
+                    k: p.get(k)
+                    for k in ("id", "label", "planner", "model", "reasoning_effort")
+                },
+                **({"fixed_tools": p["fixed_tools"]} if p.get("fixed_tools") else {}),
             }
             for p in self.profiles.values()
         ]
@@ -500,7 +510,12 @@ class Workbench:
                 raise ValueError(
                     f"Unsupported task field {field['name']}: {request.get(field['name'])}"
                 )
-        selected = self.selection(request.get("tools"))
+        if self.profiles[profile_id].get("bailian_profile"):
+            from robots.robodojo.bailian import selected_tools
+
+            selected = selected_tools()
+        else:
+            selected = self.selection(request.get("tools"))
         if self.robot == "flexiv" and self.config.get("control_mode") == "eef_absolute":
             from robots.flexiv.prompt_bundle import inspection_task
 

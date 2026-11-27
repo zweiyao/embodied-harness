@@ -197,6 +197,11 @@ def _build_argparser() -> argparse.ArgumentParser:
         help="Give Codex analysis unrestricted filesystem/network access without approval prompts; requires --codex-analysis.",
     )
 
+    ap.add_argument(
+        "--bailian-profile",
+        help="Opt into the RoboDojo Bailian model and full-access analysis tools.",
+    )
+
     # other config
     ap.add_argument("--output-dir", default=None)
     ap.add_argument(
@@ -315,6 +320,7 @@ def _start_continuation_session(
         max_tokens=args.max_tokens,
         planner_timeout_s=args.planner_timeout_s,
         reasoning_effort=args.reasoning_effort,
+        bailian_profile=getattr(args, "bailian_profile", None),
         codex_analysis=getattr(args, "codex_analysis", False),
         codex_full_access=getattr(args, "codex_full_access", False),
         claude_code_max_budget_usd=args.claude_code_max_budget_usd,
@@ -376,6 +382,17 @@ def main() -> int:
     if args.codex_full_access and not args.codex_analysis:
         parser.error("--codex-full-access requires --codex-analysis")
     args.robot_name = early.robot_name
+    if args.bailian_profile:
+        from robots.robodojo.bailian import model_profile
+
+        if args.robot_name != "robodojo" or args.no_images:
+            parser.error("--bailian-profile requires RoboDojo and image input")
+        profile = model_profile(args.bailian_profile)
+        args.planner, args.model, args.reasoning_effort = (
+            profile["planner"],
+            profile["model"],
+            profile["reasoning_effort"],
+        )
     human_interactive_exploration = (
         args.explore and robot_spec.supports_human_interactive_exploration
     )
@@ -466,6 +483,10 @@ def main() -> int:
     prepare_run_memory(args, robot_spec, run_config)
     from rpent.cli.prompts import prepare_prompt_context, record_prompts, render_prompt
 
+    if args.bailian_profile:
+        from robots.robodojo.bailian import selected_tools
+
+        run_config.prompt_vars["manual_tools"] = selected_tools()
     prepare_prompt_context(args, run_config)
 
     dashboard_events = NullDashboardEventSink()
@@ -481,6 +502,7 @@ def main() -> int:
         max_tokens=args.max_tokens,
         planner_timeout_s=args.planner_timeout_s,
         reasoning_effort=args.reasoning_effort,
+        bailian_profile=getattr(args, "bailian_profile", None),
         codex_analysis=getattr(args, "codex_analysis", False),
         codex_full_access=getattr(args, "codex_full_access", False),
         claude_code_max_budget_usd=args.claude_code_max_budget_usd,

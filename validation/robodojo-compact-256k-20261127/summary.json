@@ -1,0 +1,363 @@
+{
+  "code": "7885e05fda8d4eca0204cbcfb3167fe4cce7f013",
+  "offline": {
+    "wire_contract": {
+      "passed": 3,
+      "threshold_cases": [
+        262143,
+        262144,
+        262145
+      ]
+    },
+    "full_unit": {
+      "passed": 2183,
+      "skipped": 19
+    },
+    "pre_commit": "passed",
+    "environment": "Remote validation copy, Python 3.11"
+  },
+  "trial": {
+    "run_id": "3ebae05167975b6a611b",
+    "archive": "research-runs/robodojo-compact-256k-20261127/session-256k/tasks/0001_stack_bowls_l0",
+    "model": "deepseek-v4.1-flash",
+    "reasoning_effort": "high",
+    "task": "stack_bowls",
+    "layout": 0,
+    "input_threshold": 262144,
+    "max_requests": 200,
+    "planner_timeout_s": 7200,
+    "status": "excluded_provider_billing_error",
+    "provider_error_code": "Arrearage",
+    "provider_http_status": 400,
+    "count_as_benchmark_result": false,
+    "requests": 83,
+    "responses": 82,
+    "maximum_input_tokens_per_request": 203986,
+    "compaction_status": "not_triggered",
+    "executed_eef_calls": 18,
+    "first_effective_eef_wall_s_from_initial_model_request": 681.5,
+    "outcome": {
+      "status": "error",
+      "environment_success": false,
+      "elapsed_s": 1236.0,
+      "stats": {
+        "total_input_tokens": 7680425,
+        "total_output_tokens": 140477,
+        "total_cached_input_tokens": 6842624,
+        "turns_used": 83,
+        "tool_calls": 81,
+        "analysis_calls": 47
+      },
+      "last_completed_step": 19,
+      "video_recorded": true
+    },
+    "video_check": {
+      "files": [
+        "episode_2026-11-27_17-21-14_cam_head.mp4",
+        "episode_2026-11-27_17-21-14_cam_left_wrist.mp4",
+        "episode_2026-11-27_17-21-14_cam_right_wrist.mp4"
+      ],
+      "first_and_last_frames_decoded": true,
+      "frames_per_view": 207,
+      "frames_per_second": 25.0
+    }
+  },
+  "remaining": [
+    "A controlled multi-episode comparison of task success, elapsed time, and token costs."
+  ],
+  "retry_trial": {
+    "run_id": "64ffee4159da0c56c2ad",
+    "archive": "research-runs/robodojo-compact-256k-20261127/session-256k/tasks/0002_stack_bowls_l0",
+    "model": "deepseek-v4.1-flash",
+    "reasoning_effort": "high",
+    "task": "stack_bowls",
+    "layout": 0,
+    "input_threshold": 262144,
+    "max_requests": 200,
+    "planner_timeout_s": 7200,
+    "provider_connectivity_check": "passed",
+    "control_requests": 199,
+    "control_responses": 199,
+    "maximum_input_tokens_per_request": 337574,
+    "executed_eef_calls": 36,
+    "outcome": {
+      "status": "budget_exhausted",
+      "environment_success": false,
+      "elapsed_s": 1993.3,
+      "stats": {
+        "total_input_tokens": 31219082,
+        "total_output_tokens": 210615,
+        "total_cached_input_tokens": 29536384,
+        "turns_used": 200,
+        "tool_calls": 199,
+        "analysis_calls": 130
+      },
+      "last_completed_step": 39,
+      "video_recorded": true,
+      "error": null
+    },
+    "compaction": {
+      "attempts": 1,
+      "successful_compactions": 0,
+      "first_effective_eef_request": 77,
+      "first_effective_eef_s": 625.294794,
+      "trigger_request": 156,
+      "trigger_input_tokens": 262492,
+      "failure_event": {
+        "error_type": "ValueError",
+        "elapsed_s": 21.937860995996743
+      },
+      "fallback_input_tokens": 262910,
+      "fallback_request": 157,
+      "summary_usage_inferred_from_counters": {
+        "input_tokens": 122335,
+        "output_tokens": 4096
+      },
+      "first_effective_eef_after_fallback_request": 162,
+      "first_effective_eef_after_fallback_s": 67.444229,
+      "summary_max_output_tokens": 4096,
+      "diagnosis": "The isolated summary used the full output token budget. Truncation is likely. The failed summary's finish reason and body were not recorded."
+    },
+    "video_check": {
+      "first_and_last_frames_decoded": true,
+      "files": [
+        {
+          "name": "episode_2026-11-27_18-22-59_cam_head.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 415,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_18-22-59_cam_left_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 415,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_18-22-59_cam_right_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 415,
+          "fps": 25.0
+        }
+      ]
+    }
+  },
+  "summary_without_request_output_limit_replay": {
+    "source_run_id": "64ffee4159da0c56c2ad",
+    "trigger_input_tokens": 262492,
+    "checkpoint_step": 26,
+    "original_messages": 313,
+    "retained_messages": 16,
+    "source_text_sha256": "097dd2287ebe4ba03a321e9375b80acefb66e1586c652e1da612172bad0a5978",
+    "request": {
+      "model_id": "deepseek-v4.1-flash",
+      "max_tokens_present": false,
+      "max_completion_tokens_present": false,
+      "thinking": "high"
+    },
+    "response": {
+      "finish_reason": "stop",
+      "input_tokens": 122335,
+      "output_tokens": 3956,
+      "text_characters": 2076,
+      "summary_items": {
+        "observed_progress": 5,
+        "uncertain_state": 4,
+        "failures": 3,
+        "next_checks": 5
+      }
+    },
+    "paid_requests": 1,
+    "compacted_messages": 17,
+    "event": "context_compaction_complete",
+    "elapsed_s": 26.694765344727784,
+    "offline": {
+      "wire_contract_passed": 3,
+      "full_unit": {
+        "passed": 2183,
+        "skipped": 19
+      },
+      "pre_commit": "passed"
+    }
+  },
+  "summary_without_request_output_limit_live": {
+    "code": "07a0c9e06e3e59d2e46bc35e2e7287a8c33dc717",
+    "archive": "research-runs/robodojo-summary-output-default/session-256k/tasks/0001_stack_bowls_l0",
+    "run_id": "3ebae05167975b6a611b",
+    "model": "deepseek-v4.1-flash",
+    "reasoning_effort": "high",
+    "task": "stack_bowls",
+    "layout": 0,
+    "control_requests": 119,
+    "control_responses": 119,
+    "executed_eef_calls": 21,
+    "max_requests": 200,
+    "planner_timeout_s": 7200,
+    "input_threshold": 262144,
+    "maximum_input_tokens_per_request": 206138,
+    "compaction_status": "not_triggered",
+    "last_control_response": {
+      "request_output_token_limit": 16384,
+      "finish_reason": "length",
+      "part_kinds": [
+        "thinking"
+      ],
+      "input_tokens": 206138,
+      "output_tokens": 16384
+    },
+    "outcome": {
+      "status": "error",
+      "environment_success": false,
+      "elapsed_s": 1293.2,
+      "stats": {
+        "total_input_tokens": 9727207,
+        "total_output_tokens": 146455,
+        "total_cached_input_tokens": 8781184,
+        "turns_used": 119,
+        "tool_calls": 118,
+        "analysis_calls": 78
+      },
+      "last_completed_step": 21,
+      "video_recorded": true,
+      "error": "UnexpectedModelBehavior: Model token limit (16384) exceeded before any response was generated. Increase the `max_tokens` model setting, or simplify the prompt to result in a shorter response that will fit within the limit."
+    },
+    "video_check": {
+      "first_and_last_frames_decoded": true,
+      "files": [
+        {
+          "name": "episode_2026-11-27_19-15-12_cam_head.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 229,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_19-15-12_cam_left_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 229,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_19-15-12_cam_right_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 229,
+          "fps": 25.0
+        }
+      ]
+    }
+  },
+  "provider_default_output_limit_live": {
+    "code": "1839a1ba1f17b2af154cf1cdc4b89cbffb2956ce",
+    "archive": "research-runs/robodojo-control-output-default/session-control-default/tasks/0001_stack_bowls_l0",
+    "run_id": "53d25b1fd399b99de63b",
+    "model": "deepseek-v4.1-flash",
+    "reasoning_effort": "high",
+    "task": "stack_bowls",
+    "layout": 0,
+    "offline": {
+      "focused_wire_passed": 7,
+      "full_unit": {
+        "passed": 2183,
+        "skipped": 19
+      },
+      "pre_commit": "passed"
+    },
+    "control_requests": 199,
+    "control_responses": 199,
+    "executed_eef_calls": 32,
+    "max_requests": 200,
+    "planner_timeout_s": 7200,
+    "input_threshold": 262144,
+    "compaction_status": "applied",
+    "checkpoint": {
+      "input_before": 264106,
+      "input_after": 41113,
+      "summary_elapsed_s": 14.084067021962255,
+      "summary_usage": {
+        "input_tokens": 129318,
+        "cache_write_tokens": 0,
+        "cache_read_tokens": 0,
+        "output_tokens": 2264,
+        "input_audio_tokens": 0,
+        "cache_audio_read_tokens": 0,
+        "output_audio_tokens": 0,
+        "audio_seconds": 0,
+        "details": {
+          "reasoning_tokens": 1852,
+          "text_tokens": 411
+        },
+        "cost": null
+      },
+      "observation_step": 16,
+      "first_execution_after_summary_s": 56.029238,
+      "control_requests_without_explicit_output_limit": 199,
+      "summary_attempts": 1,
+      "successful_summaries": 1,
+      "resumed_control_responses": 1,
+      "before": {
+        "input_tokens": 264106,
+        "cache_read_tokens": 257024,
+        "output_tokens": 230,
+        "request_index": 136,
+        "uncached_input_tokens": 7082
+      },
+      "after": {
+        "input_tokens": 41113,
+        "cache_read_tokens": 3584,
+        "output_tokens": 404,
+        "request_index": 137,
+        "uncached_input_tokens": 37529
+      },
+      "input_reduction_fraction": 0.8443314426783185,
+      "messages_before": 273,
+      "messages_after": 17
+    },
+    "outcome": {
+      "status": "budget_exhausted",
+      "environment_success": false,
+      "elapsed_s": 2112.4,
+      "stats": {
+        "total_input_tokens": 19147743,
+        "total_output_tokens": 240002,
+        "total_cached_input_tokens": 17245824,
+        "turns_used": 200,
+        "tool_calls": 199,
+        "analysis_calls": 149
+      },
+      "last_completed_step": 33,
+      "video_recorded": true,
+      "error": null
+    },
+    "video_check": {
+      "first_and_last_frames_decoded": true,
+      "files": [
+        {
+          "name": "episode_2026-11-27_20-49-45_cam_head.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 381,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_20-49-45_cam_left_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 381,
+          "fps": 25.0
+        },
+        {
+          "name": "episode_2026-11-27_20-49-45_cam_right_wrist.mp4",
+          "width": 640,
+          "height": 480,
+          "frames": 381,
+          "fps": 25.0
+        }
+      ]
+    }
+  }
+}

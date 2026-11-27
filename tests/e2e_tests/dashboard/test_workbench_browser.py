@@ -246,3 +246,28 @@ def test_manual_gripper(workbench_url, browser_page):
     )
     assert commands == [("POST", "open"), ("POST", "close")]
     toggle.click()
+
+
+def test_fixed_model_tools_restore_manual_selection(workbench_url, browser_page, bench):
+    from playwright.sync_api import expect
+
+    bench.profiles["fixed"] = {
+        "id": "fixed",
+        "label": "Fixed API fixture",
+        "planner": "api",
+        "model": "openai-chat:test",
+        "fixed_tools": ["native:finish"],
+    }
+    page = browser_page
+    page.goto(workbench_url)
+    model = page.locator("#model")
+    boxes = page.locator("#toolPicker input[type=checkbox]")
+    model.select_option("api")
+    page.locator("#nativeTools").click()
+    before = boxes.evaluate_all("(xs) => xs.map(x => [x.checked, x.disabled])")
+    model.select_option("fixed")
+    expect(page.locator("#toolPicker input:checked")).to_have_count(1)
+    expect(page.locator("#toolPicker input:enabled")).to_have_count(0)
+    expect(page.locator("#toolSelectionActions")).to_be_hidden()
+    model.select_option("api")
+    assert boxes.evaluate_all("(xs) => xs.map(x => [x.checked, x.disabled])") == before

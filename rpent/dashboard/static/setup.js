@@ -202,6 +202,22 @@ try {
       sessionStorage.removeItem('rpent.copyRun');
     }
     picker = renderTools($('toolPicker'), catalog, selection, canSelect);
+    if (setup.model_profiles?.some(p => p.fixed_tools)) {
+      let unlocked = selection;
+      let locked = false;
+      const applyModelTools = () => {
+        const fixed = setup.model_profiles.find(p => p.id === $('model').value)?.fixed_tools;
+        if (!locked) unlocked = picker.selected();
+        locked = Boolean(fixed);
+        picker = renderTools($('toolPicker'), catalog, fixed || unlocked, canSelect);
+        if (locked) {
+          for (const checkbox of $('toolPicker').querySelectorAll('input[type=checkbox]')) checkbox.disabled = true;
+        }
+        $('toolSelectionActions').hidden = locked || !canSelect;
+      };
+      $('model').addEventListener('change', applyModelTools);
+      applyModelTools();
+    }
     if (canSelect) for (const [id, mode] of [['allTools','all'],['clearTools','none'],['nativeTools','native']]) $(id).onclick = () => picker.select(mode);
   }
   if (setup.workbench) {

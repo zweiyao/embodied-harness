@@ -227,6 +227,7 @@ def build_planner(
     dashboard_events: DashboardEventSink,
     no_images: bool = False,
     interactive: bool = False,
+    bailian_profile: str | None = None,
     codex_analysis: bool = False,
     codex_full_access: bool = False,
 ) -> Planner:
@@ -238,11 +239,43 @@ def build_planner(
         from rpent.planner.api_loop import ApiAgentLoop
 
         api_model = build_api_model(model, base_url)
+        workspace = None
+        if bailian_profile:
+            from pydantic_ai.models.openai import OpenAIChatModel
+
+            from robots.robodojo.bailian import model_profile
+            from rpent.planner.codex_workspace import prepare_workspace
+
+            if (
+                robot_name != "robodojo"
+                or model != model_profile(bailian_profile)["model"]
+                or no_images
+            ):
+                raise ValueError(
+                    "RoboDojo Bailian analysis requires its configured vision model"
+                )
+            api_model = OpenAIChatModel(
+                api_model.model_name,
+                provider=api_model.provider,
+                profile={
+                    **api_model.profile,
+                    "openai_chat_thinking_field": "reasoning_content",
+                    "openai_chat_send_back_thinking_parts": "field",
+                },
+            )
+            workspace = prepare_workspace(
+                Path(output_dir), Path(memory_dir) if memory_dir else None
+            )
         api_timeout_s = planner_timeout_s
         if api_timeout_s is None:
             api_timeout_s = int(os.environ.get("CELL_TIMEOUT_S", "1200"))
         return ApiAgentLoop(
             model=api_model,
+            analysis_workspace=workspace,
+            compact_256k=(
+                bailian_profile == "deepseek-v4.1-flash"
+                and os.environ.get("RPENT_ROBODOJO_API_COMPACT_256K") == "1"
+            ),
             max_tokens=max_tokens,
             reasoning_effort=reasoning_effort,
             dashboard_events=dashboard_events,
