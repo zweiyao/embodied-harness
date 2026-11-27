@@ -1,0 +1,68 @@
+{
+  "code": "7885e05fda8d4eca0204cbcfb3167fe4cce7f013",
+  "offline": {
+    "wire_contract": {
+      "passed": 3,
+      "threshold_cases": [
+        262143,
+        262144,
+        262145
+      ]
+    },
+    "full_unit": {
+      "passed": 2183,
+      "skipped": 19
+    },
+    "pre_commit": "passed",
+    "environment": "Remote validation copy, Python 3.11"
+  },
+  "trial": {
+    "run_id": "3ebae05167975b6a611b",
+    "archive": "research-runs/robodojo-compact-256k-20261127/session-256k/tasks/0001_stack_bowls_l0",
+    "model": "deepseek-v4.1-flash",
+    "reasoning_effort": "high",
+    "task": "stack_bowls",
+    "layout": 0,
+    "input_threshold": 262144,
+    "max_requests": 200,
+    "planner_timeout_s": 7200,
+    "status": "excluded_provider_billing_error",
+    "provider_error_code": "Arrearage",
+    "provider_http_status": 400,
+    "count_as_benchmark_result": false,
+    "requests": 83,
+    "responses": 82,
+    "maximum_input_tokens_per_request": 203986,
+    "compaction_status": "not_triggered",
+    "executed_eef_calls": 18,
+    "first_effective_eef_wall_s_from_initial_model_request": 681.5,
+    "outcome": {
+      "status": "error",
+      "environment_success": false,
+      "elapsed_s": 1236.0,
+      "stats": {
+        "total_input_tokens": 7680425,
+        "total_output_tokens": 140477,
+        "total_cached_input_tokens": 6842624,
+        "turns_used": 83,
+        "tool_calls": 81,
+        "analysis_calls": 47
+      },
+      "last_completed_step": 19,
+      "video_recorded": true
+    },
+    "video_check": {
+      "files": [
+        "episode_2026-11-27_17-21-14_cam_head.mp4",
+        "episode_2026-11-27_17-21-14_cam_left_wrist.mp4",
+        "episode_2026-11-27_17-21-14_cam_right_wrist.mp4"
+      ],
+      "first_and_last_frames_decoded": true,
+      "frames_per_view": 207,
+      "frames_per_second": 25.0
+    }
+  },
+  "remaining": [
+    "Live summary and post-compaction control continuation after provider access is restored."
+  ]
+}
